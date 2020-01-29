@@ -2020,17 +2020,17 @@ var highCharts = (function (S, M) {
         borderWidth: 1,
         shadow: !0,
         style: {color: "#333333", cursor: "default", fontSize: "12px", pointerEvents: "none", whiteSpace: "nowrap"}
-      },
-      credits: {
-        enabled: !0,
-        href: "https://www.highcharts.com?credits",
-        position: {align: "right", x: -10, verticalAlign: "bottom", y: -5},
-        style: {
-          cursor: "pointer",
-          color: "#999999", fontSize: "9px"
-        },
-        text: "Highcharts.com"
       }
+      // credits: {
+      //   enabled: !0,
+      //   href: "https://www.highcharts.com?credits",
+      //   position: {align: "right", x: -10, verticalAlign: "bottom", y: -5},
+      //   style: {
+      //     cursor: "pointer",
+      //     color: "#999999", fontSize: "9px"
+      //   },
+      //   text: "Highcharts.com"
+      // }
     };
     c.setOptions = function (e) {
       c.defaultOptions = F(!0, c.defaultOptions, e);

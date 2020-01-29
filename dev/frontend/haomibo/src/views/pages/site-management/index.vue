@@ -81,7 +81,7 @@
                       <b-button
                         size="sm" @click="onAction('edit',props.rowData)"
                         variant="primary default btn-square"
-                        :disabled="props.rowData.status === '1000000701' || checkPermItem('field_modify')">
+                        :disabled="checkPermItem('field_modify')">
                         <i class="icofont-edit"/>
                       </b-button>
 
@@ -137,6 +137,7 @@
                         <span class="text-danger">*</span>
                       </template>
                       <b-form-input type="text" v-model="siteForm.fieldSerial"
+                                    :disabled="pageStatus==='edit'"
                                     :state="!$v.siteForm.fieldSerial.$invalid"
                                     :placeholder="$t('system-setting.please-enter-site-no')"/>
                       <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}
@@ -215,12 +216,20 @@
             <b-row class="flex-grow-1 align-items-end">
               <b-col cols="12" class="d-flex justify-content-end">
                 <div class="mr-3">
-                  <b-button @click="onAction('save')" size="sm" variant="success default" v-if="pageStatus !== 'show'">
+                  <b-button @click="onAction('save')" size="sm" variant="success default">
                     <i class="icofont-save"/> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="onAction('delete',siteForm)" size="sm" variant="danger default"
-                            v-if="pageStatus !== 'create' || checkPermItem('field_delete')">
-                    <i class="icofont-bin"/> {{$t('system-setting.delete')}}
+                  <b-button v-if="siteForm.status === '1000000701' && pageStatus !== 'create'" :disabled="checkPermItem('field_update_status')"
+                            @click="onAction('inactivate',siteForm)" size="sm" variant="warning default">
+                    <i class="icofont-ban"/> {{$t('permission-management.action-make-inactive')}}
+                  </b-button>
+                  <b-button v-if="siteForm.status === '1000000702' && pageStatus !== 'create'" :disabled="checkPermItem('field_update_status')"
+                            @click="onAction('activate',siteForm)" size="sm" variant="success default">
+                    <i class="icofont-check-circled"/> {{$t('permission-management.active')}}
+                  </b-button>
+                  <b-button v-if="siteForm.status !== '1000000701' && pageStatus !== 'create'" :disabled="checkPermItem('field_delete')"
+                            @click="onAction('delete',siteForm)" size="sm" variant="danger default">
+                    <i class="icofont-bin"/> {{$t('permission-management.delete')}}
                   </b-button>
                   <b-button @click="onAction('list')" size="sm" variant="info default">
                     <i class="icofont-long-arrow-left"/> {{$t('system-setting.return')}}
@@ -244,7 +253,7 @@
                         {{$t('system-setting.site-no')}}&nbsp;
                         <span class="text-danger">*</span>
                       </template>
-                      <b-form-input type="text" v-model="siteForm.fieldSerial"
+                      <b-form-input disabled type="text" v-model="siteForm.fieldSerial"
                                     :placeholder="$t('system-setting.please-enter-site-no')"/>
                     </b-form-group>
                   </b-col>
@@ -324,11 +333,11 @@
                             @click="onAction('activate',siteForm)" size="sm" variant="success default">
                     <i class="icofont-check-circled"/> {{$t('system-setting.status-active')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_delete')"
-                            @click="onAction('delete',siteForm)" size="sm"
-                            variant="danger default">
-                    <i class="icofont-bin"/> {{$t('system-setting.delete')}}
-                  </b-button>
+<!--                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_delete')"-->
+<!--                            @click="onAction('delete',siteForm)" size="sm"-->
+<!--                            variant="danger default">-->
+<!--                    <i class="icofont-bin"/> {{$t('system-setting.delete')}}-->
+<!--                  </b-button>-->
                   <b-button @click="onAction('list')" size="sm" variant="info default">
                     <i class="icofont-long-arrow-left"/> {{$t('system-setting.return')}}
                   </b-button>
@@ -391,7 +400,7 @@
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -786,6 +795,7 @@
             break;
           case 'inactivate':
             this.initialize(data);
+            //this.updateItemStatus('1000000702');
             this.$refs['modal-inactive'].show();
             break;
           case 'delete':
@@ -944,7 +954,6 @@
                 });
                 if (this.siteForm.fieldId > 0)
                   this.siteForm.status = statusValue;
-                if (this.pageStatus === 'table')
                   this.$refs.vuetable.reload();
                 this.getSiteData();
                 break;

@@ -4,6 +4,7 @@ import {responseMessages} from "../constants/response-messages";
 import app from '../main';
 import moment from '../../node_modules/moment';
 import {apiBaseUrl} from '../constants/config';
+
 const getApiManager = function () {
 
   const apiManager = axios.create({
@@ -127,7 +128,7 @@ const getApiManagerError = function () {
 const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
   if (datetime === "" || datetime == null)
     return "";
-  var array;
+  let array;
   array=datetime.split(".");
   datetime = array[0];
   datetime = datetime + "." + "000+1400";
@@ -150,8 +151,7 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
       let type = '天';
       if(lang !== 'zh')
         type = 'D';
-      let diff = moment.utc(moment().diff(moment(String(datetime)))).format(`D[${type}] HH:mm:ss`);
-      return diff;
+      return moment.utc(moment().diff(moment(String(datetime)))).format(`D[${type}] HH:mm:ss`);
   }
  // datetime = '2019-12-31T18:10:49.000+0000';
   return moment(String(datetime)).format(format)
@@ -215,7 +215,7 @@ const printFileFromServer = (link,params) => {
           item.parentNode.removeChild(item);
         });
         let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-        var objFra = document.createElement('iframe');
+        let objFra = document.createElement('iframe');
         objFra.style.visibility = "hidden";
         objFra.style.display = 'none';
         objFra.src = fileURL;
@@ -237,35 +237,34 @@ const printFileFromServer = (link,params) => {
 function isPhoneValid(value) {
   if(value === "")
     return true;
-  let phoneno = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
-  if(value.match(phoneno)){
-    return true;
-  }
-  else{
+  let phoneNumber = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
+  return !!value.match(phoneNumber);
+}
+
+function isGuidValid(value) {
+  if(value === "")
     return false;
-  }
-};
+  let regGuid = /^(\{{0,1}([0-9A-Z]){8}-([0-9A-Z]){4}-([0-9A-Z]){4}-([0-9A-Z]){4}-([0-9A-Z]){12}\}{0,1})$/;
+  return regGuid.test(value);
+}
 
 function isDataCodeValid(value) {
   if(value === "")
-    return true;
-  let Reg = /^[0-9]+$/;
-  if(Reg.test(value)){
-    return true;
-  }
-  else{
     return false;
-  }
-};
+  let Reg = /^[0-9]+$/;
+  return Reg.test(value);
+}
+
+
 
 function isAccountValid(value) {
   let accountReg = /^[A-Za-z0-9._-]+$/;
   let arrReg = [/^[A-Z]+$/, /^[a-z]+$/, /^[0-9]+$/, /^[._-]+$/];
   let regId=0;
-  if(value === "") {
+  if(value === null) {
     return false;
   }else {
-    var arrPassword = value.split('');
+    let arrPassword = value.split('');
     for (let i = 0; i < arrPassword.length; i++) {
       if (accountReg.test(arrPassword[i])) {
         for(let j=0; j<arrReg.length; j++){
@@ -286,4 +285,10 @@ function isAccountValid(value) {
 
 }
 
-export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid, isAccountValid, isDataCodeValid};
+// function downloadPath() {
+//   var browser;
+//   browser.downloads.showDefaultFolder();
+// }
+
+
+export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid, isAccountValid, isDataCodeValid, isGuidValid};

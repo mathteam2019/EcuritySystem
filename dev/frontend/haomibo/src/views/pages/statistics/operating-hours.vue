@@ -14,13 +14,13 @@
 
           <b-col>
             <b-form-group :label="'设备类型'">
-              <b-form-select v-model="filter.deviceId" :options="categoryFilterData" plain/>
+              <b-form-select v-model="filter.deviceType" :options="categoryFilterDatas" plain/>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="'设备'">
-              <b-form-input v-model="filter.deviceCategoryId"/>
+              <b-form-input v-model="filter.deviceName"/>
             </b-form-group>
           </b-col>
 
@@ -65,7 +65,7 @@
               <b-img src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span>D{{totalData['day'].value}} {{totalData['hour'].value}}h: {{totalData['minute'].value}}m: {{totalData['second'].value}}s</span>
+              <div><span class="span-font">D{{totalData['day'].value}} {{totalData['hour'].value}}h: {{totalData['minute'].value}}m: {{totalData['second'].value}}s</span>
               </div>
               <div><span>累计运行时长</span></div>
             </div>
@@ -79,7 +79,7 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span>D{{scanData['day'].value}} {{scanData['hour'].value}}h: {{scanData['minute'].value}}m: {{scanData['second'].value}}s</span>
+              <div><span class="span-font">D{{scanData['day'].value}} {{scanData['hour'].value}}h: {{scanData['minute'].value}}m: {{scanData['second'].value}}s</span>
               </div>
               <div><span>安检仪累计运行时长</span></div>
             </div>
@@ -93,7 +93,7 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>D{{judgeData['day'].value}} {{judgeData['hour'].value}}h: {{judgeData['minute'].value}}m: {{judgeData['second'].value}}s</span>
+              <div><span class="span-font">D{{judgeData['day'].value}} {{judgeData['hour'].value}}h: {{judgeData['minute'].value}}m: {{judgeData['second'].value}}s</span>
               </div>
               <div><span>判图站累计运行时长</span></div>
             </div>
@@ -107,7 +107,7 @@
               <b-img src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span>D{{handData['day'].value}} {{handData['hour'].value}}h: {{handData['minute'].value}}m: {{handData['second'].value}}s</span>
+              <div><span class="span-font">D{{handData['day'].value}} {{handData['hour'].value}}h: {{handData['minute'].value}}m: {{handData['second'].value}}s</span>
               </div>
               <div><span>手检站累计运行时长</span></div>
             </div>
@@ -281,7 +281,7 @@
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -451,8 +451,12 @@
             axisLine: {
               show: true
             },
+            axisLabel: {
+              interval:0
+            },
             axisTick: {
-              show: false
+              show: false,
+              interval:0,
             }
 
           },
@@ -510,8 +514,8 @@
         isModalVisible: false,
 
         filter: {
-          deviceId: null,
-          deviceCategoryId: null,
+          deviceName: null,
+          deviceType: null,
           startTime: null,
           endTime: null,
           statWidth: 'hour',
@@ -528,6 +532,12 @@
 
         categoryData: [],
         categoryFilterData: [],
+        categoryFilterDatas: [
+          {value: null, text: "全部"},
+          {value: 1000001901, text: "安检仪"},
+          {value: 1000001902, text: "审图端"},
+          {value: 1000001903, text: "手检端"}
+        ],
 
         statisticalStepSizeOptions: [
           {value: 'hour', text: "时"},
@@ -738,7 +748,7 @@
               }
             },
           ],
-          perPage: 5,
+          perPage: 10,
         },
 
       }
@@ -914,15 +924,15 @@
           filter: this.filter
         }).then((response) => {
           this.graphData = response.data.data;
-
+          this.bar3ChartOptions.xAxis.data=[];
           let keyData = Object.keys(this.graphData.detailedStatistics);
           let xAxisChart = [];
 
-          for (let i = 1; i < keyData.length; i++) {
+          for (let i = 0; i < keyData.length; i++) {
 
             let key = keyData[i];
 
-            xAxisChart[i - 1] = this.graphData.detailedStatistics[key].name;
+            xAxisChart[i] = this.graphData.detailedStatistics[key].name;
             if (this.graphData.detailedStatistics[key].scanStatistics != null) {
               this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[key].scanStatistics.workingSeconds;
             } else {
@@ -989,12 +999,12 @@
 
         this.getGraphData();
         this.getPreviewData();
-        //this.$refs.taskVuetable.refresh();
+        this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
         this.filter = {
-          deviceId: null,
-          deviceCategoryId: null,
+          deviceName: null,
+          deviceType: null,
           statWidth: 'hour',
           startTime: null,
           endTime: null

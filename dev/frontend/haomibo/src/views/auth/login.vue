@@ -11,6 +11,7 @@
     .form-control {
       max-width: unset !important;
     }
+
     img.logo {
       top: 3.125rem;
       left: 3.125rem;
@@ -95,6 +96,7 @@
     .fixed-background {
       transform: rotateY(180deg);
     }
+
     .auth-login-page {
       img.logo {
         top: 3.125rem;
@@ -175,8 +177,8 @@
     }
     .auth-login-page {
       .form-control {
-        max-width: 100%!important;
-        border-radius: 0px!important;
+        max-width: 100% !important;
+        border-radius: 0px !important;
       }
     }
   }
@@ -254,7 +256,7 @@
       return {
         account: '',
         password: '',
-        count:null,
+        count: null,
         localeOptions,
         processing: false
       }
@@ -293,6 +295,7 @@
       },
       formSubmit() {
         this.count = getInvalidCount(this.account);
+        console.log(this.count);
 
         if (this.account.length === 0) {
           this.$notify('warning', this.$t('user.warning'), this.$t(`user.enter-valid-email`), {
@@ -313,7 +316,7 @@
           .post(`${apiBaseUrl}/auth/login`, {
             userAccount: this.account,
             password: this.password,
-            count:this.count
+            count: this.count
           })
           .then(response => {
             this.processing = false;
@@ -346,12 +349,12 @@
                   ...data.user
                 });
 
-                if(data.user.category === 'normal') {
+                if (data.user.category === 'normal') {
                   this.$router.push('/pages/dashboard');
                   break;
                 }
 
-                if(data.user.category === 'admin'){
+                if (data.user.category === 'admin') {
                   this.$router.push('/pages/dashboard');
                   break;
                 }
@@ -371,26 +374,34 @@
                 break;
               case responseMessages['invalid-password']:
                 setInvalidCount(this.account);
-                if(this.count!=='6'){
-                  this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.invalid-password`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-                }
-                else {
-                  this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.forbidden_warning`), {
-                    duration: 6000,
-                    permanent: false
-                  });
-
-                  break;
-                }
-              case responseMessages['user_pending_status']:
-                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.forbidden`), {
-                  duration: 10000,
+                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.invalid-password`), {
+                  duration: 3000,
                   permanent: false
                 });
+                break;
+
+              case responseMessages['pre-user-pending-status']:
+                setInvalidCount(this.account);
+                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.forbidden-warning`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+
+              case responseMessages['user-pending-status']:
+                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.forbidden`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                removeCount(this.account);
+                break;
+
+              case responseMessages['user-non-active-status']:
+                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.inactive`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                removeCount(this.account);
                 break;
             }
           })

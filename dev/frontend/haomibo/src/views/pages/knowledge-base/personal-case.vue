@@ -87,7 +87,7 @@
                     size="sm"
                     variant="danger default btn-square"
                     :disabled="checkPermItem('personal_knowledge_delete')"
-                    @click="onAction(props.rowData.caseDealId)">
+                    @click="showModal(props.rowData.caseDealId)">
                     <i class="icofont-ban"/>
                   </b-button>
                 </div>
@@ -584,7 +584,7 @@
 
                     <b-button size="sm" variant="danger default"
                               :disabled="checkPermItem('personal_knowledge_delete')"
-                              @click="onAction(caseDealId)">
+                              @click="showModal(caseDealId)">
                       <i class="icofont-bin"/> {{$t('system-setting.delete')}}
                     </b-button>
                     <b-button size="sm" variant="info default" @click="pageStatus='table'">
@@ -616,7 +616,7 @@
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -630,6 +630,16 @@
           <i class="icofont-long-arrow-left"/>{{$t('system-setting.cancel')}}
         </b-button>
       </div>
+    </b-modal>
+    <b-modal centered id="modal-dismiss" ref="modal-dismiss" :title="$t('system-setting.prompt')">
+      {{$t('device-management.device-table.dismiss-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="onAction(caseDealId)" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-dismiss')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
     </b-modal>
     <Modal
       ref="exportModal"
@@ -1712,6 +1722,11 @@
         this.$refs.pendingListTable.changePage(page);
       },
 
+      showModal(data) {
+        this.caseDealId= data;
+        this.$refs['modal-dismiss'].show();
+      },
+
       onAction(data) { // called when any action button is called from table
         // call api
         getApiManager()
@@ -1726,6 +1741,7 @@
                   duration: 3000,
                   permanent: false
                 });
+                this.$refs['modal-dismiss'].hide();
                 this.pageStatus= 'table';
                 this.$refs.pendingListTable.refresh();
                 break;

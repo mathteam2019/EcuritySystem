@@ -84,7 +84,7 @@
           <slot name="body">
             <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
               <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                        :state="!$v.fileSelection.$invalid"
+                        :state="!$v.fileSelection.$invalid" :searchable="false"
                         class="v-select-custom-style" :dir="direction" multiple/>
             </b-form-group>
           </slot>

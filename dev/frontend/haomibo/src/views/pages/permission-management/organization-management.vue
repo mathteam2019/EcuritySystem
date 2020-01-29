@@ -27,7 +27,7 @@
 
       <b-tab :title="$t('permission-management.organization-table')">
         <b-row v-show="pageStatus==='table'" class="h-100">
-          <b-col cols="12 d-flex flex-column">
+          <b-col cols="12 d-flex flex-column" style="padding-right: 15px; padding-left: 15px;">
             <b-row class="pt-2">
               <b-col class="d-flex">
                 <div class="flex-grow-1">
@@ -73,11 +73,11 @@
                   </b-button>
                   <b-button @click="onExportButton()" size="sm" class="ml-2" variant="outline-info default"
                             :disabled="checkPermItem('org_export')">
-                    <i class="icofont-share-alt"/>&nbsp;{{ $t('permission-management.print') }}
+                    <i class="icofont-share-alt"/>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
                   <b-button @click="onPrintButton()" size="sm" class="ml-2" variant="outline-info default"
                             :disabled="checkPermItem('org_print')"><i class="icofont-printer"/>&nbsp;
-                    {{ $t('permission-management.export') }}
+                    {{ $t('permission-management.print') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()"
                             :disabled="checkPermItem('org_create')">
@@ -105,7 +105,7 @@
                     </template>
                     <template slot="actions" slot-scope="props">
                       <div>
-                        <template v-if="props.rowData.status==='1000000702'">
+<!--                        <template v-if="props.rowData.status==='1000000702'">-->
                           <b-button
                             size="sm"
                             variant="info default btn-square"
@@ -115,6 +115,7 @@
                           </b-button>
                           <b-button
                             size="sm"
+                            v-if="props.rowData.status==='1000000702'"
                             variant="success default btn-square"
                             :disabled="checkPermItem('org_update_status')"
                             @click="onAction('activate', props.rowData, props.rowIndex)">
@@ -122,44 +123,52 @@
                           </b-button>
                           <b-button
                             size="sm"
+                            v-if="props.rowData.status==='1000000701'"
+                            variant="warning default btn-square"
+                            :disabled="checkPermItem('org_update_status')"
+                            @click="onAction('deactivate', props.rowData, props.rowIndex)">
+                            <i class="icofont-ban"/>
+                          </b-button>
+                          <b-button
+                            size="sm"
                             variant="danger default btn-square"
-                            :disabled="checkPermItem('org_delete')"
+                            :disabled="checkPermItem('org_delete') || props.rowData.status==='1000000701'"
                             @click="onAction('delete', props.rowData, props.rowIndex)">
                             <i class="icofont-bin"/>
                           </b-button>
-                        </template>
-                        <template v-if="props.rowData.status==='1000000701'">
-                          <b-button
-                            size="sm"
-                            variant="info default btn-square"
-                            disabled>
-                            <i class="icofont-edit"/>
-                          </b-button>
+<!--                        </template>-->
+<!--                        <template v-if="props.rowData.status==='1000000701'">-->
+<!--                          <b-button-->
+<!--                            size="sm"-->
+<!--                            variant="info default btn-square"-->
+<!--                            disabled>-->
+<!--                            <i class="icofont-edit"/>-->
+<!--                          </b-button>-->
 
-                          <template v-if="props.rowData.parentOrgId===0">
-                            <b-button
-                              size="sm"
-                              variant="warning default btn-square"
-                              disabled>
-                              <i class="icofont-ban"/>
-                            </b-button>
-                          </template>
-                          <template v-else>
-                            <b-button
-                              size="sm"
-                              variant="warning default btn-square"
-                              :disabled="checkPermItem('org_update_status')"
-                              @click="onAction('deactivate', props.rowData, props.rowIndex)">
-                              <i class="icofont-ban"/>
-                            </b-button>
-                          </template>
-                          <b-button
-                            size="sm"
-                            variant="danger default btn-square"
-                            disabled>
-                            <i class="icofont-bin"/>
-                          </b-button>
-                        </template>
+<!--                          <template v-if="props.rowData.parentOrgId===0">-->
+<!--                            <b-button-->
+<!--                              size="sm"-->
+<!--                              variant="warning default btn-square"-->
+<!--                              disabled>-->
+<!--                              <i class="icofont-ban"/>-->
+<!--                            </b-button>-->
+<!--                          </template>-->
+<!--                          <template v-else>-->
+<!--                            <b-button-->
+<!--                              size="sm"-->
+<!--                              variant="warning default btn-square"-->
+<!--                              :disabled="checkPermItem('org_update_status')"-->
+<!--                              @click="onAction('deactivate', props.rowData, props.rowIndex)">-->
+<!--                              <i class="icofont-ban"/>-->
+<!--                            </b-button>-->
+<!--                          </template>-->
+<!--                          <b-button-->
+<!--                            size="sm"-->
+<!--                            variant="danger default btn-square"-->
+<!--                            disabled>-->
+<!--                            <i class="icofont-bin"/>-->
+<!--                          </b-button>-->
+<!--                        </template>-->
                       </div>
                     </template>
                   </vuetable>
@@ -241,7 +250,8 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
-                                v-model="createPage.mobile"  :state="!$v.createPage.mobile.$dirty ? null : !$v.createPage.mobile.$invalid"
+                                v-model="createPage.mobile"
+                                :state="!$v.createPage.mobile.$dirty ? null : !$v.createPage.mobile.$invalid"
                                 :placeholder="'000-0000-0000'"/>
                 </b-form-group>
               </b-col>
@@ -282,7 +292,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-input type="text"
+                  <b-form-input type="text" disabled
                                 v-model="modifyPage.orgNumber"
                                 :state="!$v.modifyPage.orgNumber.$dirty ? null : !$v.modifyPage.orgNumber.$invalid"
                                 :placeholder="$t('permission-management.please-enter-organization-number')"/>
@@ -340,7 +350,8 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
-                                v-model="modifyPage.mobile" :state="!$v.modifyPage.mobile.$dirty ? null : !$v.modifyPage.mobile.$invalid"
+                                v-model="modifyPage.mobile"
+                                :state="!$v.modifyPage.mobile.$dirty ? null : !$v.modifyPage.mobile.$invalid"
                                 :placeholder="'000-0000-0000'"/>
                 </b-form-group>
               </b-col>
@@ -364,15 +375,15 @@
               class="icofont-save"/> {{
               $t('permission-management.save-button') }}
             </b-button>
-            <b-button v-if="modifyPage.selectedOrg.status==='1000000702'" size="sm" variant="warning default mr-1"
-                      @click="onAction('activate')"><i class="icofont-check-circled"/> {{
+            <b-button v-if="modifyPage.selectedOrg.status==='1000000702'" size="sm" variant="success default"
+                      :disabled="checkPermItem('org_update_status')" @click="onAction('activate')"><i class="icofont-check-circled"/> {{
               $t('permission-management.active')}}
             </b-button>
             <b-button v-else-if="modifyPage.selectedOrg.status==='1000000701'" size="sm" variant="warning default mr-1"
-                      @click="onAction('deactivate')"><i class="icofont-ban"/> {{
+                      :disabled="checkPermItem('org_update_status')" @click="onAction('deactivate')"><i class="icofont-ban"/> {{
               $t('permission-management.action-make-inactive')}}
             </b-button>
-            <b-button size="sm" variant="danger default mr-1" @click="onAction('delete')"><i class="icofont-bin"></i> {{
+            <b-button v-if="modifyPage.selectedOrg.status==='1000000702'" size="sm" variant="danger default mr-1" :disabled="checkPermItem('org_delete')" @click="onAction('delete')"><i class="icofont-bin"></i> {{
               $t('permission-management.delete')}}
             </b-button>
             <b-button size="sm" variant="primary default" @click="onModifyPageBackButton()"><i
@@ -392,7 +403,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-input type="text"
+                  <b-form-input type="text" disabled
                                 v-model="modifyPage.orgNumber"
                                 :state="!$v.modifyPage.orgNumber.$dirty ? null : !$v.modifyPage.orgNumber.$invalid"
                                 :placeholder="$t('permission-management.please-enter-organization-number')"/>
@@ -470,6 +481,14 @@
             </b-row>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
+            <b-button v-if="modifyPage.selectedOrg.status==='1000000702'" size="sm" variant="success default"
+                      :disabled="checkPermItem('org_update_status')" @click="onAction('activate')"><i class="icofont-check-circled"/> {{
+              $t('permission-management.active')}}
+            </b-button>
+            <b-button v-else-if="modifyPage.selectedOrg.status==='1000000701'" size="sm" variant="warning default mr-1"
+                      :disabled="checkPermItem('org_update_status')" @click="onAction('deactivate')"><i class="icofont-ban"/> {{
+              $t('permission-management.action-make-inactive')}}
+            </b-button>
             <b-button size="sm" variant="primary default" @click="onModifyPageBackButton()"><i
               class="icofont-long-arrow-left"/> {{
               $t('permission-management.back-button') }}
@@ -532,17 +551,18 @@
       </template>
     </b-modal>
 
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -612,7 +632,7 @@
     },
     mixins: [validationMixin],
     validations: {
-      fileSelection : {
+      fileSelection: {
         required
       },
       createPage: { // create page
@@ -625,7 +645,7 @@
         parentOrgId: {
           required
         },
-        mobile:{
+        mobile: {
           isPhoneValid
         }
       },
@@ -639,7 +659,7 @@
         parentOrgId: {
           required
         },
-        mobile:{
+        mobile: {
           isPhoneValid
         }
       }
@@ -677,10 +697,10 @@
         },
         orgData: [], // loaded from server when the page is mounted
         pageStatus: 'table', // table, create, modify -> it will change the page
-	link: '',
+        link: '',
         params: {},
         name: '',
-        fileSelection : [],
+        fileSelection: [],
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
@@ -781,7 +801,8 @@
               name: 'note',
               title: this.$t('permission-management.th-org-note'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '16%'
             },
             {
               name: '__slot:actions',
@@ -817,6 +838,11 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
+      // pageStatus(newVal) {
+      //   if(newVal==='table'){
+      //     this.$refs.vuetable.reload();
+      //   }
+      // },
 
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
@@ -913,7 +939,7 @@
         this.name = 'organization';
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
@@ -922,7 +948,7 @@
           'idList': checkedIds.join()
         };
         let link = `permission-management/organization-management/organization`;
-        if(this.fileSelection !== null) {
+        if (this.fileSelection !== null) {
           downLoadFileFromServer(link, params, 'organization', this.fileSelection);
           this.hideModal('model-export')
         }
@@ -938,7 +964,7 @@
         let link = `permission-management/organization-management/organization`;
         printFileFromServer(link, params);
       },
-      getOrgDataAll(){
+      getOrgDataAll() {
         getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
           type: 'with_graphic'
         }).then((response) => {
@@ -1039,8 +1065,7 @@
               mobile: data.mobile,
               note: data.note
             };
-          }
-          else {
+          } else {
             // rest models
             this.modifyPage = {
               selectedOrg: data,
@@ -1090,6 +1115,8 @@
                   });
                   if (this.modifyPage != null)
                     this.modifyPage.selectedOrg.status = '1000000701';
+                  if(this.pageStatus==='modify')
+                    this.pageStatus = 'table';
                   this.$refs.vuetable.reload();
                   this.getOrgDataAll();
                   break;
@@ -1154,7 +1181,8 @@
           this.selectedOrg = data;
           if (data == null)
             this.selectedOrg = this.modifyPage.selectedOrg;
-          this.$refs['modal-deactivate'].show();
+          this.deactivateOrg();
+          //this.$refs['modal-deactivate'].show();
         };
 
         switch (action) {
@@ -1471,6 +1499,7 @@
                 });
                 if (this.modifyPage != null)
                   this.modifyPage.selectedOrg.status = '1000000702';
+                //this.pageStatus = 'table';
                 this.$refs.vuetable.reload();
                 this.getOrgDataAll();
                 break;

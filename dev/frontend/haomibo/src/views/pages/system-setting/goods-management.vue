@@ -53,7 +53,7 @@
                       <span v-if="checkPermItem('seized_good_modify')" class="cursor-p text-primary">
                         {{props.rowData.seizedGoods}}
                       </span>
-                        <span v-else class="cursor-p text-primary" @click="onGoodsNumberClicked(props.rowData)">
+                        <span v-else class="cursor-p text-primary" @click="onGoodsNumberClicked(props.rowData, true)">
                         {{props.rowData.seizedGoods}}
                       </span>
                       </template>
@@ -98,6 +98,7 @@
 <!--                      :placeholder="$t('system-setting.enter-goods')"/>-->
                     <b-form-select
                       v-model="goodsForm.goodsName" :options="onNameOptions"
+                      :disabled="showable"
                       :state="!$v.goodsForm.goodsName.$invalid"
                     />
                   </b-form-group>
@@ -109,6 +110,7 @@
                     </template>
                     <b-form-select
                       v-model="goodsForm.goodsGrade" :options="onGradeOptions"
+                      :disabled="showable"
                       :state="!$v.goodsForm.goodsGrade.$invalid"
                       />
                   </b-form-group>
@@ -120,6 +122,7 @@
                     </template>
                     <b-form-select
                       v-model="goodsForm.goodsCategory" :options="onCategoryOptions"
+                      :disabled="showable"
                       :state="!$v.goodsForm.goodsCategory.$invalid"
                     />
                   </b-form-group>
@@ -248,6 +251,7 @@
     data() {
       return {
         isLoading: false,
+        showable:false,
         goodsForm: {
           visible: false,
           goodsName: '',
@@ -284,7 +288,7 @@
         isSelectedAllResourcesForGoods: false,
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/seized-good-management/seized/get-by-filter-and-page`,
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',
@@ -477,8 +481,13 @@
       },
       onClickSaveGoods() {
 
-
           if(this.$v.goodsForm.$invalid){
+            if(this.goodsForm.goodsGrade===""||this.goodsForm.goodsCategory===""||this.goodsForm.goodsName===""){
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.goods-invalid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
             return;
           }
 
@@ -625,7 +634,8 @@
         this.goodsForm.visible =false;
         this.$refs.goodsPagination.setPaginationData(paginationData)
       },
-      onGoodsNumberClicked(dataItem) {
+      onGoodsNumberClicked(dataItem, show=false) {
+        this.showable = show;
         this.goodsForm.visible = false;
         this.selectedGoods = JSON.parse(JSON.stringify(dataItem));
         this.goodsForm.goodsName = this.selectedGoods.seizedGoodsCode;
