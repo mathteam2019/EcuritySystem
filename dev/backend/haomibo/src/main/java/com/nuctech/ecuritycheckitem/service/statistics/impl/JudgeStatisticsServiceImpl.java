@@ -249,9 +249,9 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 "\tsum( IF ( g.judge_user_id = " + Constants.DEFAULT_SYSTEM_USER + " AND g.judge_timeout LIKE '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeout,\n" +
                 "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS atrResult,\n" +
                 "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "' " +
-                " AND g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.SYSTEM + "', 1, 0 ) ) AS suspiction,\n" +
+                " AND g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspiction,\n" +
                 "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.FALSE + "' " +
-                " AND g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.ARTIFICIAL + "', 1, 0 ) ) AS noSuspiction,\n" +
+                " AND g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspiction,\n" +
                 "\tcount( JUDGE_ID ) AS total ,\n" +
                 "\tAVG( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS avgDuration,\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS maxDuration,\n" +
