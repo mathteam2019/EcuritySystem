@@ -134,7 +134,7 @@ public interface DeviceService {
      * remove device
      * @param deviceId
      */
-    void removeDevice(Long deviceId);
+    boolean removeDevice(Long deviceId);
 
     /**
      * edit device field id

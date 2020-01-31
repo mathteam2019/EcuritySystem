@@ -32,6 +32,7 @@ public enum ResponseMessage {
     INVALID_PASSWORD("invalid_password"),  //response message in case of invalid password
     TOKEN_EXPIRED("token_expired"),  //response message in case of token expired
     INVALID_TOKEN("invalid_token"),  //response message in case of invalid token
+    ACTIVE_ORG("active_org"), //response message in case of active org delete
     USED_EMAIL("used_email"),  //response message in case of used email
     SERVER_ERROR("server_error"),  //response message in case of server error
     EXIST_USER("exist_user"), //response message in case of create assign user role
@@ -40,6 +41,7 @@ public enum ResponseMessage {
     USED_USER_ACCOUNT("used_user_account"),  //response message in case of used user account
     USED_USER_NUMBER("used_user_number"),  //response message in case of used user account
     USED_MOBILE("used_mobile"),  //response message in case of used mobile
+    USER_NOT_LOCK("user_not_lock"), //response message in case of locked user password modify
     FORBIDDEN("forbidden"),  //response message in case of forbidden
     BAD_REQUEST("bad_request"),  //response message in case of bad request
     HAS_USERS("has_users"),  //response message in case of has users
@@ -51,19 +53,23 @@ public enum ResponseMessage {
     HAS_ARCHIVES("has_archives"),  //response message in case of has archives
     HAS_ARCHIVE_TEMPLATE("has_archive_template"),  //response message in case of has archive template
     HAS_DEVICES("has_devices"),  //response message in case of has devices
+    ACTIVE_FIELD("active_field"), //response message in case of active field
     DEVICE_INACTIVE_STATUS("device_inactive_status"),  //response message in case of device inactive status
     USED_CATEGORY_NAME("used_category_name"),  //response message in case of used category name
     USED_CATEGORY_NUMBER("used_category_number"),  //response message in case of used category number
     USED_TEMPLATE_NAME("used_template_name"),  //response message in case of used template_name
     USED_TEMPLATE_NUMBER("used_template_number"),  //response message in case of used template_number
+    ACTIVE_TEMPLATE("active_template"), //response message in case of delete template
     USED_ARCHIVE_NAME("used_archive_name"),  //response message in case of used archive_name
     USED_ARCHIVE_NUMBER("used_archive_number"),  //response message in case of used archive number
+    ACTIVE_ARCHIVE("active_archive"), //response message in case of delete archive
     USED_DEVICE_NAME("used_device_name"),  //response message in case of used device name
     USED_DEVICE_SERIAL("used_device_serial"),  //response message in case of used device serial
     USED_DEVICE("used_device"),  //response message in case of used device
     USED_DEVICE_GUID("used_device_guid"),  //response message in case of used device guid
     USED_FIELD_SERIAL("used_field_serial"),  //response message in case of used field serial
     USED_FIELD_DESIGNATION("used_field_designation"),  //response message in case of used field designation
+    ACTIVE_DEVICE("active_device"), //response message in case of delete device
     USED_ORG_NAME("used_org_name"),  //response message in case of used org name
     USED_ORG_NUMBER("used_org_number"),  //response message in case of used org number
     USED_USER_GROUP_NAME("used_user_group_name"),  //response message in case of used user group_name
@@ -81,7 +87,8 @@ public enum ResponseMessage {
     FAILED_INSERT_KNOWLEDGECASEDEAL("failed_insert_knowledgecasedeal"), //response message in case of failed inserting new knowledgecasedeal
     DEVICE_CONFIG_ACTIVE("device_config_active"),//response message if device config is active for update status of device
     DEVICE_SCAN_ACTIVE("device_scan_active"),//response message if device scan param is active for update status of device
-    DEVICE_ONLINE("device_online");// response message if device is online
+    DEVICE_ONLINE("device_online"),// response message if device is online
+    DEVICE_NOT_FIELD("device_not_field"); //response message if device not have field(using device config update status)
 
 
     private final String value;

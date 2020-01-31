@@ -200,7 +200,6 @@ public class OrganizationManagementController extends BaseController {
                     .parentOrgId(this.getParentOrgId())
                     .leader(Optional.ofNullable(this.getLeader()).orElse(""))
                     .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
-                    .status(SysOrg.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
         }
@@ -363,15 +362,6 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
         }
 
-        Object checkResult = checkExist(requestBody.getOrgId());
-        if(checkResult != null) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("Org", null, currentLocale),
-                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
-
-            return checkResult;
-        }
-
         SysOrg sysOrg = requestBody.convert2SysOrg();
 
         if (organizationService.modifyOrganization(requestBody.getOrgId(), requestBody.getParentOrgId(), sysOrg)) {
@@ -404,28 +394,13 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(organizationService.checkChildrenExist(requestBody.getOrgId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("Org", null, currentLocale),
-                    messageSource.getMessage("HaveChild", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
-        }
-
-        Object checkResult = checkExist(requestBody.getOrgId());
-        if(checkResult != null) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("Org", null, currentLocale),
-                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
-            return checkResult;
-        }
-
         if (organizationService.deleteOrganization(requestBody.getOrgId())) {
             return new CommonResponseBody(ResponseMessage.OK);
         } else {
             auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("Org", null, currentLocale),
-                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+                    messageSource.getMessage("Organization.Error.ActiveOrg", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.ACTIVE_ORG);
         }
     }
 

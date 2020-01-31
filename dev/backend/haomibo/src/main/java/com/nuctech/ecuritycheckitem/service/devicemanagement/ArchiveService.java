@@ -95,7 +95,7 @@ public interface ArchiveService {
      * remove archive
      * @param archiveId
      */
-    void removeSerArchive(long archiveId);
+    boolean removeSerArchive(long archiveId);
 
     /**
      * find all archive

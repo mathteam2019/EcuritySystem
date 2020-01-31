@@ -34,6 +34,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
@@ -193,7 +194,6 @@ public class UserManagementController extends BaseController {
                     .mobile(this.getMobile())
                     .address(this.getAddress())
                     .category(SysUser.Category.NORMAL)
-                    .status(SysUser.Status.INACTIVE)
                     .note(this.getNote())
                     .build();
         }
@@ -290,6 +290,21 @@ public class UserManagementController extends BaseController {
         @NotNull
         @Pattern(regexp = SysUser.Status.ACTIVE + "|" + SysUser.Status.INACTIVE + "|" + SysUser.Status.BLOCKED + "|" + SysUser.Status.PENDING)
         String status;
+    }
+
+    /**
+     * User update status request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class UserModifyPasswordRequestBody {
+
+        @NotNull
+        Long userId;
+        String password;
     }
 
 
@@ -426,17 +441,17 @@ public class UserManagementController extends BaseController {
                     messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        if (!requestBody.getEmail().equals("") && userService.checkEmailExist(requestBody.getEmail(), null)) { // Check if user email is duplicated.
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("User", null, currentLocale),
-                    messageSource.getMessage("UsedMobile", null, currentLocale), "", null, false, "", "");
-
-            return new CommonResponseBody(ResponseMessage.USED_EMAIL);
-        }
-        if (!requestBody.getMobile().equals("") && userService.checkMobileExist(requestBody.getMobile(), null)) { // Check if user phone number is duplicated.
+        if (StringUtils.isNotBlank(requestBody.getEmail()) && userService.checkEmailExist(requestBody.getEmail(), null)) { // Check if user email is duplicated.
             auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("User", null, currentLocale),
                     messageSource.getMessage("UsedEmail", null, currentLocale), "", null, false, "", "");
+
+            return new CommonResponseBody(ResponseMessage.USED_EMAIL);
+        }
+        if (StringUtils.isNotBlank(requestBody.getMobile()) && userService.checkMobileExist(requestBody.getMobile(), null)) { // Check if user phone number is duplicated.
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale),
+                    messageSource.getMessage("UsedMobile", null, currentLocale), "", null, false, "", "");
 
             return new CommonResponseBody(ResponseMessage.USED_MOBILE);
         }
@@ -485,14 +500,14 @@ public class UserManagementController extends BaseController {
 
             return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
-        if (!requestBody.getMobile().equals("") && userService.checkMobileExist(requestBody.getMobile(), requestBody.getUserId())) {
+        if (StringUtils.isNotBlank(requestBody.getMobile()) && userService.checkMobileExist(requestBody.getMobile(), requestBody.getUserId())) {
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("User", null, currentLocale),
                     messageSource.getMessage("UsedMobile", null, currentLocale), "", null, false, "", "");
 
             return new CommonResponseBody(ResponseMessage.USED_MOBILE);
         }
-        if (!requestBody.getEmail().equals("") && userService.checkEmailExist(requestBody.getEmail(), requestBody.getUserId())) {
+        if (StringUtils.isNotBlank(requestBody.getEmail()) && userService.checkEmailExist(requestBody.getEmail(), requestBody.getUserId())) {
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("User", null, currentLocale),
                     messageSource.getMessage("UsedEmail", null, currentLocale), "", null, false, "", "");
@@ -744,8 +759,61 @@ public class UserManagementController extends BaseController {
                     , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+        if(requestBody.getStatus().equals(SysOrg.Status.INACTIVE)) {
+            if (userService.checkParentUserGroupExist(requestBody.getUserId())) { // Check if org is existing.
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                        , "", messageSource.getMessage("HaveUserGroup", null, currentLocale), requestBody.getUserId().toString(),null);
+                return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
+            }
+            if (userService.checkParentDataGroupExist(requestBody.getUserId())) { // Check if org is existing.
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                        , "", messageSource.getMessage("HaveDataGroup", null, currentLocale), requestBody.getUserId().toString(),null);
+                return new CommonResponseBody(ResponseMessage.HAS_DATA_GROUPS);
+            }
+            if (userService.checkRoleExist(requestBody.getUserId())) { // Check if org is existing.
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                        , "", messageSource.getMessage("HaveRole", null, currentLocale), requestBody.getUserId().toString(),null);
+                return new CommonResponseBody(ResponseMessage.HAS_ROLES);
+            }
+        }
         userService.updateStatus(requestBody.getUserId(), requestBody.getStatus());
         auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getUserId().toString(),null);
+
+        return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    /**
+     * User update status request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @PreAuthorize(Role.Authority.HAS_USER_UPDATE_STATUS)
+    @RequestMapping(value = "/user/modify-password", method = RequestMethod.POST)
+    public Object userModifyPassword(
+            @RequestBody @Valid UserModifyPasswordRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(),null);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if (!userService.checkUserExist(requestBody.getUserId())) { // Check if org is existing.
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(),null);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(!userService.modifyPassword(requestBody.getUserId(), requestBody.getPassword())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("User.Error.NoLocking", null, currentLocale), requestBody.getUserId().toString(),null);
+            return new CommonResponseBody(ResponseMessage.USER_NOT_LOCK);
+        }
+        auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
                 , "", "", requestBody.getUserId().toString(),null);
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -1082,13 +1150,13 @@ public class UserManagementController extends BaseController {
                     messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        if (userService.checkUserGroupUserExist(requestBody.getUserGroupId())) { // If user group has users, it can't be delete.
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("UserGroup", null, currentLocale),
-                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
-
-            return new CommonResponseBody(ResponseMessage.HAS_USERS);
-        }
+//        if (userService.checkUserGroupUserExist(requestBody.getUserGroupId())) { // If user group has users, it can't be delete.
+//            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+//                    "", messageSource.getMessage("UserGroup", null, currentLocale),
+//                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
+//
+//            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+//        }
         if (userService.checkUserGroupRoleExist(requestBody.getUserGroupId())) {
             /*
              * Todo
@@ -1096,8 +1164,8 @@ public class UserManagementController extends BaseController {
              * */
             auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("UserGroup", null, currentLocale),
-                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+                    messageSource.getMessage("HaveRole", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.HAS_ROLES);
         }
         userService.removeUserGroup(requestBody.getUserGroupId()); // Delete.
         return new CommonResponseBody(ResponseMessage.OK);

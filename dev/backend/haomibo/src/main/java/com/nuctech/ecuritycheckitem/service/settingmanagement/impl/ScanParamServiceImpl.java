@@ -234,6 +234,7 @@ public class ScanParamServiceImpl implements ScanParamService {
         }
         // Add edited info.
         serScanParamNew.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serScanParamNew.setStatus(serScanParam.getStatus());
         serScanParamNew.setCreatedBy(serScanParam.getCreatedBy());
         serScanParamNew.setCreatedTime(serScanParam.getCreatedTime());
         serScanParamNew.setDeviceId(serScanParam.getDeviceId());

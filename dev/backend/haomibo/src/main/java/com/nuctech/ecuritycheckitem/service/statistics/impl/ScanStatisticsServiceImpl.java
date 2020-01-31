@@ -291,11 +291,11 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             record.setInvalidScanRate(0);
             record.setPassedScanRate(0);
             record.setAlarmScanRate(0);
-            if (record.getTotalScan() > 0) {
+            if (record.getTotalScan() > 0 && record.getValidScan() > 0) {
                 record.setValidScanRate(record.getValidScan() * 100 / (double)record.getTotalScan());
                 record.setInvalidScanRate(record.getInvalidScan() * 100 / (double)record.getTotalScan());
-                record.setPassedScanRate(record.getPassedScan() * 100 / (double)record.getTotalScan());
-                record.setAlarmScanRate(record.getAlarmScan() * 100 / (double)record.getTotalScan());
+                record.setPassedScanRate(record.getPassedScan() * 100 / (double)record.getValidScan());
+                record.setAlarmScanRate(record.getAlarmScan() * 100 / (double)record.getValidScan());
             }
         } catch (Exception e) {
         }

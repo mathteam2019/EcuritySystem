@@ -25,7 +25,9 @@ import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.Resource;
 
 import javax.persistence.EntityManager;
 import java.net.URL;
@@ -236,8 +238,14 @@ public class BaseController {
         ConstantDictionary.setDictionaryList(dictionaryList);
     }
 
-    public URL getFontResource() {
+    @Value(Constants.PDF_HEADER_FONT_RESOURCE_PATH)
+    Resource resourceFile;
 
+    public URL getFontResource() {
+//        try {
+//            return resourceFile.getURL();
+//        } catch (Exception ex) {}
+//        return null;
         return this.getClass().getClassLoader().getResource(Constants.PDF_HEADER_FONT_RESOURCE_PATH);
     }
 

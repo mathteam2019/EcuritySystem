@@ -347,6 +347,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         String valueBefore = getJsonFromArchiveTemplate(oldSerArchiveTemplate);
         serArchiveTemplate.setCreatedBy(oldSerArchiveTemplate.getCreatedBy());
         serArchiveTemplate.setCreatedTime(oldSerArchiveTemplate.getCreatedTime());
+        serArchiveTemplate.setStatus(oldSerArchiveTemplate.getStatus());
 
 
         // Add editInfo.
@@ -379,9 +380,12 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
      */
     @Override
     @Transactional
-    public void removeSerArchiveTemplate(long archiveTemplateId) {
+    public boolean removeSerArchiveTemplate(long archiveTemplateId) {
         SerArchiveTemplate serArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(archiveTemplateId)).orElse(null);
+        if(serArchiveTemplate.getStatus().equals(SerArchiveTemplate.Status.ACTIVE)) {
+            return false;
+        }
 
         String valueBefore = getJsonFromArchiveTemplate(serArchiveTemplate);
         //remove it's indicators
@@ -399,6 +403,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("ArchiveTemplate", null, currentLocale), "", serArchiveTemplate.getArchivesTemplateId().toString(), null,
                 true, valueBefore, "");
+        return true;
     }
 
     /**

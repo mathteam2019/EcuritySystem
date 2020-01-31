@@ -16,11 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
-import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRoleRepository;
+import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
@@ -68,6 +64,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     SysUserGroupRoleRepository sysUserGroupRoleRepository;
+
+    @Autowired
+    SysDataGroupUserRepository sysDataGroupUserRepository;
+
+    @Autowired
+    SysRoleUserRepository sysRoleUserRepository;
+
+    @Autowired
+    SysUserLookupRepository sysUserLookupRepository;
 
     @Autowired
     AuthService authService;
@@ -236,6 +241,33 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * Check user group exist which contain user
+     * @param userId
+     * @return
+     */
+    public boolean checkParentUserGroupExist(Long userId) {
+        return sysUserGroupUserRepository.exists(QSysUserGroupUser.sysUserGroupUser.userId.eq(userId));
+    }
+
+    /**
+     * Check data group exist which contain user
+     * @param userId
+     * @return
+     */
+    public boolean checkParentDataGroupExist(Long userId) {
+        return sysDataGroupUserRepository.exists(QSysDataGroupUser.sysDataGroupUser.userId.eq(userId));
+    }
+
+    /**
+     * Check user have role
+     * @param userId
+     * @return
+     */
+    public boolean checkRoleExist(Long userId) {
+        return sysRoleUserRepository.exists(QSysRoleUser.sysRoleUser.userId.eq(userId));
+    }
+
+    /**
      * create new user
      * @param user
      * @param portraitFile
@@ -281,6 +313,7 @@ public class UserServiceImpl implements UserService {
         //Don't modify created by and created time
         user.setCreatedBy(oldSysUser.getCreatedBy());
         user.setCreatedTime(oldSysUser.getCreatedTime());
+        user.setStatus(oldSysUser.getStatus());
 
         // Process user portrait file.
         String fileName = utils.saveImageFile(portraitFile);
@@ -465,6 +498,32 @@ public class UserServiceImpl implements UserService {
         auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("User", null, currentLocale), "", sysUser.getUserId().toString(), null, true, valueBefore, valueAfter);
         return true;
+    }
+
+    /**
+     * modify user password
+     * @param userId
+     * @param password
+     * @return
+     */
+    public boolean modifyPassword(long userId, String password) {
+        Optional<SysUser> optionalSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId));
+
+        SysUser sysUser = optionalSysUser.get();
+        if(sysUser.getStatus().equals(SysUser.Status.PENDING)) {
+            String valueBefore = getJsonFromUser(sysUser);
+            sysUser.setStatus(SysUser.Status.ACTIVE);
+            sysUser.setPassword(password);
+            sysUser.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+
+            sysUserRepository.save(sysUser);
+            String valueAfter = getJsonFromUser(sysUser);
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale), "", sysUser.getUserId().toString(), null, true, valueBefore, valueAfter);
+            return true;
+        }
+        return false;
+
     }
 
     /**

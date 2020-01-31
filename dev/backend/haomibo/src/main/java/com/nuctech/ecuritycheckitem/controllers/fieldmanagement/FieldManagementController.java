@@ -206,7 +206,6 @@ public class FieldManagementController extends BaseController {
                     .parentFieldId(this.getParentFieldId())
                     .leader(Optional.ofNullable(this.getLeader()).orElse(""))
                     .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
-                    .status(SysField.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
         }
@@ -325,13 +324,7 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
-        //check if device use this field
-        if(fieldService.checkDeviceExist(requestBody.getFieldId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("Field", null, currentLocale),
-                    messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
-        }
+
 
         SysField sysField = requestBody.convert2SysField();
         fieldService.modifyField(sysField);
@@ -371,7 +364,12 @@ public class FieldManagementController extends BaseController {
                     messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
-        fieldService.removeField(requestBody.getFieldId());
+        if(fieldService.removeField(requestBody.getFieldId()) == false) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Field", null, currentLocale),
+                    messageSource.getMessage("FieldManagement.Error.ActiveField", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.ACTIVE_FIELD);
+        }
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -401,19 +399,22 @@ public class FieldManagementController extends BaseController {
                     messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        if (fieldService.checkHasChild(requestBody.getFieldId())) { // Check if field has children.
-            // Can't delete if field has children.
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("Field", null, currentLocale),
-                    messageSource.getMessage("HaveChild", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+        if(requestBody.getStatus().equals(SysField.Status.INACTIVE)) {
+            if (fieldService.checkHasChild(requestBody.getFieldId())) { // Check if field has children.
+                // Can't delete if field has children.
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("Field", null, currentLocale),
+                        messageSource.getMessage("HaveChild", null, currentLocale), "", null, false, "", "");
+                return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+            }
+            if(fieldService.checkDeviceExist(requestBody.getFieldId())) { //check if device use this field
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("Field", null, currentLocale),
+                        messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
+                return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+            }
         }
-        if(fieldService.checkDeviceExist(requestBody.getFieldId())) { //check if device use this field
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("Field", null, currentLocale),
-                    messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
-        }
+
 
         fieldService.updateStatus(requestBody.getFieldId(), requestBody.getStatus());
         return new CommonResponseBody(ResponseMessage.OK);

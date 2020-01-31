@@ -229,6 +229,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         //Don't modify created by and created time
         sysOrg.setCreatedBy(oldSysOrg.getCreatedBy());
         sysOrg.setCreatedTime(oldSysOrg.getCreatedTime());
+        sysOrg.setStatus(oldSysOrg.getStatus());
 
         // Add edited info.
         sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
@@ -248,19 +249,17 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @return
      */
     public boolean deleteOrganization(Long orgId) {
-
-        boolean isHavingChildren = sysOrgRepository.exists(QSysOrg.sysOrg.parentOrgId.eq(orgId));
-        if (isHavingChildren) {
-            // Can't delete if org has children.
-            return false;
-        }
         SysOrg oldSysOrg = sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(orgId)).orElse(null);
-        String valueBefore = getJsonFromOrg(oldSysOrg);
+        if(oldSysOrg.getStatus().equals(SysOrg.Status.INACTIVE)) {
+            String valueBefore = getJsonFromOrg(oldSysOrg);
 
-        sysOrgRepository.delete(SysOrg.builder().orgId(orgId).build());
-        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
-                "", messageSource.getMessage("Org", null, currentLocale), "", String.valueOf(orgId), null, true, valueBefore, "");
-        return true;
+            sysOrgRepository.delete(SysOrg.builder().orgId(orgId).build());
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale), "", String.valueOf(orgId), null, true, valueBefore, "");
+            return true;
+        }
+        return false;
+
     }
 
     /**

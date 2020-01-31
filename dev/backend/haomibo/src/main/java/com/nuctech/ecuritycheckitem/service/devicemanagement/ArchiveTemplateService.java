@@ -105,7 +105,7 @@ public interface ArchiveTemplateService {
      * remove archive template
      * @param archiveTemplateId
      */
-    void removeSerArchiveTemplate(long archiveTemplateId);
+    boolean removeSerArchiveTemplate(long archiveTemplateId);
 
     /**
      * remove archive indicator

@@ -72,7 +72,7 @@ public interface FieldService {
      * remove field
      * @param fieldId
      */
-    void removeField(Long fieldId);
+    boolean removeField(Long fieldId);
 
     /**
      * update field status

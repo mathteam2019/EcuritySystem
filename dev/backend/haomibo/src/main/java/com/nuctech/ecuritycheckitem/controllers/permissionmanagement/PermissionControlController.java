@@ -908,18 +908,18 @@ public class PermissionControlController extends BaseController {
                     messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        if (permissionService.checkUserLookUpExist(requestBody.getDataGroupId())) { // If there are users assigned with this data group, it can't be deleted.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("DataGroup", null, currentLocale),
-                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.HAS_USERS);
-        }
-        if (permissionService.checkDataGroupLookupExist(requestBody.getDataGroupId())) { // If there are user groups assigned with this data group, it can't be deleted.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("DataGroup", null, currentLocale),
-                    messageSource.getMessage("HaveUserGroup", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
-        }
+//        if (permissionService.checkUserLookUpExist(requestBody.getDataGroupId())) { // If there are users assigned with this data group, it can't be deleted.
+//            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+//                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+//                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
+//            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+//        }
+//        if (permissionService.checkDataGroupLookupExist(requestBody.getDataGroupId())) { // If there are user groups assigned with this data group, it can't be deleted.
+//            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+//                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+//                    messageSource.getMessage("HaveUserGroup", null, currentLocale), "", null, false, "", "");
+//            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
+//        }
 
         List<Long> userIdList = requestBody.getUserIdList();
         permissionService.modifyDataGroup(requestBody.getDataGroupId(), userIdList);

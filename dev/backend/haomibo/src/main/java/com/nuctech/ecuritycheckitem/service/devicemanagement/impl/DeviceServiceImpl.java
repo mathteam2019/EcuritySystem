@@ -216,14 +216,14 @@ public class DeviceServiceImpl implements DeviceService {
                 return 1;
             }
         }
-        Optional<SerScanParam> optionalSerScanParam = serScanParamRepository.findOne(QSerScanParam.
-                serScanParam.deviceId.eq(deviceId));
-        SerScanParam serScanParam = optionalSerScanParam.get();
-        if(serScanParam != null) {
-            if(serScanParam.getStatus().equals(SerScanParam.Status.ACTIVE)) {
-                return 2;
-            }
-        }
+//        Optional<SerScanParam> optionalSerScanParam = serScanParamRepository.findOne(QSerScanParam.
+//                serScanParam.deviceId.eq(deviceId));
+//        SerScanParam serScanParam = optionalSerScanParam.get();
+//        if(serScanParam != null) {
+//            if(serScanParam.getStatus().equals(SerScanParam.Status.ACTIVE)) {
+//                return 2;
+//            }
+//        }
         return 0;
     }
 
@@ -576,10 +576,14 @@ public class DeviceServiceImpl implements DeviceService {
      */
     @Override
     @Transactional
-    public void removeDevice(Long deviceId) {
+    public boolean removeDevice(Long deviceId) {
         SysDevice sysDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
                 .deviceId.eq(deviceId)).orElse(null);
+        if(sysDevice.getStatus().equals(SysDevice.Status.ACTIVE)) {
+            return false;
+        }
         String valueBefore = getJsonFromDevice(sysDevice);
+
 
         if(sysDevice.getDeviceType().equals(SysDevice.DeviceType.JUDGE)) {
             SysJudgeDevice sysJudgeDevice = sysJudgeDeviceRepository.findOne(QSysJudgeDevice.sysJudgeDevice
@@ -622,6 +626,7 @@ public class DeviceServiceImpl implements DeviceService {
         sysDeviceRepository.delete(sysDevice);
         auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, valueBefore, "");
+        return true;
     }
 
     /**

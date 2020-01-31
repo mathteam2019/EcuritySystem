@@ -342,6 +342,13 @@ public class DeviceConfigManagementController extends BaseController {
                         messageSource.getMessage("DeviceOnline", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.DEVICE_ONLINE);
             }
+        } else {
+            if(!deviceConfigService.checkDeviceHaveField(deviceId)) {
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                        messageSource.getMessage("Device.Error.NotField", null, currentLocale), "", null, false, "", "");
+                return new CommonResponseBody(ResponseMessage.DEVICE_ONLINE);
+            }
         }
 
         deviceConfigService.updateStatusDeviceConfig(requestBody.getConfigId(), requestBody.getStatus()); //remove correspond manual group

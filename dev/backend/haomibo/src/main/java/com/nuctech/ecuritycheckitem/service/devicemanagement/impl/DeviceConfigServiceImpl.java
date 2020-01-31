@@ -267,8 +267,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 QSysDeviceConfig.sysDeviceConfig.configId.eq(sysDeviceConfig.getConfigId()));
         SysDeviceConfig oldSysDeviceConfig = sysDeviceConfigData.get();
         String valueBefore = getJsonFromDeviceConfig(oldSysDeviceConfig);
-        sysDeviceConfig.setCreatedBy(oldSysDeviceConfig.getCreatedBy());
-        sysDeviceConfig.setCreatedTime(oldSysDeviceConfig.getCreatedTime());
         sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         List<SysDeviceConfig> deviceConfigList = new ArrayList<>();
         if (configDeviceIdList != null && configDeviceIdList.size() > 0) {

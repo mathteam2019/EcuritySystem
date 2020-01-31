@@ -182,7 +182,6 @@ public class ArchiveManagementController extends BaseController {
                     .archivesTemplateId(this.getArchivesTemplateId())
                     .archivesName(this.getArchivesName())
                     .archivesNumber(this.getArchivesNumber())
-                    .status(SerArchive.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
         }
@@ -319,13 +318,16 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if device is existing.
-        if (archiveService.checkDeviceExist(requestBody.getArchiveId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("Archive", null, currentLocale),
-                    messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+        if(requestBody.getStatus().equals(SerArchive.Status.INACTIVE)) {
+            // Check if device is existing.
+            if (archiveService.checkDeviceExist(requestBody.getArchiveId())) {
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("Archive", null, currentLocale),
+                        messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
+                return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+            }
         }
+
 
         archiveService.updateStatus(requestBody.getArchiveId(), requestBody.getStatus()); //update archive state to database through archiveService
 
@@ -484,7 +486,12 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
-        archiveService.removeSerArchive(requestBody.getArchiveId());
+        if(!archiveService.removeSerArchive(requestBody.getArchiveId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Archive", null, currentLocale),
+                    messageSource.getMessage("DeviceArchive.Error.ActiveArchive", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.ACTIVE_ARCHIVE);
+        }
 
         return new CommonResponseBody(ResponseMessage.OK);
     }

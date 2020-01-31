@@ -167,6 +167,12 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USER_NOT_FOUND);
         }
 
+        if((sysUser.getStatus().equals(SysUser.Status.PENDING))) {
+            accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , messageSource.getMessage("Lock", null, currentLocale), null);
+            return new CommonResponseBody(ResponseMessage.USER_PENDING_STATUS);
+        }
+
         if(!(sysUser.getStatus().equals(SysUser.Status.ACTIVE))) {
             accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                     , messageSource.getMessage("NonActive", null, currentLocale), null);
@@ -178,12 +184,12 @@ public class AuthController extends BaseController {
             int checkValue = authService.checkPendingUser(sysUser, requestBody.getCount());
             if(checkValue == 2) {
                 accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , messageSource.getMessage("Block", null, currentLocale), null);
+                        , messageSource.getMessage("Lock", null, currentLocale), null);
                 return new CommonResponseBody(ResponseMessage.USER_PENDING_STATUS);
             }
             if(checkValue == 1) {
                 accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , messageSource.getMessage("InvalidPassword", null, currentLocale), null);
+                        , messageSource.getMessage("PrePending", null, currentLocale), null);
                 return new CommonResponseBody(ResponseMessage.PRE_USER_PENDING_STATUS);
             }
             accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)

@@ -925,7 +925,13 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USED_DEVICE);
         }
 
-        deviceService.removeDevice(requestBody.getDeviceId());
+        if(!deviceService.removeDevice(requestBody.getDeviceId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("Device.Error.ActiveDevice", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.ACTIVE_DEVICE);
+
+        }
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

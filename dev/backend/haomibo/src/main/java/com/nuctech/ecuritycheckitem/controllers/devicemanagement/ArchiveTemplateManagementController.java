@@ -265,7 +265,6 @@ public class ArchiveTemplateManagementController extends BaseController {
                     .categoryId(this.getCategoryId())
                     .manufacturer(Optional.ofNullable(this.getManufacturer()).orElse(""))
                     .originalModel(Optional.ofNullable(this.getOriginalModel()).orElse(""))
-                    .status(SerArchiveTemplate.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .archiveIndicatorsList(this.getArchiveIndicatorsList())
                     .build();
@@ -547,12 +546,15 @@ public class ArchiveTemplateManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(archiveTemplateService.checkArchiveExist(requestBody.getArchivesTemplateId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
-                    messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+        if(requestBody.getStatus().equals(SerArchiveTemplate.Status.INACTIVE)) {
+            if(archiveTemplateService.checkArchiveExist(requestBody.getArchivesTemplateId())) {
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                        messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
+                return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+            }
         }
+
         archiveTemplateService.updateStatus(requestBody.getArchivesTemplateId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -762,7 +764,12 @@ public class ArchiveTemplateManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
         }
 
-        archiveTemplateService.removeSerArchiveTemplate(requestBody.getArchivesTemplateId());
+        if(!archiveTemplateService.removeSerArchiveTemplate(requestBody.getArchivesTemplateId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("DeviceArchiveTemplate.Error.ActiveTemplate", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.ACTIVE_TEMPLATE);
+        }
 
         return new CommonResponseBody(ResponseMessage.OK);
     }

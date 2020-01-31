@@ -172,6 +172,7 @@ public class FieldServiceImpl implements FieldService {
         //Don't modify created by and created time
         sysField.setCreatedBy(oldSysField.getCreatedBy());
         sysField.setCreatedTime(oldSysField.getCreatedTime());
+        sysField.setStatus(oldSysField.getStatus());
 
         // Add edited info.
         sysField.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
@@ -188,12 +189,16 @@ public class FieldServiceImpl implements FieldService {
      */
     @Override
     @Transactional
-    public void removeField(Long fieldId) {
+    public boolean removeField(Long fieldId) {
         SysField oldSysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(fieldId)).orElse(null);
+        if(oldSysField.getStatus().equals(SysField.Status.ACTIVE)) {
+            return false;
+        }
         String valueBefore = getJsonFromField(oldSysField);
         sysFieldRepository.delete(SysField.builder().fieldId(fieldId).build());
         auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("Field", null, currentLocale), "", String.valueOf(fieldId), null, true, valueBefore, "");
+        return true;
     }
 
     /**

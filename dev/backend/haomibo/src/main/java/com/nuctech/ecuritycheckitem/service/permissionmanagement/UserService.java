@@ -69,6 +69,29 @@ public interface UserService {
     boolean checkMobileExist(String mobile, Long userId);
 
     /**
+     * Check user group exist which contain user
+     * @param userId
+     * @return
+     */
+    boolean checkParentUserGroupExist(Long userId);
+
+    /**
+     * Check data group exist which contain user
+     * @param userId
+     * @return
+     */
+    boolean checkParentDataGroupExist(Long userId);
+
+    /**
+     * Check user have role
+     * @param userId
+     * @return
+     */
+    boolean checkRoleExist(Long userId);
+
+
+
+    /**
      * check if groupname exists
      * @param groupName
      * @param groupId
@@ -131,6 +154,14 @@ public interface UserService {
      * @return
      */
     boolean updateStatus(long userId, String status);
+
+    /**
+     * modify user password
+     * @param userId
+     * @param password
+     * @return
+     */
+    boolean modifyPassword(long userId, String password);
 
     /**
      * find all user

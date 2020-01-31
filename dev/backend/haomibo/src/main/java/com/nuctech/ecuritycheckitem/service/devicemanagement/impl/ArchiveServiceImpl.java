@@ -318,6 +318,7 @@ public class ArchiveServiceImpl implements ArchiveService {
         String valueBefore = getJsonFromArchive(oldSerArchive);
         serArchive.setCreatedBy(oldSerArchive.getCreatedBy());
         serArchive.setCreatedTime(oldSerArchive.getCreatedTime());
+        serArchive.setStatus(oldSerArchive.getStatus());
 
         //remove original indicators value
         if(oldSerArchive.getArchiveValueList() != null) {
@@ -342,10 +343,13 @@ public class ArchiveServiceImpl implements ArchiveService {
      */
     @Override
     @Transactional
-    public void removeSerArchive(long archiveId) {
+    public boolean removeSerArchive(long archiveId) {
         SerArchive serArchive = serArchiveRepository.findOne(QSerArchive.serArchive
                 .archiveId.eq(archiveId)).orElse(null);
         if(serArchive != null) {
+            if(serArchive.getStatus().equals(SerArchive.Status.ACTIVE)) {
+                return false;
+            }
             String valueBefore = getJsonFromArchive(serArchive);
             String valueAfter = "";
             String archiveIdStr = serArchive.getArchiveId().toString();
@@ -358,7 +362,9 @@ public class ArchiveServiceImpl implements ArchiveService {
             serArchiveRepository.delete(serArchive);
             auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                     "", messageSource.getMessage("Archive", null, currentLocale), "", archiveIdStr, null, true, valueBefore, valueAfter);
+            return true;
         }
+        return false;
 
     }
 
