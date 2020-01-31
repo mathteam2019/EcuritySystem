@@ -203,35 +203,43 @@ const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
 };
 
 const printFileFromServer = (link,params) => {
-  getApiManager()
-    .post(`${apiBaseUrl}/` + link + '/' + 'pdf',params,{
-      responseType: 'blob'
-    })
-    .then((response) => {
-      let status = response.status;
-      if(status === 200) {
-        let els = document.querySelectorAll('body>iframe');
-        els.forEach(item => {
-          item.parentNode.removeChild(item);
-        });
-        let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-        let objFra = document.createElement('iframe');
-        objFra.style.visibility = "hidden";
-        objFra.style.display = 'none';
-        objFra.src = fileURL;
-        document.body.appendChild(objFra);
-        objFra.contentWindow.focus();
-        objFra.contentWindow.print();
-      } else if(status === 201) {
-        app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.forbidden`), {
-          duration: 3000,
-          permanent: false
-        });
-      }
-    })
-    .catch(error => {
-      throw new Error(error);
+  if(params.isAll===true&&params.idList===""){
+    app.$notify('warning', app.$t('permission-management.warning'), app.$t(`response-messages.select-data`), {
+      duration: 3000,
+      permanent: false
     });
+  }
+  else {
+    getApiManager()
+      .post(`${apiBaseUrl}/` + link + '/' + 'pdf', params, {
+        responseType: 'blob'
+      })
+      .then((response) => {
+        let status = response.status;
+        if (status === 200) {
+          let els = document.querySelectorAll('body>iframe');
+          els.forEach(item => {
+            item.parentNode.removeChild(item);
+          });
+          let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+          let objFra = document.createElement('iframe');
+          objFra.style.visibility = "hidden";
+          objFra.style.display = 'none';
+          objFra.src = fileURL;
+          document.body.appendChild(objFra);
+          objFra.contentWindow.focus();
+          objFra.contentWindow.print();
+        } else if (status === 201) {
+          app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.forbidden`), {
+            duration: 3000,
+            permanent: false
+          });
+        }
+      })
+      .catch(error => {
+        throw new Error(error);
+      });
+  }
 };
 
 function isPhoneValid(value) {
@@ -255,7 +263,12 @@ function isDataCodeValid(value) {
   return Reg.test(value);
 }
 
-
+function isColorValid(value) {
+  if(value === "")
+    return false;
+  let Reg = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+  return Reg.test(value);
+}
 
 function isAccountValid(value) {
   let accountReg = /^[A-Za-z0-9._-]+$/;
@@ -291,4 +304,4 @@ function isAccountValid(value) {
 // }
 
 
-export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid, isAccountValid, isDataCodeValid, isGuidValid};
+export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid, isAccountValid, isDataCodeValid, isGuidValid, isColorValid};

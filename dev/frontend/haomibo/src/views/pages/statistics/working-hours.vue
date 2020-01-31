@@ -20,21 +20,21 @@
 
           <b-col>
             <b-form-group :label="'操作员'">
-              <b-form-input v-model="filter.userName"></b-form-input>
+              <b-form-input v-model="filter.userName"/>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
               <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
-                           placeholder=""></date-picker>
+                           placeholder=""/>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="$t('statistics.view.end-time')">
               <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
-                           placeholder=""></date-picker>
+                           placeholder=""/>
             </b-form-group>
           </b-col>
 
@@ -49,10 +49,10 @@
       <b-col cols="4" class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-            <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+            <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-            <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+            <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
           </b-button>
         </div>
       </b-col>
@@ -66,7 +66,7 @@
               <b-img src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{totalData['day'].value}} {{totalData['hour'].value}}h: {{totalData['minute'].value}}m: {{totalData['second'].value}}s</span>
+              <div><span class="span-font">D{{totalData['day'].value}} {{totalData['hour'].value}}: {{totalData['minute'].value}}: {{totalData['second'].value}}</span>
               </div>
               <div><span>累计工时</span></div>
             </div>
@@ -80,7 +80,7 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{scanData['day'].value}} {{scanData['hour'].value}}h: {{scanData['minute'].value}}m: {{scanData['second'].value}}s</span>
+              <div><span class="span-font">D{{scanData['day'].value}} {{scanData['hour'].value}}: {{scanData['minute'].value}}: {{scanData['second'].value}}</span>
               </div>
               <div><span>扫描累计工时</span></div>
             </div>
@@ -94,7 +94,7 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{judgeData['day'].value}} {{judgeData['hour'].value}}h: {{judgeData['minute'].value}}m: {{judgeData['second'].value}}s</span>
+              <div><span class="span-font">D{{judgeData['day'].value}} {{judgeData['hour'].value}}: {{judgeData['minute'].value}}: {{judgeData['second'].value}}</span>
               </div>
               <div><span>判图累计工时</span></div>
             </div>
@@ -108,7 +108,7 @@
               <b-img src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{handData['day'].value}} {{handData['hour'].value}}h: {{handData['minute'].value}}m: {{handData['second'].value}}s</span>
+              <div><span class="span-font">D{{handData['day'].value}} {{handData['hour'].value}}: {{handData['minute'].value}}: {{handData['second'].value}}</span>
               </div>
               <div><span>手检累计工时</span></div>
             </div>
@@ -120,15 +120,15 @@
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
-            <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
+            <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default"
                     :disabled="checkPermItem('user_statistics_export')" @click="onExportButton()">
-            <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+            <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default"
                     :disabled="checkPermItem('user_statistics_print')" @click="onPrintButton()">
-            <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+            <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
       </b-col>
@@ -202,24 +202,24 @@
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>现场:</b></b-col>
             <b-col cols="11">
-              <span>{{this.allField}}</span>
+              <span>{{allField}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>安检仪:</b></b-col>
             <b-col cols="11">
-              <span>安检仪001, 安检仪002, 安检仪003</span>
+              <span>{{allDevice}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>操作员类型:</b></b-col>
-            <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
+            <b-col cols="11"><span v-if="filter.modeId===null">扫描, 判图, 手检</span>
+              <span v-else>{{getCategoryLabel(filter.modeId)}}</span></b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>操作员:</b></b-col>
             <b-col cols="11">
-              <span v-if="filter.userName===null">张三, 李四, 王五</span>
-              <span v-else>{{filter.userName}}</span>
+              <span>{{allUser}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
@@ -349,7 +349,7 @@
       },
     },
     mounted() {
-
+      this.getManualDeviceData();
       this.getSiteOption();
       this.getPreviewData();
       this.getGraphData();
@@ -504,6 +504,8 @@
 
         siteData: [],
         allField: '',
+        allDevice:'',
+        allUser:'',
         preViewData: [],
         graphData: [],
         total: [],
@@ -760,6 +762,16 @@
         return checkPermissionItem(value);
       },
 
+      getCategoryLabel(value){
+        if(value===null||this.operatorTypeOptions===null) return "";
+        else{
+          for(let i=0; i<this.operatorTypeOptions.length; i++){
+            if(this.operatorTypeOptions[i].value===value)
+              return this.operatorTypeOptions[i].text;
+          }
+        }
+      },
+
       getDateTimeFormat(datatime) {
         if (datatime == null) return '';
         return getDateTimeWithFormat(datatime, 'monitor');
@@ -864,6 +876,39 @@
           });
 
       },
+      getManualDeviceData() {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-config/manual-device/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              let options = [];
+              options = data.map(opt => ({
+                text: opt.device ? opt.device.deviceName : "Unknown",
+                value: opt.manualDeviceId
+              }));
+
+              let allFieldStr = "";
+              let cnt = data.length;
+
+              allFieldStr = allFieldStr + data[0].device.deviceName;
+              //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+              for (let i = 1; i < cnt; i++) {
+
+                allFieldStr = allFieldStr + ", " + data[i].device.deviceName;
+
+              }
+              this.allDevice = allFieldStr;
+
+              this.manualDeviceOptions = options;
+              this.manualDeviceOptions.push({
+                text: this.$t('personal-inspection.all'),
+                value: null
+              });
+              break;
+          }
+        });
+      },
 
       getGraphData() {
         getApiManager().post(`${apiBaseUrl}/task/statistics/get-statistics-filter-by-user`, {
@@ -874,10 +919,17 @@
 
           let keyData = Object.keys(this.graphData.detailedStatistics);
           let xAxisChart = [];
+          let allUserStr="";
 
           for (let i = 0; i < keyData.length; i++) {
 
             let key = keyData[i];
+            if(i===0){
+              allUserStr = allUserStr + this.graphData.detailedStatistics[key].name;
+            }else {
+              allUserStr = allUserStr + ", " + this.graphData.detailedStatistics[key].name;
+            }
+
 
             xAxisChart[i] = this.graphData.detailedStatistics[key].name;
             if (this.graphData.detailedStatistics[key].scanStatistics != null) {
@@ -900,6 +952,7 @@
             // this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[i].judgeStatistics.workingSeconds;
             // this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[i].handExaminationStatistics.workingSeconds;
           }
+          this.allUser=allUserStr;
 
           this.bar3ChartOptions.xAxis.data = xAxisChart;
         })
@@ -1026,9 +1079,9 @@
 </script>
 
 <style lang="scss">
-  .span-font{
-    font-size: 1.4rem;
-  }
+  /*.span-font{*/
+  /*  font-size: 1.4rem;*/
+  /*}*/
   .working-hours {
 
     display: flex;

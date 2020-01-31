@@ -28,6 +28,7 @@
     "has-data-groups":"机构已经使用-数据组",
     "has-roles":"机构已经使用-角色",
     "has-fields":"机构已经使用-场地",
+    "active-org": "机构已经生效",
     "role-already-used":"角色已经使用",
     "data-group-already-used":"数据组已经使用",
     "category-has-archive-template":"设备分类已经使用-档案模板",
@@ -56,6 +57,7 @@
     "fail": "失败",
     "warning": "警告",
     "success": "成功",
+    "enter-valid-account": "请输入有效的账号",
     "enter-valid-email": "请输入有效的邮件地址",
     "enter-valid-password": "请输入有效的密码",
     "login-success": "登录成功",
@@ -180,6 +182,7 @@
     "format-invalid" : "密码格式不正确",
     "input-none" : "密码不正确",
     "confirm": "确认",
+    "user-not-locked": "用户未锁定",
     "update-password-successful": "密码变更成功",
     "invalid-password" : "原始密码不正确"
   },
@@ -377,7 +380,11 @@
     "user": {
       "user-group-has-child":"人员组有孩子",
       "group-has-users":"人员组已经使用的",
+      "group-has-roles":"人员组有角色",
       "group-has-child":"人员组有孩子",
+      "has-roles":"人员有角色",
+      "has-data-groups":"人员有数据组",
+      "has-user-groups":"人员有人员组",
       "group-removed-successfully":"人员组删除成功",
       "username-field-is-mandatory": "人员姓名是必需的",
       "userId-field-is-mandatory": "人员编号是必需的",
@@ -390,6 +397,7 @@
       "account-should-be-numerical-or-characters": "账号称应为数字或字符",
       "group-name": "分组",
       "required-field": "这是必填栏",
+      "required-user": "人员是必填栏",
       "note": "备注",
       "enter-note": "请输入备注信息",
       "group-flag": "分组标志",
@@ -420,6 +428,8 @@
       "note": "备注",
       "role-flag": "功能",
       "all": "全部",
+      "required-role": "功能是必填栏",
+      "required-data-group": "数据范围是必填栏",
       "system-management": "统一管理平台",
       "business-operating": "综合业务平台",
       "no-role": "无角色",
@@ -465,6 +475,7 @@
     "site-added-successfully": "场地已成功添加",
     "delete-prompt": "是否删除",
     "make-inactive-prompt": "发出不活动的提示",
+    "active-field": "场地已生效",
     "site-has-devices": "场地有设备"
   },
   "device-management": {
@@ -543,6 +554,7 @@
     },
     "document-template": {
       "device-show-list": "设备指标项",
+      "device-not-field": "设备沒有地方",
       "add-indicator": "增加指标",
       "indicator": "指标",
       "classify": "分类",
@@ -558,6 +570,8 @@
       "delete-prompt": "是否删除",
       "make-inactive-prompt": "是否失效该模板",
       "has-archives": "已经有档案",
+      "has-devices": "已经有设备",
+      "active-template" : "模板已生效",
       "not-have-indicators": "没有指标",
       "indicator-added-successfully":"指标创建成功",
       "indicator-deleted-successfully":"指标删除成功"
@@ -568,6 +582,7 @@
       "guid": "吉德",
       "device-type": "设备类型",
       "device": "安检仪",
+      "active-device": "设备已生效",
       "judge": "判图站",
       "manual": "手检端",
       "status-updated-successfully": "设备修改成功",
@@ -588,6 +603,7 @@
       "has-children": "该档案有孩子",
       "added-successfully": "档案创建成功",
       "delete-prompt": "是否删除",
+      "active-archive": "档案已生效",
       "make-inactive-prompt": "是否失效该档案",
       "has-devices": "已经有设备",
       "required-indicator-value":"有必要设备指标"
@@ -1170,6 +1186,7 @@
     "invalid-token": "Token无效",
     "forbidden-warning" : "您的帐户可能被禁止",
     "forbidden" : "禁止该用户",
+    "select-data" : "没有可以打印的数据",
     "inactive": "未生效该用户"
   },
   "auth-token-messages": {

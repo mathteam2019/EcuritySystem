@@ -49,6 +49,7 @@
     "fail": "Failed",
     "warning": "Warning",
     "success": "Success",
+    "enter-valid-account": "Please, Enter valid ID.",
     "enter-valid-email": "Please, Enter valid Email.",
     "enter-valid-password": "Please, Enter valid Password.",
     "login-success": "Login Success",
@@ -437,6 +438,7 @@
     "site-added-successfully" : "Site added successfully.",
     "delete-prompt": "Delete Prompt",
     "make-inactive-prompt": "Make inactive promtp",
+    "active-field": "Site activated",
     "site-has-devices": "Site has devices"
   },
   "device-management": {

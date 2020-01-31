@@ -104,7 +104,7 @@
                         <b-button
                           size="sm"
                           variant="primary default btn-square"
-                          :disabled="checkPermItem('user_modify')"
+                          :disabled="checkPermItem('user_modify') || props.rowData.status==='1000000304' || props.rowData.status==='1000000303'"
                           @click="onAction('modify', props.rowData, props.rowIndex)">
                           <i class="icofont-edit"/>
                         </b-button>
@@ -243,7 +243,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select v-model="profileForm.gender" :options="genderOptions" plain
+                  <b-form-select :disabled="profileForm.status==='1000000301'" v-model="profileForm.gender" :options="genderOptions" plain
                                  :state="!$v.profileForm.gender.$dirty ? null : !$v.profileForm.gender.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.gender.required) ?
@@ -270,7 +270,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.affiliated-institution')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select v-model="profileForm.orgId" :options="orgNameSelectData" plain
+                  <b-form-select :disabled="profileForm.status==='1000000301'" v-model="profileForm.orgId" :options="orgNameSelectData" plain
                                  :state="!$v.profileForm.orgId.$dirty ? null : !$v.profileForm.orgId.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.orgId.required) ?
@@ -396,6 +396,10 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
+              <b-button @click="onSaveUserPage()" variant="success default" size="sm"><i
+                class="icofont-save"/> {{
+                $t('permission-management.save') }}
+              </b-button>
               <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000301' && modifyPage===true" class="mr-1" @click="onAction('inactivate', profileForm)"
                         variant="warning default" size="sm"><i class="icofont-ban"/> {{
                 $t('permission-management.action-make-inactive') }}
@@ -415,10 +419,6 @@
               <b-button :disabled="checkPermItem('user_modify')" v-if="profileForm.status==='1000000304' && modifyPage===true" class="mr-1" @click="onAction('reset-password', profileForm)"
                         variant="purple default" size="sm"><i class="icofont-ui-password"/> {{
                 $t('permission-management.pending') }}
-              </b-button>
-              <b-button @click="onSaveUserPage()" variant="info default" size="sm"><i
-                class="icofont-save"/> {{
-                $t('permission-management.save') }}
               </b-button>
               <b-button @click="onTableListPage()" variant="danger default" size="sm"><i
                 class="icofont-long-arrow-left"/> {{
@@ -450,7 +450,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select v-model="profileForm.gender" :options="genderOptions" plain
+                  <b-form-select :disabled="profileForm.status==='1000000301'" v-model="profileForm.gender" :options="genderOptions" plain
                   />
                 </b-form-group>
               </b-col>
@@ -772,6 +772,43 @@
       </template>
     </b-modal>
 
+    <b-modal centered id="modal-reset" ref="modal-reset">
+      <template slot="modal-header">
+        <h2 style="font-size: 1.7rem; font-weight: bold;" class="modal-title">
+          {{$t('password-reset.password-change')}}</h2>
+        <button type="button" aria-label="Close" @click="fnHideModal('modal-reset')" class="close">×</button>
+      </template>
+      <b-row>
+        <b-col cols="12" class="d-flex justify-content-center">
+          <div style="width: 100%">
+            <b-form-group class="mw-100">
+              <template slot="label">{{$t('password-reset.new-password')}}<span
+                class="text-danger">*</span>
+              </template>
+              <b-form-input type="password" v-model="passwordForm.password"
+                            :state="!$v.passwordForm.password.$dirty ? null : !$v.passwordForm.password.$invalid"
+                            class="mw-100"/>
+            </b-form-group>
+            <b-form-group>
+              <template slot="label">{{$t('password-reset.confirm-password')}}<span
+                class="text-danger">*</span>
+              </template>
+              <b-form-input type="password" v-model="passwordForm.confirmPassword"
+                            :state="!$v.passwordForm.confirmPassword.$dirty ? null : !$v.passwordForm.confirmPassword.$invalid"
+                            class="mw-100"/>
+            </b-form-group>
+          </div>
+        </b-col>
+      </b-row>
+      <template slot="modal-footer">
+        <b-button variant="primary default" @click="resetPassword(promptTemp)" class="mr-1">
+          {{$t('password-reset.confirm')}}
+        </b-button>
+        <b-button variant="light default" @click="fnHideModal('modal-reset')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
+
     <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
@@ -823,7 +860,7 @@
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
 
-  const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
+  const {required, email, minLength, maxLength, alphaNum, sameAs} = require('vuelidate/lib/validators');
 
   /**
    * getting orgFull name with parent org
@@ -855,6 +892,15 @@
     validations: {
       fileSelection: {
         required
+      },
+      passwordForm: {
+        password: {
+          required, minLength: minLength(6),
+          isAccountValid
+        },
+        confirmPassword: {
+          required, sameAs: sameAs('password')
+        },
       },
       profileForm: {
         userName: {
@@ -948,6 +994,11 @@
           status: null,
           orgId: '',
           gender: null
+        },
+
+        passwordForm:{
+          password: null,
+          confirmPassword: null
         },
         promptTemp: {
           userId: 0,
@@ -1456,6 +1507,10 @@
             this.fnShowItem(data);
             break;
           case 'reset-password':
+            this.$refs['modal-reset'].show();
+            this.promptTemp.userId = userId;
+            this.promptTemp.action = action;
+            break;
           case 'activate':
           case 'unblock':
             this.fnChangeItemStatus(userId, action);
@@ -1463,8 +1518,8 @@
           case 'inactivate':
             this.promptTemp.userId = userId;
             this.promptTemp.action = action;
-            this.fnChangeItemStatus();
-            break;
+            // this.fnChangeItemStatus();
+            // break;
           case 'blocked':
             this.fnShowConfDiaglog(userId, action);
             break;
@@ -1472,6 +1527,62 @@
             this.fnShowUserGroupConfDiaglog(data);
             break;
         }
+      },
+
+      resetPassword(data) {
+        this.$v.passwordForm.$touch();
+        if (this.$v.passwordForm.$invalid) {
+          console.log(this.passwordForm.password);
+          if(this.passwordForm.password === null){
+            this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.input-none`), {
+              duration: 3000,
+              permanent: false
+            });
+          }
+          else {
+            if(!isAccountValid(this.passwordForm.password)){
+              this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.format-invalid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else if(this.$v.passwordForm.confirmPassword.$invalid){
+              this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.confirm-invalid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+          }
+          return;
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/permission-management/user-management/user/modify-password`, {
+            userId: this.promptTemp.userId,
+            password: this.passwordForm.password
+          })
+          .then((response) => {
+            let message = response.data.message;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`password-reset.update-password-successful`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                this.$refs['modal-reset'].hide();
+                this.$refs.vuetable.reload();
+                this.passwordForm.password = null;
+                this.passwordForm.confirmPassword = null;
+                break;
+              case responseMessages['user-not-lock']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.user-not-locked`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+            }
+          })
+          .catch((error) => {
+          });
       },
       fnHideModal(modal) {
         // hide modal
@@ -1541,7 +1652,25 @@
                 });
                 this.profileForm.status = status;
                 this.$refs.vuetable.reload();
+                break;
 
+              case responseMessages['has-roles']://duplicated user email
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.has-roles`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-data-groups']://duplicated user email
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.has-data-group`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-user-groups']://duplicated user email
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.has-user-groups`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           })
@@ -1656,6 +1785,12 @@
                   break;
                 case responseMessages['has-users']: // okay
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-users`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-roles']: // okay
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-roles`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -1852,41 +1987,49 @@
           checkedNodes.forEach((node) => {
             if (node.isUser) userGroupUserIds.push(node.userId);
           });
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
-              'userGroupId': this.selectedUserGroupItem.userGroupId,
-              'userIdList': userGroupUserIds
-            })
-            .then((response) => {
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']:
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  this.$refs.userGroupTable.reload();
-                  break;
-                case responseMessages['used-user-group-name']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-name`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-                case responseMessages['used-user-group-number']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-number`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-                default:
-
-              }
-            })
-            .catch((error) => {
-
+          if(userGroupUserIds.length===0){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.required-user`), {
+              duration: 3000,
+              permanent: false
             });
+          }
+          else {
+            getApiManager()
+              .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
+                'userGroupId': this.selectedUserGroupItem.userGroupId,
+                'userIdList': userGroupUserIds
+              })
+              .then((response) => {
+                let message = response.data.message;
+                let data = response.data.data;
+                switch (message) {
+                  case responseMessages['ok']:
+                    this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    this.$refs.userGroupTable.reload();
+                    break;
+                  case responseMessages['used-user-group-name']:
+                    this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-name`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+                  case responseMessages['used-user-group-number']:
+                    this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-number`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+                  default:
+
+                }
+              })
+              .catch((error) => {
+
+              });
+          }
         }
       }
     }

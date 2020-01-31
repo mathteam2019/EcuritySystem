@@ -65,7 +65,7 @@
               <b-img src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{totalData['day'].value}} {{totalData['hour'].value}}h: {{totalData['minute'].value}}m: {{totalData['second'].value}}s</span>
+              <div><span class="span-font">D{{totalData['day'].value}} {{totalData['hour'].value}}: {{totalData['minute'].value}}: {{totalData['second'].value}}</span>
               </div>
               <div><span>累计运行时长</span></div>
             </div>
@@ -79,7 +79,7 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{scanData['day'].value}} {{scanData['hour'].value}}h: {{scanData['minute'].value}}m: {{scanData['second'].value}}s</span>
+              <div><span class="span-font">D{{scanData['day'].value}} {{scanData['hour'].value}}: {{scanData['minute'].value}}: {{scanData['second'].value}}</span>
               </div>
               <div><span>安检仪累计运行时长</span></div>
             </div>
@@ -93,7 +93,7 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{judgeData['day'].value}} {{judgeData['hour'].value}}h: {{judgeData['minute'].value}}m: {{judgeData['second'].value}}s</span>
+              <div><span class="span-font">D{{judgeData['day'].value}} {{judgeData['hour'].value}}: {{judgeData['minute'].value}}: {{judgeData['second'].value}}</span>
               </div>
               <div><span>判图站累计运行时长</span></div>
             </div>
@@ -107,7 +107,7 @@
               <b-img src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{handData['day'].value}} {{handData['hour'].value}}h: {{handData['minute'].value}}m: {{handData['second'].value}}s</span>
+              <div><span class="span-font">D{{handData['day'].value}} {{handData['hour'].value}}: {{handData['minute'].value}}: {{handData['second'].value}}</span>
               </div>
               <div><span>手检站累计运行时长</span></div>
             </div>
@@ -201,13 +201,13 @@
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>现场:</b></b-col>
             <b-col cols="11">
-              <span>{{this.allField}}</span>
+              <span>{{allField}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>安检仪:</b></b-col>
             <b-col cols="11">
-              <span>安检仪001, 安检仪002, 安检仪003</span>
+              <span>{{allDevice}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
@@ -523,6 +523,7 @@
 
         siteData: [],
         allField: '',
+        allDevice:'',
         preViewData: [],
         graphData: [],
         total: [],
@@ -927,10 +928,16 @@
           this.bar3ChartOptions.xAxis.data=[];
           let keyData = Object.keys(this.graphData.detailedStatistics);
           let xAxisChart = [];
+          let allUserStr="";
 
           for (let i = 0; i < keyData.length; i++) {
 
             let key = keyData[i];
+            if(i===0){
+              allUserStr = allUserStr + this.graphData.detailedStatistics[key].name;
+            }else {
+              allUserStr = allUserStr + ", " + this.graphData.detailedStatistics[key].name;
+            }
 
             xAxisChart[i] = this.graphData.detailedStatistics[key].name;
             if (this.graphData.detailedStatistics[key].scanStatistics != null) {
@@ -949,6 +956,7 @@
               this.bar3ChartOptions.series[2].data[i] = 0;
             }
           }
+          this.allDevice=allUserStr;
 
           this.bar3ChartOptions.xAxis.data = xAxisChart;
         })

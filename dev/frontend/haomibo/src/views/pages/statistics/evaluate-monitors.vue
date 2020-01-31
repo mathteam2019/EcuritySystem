@@ -471,10 +471,12 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="showTable = !showTable">
               <i class="icofont-exchange"/>&nbsp;{{ $t('statistics.evaluate-monitors.displacement') }}
             </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('evaluate_statistics_export')" @click="onExportButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default"
+                      :disabled="checkPermItem('evaluate_statistics_export')" @click="onExportButton()">
               <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
             </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('evaluate_statistics_print')" @click="onPrintButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default"
+                      :disabled="checkPermItem('evaluate_statistics_print')" @click="onPrintButton()">
               <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
             </b-button>
           </div>
@@ -651,27 +653,27 @@
                 <b-col cols="1"><b>现场:</b></b-col>
                 <b-col cols="11">
                   <span v-if="filter.fieldId === null">{{this.allField}}</span>
-                  <span v-else>{{filter.fieldId}}</span>
+                  <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>安检仪:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.deviceId === null">安检仪001, 安检仪002, 安检仪003</span>
-                  <span v-else>{{filter.deviceId}}</span>
+                  <span v-if="filter.deviceId === null">{{allDevice}}</span>
+                  <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员类型:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.userCategory === null">引导员, 判图员, 手检员</span>
-                  <span v-else>{{filter.userCategory}}</span>
+                  <span v-if="filter.userName === null">手检员</span>
+                  <span v-else>{{filter.userName}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.userName===null">张三, 李四, 王五</span>
+                  <span v-if="filter.userName===null">全部</span>
                   <span v-else>{{filter.userName}}</span>
                 </b-col>
               </b-row>
@@ -718,10 +720,11 @@
       </div>
       <b-row class="mt-3"/>
     </div>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -776,6 +779,7 @@
 
   import {checkPermissionItem, getDirection} from "../../../utils";
   import {validationMixin} from "vuelidate";
+
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -949,13 +953,14 @@
         },
         siteData: [],
         allField: '',
+        allDevice: '',
         preViewData: [],
         manualDeviceOptions: [],
 
         link: '',
         params: {},
         name: '',
-        fileSelection : [],
+        fileSelection: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -1199,7 +1204,25 @@
       closeModal() {
         this.isModalVisible = false;
       },
-    checkPermItem(value) {
+      getSiteLabel(value) {
+        if (value === null || this.onSiteOption === null) return "";
+        else {
+          for (let i = 0; i < this.onSiteOption.length; i++) {
+            if (this.onSiteOption[i].value === value)
+              return this.onSiteOption[i].text;
+          }
+        }
+      },
+      getDeviceLabel(value) {
+        if (value === null || this.manualDeviceOptions === null) return "";
+        else {
+          for (let i = 0; i < this.manualDeviceOptions.length; i++) {
+            if (this.manualDeviceOptions[i].value === value)
+              return this.manualDeviceOptions[i].text;
+          }
+        }
+      },
+      checkPermItem(value) {
         return checkPermissionItem(value);
       },
       getManualDeviceData() {
@@ -1213,6 +1236,17 @@
                 text: opt.device ? opt.device.deviceName : "Unknown",
                 value: opt.manualDeviceId
               }));
+              let allFieldStr = "";
+              let cnt = data.length;
+
+              allFieldStr = allFieldStr + data[0].device.deviceName;
+              //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+              for (let i = 1; i < cnt; i++) {
+
+                allFieldStr = allFieldStr + ", " + data[i].device.deviceName;
+
+              }
+              this.allDevice = allFieldStr;
 
               this.manualDeviceOptions = options;
               this.manualDeviceOptions.push({
@@ -1235,41 +1269,39 @@
         if (this.showTable === false) {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0  || this.showTable ===false ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.showTable === false ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.showTable ===false?checkedIds:checkedIds.join()
+          'idList': this.showTable === false ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/evaluatejudge/generate`;
         this.name = 'Statistics-Evaluate';
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll, checkedIds;
         if (this.showTable === false) {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.showTable===false ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.showTable === false ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.showTable ===false?checkedIds:checkedIds.join()
+          'idList': this.showTable === false ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/evaluatejudge/generate`;
-        if(this.showTable!==false&& checkedIds.length === 0){
+        if (this.showTable !== false && checkedIds.length === 0) {
 
-        }else {
+        } else {
           downLoadFileFromServer(link, params, 'Statistics-Evaluate', this.fileSelection);
           this.hideModal('model-export')
         }
@@ -1284,21 +1316,20 @@
         if (this.showTable === false) {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.showTable===false ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.showTable === false ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.showTable ===false?checkedIds:checkedIds.join()
+          'idList': this.showTable === false ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/evaluatejudge/generate`;
-        if(this.showTable!==false&& checkedIds.length === 0){
+        if (this.showTable !== false && checkedIds.length === 0) {
 
-        }else {
+        } else {
           printFileFromServer(link, params);
         }
 
@@ -1341,24 +1372,24 @@
           // if (this.filter.statWidth === 'year') {
           //   this.bar3ChartOptions.xAxis.data = this.xHour;
           // } else {
-            this.xDay = Object.keys(this.preViewData.detailedStatistics);
-            this.lineChart1Options.xAxis.data = this.xDay;
-            this.lineChart2Options.xAxis.data = this.xDay;
-            this.lineChart3Options.xAxis.data = this.xDay;
+          this.xDay = Object.keys(this.preViewData.detailedStatistics);
+          this.lineChart1Options.xAxis.data = this.xDay;
+          this.lineChart2Options.xAxis.data = this.xDay;
+          this.lineChart3Options.xAxis.data = this.xDay;
 
-            for (let i = 0; i < this.xDay.length; i++) {
-              let key = this.xDay[i];
+          for (let i = 0; i < this.xDay.length; i++) {
+            let key = this.xDay[i];
 
-              if (this.preViewData.detailedStatistics[i] != null) {
-                this.lineChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[key].missingReport;
-                this.lineChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[key].mistakeReport;
-                this.lineChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMissing;
-                this.lineChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMistake;
-                this.lineChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMissing;
-                this.lineChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMistake;
+            if (this.preViewData.detailedStatistics[i] != null) {
+              this.lineChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[key].missingReport;
+              this.lineChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[key].mistakeReport;
+              this.lineChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMissing;
+              this.lineChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMistake;
+              this.lineChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMissing;
+              this.lineChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMistake;
 
-              }
             }
+          }
           //}
         });
       },
@@ -1402,7 +1433,6 @@
         let transformed = {};
 
         let data = response.data;
-
 
 
         transformed.pagination = {

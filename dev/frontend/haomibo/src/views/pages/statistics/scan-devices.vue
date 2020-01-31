@@ -327,15 +327,15 @@
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.fieldId === null">{{this.allField}}</span>
-                  <span v-else>{{filter.fieldId}}</span>
+                  <span v-if="filter.fieldId === null">{{allField}}</span>
+                  <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>安检仪:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.deviceId === null">安检仪001, 安检仪002, 安检仪003</span>
-                  <span v-else>{{filter.deviceId}}</span>
+                  <span v-if="filter.deviceId === null">{{allDevice}}</span>
+                  <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
@@ -345,7 +345,7 @@
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.userName===null">张三, 李四, 王五</span>
+                  <span v-if="filter.userName===null">全部</span>
                   <span v-else>{{filter.userName}}</span>
                 </b-col>
               </b-row>
@@ -686,6 +686,7 @@
 
         siteData: [],
         allField: '',
+        allDevice:'',
         preViewData: [],
         manualDeviceOptions: [],
 
@@ -711,9 +712,9 @@
         ],
         operatorTypeOptions: [
           {value: null, text: "全部"},
-          {value: '引导员', text: "引导员"},
-          {value: '判图员', text: "判图员"},
-          {value: '手检员', text: "手检员"},
+          {value: '1000002404', text: "扫描"},
+          {value: '1000002403', text: "判图"},
+          {value: '1000002402', text: "手检"},
         ],
         statisticalStepSizeOptions: [
           {value: 'hour', text: "时"},
@@ -850,6 +851,33 @@
       //   this.name = 'Invalid-Task';
       //   this.isModalVisible = true;
       // },
+      getSiteLabel(value){
+        if(value===null||this.onSiteOption===null) return "";
+        else{
+          for(let i=0; i<this.onSiteOption.length; i++){
+            if(this.onSiteOption[i].value===value)
+              return this.onSiteOption[i].text;
+          }
+        }
+      },
+      getDeviceLabel(value){
+        if(value===null||this.manualDeviceOptions===null) return "";
+        else{
+          for(let i=0; i<this.manualDeviceOptions.length; i++){
+            if(this.manualDeviceOptions[i].value===value)
+              return this.manualDeviceOptions[i].text;
+          }
+        }
+      },
+      getCategoryLabel(value){
+        if(value===null||this.operatorTypeOptions===null) return "";
+        else{
+          for(let i=0; i<this.operatorTypeOptions.length; i++){
+            if(this.operatorTypeOptions[i].value===value)
+              return this.operatorTypeOptions[i].text;
+          }
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -867,6 +895,18 @@
                 text: opt.device ? opt.device.deviceName : "Unknown",
                 value: opt.manualDeviceId
               }));
+
+              let allFieldStr = "";
+              let cnt = data.length;
+
+              allFieldStr = allFieldStr + data[0].device.deviceName;
+              //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+              for (let i = 1; i < cnt; i++) {
+
+                allFieldStr = allFieldStr + ", " + data[i].device.deviceName;
+
+              }
+              this.allDevice = allFieldStr;
 
               this.manualDeviceOptions = options;
               this.manualDeviceOptions.push({

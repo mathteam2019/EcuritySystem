@@ -867,6 +867,12 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['active-archive']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.active-archive`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {

@@ -429,6 +429,7 @@
           originalModel: '',
           archiveIndicatorsList: [],
           note: '',
+          status:'',
           archivesTemplateId: 0
         },
         categoryFilterData: [],
@@ -742,7 +743,18 @@
           };
           this.indicatorData = [];
         } else {
-          this.basicForm = data;
+          //this.basicForm = data;
+          this.basicForm = {
+            templateName: data.templateName,
+            archivesTemplateNumber: data.archivesTemplateNumber,
+            categoryId: data.categoryId,
+            manufacturer: data.manufacturer,
+            originalModel: data.originalModel,
+            archiveIndicatorsList: data.archiveIndicatorsList,
+            note: data.note,
+            status: data.status,
+            archivesTemplateId: data.archivesTemplateId
+          };
           if (isUpdated) {
             let items = [];
             this.basicForm.archiveIndicatorsList.forEach((item) => {
@@ -901,6 +913,12 @@
                 break;
               case responseMessages['has-devices']: // okay
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-devices`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['active-template']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.active-template`), {
                   duration: 3000,
                   permanent: false
                 });

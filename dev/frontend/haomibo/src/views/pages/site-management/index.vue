@@ -821,7 +821,17 @@
           };
           this.selectedSiteItem = '';
         } else {
-          this.siteForm = data;
+          // this.siteForm = data;
+          this.siteForm = {
+            fieldSerial: data.fieldSerial,
+            fieldDesignation: data.fieldDesignation,
+            parentFieldId: data.parentFieldId,
+            parentFieldDesignation: data.parentFieldDesignation,
+            leader: data.leader,
+            mobile: data.mobile,
+            note: data.note,
+            fieldId: data.fieldId
+          };
           this.selectedSiteItem = getParentSerialName(this.siteData, this.siteForm.parentFieldId);
         }
 
@@ -1008,6 +1018,12 @@
                 break;
               case responseMessages["has-devices"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-devices`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages["active-field"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.active-field`), {
                   duration: 3000,
                   permanent: false
                 });

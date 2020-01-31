@@ -329,6 +329,7 @@
                   <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-select :options="parentOrganizationNameSelectOptions"
+                                 :disabled="modifyPage.selectedOrg.status==='1000000701'"
                                  :state="!$v.modifyPage.parentOrgId.$dirty ? null : !$v.modifyPage.parentOrgId.$invalid"
                                  v-model="modifyPage.parentOrgId" plain/>
                   <b-form-invalid-feedback>
@@ -440,6 +441,7 @@
                   <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-select :options="parentOrganizationNameSelectOptions"
+                                 :disabled="modifyPage.selectedOrg.status==='1000000701'"
                                  :state="!$v.modifyPage.parentOrgId.$dirty ? null : !$v.modifyPage.parentOrgId.$invalid"
                                  v-model="modifyPage.parentOrgId" plain/>
                   <b-form-invalid-feedback>
@@ -1036,15 +1038,27 @@
         let modifyItem = () => {
 
           // rest models
-          this.modifyPage = {
-            selectedOrg: data,
-            orgName: data.orgName,
-            orgNumber: data.orgNumber,
-            parentOrgId: data.parent.orgId,
-            leader: data.leader,
-            mobile: data.mobile,
-            note: data.note
-          };
+          if(data.parent==null){
+            this.modifyPage = {
+              selectedOrg: data,
+              orgName: data.orgName,
+              orgNumber: data.orgNumber,
+              parentOrgId: 'None',
+              leader: data.leader,
+              mobile: data.mobile,
+              note: data.note
+            };
+          } else {
+            this.modifyPage = {
+              selectedOrg: data,
+              orgName: data.orgName,
+              orgNumber: data.orgNumber,
+              parentOrgId: data.parent.orgId,
+              leader: data.leader,
+              mobile: data.mobile,
+              note: data.note
+            };
+          }
 
           // change page to modify
           this.pageStatus = 'modify';
@@ -1115,8 +1129,7 @@
                   });
                   if (this.modifyPage != null)
                     this.modifyPage.selectedOrg.status = '1000000701';
-                  if(this.pageStatus==='modify')
-                    this.pageStatus = 'table';
+
                   this.$refs.vuetable.reload();
                   this.getOrgDataAll();
                   break;
@@ -1181,8 +1194,8 @@
           this.selectedOrg = data;
           if (data == null)
             this.selectedOrg = this.modifyPage.selectedOrg;
-          this.deactivateOrg();
-          //this.$refs['modal-deactivate'].show();
+          //this.deactivateOrg();
+          this.$refs['modal-deactivate'].show();
         };
 
         switch (action) {
@@ -1463,6 +1476,12 @@
                 });
                 break;
               case responseMessages['has-roles']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-roles`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['active-org']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-roles`), {
                   duration: 3000,
                   permanent: false

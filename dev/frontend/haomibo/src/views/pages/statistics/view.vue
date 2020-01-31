@@ -93,7 +93,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.totalScan}}</span>
+                <span
+                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.totalScan}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>扫描</span></div>
@@ -109,7 +110,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.validScan}}</span>
+                <span
+                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.validScan}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>有效扫描</span></div>
@@ -125,7 +127,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.passedScan}}</span>
+                <span
+                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.passedScan}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>通过</span></div>
@@ -141,7 +144,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</span>
+                <span
+                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>报警</span></div>
@@ -256,10 +260,12 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('preview_statistics_export')" @click="onExportButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('preview_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('preview_statistics_print')" @click="onPrintButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('preview_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -287,23 +293,31 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">无效扫描</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.invalidScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.scanStatistics.invalidScan}}
+                      </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">有效扫描</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.validScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.scanStatistics.validScan}}
+                      </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">报警</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.scanStatistics.alarmScan}}
+                      </div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">通过</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.passedScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.scanStatistics.passedScan}}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -343,35 +357,35 @@
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.fieldId === null">{{this.allField}}</span>
-                  <span v-else>{{filter.fieldId}}</span>
+                  <span v-if="filter.fieldId === null">{{allField}}</span>
+                  <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>安检仪:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.deviceId === null">安检仪001, 安检仪002, 安检仪003</span>
-                  <span v-else>{{filter.deviceId}}</span>
+                  <span v-if="filter.deviceId === null">{{allDevice}}</span>
+                  <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员类型:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.userCategory === null">引导员, 判图员, 手检员</span>
-                  <span v-else>{{filter.userCategory}}</span>
+                  <span v-if="filter.userCategory === null">扫描, 判图, 手检</span>
+                  <span v-else>{{getCategoryLabel(filter.userCategory)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.userName===null">张三, 李四, 王五</span>
+                  <span v-if="filter.userName===null">全部</span>
                   <span v-else>{{filter.userName}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>时间:</b></b-col>
                 <b-col cols="11">
-                  <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+                  <span>{{getDateTimeFormat(filter.startTime)}}-{{getDateTimeFormat(filter.endTime)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
@@ -422,10 +436,11 @@
 
       </b-col>
     </b-row>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -463,7 +478,7 @@
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
+  import 'vue-tree-halower/dist/halower-tree.min.css'
   import Switches from 'vue-switches';
   import ECharts from 'vue-echarts'
   import 'echarts/lib/chart/pie';
@@ -477,7 +492,6 @@
   import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
-
   import {checkPermissionItem, getDirection} from "../../../utils";
   import {validationMixin} from "vuelidate";
   import Modal from '../../../components/Modal/modal'
@@ -660,18 +674,18 @@
         isExpanded: false,
         isCheckAll: false,
         pageStatus: 'charts',
-	link: '',
+        link: '',
         params: {},
         name: '',
 
-        fileSelection : [],
+        fileSelection: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-	isModalVisible: false,
+        isModalVisible: false,
 
         filter: {
           fieldId: null,
@@ -683,8 +697,11 @@
           statWidth: 'hour',
         },
 
+        categoryLabel: '',
+
         siteData: [],
         allField: '',
+        allDevice: '',
         preViewData: [],
         manualDeviceOptions: [],
 
@@ -710,9 +727,9 @@
         ],
         operatorTypeOptions: [
           {value: null, text: "全部"},
-          {value: '1000002404', text: "引导员"},
-          {value: '1000002403', text: "判图员"},
-          {value: '1000002402', text: "手检员"},
+          {value: '1000002404', text: "扫描"},
+          {value: '1000002403', text: "判图"},
+          {value: '1000002402', text: "手检"},
         ],
         statisticalStepSizeOptions: [
           {value: 'hour', text: "时"},
@@ -737,7 +754,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (time) => {
-                if (this.filter.statWidth === 'hour') return time+1;
+                if (this.filter.statWidth === 'hour') return time + 1;
                 else return time;
               }
             },
@@ -901,6 +918,33 @@
       //   this.name = 'Invalid-Task';
       //   this.isModalVisible = true;
       // },
+      getSiteLabel(value) {
+        if (value === null || this.onSiteOption === null) return "";
+        else {
+          for (let i = 0; i < this.onSiteOption.length; i++) {
+            if (this.onSiteOption[i].value === value)
+              return this.onSiteOption[i].text;
+          }
+        }
+      },
+      getDeviceLabel(value) {
+        if (value === null || this.manualDeviceOptions === null) return "";
+        else {
+          for (let i = 0; i < this.manualDeviceOptions.length; i++) {
+            if (this.manualDeviceOptions[i].value === value)
+              return this.manualDeviceOptions[i].text;
+          }
+        }
+      },
+      getCategoryLabel(value) {
+        if (value === null || this.operatorTypeOptions === null) return "";
+        else {
+          for (let i = 0; i < this.operatorTypeOptions.length; i++) {
+            if (this.operatorTypeOptions[i].value === value)
+              return this.operatorTypeOptions[i].text;
+          }
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -919,6 +963,18 @@
                 value: opt.manualDeviceId
               }));
 
+              let allFieldStr = "";
+              let cnt = data.length;
+
+              allFieldStr = allFieldStr + data[0].device.deviceName;
+              //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+              for (let i = 1; i < cnt; i++) {
+
+                allFieldStr = allFieldStr + ", " + data[i].device.deviceName;
+
+              }
+              this.allDevice = allFieldStr;
+
               this.manualDeviceOptions = options;
               this.manualDeviceOptions.push({
                 text: this.$t('personal-inspection.all'),
@@ -930,52 +986,50 @@
       },
 
       getDateTimeFormat(datatime) {
-        if(datatime==null)return '';
+        if (datatime == null) return '';
         return getDateTimeWithFormat(datatime, 'monitor');
       },
 
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
-       let checkedAll, checkedIds;
+        let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0  || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/preview/generate`;
         this.name = 'Statistics-Preview';
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/preview/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        }else {
+        } else {
           downLoadFileFromServer(link, params, 'Statistics-Preview', this.fileSelection);
           this.hideModal('model-export')
         }
@@ -990,21 +1044,20 @@
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/preview/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        }else {
+        } else {
           printFileFromServer(link, params);
         }
       },
@@ -1056,15 +1109,14 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
-          if(this.preViewData.totalStatistics!=null && this.preViewData.totalStatistics.scanStatistics!=null) {
+          if (this.preViewData.totalStatistics != null && this.preViewData.totalStatistics.scanStatistics != null) {
 
             this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.scanStatistics.invalidScan;
             this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.scanStatistics.validScan;
             this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.scanStatistics.alarmScan;
             this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
 
-          }
-          else {
+          } else {
             this.doublePieChartOptions.series[0].data[0].value = 0;
             this.doublePieChartOptions.series[0].data[1].value = 0;
             this.doublePieChartOptions.series[1].data[0].value = 0;
@@ -1074,27 +1126,26 @@
           // if (this.filter.statWidth === 'year') {
           //   this.bar3ChartOptions.xAxis.data = this.xHour;
           // } else {
-            this.xDay = Object.keys(this.preViewData.detailedStatistics);
+          this.xDay = Object.keys(this.preViewData.detailedStatistics);
 
-            this.bar3ChartOptions.xAxis.data = this.xDay;
-            for (let i = 0; i < this.xDay.length; i++) {
-              let key = this.xDay[i];
+          this.bar3ChartOptions.xAxis.data = this.xDay;
+          for (let i = 0; i < this.xDay.length; i++) {
+            let key = this.xDay[i];
 
-              if (this.preViewData.detailedStatistics[key] != null && this.preViewData.detailedStatistics[key].scanStatistics != null) {
-                this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.passedScan;
-                this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.alarmScan;
-                this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.invalidScan;
-              }
-              else {
-                this.bar3ChartOptions.series[0].data[i] = 0;
-                this.bar3ChartOptions.series[1].data[i] = 0;
-                this.bar3ChartOptions.series[2].data[i] = 0;
-              }
+            if (this.preViewData.detailedStatistics[key] != null && this.preViewData.detailedStatistics[key].scanStatistics != null) {
+              this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.passedScan;
+              this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.alarmScan;
+              this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.invalidScan;
+            } else {
+              this.bar3ChartOptions.series[0].data[i] = 0;
+              this.bar3ChartOptions.series[1].data[i] = 0;
+              this.bar3ChartOptions.series[2].data[i] = 0;
             }
+          }
           //}
 
         }).catch((error) => {
-          });
+        });
       },
 
       onSearchButton() {

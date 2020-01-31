@@ -11,6 +11,7 @@
 
     }
   }
+  .pointer {cursor: pointer;}
 </style>
 <template>
   <div class="system-setting">
@@ -34,10 +35,9 @@
                     <label class="font-weight-bold">{{$t('system-setting.parameter-setting.scan')}}</label>
                   </b-col>
                   <b-col cols="2">
-                    <b-form-group :label="$t('system-setting.parameter-setting.atr-suspect-box-color')">
-                      <colorpicker :color="platFormData.scanRecogniseColour"
+                    <b-form-group :label="$t('system-setting.parameter-setting.atr-suspect-box-color')" class="pointer">
+                      <colorpicker type="colorpicker" :color="platFormData.scanRecogniseColour"
                                    v-model="platFormData.scanRecogniseColour"
-                                   :state="!$v.platFormData.scanRecogniseColour.$dirty ? null : !$v.platFormData.scanRecogniseColour.$invalid"
                                    style="margin-bottom: 0 !important;"/>
                     </b-form-group>
                   </b-col>
@@ -658,7 +658,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
-  import {getApiManager, getApiManagerError, getDateTimeWithFormat} from '../../../api';
+  import {getApiManager, isColorValid, getApiManagerError, getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {apiBaseUrl, apiParamUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
@@ -693,6 +693,8 @@
       platFormData: {
         scanRecogniseColour: {
           required,
+          minLength:minLength(7), maxLength:maxLength(7),
+          isColorValid
         },
         scanOverTime: {
           required,
@@ -708,10 +710,14 @@
           required
         },
         judgeRecogniseColour: {
-          required
+          required,
+          minLength:minLength(7), maxLength:maxLength(7),
+          isColorValid
         },
         displayDeleteSuspicionColour: {
-          required
+          required,
+          minLength:minLength(7), maxLength:maxLength(7),
+          isColorValid
         },
         historyDataStorageSelect: {
           required
@@ -928,6 +934,9 @@
       }
     },
     methods: {
+      changeCursor(){
+        document.getElementsByClassName("colorpicker-chrome").style.cursor = "pointer";
+      },
       checkPermItem(value) {
         return checkPermissionItem(value);
       },

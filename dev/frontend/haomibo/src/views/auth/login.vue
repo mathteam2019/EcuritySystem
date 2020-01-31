@@ -5,7 +5,7 @@
     .header-title {
       font-size: 4.375rem;
       font-weight: bold;
-      text-shadow: 3px 4px 0px black;
+      text-shadow: 3px 4px 0 black;
     }
 
     .form-control {
@@ -178,7 +178,7 @@
     .auth-login-page {
       .form-control {
         max-width: 100% !important;
-        border-radius: 0px !important;
+        border-radius: 0 !important;
       }
     }
   }
@@ -227,6 +227,7 @@
                           :disabled="processing">{{
                   $t('user.login-button')}}
                 </b-button>
+
               </div>
             </b-form>
           </div>
@@ -249,9 +250,11 @@
   } from '../../utils'
   import {getApiManager} from "../../api";
   import {responseMessages} from "../../constants/response-messages";
+  //import vuecaptcha from 'vuejs-captcha';
 
 
   export default {
+
     data() {
       return {
         account: '',
@@ -298,7 +301,7 @@
         console.log(this.count);
 
         if (this.account.length === 0) {
-          this.$notify('warning', this.$t('user.warning'), this.$t(`user.enter-valid-email`), {
+          this.$notify('warning', this.$t('user.warning'), this.$t(`user.enter-valid-account`), {
             duration: 3000,
             permanent: false
           });

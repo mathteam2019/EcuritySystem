@@ -226,7 +226,7 @@
         this.$v.passwordForm.$touch();
         if (this.$v.passwordForm.$invalid) {
           console.log(this.passwordForm.password);
-          if(this.passwordForm.password === null){
+          if(this.passwordForm.password === null||this.passwordForm.password===''){
             this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.input-none`), {
               duration: 3000,
               permanent: false

@@ -44,7 +44,13 @@
 
     methods: {
       exportFile() {
-        if (this.fileSelection !== null) {
+        if(this.params.isAll===true&&this.params.idList===""){
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-messages.select-data`), {
+            duration: 3000,
+            permanent: false
+          });
+        }
+        if (this.fileSelection.length !== 0 && !(this.params.isAll===true&&this.params.idList==="")) {
           downLoadFileFromServer(this.link, this.params, this.name, this.fileSelection);
           this.close();
         }

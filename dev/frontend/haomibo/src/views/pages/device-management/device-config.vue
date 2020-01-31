@@ -1113,6 +1113,12 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['device-not-field']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.device-not-field`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
 
             }
           })

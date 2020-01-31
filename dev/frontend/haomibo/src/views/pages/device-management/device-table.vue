@@ -1138,6 +1138,12 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['active-device']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.active-device`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {

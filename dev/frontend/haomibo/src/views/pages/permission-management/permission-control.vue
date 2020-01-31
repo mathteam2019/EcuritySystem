@@ -116,7 +116,7 @@
                     </label>
                   </div>
 
-                  <div class="text-right">
+                  <div class="text-left">
                     <b-form-group>
                       <b-form-checkbox v-model="isSelectedAllResourcesForRoleForm">
                         {{$t('permission-management.permission-control.select-all')}}
@@ -176,7 +176,7 @@
                   </label>
                 </div>
 
-                <div class="text-right" v-if="selectedRole">
+                <div class="text-left" v-if="selectedRole">
                   <b-form-group>
                     <b-form-checkbox v-model="isSelectedAllResourcesForRole">
                       {{$t('permission-management.permission-control.select-all')}}
@@ -344,7 +344,7 @@
                   class="text-danger">*</span></label>
               </div>
 
-              <div class="text-right">
+              <div class="text-left">
                 <b-form-group>
                   <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
                     {{$t('permission-management.permission-control.select-all')}}
@@ -879,47 +879,57 @@
         if (this.$v.roleForm.$invalid) {
           return;
         }
-        this.isLoading = true;
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/permission-control/role/create`, {
-            'roleNumber': this.roleForm.roleNumber,
-            'roleName': this.roleForm.roleName,
-            'resourceIdList': this.$refs.resourceTreeRoleForm ? this.$refs.resourceTreeRoleForm.getCheckedNodes().map(node => node.resourceId) : [],
-          })
-          .then((response) => {
-            this.isLoading = false;
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                this.$refs.roleVuetable.reload();
-                this.roleForm.roleNumber = '';
-                this.roleForm.roleName = '';
-                break;
-              case responseMessages['used-role-name']:
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-name`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                break;
-              case responseMessages['used-role-number']:
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-number`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                break;
-              default:
 
-
-            }
-          })
-          .catch((error) => {
-            this.isLoading = false;
+        let resourceIdList = this.$refs.resourceTreeRoleForm ? this.$refs.resourceTreeRoleForm.getCheckedNodes().map(node => node.resourceId) : [];
+        if(resourceIdList.length===0){
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.required-role`), {
+            duration: 3000,
+            permanent: false
           });
+        }
+        else {
+          this.isLoading = true;
+          getApiManager()
+            .post(`${apiBaseUrl}/permission-management/permission-control/role/create`, {
+              'roleNumber': this.roleForm.roleNumber,
+              'roleName': this.roleForm.roleName,
+              'resourceIdList': resourceIdList
+            })
+            .then((response) => {
+              this.isLoading = false;
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']: // okay
+                  this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  this.$refs.roleVuetable.reload();
+                  this.roleForm.roleNumber = '';
+                  this.roleForm.roleName = '';
+                  break;
+                case responseMessages['used-role-name']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-name`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['used-role-number']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-number`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                default:
+
+
+              }
+            })
+            .catch((error) => {
+              this.isLoading = false;
+            });
+        }
       },
       searchRoles() {
         this.$refs.roleVuetable.refresh();
@@ -1080,47 +1090,54 @@
         if (this.selectedDataGroup) {
           let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
           let userIdList = checkedNodes.filter(node => node.isUser).map(node => node.userId);
-          this.isLoading = true;
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
-              'dataGroupNumber': this.dataGroupForm.dataGroupNumber,
-              'dataGroupName': this.dataGroupForm.dataGroupName,
-              'userIdList': userIdList
-            })
-            .then((response) => {
-              this.isLoading = false;
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']: // okay
-                  this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-created`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  this.dataGroupForm.dataGroupName = '';
-                  this.dataGroupForm.dataGroupNumber = '';
-                  this.$refs.dataGroupVuetable.refresh();
-                  break;
-                case responseMessages['used-data-group-name']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-name`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-                case responseMessages['used-data-group-number']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-number`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-
-                default:
-
-              }
-            })
-            .catch((error) => {
-              this.isLoading = false;
+          if(userIdList.length===0){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.required-data-group`), {
+              duration: 3000,
+              permanent: false
             });
+          }else {
+            this.isLoading = true;
+            getApiManager()
+              .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
+                'dataGroupNumber': this.dataGroupForm.dataGroupNumber,
+                'dataGroupName': this.dataGroupForm.dataGroupName,
+                'userIdList': userIdList
+              })
+              .then((response) => {
+                this.isLoading = false;
+                let message = response.data.message;
+                let data = response.data.data;
+                switch (message) {
+                  case responseMessages['ok']: // okay
+                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-created`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    this.dataGroupForm.dataGroupName = '';
+                    this.dataGroupForm.dataGroupNumber = '';
+                    this.$refs.dataGroupVuetable.refresh();
+                    break;
+                  case responseMessages['used-data-group-name']:
+                    this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-name`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+                  case responseMessages['used-data-group-number']:
+                    this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-number`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+
+                  default:
+
+                }
+              })
+              .catch((error) => {
+                this.isLoading = false;
+              });
+          }
         }
       },
       onClickSaveDataGroup() {
