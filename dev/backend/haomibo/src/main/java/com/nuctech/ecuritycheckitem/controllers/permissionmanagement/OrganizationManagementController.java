@@ -468,7 +468,7 @@ public class OrganizationManagementController extends BaseController {
 
         boolean isAll = false;
         if(requestBody.getType().equals(OrganizationGetAllRequestBody.GetAllType.WITH_GRAPHIC)) {
-            isAll = true;
+            //isAll = true;
         }
 
         List<SysOrg> sysOrgList = organizationService.getAllOrganization(isAll);

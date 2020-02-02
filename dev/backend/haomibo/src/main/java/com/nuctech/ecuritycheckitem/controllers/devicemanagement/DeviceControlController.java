@@ -911,12 +911,7 @@ public class DeviceControlController extends BaseController {
         }
 
         int checkStatus = deviceService.checkDeviceStatus(requestBody.getDeviceId());
-        if(checkStatus == 0) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("Device", null, currentLocale),
-                    messageSource.getMessage("DeviceInactive", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.DEVICE_INACTIVE_STATUS);
-        }
+
 
         if(checkStatus == 1) {
             auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),

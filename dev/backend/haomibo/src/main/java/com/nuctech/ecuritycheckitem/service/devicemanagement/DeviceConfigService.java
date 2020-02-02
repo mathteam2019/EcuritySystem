@@ -38,7 +38,7 @@ public interface DeviceConfigService {
      * @param perPage
      * @return
      */
-    PageResult<SysDeviceConfig> findConfigByFilter(String sortBy, String order, String deviceName, Long fieldId, Long categoryId, int currentPage, int perPage);
+    PageResult<SysDeviceConfig> findConfigByFilter(String sortBy, String order, String deviceName, Long fieldId, Long categoryId, Long mode, int currentPage, int perPage);
 
     /**
      * modify device config

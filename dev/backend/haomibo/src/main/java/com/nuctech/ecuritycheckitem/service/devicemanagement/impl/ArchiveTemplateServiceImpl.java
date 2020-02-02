@@ -14,7 +14,9 @@ package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
 import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
 import com.nuctech.ecuritycheckitem.models.db.QSerArchive;
@@ -113,7 +115,8 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         ObjectMapper objectMapper = new ObjectMapper();
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(newArchiveTemplate);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newArchiveTemplate);
         } catch(Exception ex) {
         }
         return answer;
@@ -130,7 +133,8 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         ObjectMapper objectMapper = new ObjectMapper();
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(newArchiveIndicator);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newArchiveIndicator);
         } catch(Exception ex) {
         }
         return answer;

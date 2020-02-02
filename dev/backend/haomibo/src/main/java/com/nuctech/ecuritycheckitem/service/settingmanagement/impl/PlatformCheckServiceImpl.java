@@ -13,6 +13,8 @@
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.db.SysDictionary;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -48,7 +50,8 @@ public class PlatformCheckServiceImpl implements PlatformCheckService {
         ObjectMapper objectMapper = new ObjectMapper();
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(params);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(params);
         } catch(Exception ex) {
         }
         return answer;

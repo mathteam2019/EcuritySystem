@@ -12,7 +12,9 @@
 
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.SerSeizedGoodRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDictionaryDataRepository;
@@ -66,7 +68,8 @@ public class DictionaryServiceImpl implements DictionaryService {
         ObjectMapper objectMapper = new ObjectMapper();
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(newDictionary);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newDictionary);
         } catch(Exception ex) {
         }
         return answer;
@@ -82,7 +85,8 @@ public class DictionaryServiceImpl implements DictionaryService {
         ObjectMapper objectMapper = new ObjectMapper();
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(newDictionaryData);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newDictionaryData);
         } catch(Exception ex) {
         }
         return answer;

@@ -13,7 +13,9 @@
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.*;
@@ -97,7 +99,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         ObjectMapper objectMapper = new ObjectMapper();
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(newConfig);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newConfig);
         } catch(Exception ex) {
         }
         return answer;
@@ -164,7 +167,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
      * @return
      */
     @Override
-    public PageResult<SysDeviceConfig> findConfigByFilter(String sortBy, String order, String deviceName, Long fieldId, Long categoryId, int currentPage, int perPage) {
+    public PageResult<SysDeviceConfig> findConfigByFilter(String sortBy, String order, String deviceName, Long fieldId, Long categoryId, Long mode, int currentPage, int perPage) {
         QSysDeviceConfig builder = QSysDeviceConfig.sysDeviceConfig;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -174,6 +177,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         }
         if (fieldId != null) {
             predicate.and(builder.device.field.fieldId.eq(fieldId));
+        }
+        if (mode != null) {
+            predicate.and(builder.modeId.eq(mode));
         }
         predicate.and(builder.device.status.eq(SysDevice.Status.ACTIVE));
 
@@ -437,7 +443,15 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
      */
     @Override
     public List<SysManualDevice> findAllManualDevice() {
-        return sysManualDeviceRepository.findAll();
+        QSysManualDevice builder = QSysManualDevice.sysManualDevice;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.device.status.eq(SysDevice.Status.ACTIVE));
+
+        return StreamSupport
+                .stream(sysManualDeviceRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -446,6 +460,14 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
      */
     @Override
     public List<SysJudgeDevice> findAllJudgeDevice() {
-        return sysJudgeDeviceRepository.findAll();
+        QSysJudgeDevice builder = QSysJudgeDevice.sysJudgeDevice;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.device.status.eq(SysDevice.Status.ACTIVE));
+
+        return StreamSupport
+                .stream(sysJudgeDeviceRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 }

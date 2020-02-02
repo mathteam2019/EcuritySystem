@@ -93,6 +93,7 @@ public class DeviceConfigManagementController extends BaseController {
         static class Filter {
             String deviceName; //device name
             Long categoryId; //device category id
+            Long mode;
             Long fieldId; //field id
         }
 
@@ -220,10 +221,12 @@ public class DeviceConfigManagementController extends BaseController {
         String deviceName  = "";
         Long fieldId = null;
         Long categoryId = null;
+        Long mode = null;
         if(requestBody.getFilter() != null) {
             deviceName = requestBody.getFilter().getDeviceName(); //get device name from input parameter
             fieldId = requestBody.getFilter().getFieldId(); //get field id from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get device category id from input parameter
+            mode = requestBody.getFilter().getMode();
         }
 
         String sortBy = "";
@@ -236,7 +239,7 @@ public class DeviceConfigManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        PageResult<SysDeviceConfig> result = deviceConfigService.findConfigByFilter(sortBy, order, deviceName, fieldId, categoryId, currentPage, perPage); //get result from database through deviceConfigService
+        PageResult<SysDeviceConfig> result = deviceConfigService.findConfigByFilter(sortBy, order, deviceName, fieldId, categoryId, mode, currentPage, perPage); //get result from database through deviceConfigService
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
@@ -347,7 +350,7 @@ public class DeviceConfigManagementController extends BaseController {
                 auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                         "", messageSource.getMessage("DeviceConfig", null, currentLocale),
                         messageSource.getMessage("Device.Error.NotField", null, currentLocale), "", null, false, "", "");
-                return new CommonResponseBody(ResponseMessage.DEVICE_ONLINE);
+                return new CommonResponseBody(ResponseMessage.DEVICE_NOT_FIELD);
             }
         }
 

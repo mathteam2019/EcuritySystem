@@ -12,11 +12,18 @@
 
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.enums.CustomType;
+import com.nuctech.ecuritycheckitem.enums.DefaultType;
+import com.nuctech.ecuritycheckitem.enums.GenderType;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 
+import com.nuctech.ecuritycheckitem.models.simplifieddb.QHistorySimplifiedForHistoryTaskManagement;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
@@ -123,10 +130,13 @@ public class DeviceServiceImpl implements DeviceService {
                 .workStatus(device.getWorkStatus())
                 .build();
         ObjectMapper objectMapper = new ObjectMapper();
+
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(newDevice);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newDevice);
         } catch(Exception ex) {
+            ex.printStackTrace();
         }
         return answer;
     }
@@ -252,9 +262,7 @@ public class DeviceServiceImpl implements DeviceService {
         Optional<SysDevice> optionalSysDevice = sysDeviceRepository.findOne(QSysDevice.
                 sysDevice.deviceId.eq(deviceId));
         SysDevice sysDevice = optionalSysDevice.get();
-        if(sysDevice.getStatus().equals(SysDevice.Status.INACTIVE)) {
-            return 0;
-        }
+
         if(serScanRepository.exists(QSerScan.serScan.scanDeviceId.eq(deviceId))) {
             return 1;
         }
@@ -265,10 +273,10 @@ public class DeviceServiceImpl implements DeviceService {
         if(serAssignRepository.exists(QSerAssign.serAssign.assignHandDeviceId.eq(deviceId))) {
             return 1;
         }
-        if(historyRepository.exists(QHistory.history.handDeviceId.eq(deviceId))) {
+        if(historyRepository.exists(QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement.handDeviceId.eq(deviceId))) {
             return 1;
         }
-        if(historyRepository.exists(QHistory.history.judgeDeviceId.eq(deviceId))) {
+        if(historyRepository.exists(QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement.judgeDeviceId.eq(deviceId))) {
             return 1;
         }
         return 2;
@@ -521,12 +529,36 @@ public class DeviceServiceImpl implements DeviceService {
             SysDeviceConfig deviceConfig = SysDeviceConfig.builder()
                     .deviceId(sysDevice.getDeviceId())
                     .status(SysDeviceConfig.Status.INACTIVE)
+                    .modeId(Constants.DEFAULT_MODE_ID)
+                    .manualSwitch(CustomType.FALSE.getValue())
+                    .atrSwitch(DefaultType.FALSE.getValue())
+                    .manDeviceGender(GenderType.MALE.getValue())
+                    .womanDeviceGender(GenderType.FEMALE.getValue())
+                    .status(SysDeviceConfig.Status.INACTIVE)
                     .build();
             deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysDeviceConfigRepository.save(deviceConfig);
 
             SerScanParam scanParam = SerScanParam.builder()
                     .deviceId(sysDevice.getDeviceId())
+                    .airCaliWarnTime(Constants.DEFAULT_AIR_CALIWARN_TIME)
+                    .standByTime(Constants.DEFAULT_STANDBY_TIME)
+                    .alarmSound(DefaultType.TRUE.getValue())
+                    .passSound(DefaultType.TRUE.getValue())
+                    .posErrorSound(DefaultType.TRUE.getValue())
+                    .standSound(DefaultType.FALSE.getValue())
+                    .scanSound(DefaultType.FALSE.getValue())
+                    .scanOverUseSound(DefaultType.FALSE.getValue())
+                    .autoRecognise(DefaultType.TRUE.getValue())
+                    .recognitionRate(Constants.DEFAULT_RECOGNIZE_RATE)
+                    .saveScanData(DefaultType.TRUE.getValue())
+                    .saveSuspectData(DefaultType.FALSE.getValue())
+                    .facialBlurring(DefaultType.TRUE.getValue())
+                    .chestBlurring(DefaultType.TRUE.getValue())
+                    .hipBlurring(DefaultType.TRUE.getValue())
+                    .groinBlurring(DefaultType.TRUE.getValue())
+                    .deviceStorageAlarm(Constants.DEFAULT_STORAGE_ALARM)
+                    .deviceStorageAlarmPercent(Constants.DEFAULT_STORAGE_PERCENT)
                     .status(SerScanParam.Status.INACTIVE)
                     .build();
             scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());

@@ -13,7 +13,9 @@
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.*;
@@ -110,7 +112,8 @@ public class UserServiceImpl implements UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(newUser);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newUser);
         } catch(Exception ex) {
         }
         return answer;
@@ -128,7 +131,8 @@ public class UserServiceImpl implements UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(newRole);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newRole);
         } catch(Exception ex) {
         }
         return answer;

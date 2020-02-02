@@ -13,7 +13,9 @@
 package com.nuctech.ecuritycheckitem.service.knowledgemanagement.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseDealRepository;
@@ -75,7 +77,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         ObjectMapper objectMapper = new ObjectMapper();
         String answer = "";
         try {
-            answer = objectMapper.writeValueAsString(newKnowledge);
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newKnowledge);
         } catch(Exception ex) {
         }
         return answer;

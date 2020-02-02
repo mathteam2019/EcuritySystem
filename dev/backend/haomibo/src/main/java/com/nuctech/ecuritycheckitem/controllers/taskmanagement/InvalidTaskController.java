@@ -14,6 +14,7 @@
 
 package com.nuctech.ecuritycheckitem.controllers.taskmanagement;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
@@ -23,9 +24,13 @@ import com.nuctech.ecuritycheckitem.export.taskmanagement.InvalidTaskPdfView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.InvalidTaskExcelView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.InvalidTaskWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
+import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
@@ -33,6 +38,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -59,6 +65,9 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/task/invalid-task")
 public class InvalidTaskController extends BaseController {
+
+    @Autowired
+    PlatformCheckService platformCheckService;
 
     /**
      * Invalid Task datatable request body.
@@ -265,6 +274,97 @@ public class InvalidTaskController extends BaseController {
         return exportList;
     }
 
+    private List<SerTaskSimplifiedForProcessTaskManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
+        List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
+        taskList = taskService.getInvalidTaskAll(
+                requestBody.getFilter().getTaskNumber(),//get task numer from request body
+                requestBody.getFilter().getMode(),//get mode id from request body
+                requestBody.getFilter().getStatus(), //get status from request body
+                requestBody.getFilter().getFieldId(),//get field id from request body
+                requestBody.getFilter().getUserName(),//get user name from request body
+                requestBody.getFilter().getStartTime(),//get start time from request body
+                requestBody.getFilter().getEndTime(), //get end time from request body
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
+
+        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        return exportList;
+    }
+
+    /**
+     * Task table original image file request.
+     */
+    @RequestMapping(value = "/generate/image", method = RequestMethod.POST)
+    public Object invalidTaskGetOriginalImageFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        List<SerPlatformCheckParams> paramsList = platformCheckService.findAll();
+        boolean isEnabledCartoon = false;
+        boolean isEnabledOriginal = false;
+        if(paramsList.size() > 0) {
+            String historyDataExport = paramsList.get(0).getHistoryDataExport();
+            String splitList[] = historyDataExport.split(",");
+            for(int i = 0; i < splitList.length; i ++) {
+                if(splitList[i].equals(SerPlatformCheckParams.HistoryData.CARTOON)) {
+                    isEnabledCartoon = true;
+                }
+                if(splitList[i].equals(SerPlatformCheckParams.HistoryData.ORIGINAL)) {
+                    isEnabledOriginal = true;
+                }
+            }
+        }
+        DownImage downImage = new DownImage();
+        downImage.setEnabledCartoon(isEnabledCartoon);
+        downImage.setEnabledOriginal(isEnabledOriginal);
+        if(isEnabledCartoon == true || isEnabledOriginal == true) {
+            Map<String, String> sortParams = new HashMap<String, String>();
+            if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+                sortParams = Utils.getSortParams(requestBody.getSort());
+                if (sortParams.isEmpty()) {
+                    return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+                }
+            }
+
+            //get all pending case deal list
+            List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+            List<String> cartoonImageList = new ArrayList<>();
+            List<String> originalImageList = new ArrayList<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            for(int i = 0; i < exportList.size(); i ++) {
+                String scanDeviceImages = exportList.get(i).getSerScan().getScanDeviceImages();
+                try {
+                    List<DeviceImageModel> deviceImageModel = objectMapper.readValue(scanDeviceImages, objectMapper.getTypeFactory().constructCollectionType(
+                            List.class, DeviceImageModel.class));
+                    for(int j = 0; j < deviceImageModel.size(); j ++) {
+                        if(isEnabledCartoon) {
+                            cartoonImageList.add(deviceImageModel.get(j).getCartoon());
+                        }
+                        if(isEnabledOriginal) {
+                            originalImageList.add(deviceImageModel.get(j).getImage());
+                        }
+                    }
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
+                if(isEnabledCartoon) {
+
+                }
+            }
+            downImage.setCartoonImageList(cartoonImageList);
+            downImage.setOriginalImageList(originalImageList);
+        }
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, downImage));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        value.setFilters(filters);
+        return value;
+    }
+
+
     /**
      * Task table generate excel file request.
      */
@@ -286,19 +386,7 @@ public class InvalidTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
-        taskList = taskService.getInvalidTaskAll(
-                requestBody.getFilter().getTaskNumber(),//get task numer from request body
-                requestBody.getFilter().getMode(),//get mode id from request body
-                requestBody.getFilter().getStatus(), //get status from request body
-                requestBody.getFilter().getFieldId(),//get field id from request body
-                requestBody.getFilter().getUserName(),//get user name from request body
-                requestBody.getFilter().getStartTime(),//get start time from request body
-                requestBody.getFilter().getEndTime(), //get end time from request body
-                sortParams.get("sortBy"), //field name
-                sortParams.get("order")); //asc or desc
-
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         setDictionary(); //set dictionary key and values
         InvalidTaskExcelView.setMessageSource(messageSource);
         InputStream inputStream = InvalidTaskExcelView.buildExcelDocument(exportList);
@@ -334,19 +422,7 @@ public class InvalidTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
-        taskList = taskService.getInvalidTaskAll(
-                requestBody.getFilter().getTaskNumber(),//get task numer from request body
-                requestBody.getFilter().getMode(),//get mode id from request body
-                requestBody.getFilter().getStatus(), //get status from request body
-                requestBody.getFilter().getFieldId(),//get field id from request body
-                requestBody.getFilter().getUserName(),//get user name from request body
-                requestBody.getFilter().getStartTime(),//get start time from request body
-                requestBody.getFilter().getEndTime(), //get end time from request body
-                sortParams.get("sortBy"), //field name
-                sortParams.get("order")); //asc or desc
-
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         setDictionary(); //set dictionary key and values
         InvalidTaskWordView.setMessageSource(messageSource);
         InputStream inputStream = InvalidTaskWordView.buildWordDocument(exportList);
@@ -383,19 +459,7 @@ public class InvalidTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
-        taskList = taskService.getInvalidTaskAll(
-                requestBody.getFilter().getTaskNumber(),//get task numer from request body
-                requestBody.getFilter().getMode(),//get mode id from request body
-                requestBody.getFilter().getStatus(), //get status from request body
-                requestBody.getFilter().getFieldId(),//get field id from request body
-                requestBody.getFilter().getUserName(),//get user name from request body
-                requestBody.getFilter().getStartTime(),//get start time from request body
-                requestBody.getFilter().getEndTime(), //get end time from request body
-                sortParams.get("sortBy"), //field name
-                sortParams.get("order")); //asc or desc
-
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         InvalidTaskPdfView.setResource(getFontResource()); //set header font
         setDictionary(); //set dicionary key and values
         InvalidTaskPdfView.setMessageSource(messageSource);

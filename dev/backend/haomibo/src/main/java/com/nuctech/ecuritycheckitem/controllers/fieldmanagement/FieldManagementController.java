@@ -442,7 +442,7 @@ public class FieldManagementController extends BaseController {
     @RequestMapping(value = "/field/get-all-field", method = RequestMethod.POST)
     public Object fieldGetAll() {
 
-        List<SysField> sysFieldList = fieldService.findAll(true); //get all list of SysField from database through fieldService
+        List<SysField> sysFieldList = fieldService.findAll(false); //get all list of SysField from database through fieldService
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         value.setFilters(filters);

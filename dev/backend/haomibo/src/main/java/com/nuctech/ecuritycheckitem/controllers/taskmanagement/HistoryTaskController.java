@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.controllers.taskmanagement;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
@@ -22,9 +23,14 @@ import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskExcelView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskPdfView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
+import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
+import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
@@ -32,6 +38,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -58,6 +65,8 @@ import java.util.ArrayList;
 @RequestMapping("/task/history-task")
 public class HistoryTaskController extends BaseController {
 
+    @Autowired
+    PlatformCheckService platformCheckService;
     /**
      * History Task datatable request body.
      */
@@ -225,6 +234,96 @@ public class HistoryTaskController extends BaseController {
         return value;
     }
 
+    private List<HistorySimplifiedForHistoryTaskManagement> getExportListFromnRequest(HistoryGenerateRequestBody requestBody, Map<String, String> sortParams) {
+        List<HistorySimplifiedForHistoryTaskManagement> taskList = new ArrayList<>();
+        taskList = historyService.getHistoryTaskAll(
+                requestBody.getFilter().getTaskNumber(), //get task number from input parameter
+                requestBody.getFilter().getMode(), //get mode id from input parameter
+                requestBody.getFilter().getStatus(), //get status from input parameter
+                requestBody.getFilter().getFieldId(), //get field id from input parameter
+                requestBody.getFilter().getUserName(), //get user name from input parameter
+                requestBody.getFilter().getStartTime(), //get start time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
+
+        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
+        return exportList;
+    }
+
+    /**
+     * Task table original image file request.
+     */
+    @RequestMapping(value = "/generate/image", method = RequestMethod.POST)
+    public Object historyTaskGetOriginalImageFile(@RequestBody @Valid HistoryGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        List<SerPlatformCheckParams> paramsList = platformCheckService.findAll();
+        boolean isEnabledCartoon = false;
+        boolean isEnabledOriginal = false;
+        if(paramsList.size() > 0) {
+            String historyDataExport = paramsList.get(0).getHistoryDataExport();
+            String splitList[] = historyDataExport.split(",");
+            for(int i = 0; i < splitList.length; i ++) {
+                if(splitList[i].equals(SerPlatformCheckParams.HistoryData.CARTOON)) {
+                    isEnabledCartoon = true;
+                }
+                if(splitList[i].equals(SerPlatformCheckParams.HistoryData.ORIGINAL)) {
+                    isEnabledOriginal = true;
+                }
+            }
+        }
+        DownImage downImage = new DownImage();
+        downImage.setEnabledCartoon(isEnabledCartoon);
+        downImage.setEnabledOriginal(isEnabledOriginal);
+        if(isEnabledCartoon == true || isEnabledOriginal == true) {
+            Map<String, String> sortParams = new HashMap<String, String>();
+            if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+                sortParams = Utils.getSortParams(requestBody.getSort());
+                if (sortParams.isEmpty()) {
+                    return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+                }
+            }
+
+            //get all pending case deal list
+            List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
+            List<String> cartoonImageList = new ArrayList<>();
+            List<String> originalImageList = new ArrayList<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            for(int i = 0; i < exportList.size(); i ++) {
+                String scanDeviceImages = exportList.get(i).getSerScan().getScanDeviceImages();
+                try {
+                    List<DeviceImageModel> deviceImageModel = objectMapper.readValue(scanDeviceImages, objectMapper.getTypeFactory().constructCollectionType(
+                            List.class, DeviceImageModel.class));
+                    for(int j = 0; j < deviceImageModel.size(); j ++) {
+                        if(isEnabledCartoon) {
+                            cartoonImageList.add(deviceImageModel.get(j).getCartoon());
+                        }
+                        if(isEnabledOriginal) {
+                            originalImageList.add(deviceImageModel.get(j).getImage());
+                        }
+                    }
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
+                if(isEnabledCartoon) {
+
+                }
+            }
+            downImage.setCartoonImageList(cartoonImageList);
+            downImage.setOriginalImageList(originalImageList);
+        }
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, downImage));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        value.setFilters(filters);
+        return value;
+    }
+
     /**
      * Task table generate excel file request.
      */
@@ -246,19 +345,7 @@ public class HistoryTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<HistorySimplifiedForHistoryTaskManagement> taskList = new ArrayList<>();
-        taskList = historyService.getHistoryTaskAll(
-                requestBody.getFilter().getTaskNumber(), //get task number from input parameter
-                requestBody.getFilter().getMode(), //get mode id from input parameter
-                requestBody.getFilter().getStatus(), //get status from input parameter
-                requestBody.getFilter().getFieldId(), //get field id from input parameter
-                requestBody.getFilter().getUserName(), //get user name from input parameter
-                requestBody.getFilter().getStartTime(), //get start time from input parameter
-                requestBody.getFilter().getEndTime(), //get end time from input parameter
-                sortParams.get("sortBy"), //field name
-                sortParams.get("order")); //asc or desc
-
-        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
+        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
         setDictionary(); //set dictionary data key and values
         HistoryTaskExcelView.setMessageSource(messageSource);
         InputStream inputStream = HistoryTaskExcelView.buildExcelDocument(exportList); //get inputstream to be exported
@@ -273,6 +360,8 @@ public class HistoryTaskController extends BaseController {
                 .contentType(MediaType.valueOf("application/x-msexcel"))
                 .body(new InputStreamResource(inputStream));
     }
+
+
 
     /**
      * Task table generate excel file request.
@@ -295,19 +384,7 @@ public class HistoryTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<HistorySimplifiedForHistoryTaskManagement> taskList = new ArrayList<>();
-        taskList = historyService.getHistoryTaskAll(
-                requestBody.getFilter().getTaskNumber(), //get task number from input parameter
-                requestBody.getFilter().getMode(), //get mode id from input parameter
-                requestBody.getFilter().getStatus(), //get status from input parameter
-                requestBody.getFilter().getFieldId(), //get field id from input parameter
-                requestBody.getFilter().getUserName(), //get user name from input parameter
-                requestBody.getFilter().getStartTime(), //get start time from input parameter
-                requestBody.getFilter().getEndTime(), //get end time from input parameter
-                sortParams.get("sortBy"), //field name
-                sortParams.get("order")); //asc or desc
-
-        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
+        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
         setDictionary(); //set dictionary data key and values
         HistoryTaskWordView.setMessageSource(messageSource);
         InputStream inputStream = HistoryTaskWordView.buildWordDocument(exportList); //get inputstream to be exported
@@ -341,19 +418,7 @@ public class HistoryTaskController extends BaseController {
             }
         }
 
-        List<HistorySimplifiedForHistoryTaskManagement> taskList = new ArrayList<>();
-        taskList = historyService.getHistoryTaskAll(
-                requestBody.getFilter().getTaskNumber(),//get task number from input parameter
-                requestBody.getFilter().getMode(),//get mode id from input parameter
-                requestBody.getFilter().getStatus(), //get status from input parameter
-                requestBody.getFilter().getFieldId(),//get field id from input parameter
-                requestBody.getFilter().getUserName(),//get user name from input parameter
-                requestBody.getFilter().getStartTime(),//get start time from input parameter
-                requestBody.getFilter().getEndTime(), //get end time from input parameter
-                sortParams.get("sortBy"), //field name
-                sortParams.get("order")); //asc or desc
-
-        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be printed with isAll and idList
+        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
         setDictionary(); //set dictionary data key and values
         HistoryTaskPdfView.setMessageSource(messageSource);
         HistoryTaskPdfView.setResource(getFontResource()); //set header font
