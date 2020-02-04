@@ -25,12 +25,14 @@ import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SerArchiveValue;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerArchiveRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerArchiveTemplateRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerArchiveValueRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.ArchiveService;
 
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
@@ -80,6 +82,9 @@ public class ArchiveServiceImpl implements ArchiveService {
     AuditLogService auditLogService;
 
     @Autowired
+    AuthService authService;
+
+    @Autowired
     public MessageSource messageSource;
 
     public static Locale currentLocale = Locale.ENGLISH;
@@ -105,6 +110,11 @@ public class ArchiveServiceImpl implements ArchiveService {
         }
         if (categoryId != null) {
             predicate.and(builder.archiveTemplate.deviceCategory.categoryId.eq(categoryId));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
         return predicate;
     }

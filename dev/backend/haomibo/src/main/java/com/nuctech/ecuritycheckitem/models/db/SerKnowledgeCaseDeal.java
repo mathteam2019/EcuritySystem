@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerScanSimplifiedForTaskManagement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -218,6 +219,11 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDeviceSimple judgeDevice;
+
+    @OneToOne()
+    @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SerScanSimplifiedForTaskManagement serScan;
 
 
 

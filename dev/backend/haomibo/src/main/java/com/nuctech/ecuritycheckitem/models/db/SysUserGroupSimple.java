@@ -38,6 +38,9 @@ public class SysUserGroupSimple extends BaseEntity implements Serializable {
     @Column(name = "USERGROUP_ID", length = 20, nullable = false)
     private Long userGroupId;
 
+    @Column(name = "DATA_RANGE_CATEGORY", length = 10)
+    private String dataRangeCategory;
+
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "sys_user_group_role",

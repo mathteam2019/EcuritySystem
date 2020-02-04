@@ -14,10 +14,12 @@ package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysAuditLogDetailRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysAuditLogRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -48,6 +50,9 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     @Autowired
     AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     private Utils utils;
@@ -85,6 +90,11 @@ public class AuditLogServiceImpl implements AuditLogService {
         }
         if(operateEndTime != null){
             predicate.and(builder.operateTime.before(operateEndTime));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
         return predicate;
     }

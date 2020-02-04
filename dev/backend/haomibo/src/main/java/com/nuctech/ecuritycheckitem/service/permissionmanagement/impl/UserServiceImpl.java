@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
@@ -318,6 +319,7 @@ public class UserServiceImpl implements UserService {
         user.setCreatedBy(oldSysUser.getCreatedBy());
         user.setCreatedTime(oldSysUser.getCreatedTime());
         user.setStatus(oldSysUser.getStatus());
+        user.setDataRangeCategory(oldSysUser.getDataRangeCategory());
 
         // Process user portrait file.
         String fileName = utils.saveImageFile(portraitFile);
@@ -368,6 +370,12 @@ public class UserServiceImpl implements UserService {
 
                 predicate.and(builder.orgId.in(parentOrgIdList));
             });
+        }
+
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
         return predicate;
@@ -592,6 +600,12 @@ public class UserServiceImpl implements UserService {
 
         if (!StringUtils.isEmpty(groupName)) {
             predicate.and(builder.groupName.contains(groupName));
+        }
+
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
         return predicate;

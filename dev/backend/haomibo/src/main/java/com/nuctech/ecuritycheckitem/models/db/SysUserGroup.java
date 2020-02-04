@@ -50,10 +50,10 @@ public class SysUserGroup extends BaseEntity implements Serializable {
     @AllArgsConstructor
     @Getter
     public enum DataRangeCategory {
-        PERSON("person"),
-        GROUP("group"),
-        ALL("all"),
-        SPECIFIED("specified");
+        PERSON("1000000501"),
+        GROUP("1000000506"),
+        ALL("1000000504"),
+        SPECIFIED("1000000505");
 
         String value;
     }

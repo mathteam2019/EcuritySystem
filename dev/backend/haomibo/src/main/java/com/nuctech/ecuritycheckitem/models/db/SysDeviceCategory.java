@@ -73,7 +73,7 @@ public class SysDeviceCategory extends BaseEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_CATEGORY_ID", referencedColumnName = "CATEGORY_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    @MapsId("parent")
+    @MapsId("parentCategory")
     private SysDeviceCategory parent;
 
 }

@@ -134,6 +134,7 @@ public class UserManagementController extends BaseController {
                     .category(SysUser.Category.NORMAL)
                     .status(SysUser.Status.INACTIVE)
                     .note(this.getNote())
+                    .dataRangeCategory(SysUser.DataRangeCategory.PERSON.getValue())
                     .build();
         }
     }
@@ -892,6 +893,7 @@ public class UserManagementController extends BaseController {
                 .builder()
                 .groupName(requestBody.getGroupName())
                 .groupNumber(requestBody.getGroupNumber())
+                .dataRangeCategory(SysUserGroup.DataRangeCategory.PERSON.getValue())
                 .note(requestBody.getNote())
                 .build()
                 .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());

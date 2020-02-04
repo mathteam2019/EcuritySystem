@@ -12,9 +12,12 @@
 
 package com.nuctech.ecuritycheckitem.controllers.knowledgemanagement;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
+import com.nuctech.ecuritycheckitem.controllers.taskmanagement.HistoryTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPendingPdfView;
 import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPendingExcelView;
@@ -25,11 +28,15 @@ import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPers
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
+import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
@@ -56,10 +63,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/knowledge-base")
@@ -73,6 +77,9 @@ public class KnowledgeDealManagementController extends BaseController {
 
     @Autowired
     public MessageSource messageSource;
+
+    @Autowired
+    PlatformCheckService platformCheckService;
 
 
 
@@ -109,6 +116,8 @@ public class KnowledgeDealManagementController extends BaseController {
         String sort;
         Filter filter;
     }
+
+
 
     /**
      * Knowledge Case Deal update status request body.
@@ -447,6 +456,87 @@ public class KnowledgeDealManagementController extends BaseController {
                 fieldDesignation, handGoods, isAll, idList); //get export list from service
         return exportList;
     }
+
+    private MappingJacksonValue getImageDownload( KnowledgeCaseGenerateRequestBody requestBody) {
+        List<SerPlatformCheckParams> paramsList = platformCheckService.findAll();
+        boolean isEnabledCartoon = false;
+        boolean isEnabledOriginal = false;
+        if(paramsList.size() > 0) {
+            String historyDataExport = paramsList.get(0).getHistoryDataExport();
+            String splitList[] = historyDataExport.split(",");
+            for(int i = 0; i < splitList.length; i ++) {
+                if(splitList[i].equals(SerPlatformCheckParams.HistoryData.CARTOON)) {
+                    isEnabledCartoon = true;
+                }
+                if(splitList[i].equals(SerPlatformCheckParams.HistoryData.ORIGINAL)) {
+                    isEnabledOriginal = true;
+                }
+            }
+        }
+        DownImage downImage = new DownImage();
+        downImage.setEnabledCartoon(isEnabledCartoon);
+        downImage.setEnabledOriginal(isEnabledOriginal);
+        if(isEnabledCartoon == true || isEnabledOriginal == true) {
+            Map<String, String> sortParams = new HashMap<String, String>();
+            String sortBy = "";
+            String order = "";
+            KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+            if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+                sortParams = Utils.getSortParams(requestBody.getSort());
+                if (!sortParams.isEmpty()) {
+                    sortBy = sortParams.get("sortBy");
+                    order = sortParams.get("order");
+                }
+            }
+            List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
+            List<String> cartoonImageList = new ArrayList<>();
+            List<String> originalImageList = new ArrayList<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            for(int i = 0; i < exportList.size(); i ++) {
+                String scanDeviceImages = exportList.get(i).getSerScan().getScanDeviceImages();
+                try {
+                    List<DeviceImageModel> deviceImageModel = objectMapper.readValue(scanDeviceImages, objectMapper.getTypeFactory().constructCollectionType(
+                            List.class, DeviceImageModel.class));
+                    for(int j = 0; j < deviceImageModel.size(); j ++) {
+                        if(isEnabledCartoon) {
+                            cartoonImageList.add(deviceImageModel.get(j).getCartoon());
+                        }
+                        if(isEnabledOriginal) {
+                            originalImageList.add(deviceImageModel.get(j).getImage());
+                        }
+                    }
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
+                if(isEnabledCartoon) {
+
+                }
+            }
+            downImage.setCartoonImageList(cartoonImageList);
+            downImage.setOriginalImageList(originalImageList);
+        }
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, downImage));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        value.setFilters(filters);
+        return value;
+    }
+
+    /**
+     * Task table original image file request.
+     */
+    @RequestMapping(value = "/generate/image", method = RequestMethod.POST)
+    public Object knowledgeCasePersonalGetOriginalImageFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //return invalid parameter if input parameter validation failed
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        return getImageDownload(requestBody);
+
+    }
+
 
     /**
      * Knowledge Case pending generate excel file request.

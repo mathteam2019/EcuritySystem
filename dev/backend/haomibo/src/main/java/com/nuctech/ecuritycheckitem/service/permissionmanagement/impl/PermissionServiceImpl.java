@@ -21,6 +21,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SysRoleRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysResourceRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysRoleResourceRepository;
@@ -34,6 +35,7 @@ import com.nuctech.ecuritycheckitem.repositories.SysUserLookupRepository;
 
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.PermissionService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -90,6 +92,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Autowired
     AuditLogService auditLogService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     public MessageSource messageSource;
@@ -214,6 +219,11 @@ public class PermissionServiceImpl implements PermissionService {
 
         if (!StringUtils.isEmpty(roleName)) {
             predicate.and(builder.roleName.contains(roleName));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
         return predicate;
@@ -545,6 +555,11 @@ public class PermissionServiceImpl implements PermissionService {
 
         if (!StringUtils.isEmpty(dataGroupName)) {
             predicate.and(builder.dataGroupName.contains(dataGroupName));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
         return predicate;

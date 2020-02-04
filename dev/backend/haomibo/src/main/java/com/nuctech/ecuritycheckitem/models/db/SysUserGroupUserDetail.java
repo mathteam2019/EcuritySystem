@@ -44,11 +44,10 @@ public class SysUserGroupUserDetail extends BaseEntity implements Serializable {
     private Long userGroupId;
 
     @ToString.Exclude
-    @OneToMany()
+    @ManyToOne()
     @JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    @MapsId("user_group")
-    private List<SysUserGroupSimple> userGroupList;
+    private SysUserGroupSimple userGroupSimple;
 //
 //    @ToString.Exclude
 //    @ManyToMany()

@@ -30,8 +30,14 @@ public class Constants {
     public static final int JUDGE_CATEGORY_ID = 2;
     public static final int MANUAL_CATEGORY_ID = 4;
     public static final int SECURITY_CATEGORY_ID = 3;
-    public static final int DEVICE_ONLINE = 1;
+    public static final int DEVICE_ONLINE = 0;
     public static final String LOGIN_STATUS = "1000001001";
+    public static final long DEFAULT_MODE_ID = 1L;
+    public static final long DEFAULT_AIR_CALIWARN_TIME = 120L;
+    public static final long DEFAULT_STANDBY_TIME = 0L;
+    public static final long DEFAULT_RECOGNIZE_RATE = 0L;
+    public static final int DEFAULT_STORAGE_ALARM = 400;
+    public static final int DEFAULT_STORAGE_PERCENT = 80;
 
     public static final String[] EXCLUDE_URL_PATTERNS = {
             "/",

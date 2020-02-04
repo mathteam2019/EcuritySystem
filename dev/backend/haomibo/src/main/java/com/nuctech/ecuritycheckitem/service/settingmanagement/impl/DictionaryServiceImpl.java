@@ -16,10 +16,12 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerSeizedGoodRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDictionaryDataRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDictionaryRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.DictionaryService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.SerSeizedGoodService;
@@ -53,6 +55,9 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Autowired
     AuditLogService auditLogService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     public MessageSource messageSource;
@@ -289,6 +294,11 @@ public class DictionaryServiceImpl implements DictionaryService {
         if (!StringUtils.isEmpty(dictionaryName)) {
             predicate.and(builder.dictionaryName.contains(dictionaryName));
         }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+        }
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if (order.equals(Constants.SortOrder.ASC)) {
@@ -298,6 +308,7 @@ public class DictionaryServiceImpl implements DictionaryService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         }
+
         long total = sysDictionaryRepository.count(predicate);
         List<SysDictionary> data = sysDictionaryRepository.findAll(predicate, pageRequest).getContent();
         return new PageResult<>(total, data);
@@ -328,6 +339,11 @@ public class DictionaryServiceImpl implements DictionaryService {
         }
 
         predicate.and(builder.dictionaryId.eq(dictionaryId));
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+        }
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if (order.equals(Constants.SortOrder.ASC)) {

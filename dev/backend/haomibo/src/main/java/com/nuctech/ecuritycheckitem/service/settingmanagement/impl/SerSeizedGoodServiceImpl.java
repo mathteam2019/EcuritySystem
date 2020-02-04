@@ -16,8 +16,10 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerSeizedGoodRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.SerSeizedGoodService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -43,6 +45,9 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
 
     @Autowired
     AuditLogService auditLogService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     public MessageSource messageSource;
@@ -163,6 +168,11 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
         long total = serSeizedGoodRepository.count(predicate);
         List<SerSeizedGood> data = serSeizedGoodRepository.findAll(predicate, pageRequest).getContent();

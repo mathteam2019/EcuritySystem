@@ -16,6 +16,7 @@ import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
 import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
 import com.nuctech.ecuritycheckitem.models.db.SysResource;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 
 import java.util.List;
 
@@ -61,4 +62,7 @@ public interface AuthService {
      * @return
      */
     List<SysResource> getAvailableSysResourceList(SysUser sysUser);
+
+
+    CategoryUser getDataCategoryUserList();
 }

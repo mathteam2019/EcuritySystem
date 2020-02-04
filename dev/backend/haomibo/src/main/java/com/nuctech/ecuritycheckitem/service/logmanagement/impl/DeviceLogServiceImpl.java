@@ -16,8 +16,10 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerDevLogRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.DeviceLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
@@ -37,6 +39,9 @@ import java.util.stream.StreamSupport;
 public class DeviceLogServiceImpl implements DeviceLogService {
     @Autowired
     SerDevLogRepository serDevLogRepository;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     SerPlatformOtherParamRepository platformOtherParamRepository;
@@ -84,6 +89,11 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         }
         if(operateEndTime != null){
             predicate.and(builder.time.before(operateEndTime));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
         return predicate;
     }

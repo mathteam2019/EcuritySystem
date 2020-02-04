@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysRoleRepository;
@@ -26,6 +27,7 @@ import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDataGroupRepository;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.OrganizationService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -72,6 +74,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Autowired
     public MessageSource messageSource;
+
+    @Autowired
+    AuthService authService;
 
     public static Locale currentLocale = Locale.ENGLISH;
 
@@ -325,6 +330,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         BooleanBuilder predicate = getPredicate(orgName, status, parentOrgName);
 
+
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if (order.equals(Constants.SortOrder.ASC)) {
@@ -379,6 +385,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     private BooleanBuilder getPredicate(String orgName, String status, String parentOrgName) {
         QSysOrg builder = QSysOrg.sysOrg;
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
@@ -391,6 +398,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
         if (!StringUtils.isEmpty(parentOrgName)) {
             predicate.and(builder.parent.orgName.contains(parentOrgName));
+        }
+
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
         return predicate;

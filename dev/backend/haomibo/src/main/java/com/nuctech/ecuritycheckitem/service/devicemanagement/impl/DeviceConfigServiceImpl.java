@@ -18,9 +18,11 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceConfigService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -75,6 +77,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Autowired
     AuditLogService auditLogService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     public MessageSource messageSource;
@@ -190,6 +195,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             if (order.equals(Constants.SortOrder.DESC)) {
                 sort = new Sort(Sort.Direction.DESC, sortBy);
             }
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
         /*

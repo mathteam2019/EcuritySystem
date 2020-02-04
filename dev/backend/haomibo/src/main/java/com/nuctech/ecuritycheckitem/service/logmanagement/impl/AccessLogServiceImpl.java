@@ -17,9 +17,11 @@ import com.nuctech.ecuritycheckitem.models.db.QSysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysAccessLogRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -48,6 +50,9 @@ public class AccessLogServiceImpl implements AccessLogService {
 
     @Autowired
     AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     private Utils utils;
@@ -79,6 +84,11 @@ public class AccessLogServiceImpl implements AccessLogService {
         }
         if(operateEndTime != null){
             predicate.and(builder.operateTime.before(operateEndTime));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
 

@@ -23,10 +23,12 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.QHistorySimplifiedForHistoryTaskManagement;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -97,6 +99,9 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
     AuditLogService auditLogService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     public MessageSource messageSource;
@@ -355,6 +360,11 @@ public class DeviceServiceImpl implements DeviceService {
         if(fieldId != null) {
             predicate.and(builder.fieldId.eq(fieldId));
         }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+        }
         /*
         * Todo
         *  Strange Category is null
@@ -531,7 +541,6 @@ public class DeviceServiceImpl implements DeviceService {
                     .status(SysDeviceConfig.Status.INACTIVE)
                     .modeId(Constants.DEFAULT_MODE_ID)
                     .manualSwitch(CustomType.FALSE.getValue())
-                    .atrSwitch(DefaultType.FALSE.getValue())
                     .manDeviceGender(GenderType.MALE.getValue())
                     .womanDeviceGender(GenderType.FEMALE.getValue())
                     .status(SysDeviceConfig.Status.INACTIVE)
@@ -713,6 +722,11 @@ public class DeviceServiceImpl implements DeviceService {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
         predicate.and(builder.fieldId.isNull());
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+        }
 
         List<SysDevice> preSysDeviceList = StreamSupport
                 .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
@@ -758,6 +772,12 @@ public class DeviceServiceImpl implements DeviceService {
 
         if(fieldId!= null) {
             predicate.and(builder.fieldId.eq(fieldId));
+        }
+
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
 

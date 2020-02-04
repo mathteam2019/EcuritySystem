@@ -31,6 +31,7 @@ import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysOrg;
 import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDataGroupRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysRoleUserRepository;
@@ -42,6 +43,7 @@ import com.nuctech.ecuritycheckitem.repositories.SysRoleRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.AssignPermissionService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
@@ -87,6 +89,9 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     @Autowired
     SysOrgRepository sysOrgRepository;
+
+    @Autowired
+    AuthService authService;
 
     /**
      * Check user role assigned
@@ -147,6 +152,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
         // Set and save data range category for user.
         sysUser.setDataRangeCategory(dataRangeCategory);
+        sysUser.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(sysUser);
 
@@ -229,6 +235,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
         // Set and save data range category for user.
         sysUserGroup.setDataRangeCategory(dataRangeCategory);
+        sysUserGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserGroupRepository.save(sysUserGroup);
 
@@ -379,6 +386,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
 
+
         if (!StringUtils.isEmpty(userName)) {
             predicate.and(builder.userName.contains(userName));
         }
@@ -403,6 +411,11 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
                 predicate.and(builder.orgId.in(parentOrgIdList));
 
             });
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
         return predicate;
@@ -436,6 +449,11 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
         if (!StringUtils.isEmpty(dataRangeCategory)) {
             predicate.and(builder.dataRangeCategory.eq(dataRangeCategory));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
         return predicate;

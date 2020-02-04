@@ -18,9 +18,11 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerScanParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerScanParamsFromRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.ScanParamService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -54,6 +56,9 @@ public class ScanParamServiceImpl implements ScanParamService {
 
     @Autowired
     AuditLogService auditLogService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     public MessageSource messageSource;
@@ -112,6 +117,11 @@ public class ScanParamServiceImpl implements ScanParamService {
         predicate.and(builder.device.status.eq(SysDevice.Status.ACTIVE));
         if (!StringUtils.isEmpty(status)) {
             predicate.and(builder.status.eq(status));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
         return predicate;

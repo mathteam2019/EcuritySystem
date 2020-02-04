@@ -118,6 +118,7 @@ public class SysOrg extends BaseEntity implements Serializable {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "parent")
+    @NotFound(action = NotFoundAction.IGNORE)
     private Set<SysOrg> children;
 
 

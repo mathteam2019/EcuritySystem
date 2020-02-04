@@ -18,10 +18,12 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysFieldRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.fieldmanagement.FieldService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -56,6 +58,9 @@ public class FieldServiceImpl implements FieldService {
 
     @Autowired
     AuditLogService auditLogService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     public MessageSource messageSource;
@@ -280,6 +285,11 @@ public class FieldServiceImpl implements FieldService {
         }
         if (!StringUtils.isEmpty(parentDesignation)) {
             predicate.and(builder.parent.fieldDesignation.contains(parentDesignation));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
         return predicate;
     }

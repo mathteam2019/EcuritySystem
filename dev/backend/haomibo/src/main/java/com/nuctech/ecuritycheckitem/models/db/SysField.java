@@ -81,7 +81,7 @@ public class SysField extends BaseEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_FIELD_ID", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    @MapsId("parent")
+    @MapsId("parentField")
     private SysField parent;
 
     @javax.persistence.Transient

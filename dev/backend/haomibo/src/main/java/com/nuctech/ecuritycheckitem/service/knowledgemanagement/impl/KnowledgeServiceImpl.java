@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseDealRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerTaskTagRepository;
@@ -117,6 +118,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         if (!StringUtils.isEmpty(handGoods)) {
             predicate.and(builder.handGoods.contains(handGoods));
         }
+
 
         return predicate;
     }

@@ -18,10 +18,12 @@ import com.nuctech.ecuritycheckitem.models.db.QSerDeviceStatus;
 import com.nuctech.ecuritycheckitem.models.db.SerScanParamSimple;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerDeviceStatusRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerScanParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerScanRepository;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceStatusService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
@@ -50,6 +52,9 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
 
     @Autowired
     SerScanParamRepository serScanParamRepository;
+
+    @Autowired
+    AuthService authService;
 
     /**
      * get record list
@@ -121,6 +126,7 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         if (!StringUtils.isEmpty(deviceName)) {
             predicate.and(builder.device.deviceName.contains(deviceName));
         }
+
 
         int startIndex = perPage * currentPage;
         int endIndex = perPage * (currentPage + 1);
