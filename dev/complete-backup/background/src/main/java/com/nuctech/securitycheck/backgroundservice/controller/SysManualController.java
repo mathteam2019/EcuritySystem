@@ -72,11 +72,12 @@ public class SysManualController {
      *
      * @param guid 设备guid
      */
+    @Async
     @ApiOperation("4.3.3.10 后台服务向手检站下发配置信息")
     @PostMapping("send-dev-config")
     public void sendDeviceConfig(@ApiParam("设备guid") @RequestParam("guid") String guid) {
-        String exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.dev");
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.dev.userlist");
+        String exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.man");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.man.config");
 
         try {
             SysDevice sysDevice = SysDevice.builder().guid(guid).build();
@@ -161,6 +162,7 @@ public class SysManualController {
      * @param guid       设备guid
      *
      */
+    @Async
     @ApiOperation("4.3.3.11 后台服务向手检站下发字典")
     @PostMapping("send-dict-data")
     public void sendDictData(@ApiParam("设备guid") @RequestParam String guid) {
@@ -179,13 +181,13 @@ public class SysManualController {
         log.debug("4.3.3.12 后台服务向手检站推送业务数据-------------start-----------timeLine------"
                 + System.currentTimeMillis() + "param:taskNumber=" + serManImageInfoModel.getImageData().getImageGuid());
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.man.image"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.man.image"));
         SendMessageModel sendMessageModel = SendMessageModel.builder()
                 .guid(serManImageInfoModel.getGuid())
                 .imageGuid(serManImageInfoModel.getImageResult().getImageGuid())
                 .result(CommonConstant.RESULT_SUCCESS.getValue())
                 .build();
-        resultMessageVO.setContent(sendMessageModel);
+        resultMessageVO.setContent(serManImageInfoModel);
         messageSender.sendJudgeInfoToHandDevice(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, serManImageInfoModel.getGuid(), serManImageInfoModel.getImageData().getImageGuid(),
                 CommonConstant.RESULT_SUCCESS.getValue().toString());

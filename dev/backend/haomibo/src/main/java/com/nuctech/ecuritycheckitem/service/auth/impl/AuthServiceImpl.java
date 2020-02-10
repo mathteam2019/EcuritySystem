@@ -16,6 +16,8 @@ package com.nuctech.ecuritycheckitem.service.auth.impl;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.QSysUserSimplifiedOnlyHasName;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
@@ -37,6 +39,9 @@ import java.util.stream.StreamSupport;
 public class AuthServiceImpl implements AuthService {
     @Autowired
     SysUserRepository sysUserRepository;
+
+    @Autowired
+    SysUserSimpleRepository sysUserSimpleRepository;
 
     @Autowired
     SysDeviceDictionaryDataRepository sysDeviceDictionaryDataRepository;
@@ -64,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     SysDataGroupRepository sysDataGroupRepository;
+
 
     /**
      * Find user by his user account
@@ -242,18 +248,32 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public CategoryUser getDataCategoryUserList() {
+        Date startTime = new Date();
         SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-        sysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(sysUser.getUserId())).get();
+        SysUserSimplifiedOnlyHasName sysUserSimple = sysUserSimpleRepository.findOne(QSysUserSimplifiedOnlyHasName.sysUserSimplifiedOnlyHasName.userId.eq(sysUser.getUserId())).get();
+        Date endTime = new Date();
+        long userTime = endTime.getTime() - startTime.getTime();
         QSysUserGroupUserDetail builder = QSysUserGroupUserDetail.sysUserGroupUserDetail;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        predicate.and(builder.userId.eq(sysUser.getUserId()));
+        predicate.and(builder.userId.eq(sysUserSimple.getUserId()));
+        CategoryUser categoryUser = new CategoryUser();
+
+
+        String levelUser = sysUserSimple.getDataRangeCategory();
+        if(levelUser.equals(SysUser.DataRangeCategory.ALL.getValue())) {
+            categoryUser.setAll(true);
+            return categoryUser;
+        }
+
+
 
         List<SysUserGroupUserDetail> allGroupUser = StreamSupport
                 .stream(sysUserGroupUserDetailRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
-        String levelUser = sysUser.getDataRangeCategory();
+        endTime = new Date();
+        long userGroupTime = endTime.getTime() - startTime.getTime();
         List<Long> relateUserList = new ArrayList<>();
         List<Long> relateDataGroupIdList = new ArrayList<>();
         if(levelUser.equals(SysUser.DataRangeCategory.SPECIFIED.getValue())) {
@@ -265,6 +285,8 @@ public class AuthServiceImpl implements AuthService {
                 relateDataGroupIdList.add(lookupList.get(i).getDataGroupId());
             }
         }
+        endTime = new Date();
+        long relateTime = endTime.getTime() - startTime.getTime();
 
         String levelGroup = "";
         List<Long> groupIdForDataList = new ArrayList<>();
@@ -286,12 +308,14 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-
-        CategoryUser categoryUser = new CategoryUser();
-        if(levelUser.equals(SysUser.DataRangeCategory.ALL.getValue()) || levelGroup.equals(SysUserGroup.DataRangeCategory.ALL.getValue())) {
+        endTime = new Date();
+        long groupTime = endTime.getTime() - startTime.getTime();
+        if(levelGroup.equals(SysUserGroup.DataRangeCategory.ALL.getValue())) {
             categoryUser.setAll(true);
             return categoryUser;
         }
+
+
         categoryUser.setAll(false);
 
         if(groupIdList.size() > 0) {
@@ -302,6 +326,8 @@ public class AuthServiceImpl implements AuthService {
                 relateUserList.add(userGroupUserList.get(i).getUserId());
             }
         }
+        endTime = new Date();
+        long groupDataTime = endTime.getTime() - startTime.getTime();
 
         if(groupIdForDataList.size() > 0) {
             List<SysUserGroupLookup> userGroupLookupList = StreamSupport
@@ -311,6 +337,8 @@ public class AuthServiceImpl implements AuthService {
                 relateDataGroupIdList.add(userGroupLookupList.get(i).getDataGroupId());
             }
         }
+        endTime = new Date();
+        long dataGroupTime = endTime.getTime() - startTime.getTime();
         if(relateDataGroupIdList.size() > 0) {
             List<SysDataGroup> dataGroupList = StreamSupport
                     .stream(sysDataGroupRepository.findAll(QSysDataGroup.sysDataGroup.dataGroupId.in(relateDataGroupIdList)).spliterator(), false)
@@ -322,6 +350,8 @@ public class AuthServiceImpl implements AuthService {
                 }
             }
         }
+        endTime = new Date();
+        long dataGroupUserTime = endTime.getTime() - startTime.getTime();
         List<Long> relateOrgIdList = new ArrayList<>();
         if(levelUser.equals(SysUser.DataRangeCategory.ORG.getValue())) {
             relateOrgIdList.add(sysUser.getOrg().getOrgId());
@@ -339,15 +369,21 @@ public class AuthServiceImpl implements AuthService {
         } else {
             relateUserList.add(sysUser.getUserId());
         }
+        endTime = new Date();
+        long orgTime = endTime.getTime() - startTime.getTime();
 
         if(relateOrgIdList.size() > 0) {
-            List<SysUser> userList = StreamSupport
-                    .stream(sysUserRepository.findAll(QSysUser.sysUser.orgId.in(relateOrgIdList)).spliterator(), false)
+            List<SysUserSimplifiedOnlyHasName> userList = StreamSupport
+                    .stream(sysUserSimpleRepository.findAll(QSysUserSimplifiedOnlyHasName.sysUserSimplifiedOnlyHasName.orgId.in(relateOrgIdList)).spliterator(), false)
                     .collect(Collectors.toList());
-            for(SysUser relateUser: userList) {
+            endTime = new Date();
+            long orgUserListTime = endTime.getTime() - startTime.getTime();
+            for(SysUserSimplifiedOnlyHasName relateUser: userList) {
                 relateUserList.add(relateUser.getUserId());
             }
         }
+        endTime = new Date();
+        long orgUserTime = endTime.getTime() - startTime.getTime();
         List<Long> answerUserIdList = new ArrayList<>();
         for(Long relateUserId: relateUserList) {
             boolean isExist = false;

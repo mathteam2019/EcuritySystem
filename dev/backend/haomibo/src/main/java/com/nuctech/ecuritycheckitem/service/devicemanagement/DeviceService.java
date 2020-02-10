@@ -88,12 +88,12 @@ public interface DeviceService {
      * @param status
      * @param fieldId
      * @param categoryId
-     * @param startIndex
-     * @param endIndex
+     * @param perPage
+     * @param currentPage
      * @return
      */
     PageResult<SysDevice> getFilterDeviceList(String sortBy, String order, String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
-                                              int startIndex, int endIndex);
+                                              int perPage, int currentPage);
 
     /**
      * get export device list

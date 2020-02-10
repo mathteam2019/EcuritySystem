@@ -3,10 +3,13 @@ package com.nuctech.securitycheck.backgroundservice.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+
+import java.util.concurrent.Executor;
 
 /**
  * WebMvcConfiguration
@@ -20,6 +23,17 @@ public class WebMvcConfiguration {
 
     @Value("${spring.resource.static-locations}")
     private String staticLocations;
+
+    @Bean
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(100);
+        executor.setMaxPoolSize(100);
+        executor.setQueueCapacity(500);
+        executor.setThreadNamePrefix("SecurityCheck-");
+        executor.initialize();
+        return executor;
+    }
 
     @Bean
     public CorsFilter corsFilter() {

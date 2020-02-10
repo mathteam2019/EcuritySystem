@@ -27,6 +27,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
+import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
@@ -458,6 +459,7 @@ public class UserManagementController extends BaseController {
         }
 
         SysUser sysUser = requestBody.convert2SysUser();
+        sysUser.setPassword(CryptUtil.encode(sysUser.getPassword()));
         userService.createUser(sysUser, requestBody.getPortrait());
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -516,6 +518,7 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USED_EMAIL);
         }
         SysUser sysUser = requestBody.convert2SysUser();
+        sysUser.setPassword(CryptUtil.encode(sysUser.getPassword()));
         userService.modifyUser(sysUser, requestBody.getPortrait());
         return new CommonResponseBody(ResponseMessage.OK);
     }

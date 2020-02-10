@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * SecuritySysController
@@ -142,6 +143,7 @@ public class SecuritySysController {
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysRegisterModel.getGuid());
         int checkResult = sysRegisterModel.checkValid();
+
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
@@ -157,6 +159,7 @@ public class SecuritySysController {
                 if (sysDevice == null) {
                     result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 } else {
+
                     //注册设备(register device)
                     boolean isSuccess = sysDeviceService.register(sysDevice, sysRegisterModel);
                     if (isSuccess) {
@@ -166,6 +169,8 @@ public class SecuritySysController {
                         // 将设备配置上传到Redis
                         judgeSysController.uploadDeviceConfig();
                         judgeSysController.uploadDeviceStatus();
+
+
 
                         //4.3.1.6 后台服务向安检仪下发用户列表
                         sysSecurityController.sendUserList(sysRegisterModel.getGuid());
@@ -185,6 +190,7 @@ public class SecuritySysController {
                 result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
+
 
 
         // 将结果发送到rabbitmq
@@ -417,6 +423,18 @@ public class SecuritySysController {
                 if(sysDeviceService.checkDeviceLogin(sysDevice) > 0) {
                     SerHeartBeat serHeartBeat = SerHeartBeat.builder().deviceId(sysDevice.getDeviceId()).deviceType(sysDevice.getDeviceType()).build();
                     SerHeartBeat oldSerHeartBeat = serHeartBeatService.find(serHeartBeat);
+                    SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
+                    serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
+
+                    Example<SerDeviceStatus> devStatusEx = Example.of(serDeviceStatus);
+                    serDeviceStatus = devStatusRepo.findOne(devStatusEx);
+
+                    if (serDeviceStatus == null) {
+                        serDeviceStatus = new SerDeviceStatus();
+                        serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
+                    }
+                    serDeviceStatus.setDeviceOnline(DeviceOnlineType.ONLINE.getValue());
+                    devStatusRepo.save(serDeviceStatus);
                     if (oldSerHeartBeat == null) {
                         //insert
                         serHeartBeat.setHeartBeatTime(DateUtil.stringDateToDate(heartBeatModel.getHeartbeatTime()));
@@ -737,6 +755,7 @@ public class SecuritySysController {
         receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.imageinfo"));
         receivceMessageVO.setContent(devSerImageInfoModel);
 
+        Date startTime = new Date();
         serMqMessageService.save(receivceMessageVO, 0, devSerImageInfoModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
 
@@ -766,11 +785,15 @@ public class SecuritySysController {
             log.error("不存在对应的GUID");
             return sendResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue(), logEnd, result, resultMessageVO);
         }
+        Date endTime = new Date();
+        long calTime = endTime.getTime() - startTime.getTime();
 
 
         // 接收数据以后保存
         ScanInfoSaveResultVO saveScanResult = securityImageInfoService.saveScanResult(devSerImageInfoModel);
         result.setMode(saveScanResult.getModeId());
+
+
 
 
 
@@ -784,30 +807,15 @@ public class SecuritySysController {
         // 数据有效
         if (devSerImageInfoModel.getImageData().getInvalidScan().equals(DeviceDefaultType.TRUE.getValue())) {
             log.error("无效的扫描图像");
-            securityImageInfoService.sendInvalidResult(saveScanResult);
+            securityImageInfoService.sendInvalidResult(saveScanResult, devSerImageInfoModel.getImageData().getAtrResult());
             return sendResult(CommonConstant.RESULT_SUCCESS.getValue(), logEnd, result, resultMessageVO);
         }
 
         sendResult(CommonConstant.RESULT_SUCCESS.getValue(), logEnd, result, resultMessageVO);
 
-        // 安检仪+审图端 和 安检仪+审图端+手检端
-        if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE.getValue())
-                || saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
-            // 4.3.2.11 后台服务向判图站推送待判图图像信息
-            sysJudgeController.sendJudgeImageInfo(devSerImageInfoModel);
-        }
-
-        // 安检仪+手检端 和 安检仪+审图端+手检端
         if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_MANUAL.getValue())
                 || saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
-            if (devSerImageInfoModel.getImageData().getAtrResult().equals(DeviceDefaultType.FALSE.getValue())) {          // 报警、有嫌疑
-                try {
-                    // 4.3.1.16 后台服务向安检仪推送调度的手检站信息
-                    sysSecurityController.dispatchManual(saveScanResult.getGuid(), saveScanResult.getTaskInfoVO());
-                } catch (Exception e) {
-                    log.error("后台服务向安检仪推送调度的手检站信息 报错：" + e.getMessage());
-                }
-            } else {        //ATR 通过, 无嫌疑
+            if (devSerImageInfoModel.getImageData().getAtrResult().equals(DeviceDefaultType.TRUE.getValue())) {          // 报警、有嫌疑
                 SysDevice deviceModel = new SysDevice();
                 deviceModel.setGuid(guid);
                 SysDevice sysDevice = sysDeviceService.find(deviceModel);
@@ -816,35 +824,62 @@ public class SecuritySysController {
 
                 if (sysDeviceConfig.getAtrSwitch().equals(DeviceDefaultType.TRUE.getValue())) {       // 无嫌疑配置
                     log.error("无嫌疑配置");
-                    securityImageInfoService.sendInvalidResult(saveScanResult);
+                    securityImageInfoService.sendInvalidResult(saveScanResult, devSerImageInfoModel.getImageData().getAtrResult());
                     return sendResult(CommonConstant.RESULT_SUCCESS.getValue(), logEnd, result, resultMessageVO);
-                } else {
-                    try {
-                        // 4.3.1.16 后台服务向安检仪推送调度的手检站信息
-                        sysSecurityController.dispatchManual(saveScanResult.getGuid(), saveScanResult.getTaskInfoVO());
-                    } catch (Exception e) {
-                        log.error("后台服务向安检仪推送调度的手检站信息 报错：" + e.getMessage());
-                    }
                 }
             }
         }
 
-        // 安检仪+手检端
-        if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_MANUAL.getValue())) {
-            //check assigned hand device or not
-            DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = sysDeviceService.isManualDeviceDispatched(saveScanResult.getTaskNumber());
-            if(dispatchManualDeviceInfoVO == null) {
-                //4.3.1.20 后台服务向安检仪推送手检结论
-                dispatchManualDeviceInfoVO = new DispatchManualDeviceInfoVO();
-                dispatchManualDeviceInfoVO.setGuid(guid);
-                dispatchManualDeviceInfoVO.setImageGuid(saveScanResult.getTaskNumber());
-                assignSecurityDevice(dispatchManualDeviceInfoVO);
+        // 安检仪+审图端 和 安检仪+审图端+手检端
+        if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE.getValue())
+                || saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+            // 4.3.2.11 后台服务向判图站推送待判图图像信息
+            sysJudgeController.sendJudgeImageInfo(devSerImageInfoModel, saveScanResult.getWorkModeName());
+        }
+        if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY.getValue()) || saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_MANUAL.getValue())) {
+            securityImageInfoService.sendInvalidResult(saveScanResult, devSerImageInfoModel.getImageData().getAtrResult());
+        }
+
+        // 安检仪+手检端 和 安检仪+审图端+手检端
+        if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_MANUAL.getValue())
+                || saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+
+            try {
+                // 4.3.1.16 后台服务向安检仪推送调度的手检站信息
+                sysSecurityController.dispatchManual(saveScanResult.getGuid(), saveScanResult.getTaskInfoVO());
+            } catch (Exception e) {
+                log.error("后台服务向安检仪推送调度的手检站信息 报错：" + e.getMessage());
             }
         }
 
-        if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY.getValue())) {
-            securityImageInfoService.sendInvalidResult(saveScanResult);
+
+        // 安检仪+手检端
+        if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_MANUAL.getValue()) || saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+            //check assigned hand device or not
+            String resultAssign = "";
+            try {
+                while(true) {
+                    resultAssign = redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.status.info") + saveScanResult.getTaskNumber());
+                    if(StringUtils.isBlank(resultAssign) == true) {
+                        //Thread.sleep(100);
+                    } else {
+                        break;
+                    }
+                }
+            } catch(Exception ex) {
+                log.error("后台服务向安检仪推送调度的手检站信息 报错：" + ex.getMessage());
+            }
+
+
+            if(!(resultAssign.equals(DeviceDefaultType.TRUE.getValue()))) {
+                //4.3.1.20 后台服务向安检仪推送手检结论
+                SendSimpleMessageModel sendSimpleMessageModel = new SendSimpleMessageModel();
+                sendSimpleMessageModel.setGuid(guid);
+                sendSimpleMessageModel.setImageGuid(saveScanResult.getTaskNumber());
+                assignSecurityDevice(sendSimpleMessageModel);
+            }
         }
+
 
         return resultMessageVO;
     }
@@ -859,7 +894,7 @@ public class SecuritySysController {
     @PostMapping("synchronize-scan-result")
     public ResultMessageVO synchronizeScanResult(@RequestBody @ApiParam("请求报文定义") DevSerDataSyncModel devSerDataSyncModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.data.synchronization"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.synchronization"));
         receivceMessageVO.setContent(devSerDataSyncModel);
         serMqMessageService.save(receivceMessageVO, 0, devSerDataSyncModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
@@ -868,9 +903,9 @@ public class SecuritySysController {
         CommonResultVO result = new CommonResultVO();
         String guid = devSerDataSyncModel.getGuid();
         result.setGuid(guid);
-        if(devSerDataSyncModel.getImageData().checkValid() == 1 || devSerDataSyncModel.getPersonData().checkValid() == 1) {
+        if(devSerDataSyncModel.getImageData().checkValidOffline() == 1 || devSerDataSyncModel.getPersonData().checkValid() == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
-        } else if(devSerDataSyncModel.getImageData().checkValid() == 2 || devSerDataSyncModel.getPersonData().checkValid() == 2) {
+        } else if(devSerDataSyncModel.getImageData().checkValidOffline() == 2 || devSerDataSyncModel.getPersonData().checkValid() == 2) {
             result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             // 判断 GUID有效
@@ -892,7 +927,7 @@ public class SecuritySysController {
             }
         }
 
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.data.synchronization");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.synchronization");
 
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(result);
@@ -933,12 +968,12 @@ public class SecuritySysController {
     /**
      * 后台服务向安检仪推送手检结论
      *
-     * @param dispatchManualDeviceInfoVO
+     * @param sendSimpleMessageModel
      * @return resultMessage
      */
     @ApiOperation("4.3.1.20 后台服务向安检仪推送手检结论")
     @PostMapping("assign-security-device")
-    public ResultMessageVO assignSecurityDevice(@RequestBody @ApiParam("请求报文定义") DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO) {
+    public ResultMessageVO assignSecurityDevice(@RequestBody @ApiParam("请求报文定义") SendSimpleMessageModel sendSimpleMessageModel) {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
 //        SendMessageModel sendMessageModel = new SendMessageModel();
 //        sendMessageModel.setGuid(dispatchManualDeviceInfoVO.getGuid());
@@ -955,9 +990,9 @@ public class SecuritySysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
-        resultMessageVO.setContent(dispatchManualDeviceInfoVO);
+        resultMessageVO.setContent(sendSimpleMessageModel);
         messageSender.sendSysDevMessage(resultMessageVO, routingKey);
-        serMqMessageService.save(resultMessageVO, 1, dispatchManualDeviceInfoVO.getGuid(), dispatchManualDeviceInfoVO.getImageGuid(),
+        serMqMessageService.save(resultMessageVO, 1, sendSimpleMessageModel.getGuid(), sendSimpleMessageModel.getImageGuid(),
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
         return resultMessageVO;
     }
@@ -966,29 +1001,29 @@ public class SecuritySysController {
     /**
      * 安检仪向后台服务请求本机手检
      *
-     * @param dispatchManualDeviceInfoVO
+     * @param sendSimpleMessageModel
      * @return resultMessage
      */
     @ApiOperation("4.3.1.21 安检仪向后台服务请求本机手检")
     @PostMapping("available-hand")
-    public ResultMessageVO availableCheckHand(@RequestBody @ApiParam("请求报文定义") DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO) {
+    public ResultMessageVO availableCheckHand(@RequestBody @ApiParam("请求报文定义") SendSimpleMessageModel sendSimpleMessageModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
         receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.manual.task"));
-        receivceMessageVO.setContent(dispatchManualDeviceInfoVO);
-        serMqMessageService.save(receivceMessageVO, 0, dispatchManualDeviceInfoVO.getGuid(), null,
+        receivceMessageVO.setContent(sendSimpleMessageModel);
+        serMqMessageService.save(receivceMessageVO, 0, sendSimpleMessageModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
 
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         SendMessageModel sendMessageModel = new SendMessageModel();
-        sendMessageModel.setGuid(dispatchManualDeviceInfoVO.getGuid());
-        sendMessageModel.setImageGuid(dispatchManualDeviceInfoVO.getImageGuid());
+        sendMessageModel.setGuid(sendSimpleMessageModel.getGuid());
+        sendMessageModel.setImageGuid(sendSimpleMessageModel.getImageGuid());
 
         String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.manual.task");
 
-        if(dispatchManualDeviceInfoVO.checkValid() == 1) {
+        if(sendSimpleMessageModel.checkValid() == 1) {
             sendMessageModel.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else {
-            boolean isSucceed = securityImageInfoService.checkAssignHand(dispatchManualDeviceInfoVO);
+            boolean isSucceed = securityImageInfoService.checkAssignHand(sendSimpleMessageModel);
             if (isSucceed) {
                 sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
             } else {
@@ -1001,7 +1036,7 @@ public class SecuritySysController {
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(sendMessageModel);
         messageSender.sendDevSysMessage(resultMessageVO, routingKey);
-        serMqMessageService.save(resultMessageVO, 1, dispatchManualDeviceInfoVO.getGuid(), dispatchManualDeviceInfoVO.getImageGuid(),
+        serMqMessageService.save(resultMessageVO, 1, sendSimpleMessageModel.getGuid(), sendSimpleMessageModel.getImageGuid(),
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
         return resultMessageVO;
     }

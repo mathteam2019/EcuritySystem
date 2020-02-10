@@ -97,6 +97,7 @@ public class SysSecurityController {
      *
      * @param guid 设备guid
      */
+    @Async
     @ApiOperation("4.3.1.5 后台服务向安检仪下发配置信息")
     @PostMapping("send-dev-config")
     public ResultMessageVO sendDeviceConfig(@ApiParam("设备guid") @RequestParam("guid") String guid) {
@@ -185,6 +186,7 @@ public class SysSecurityController {
      */
     @ApiOperation("4.3.1.6 后台服务向安检仪下发用户列表")
     @PostMapping("send-userlist")
+    @Async
     public ResultMessageVO sendUserList(@ApiParam("设备guid") @RequestParam String guid) {
 
         //设置Rabbitmq的主题密钥和路由密钥
@@ -272,8 +274,8 @@ public class SysSecurityController {
             exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.rem");
             routingKey = BackgroundServiceUtil.getConfig("routingKey.rem.dictionary");
         } else if (deviceType.equals(DeviceType.MANUAL.getValue())) {
-            exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.dev");
-            routingKey = BackgroundServiceUtil.getConfig("routingKey.sys.dev.dictionary");
+            exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.man");
+            routingKey = BackgroundServiceUtil.getConfig("routingKey.man.dictionary");
         }
 
         try {
@@ -334,6 +336,7 @@ public class SysSecurityController {
      * @param guid 设备guid
      * @Param deviceType 设备类型
      */
+    @Async
     @ApiOperation("4.3.1.7 后台服务向安检仪下发字典")
     @PostMapping("send-dict-data")
     public ResultMessageVO sendDictData(@ApiParam("设备guid") @RequestParam String guid) {
@@ -355,14 +358,10 @@ public class SysSecurityController {
                 "taskNumber:" + serDevJudgeGraphResultModel.getImageResult().getImageGuid() + "guid:" + serDevJudgeGraphResultModel.getGuid());
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.dev.result"));
-        SendMessageModel sendMessageModel = SendMessageModel.builder()
-                .guid(serDevJudgeGraphResultModel.getGuid())
-                .imageGuid(serDevJudgeGraphResultModel.getImageResult().getImageGuid())
-                .result(CommonConstant.RESULT_SUCCESS.getValue())
-                .build();
-        resultMessageVO.setContent(sendMessageModel);
+
+        resultMessageVO.setContent(serDevJudgeGraphResultModel);
         messageSender.sendJudgeInfoToSecurity(resultMessageVO);
-        serMqMessageService.save(resultMessageVO, 1, sendMessageModel.getGuid(), sendMessageModel.getImageGuid(),
+        serMqMessageService.save(resultMessageVO, 1, serDevJudgeGraphResultModel.getGuid(), serDevJudgeGraphResultModel.getImageResult().getImageGuid(),
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
         log.debug("4.3.1.15 后台服务向安检仪推送判图结论 service finished at" + System.currentTimeMillis() + "params:" +
                 "taskNumber:" + serDevJudgeGraphResultModel.getImageResult().getImageGuid() + "guid:" + serDevJudgeGraphResultModel.getGuid());
@@ -406,58 +405,6 @@ public class SysSecurityController {
     }
 
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class PlatformCheckrModifyRequestBody {
-
-        String scanRecogniseColour; //scan Recognize Colour
-        Long scanOverTime; //scan OverTime
-        Long judgeAssignTime; //judge AssignTime
-        Long judgeProcessingTime; //judge Processing Time
-        Long judgeScanOvertime; //judge ScanOvertime
-        String judgeRecogniseColour; //judge Recognise Colour
-        Long handOverTime; //hand OverTime
-        String handRecogniseColour; //hand Recognise Colour
-        List<String> historyDataStorageList; //history Data Storage List
-        List<String> historyDataExportList; //history Data Export List
-        Long displayDeleteSuspicion; //display Delete Suspicion
-        String displayDeleteSuspicionColour; //display Delete Suspicion Colour
-
-        SerPlatformCheckParams convert2SerPlatformCheckParams() { //create new object from input parameters
-
-            return SerPlatformCheckParams
-                    .builder()
-                    .scanRecogniseColour(this.getScanRecogniseColour())
-                    .scanOverTime(this.getScanOverTime())
-                    .judgeAssignTime(this.getJudgeAssignTime())
-                    .judgeProcessingTime(this.getJudgeProcessingTime())
-                    .judgeScanOvertime(this.getJudgeScanOvertime())
-                    .judgeRecogniseColour(this.getJudgeRecogniseColour())
-                    .handOverTime(this.getHandOverTime())
-                    .handRecogniseColour(this.getHandRecogniseColour())
-                    .displayDeleteSuspicion(this.getDisplayDeleteSuspicion())
-                    .displayDeleteSuspicionColour(this.getDisplayDeleteSuspicionColour())
-                    .build();
-        }
-    }
-
-    @ApiOperation("保存人员查验")
-    @PostMapping("save-checkparam")
-    public void changePlatformCheck(@RequestBody @ApiParam("参数") PlatformCheckrModifyRequestBody requestBody){
-        SerPlatformCheckParams checkParams = requestBody.convert2SerPlatformCheckParams();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String serPlatformCheckParamsStr = objectMapper.writeValueAsString(checkParams);
-            serPlatformCheckParamsStr = CryptUtil.encrypt(serPlatformCheckParamsStr);
-            redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.setting.platform.check"),
-                    serPlatformCheckParamsStr, CommonConstant.EXPIRE_TIME.getValue());
-        } catch(Exception ex) {
-            log.error("未能转换为对象");
-            ex.printStackTrace();
-        }
-    }
 
 
     @ApiOperation("测试注册sys-register")

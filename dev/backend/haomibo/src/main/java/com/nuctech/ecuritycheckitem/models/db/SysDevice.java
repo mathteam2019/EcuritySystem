@@ -15,6 +15,8 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerArchiveSimplified;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysFieldSimplifiedForProcessTaskManagement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -153,19 +155,19 @@ public class SysDevice extends BaseEntity implements Serializable {
     @JoinColumn(name = "FIELD_ID", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("field")
-    private SysField field; // Relation to SysField table.
+    private SysFieldSimplifiedForProcessTaskManagement field; // Relation to SysField table.
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ARCHIVE_ID", referencedColumnName = "ARCHIVE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    @MapsId("archive")
     private SerArchive archive; // Relation to SerArchives table.
 
-//    @javax.persistence.Transient
-//    private SysDeviceConfig deviceConfig; // Relation to SysDeviceConfig table.
-//
-//    @javax.persistence.Transient
-//    private SerScanParam scanParam; // Relation to SerScanParam table.
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "CATEGORY_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDeviceCategory category; // Relation to SysDevice table.
+
 
 }

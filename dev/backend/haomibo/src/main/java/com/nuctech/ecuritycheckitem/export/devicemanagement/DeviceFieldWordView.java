@@ -92,9 +92,8 @@ public class DeviceFieldWordView extends BaseWordView {
                 tableRow.getCell(1).setText(device.getDeviceSerial());
 
                 tableRow.getCell(2).setText(device.getDeviceName());
-                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null
-                        && device.getArchive().getArchiveTemplate().getDeviceCategory() != null) {
-                    tableRow.getCell(3).setText(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());
+                if(device.getCategory() != null) {
+                    tableRow.getCell(3).setText(device.getCategory().getCategoryName());
                 } else {
                     tableRow.getCell(3).setText("无");
                 }

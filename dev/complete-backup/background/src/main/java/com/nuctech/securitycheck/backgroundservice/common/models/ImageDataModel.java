@@ -41,7 +41,7 @@ public class ImageDataModel {
     private String loginName;
 
     @ApiModelProperty(value = "扫描图片性别", example = "0")
-    private Integer imageGender;
+    private String imageGender;
 
     @ApiModelProperty(value = "ATR 自动识别辅助报警结果")
     private String atrResult;
@@ -74,6 +74,16 @@ public class ImageDataModel {
             return 1;
         }
         if(!offline.equals("0")) {
+            return 2;
+        }
+        return 0;
+    }
+
+    public int checkValidOffline() {
+        if(StringUtils.isBlank(imageGuid) || StringUtils.isBlank(offline)) {
+            return 1;
+        }
+        if(!offline.equals("1")) {
             return 2;
         }
         return 0;

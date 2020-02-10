@@ -99,8 +99,8 @@ public class MessageListener {
 
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.manual.task"))) {
                 // 4.3.1.21 安检仪向后台服务请求本机手检-返回
-                DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = objectMapper.convertValue(result.getContent(), DispatchManualDeviceInfoVO.class);
-                result = securitySysController.availableCheckHand(dispatchManualDeviceInfoVO);
+                SendSimpleMessageModel sendSimpleMessageModel = objectMapper.convertValue(result.getContent(), SendSimpleMessageModel.class);
+                result = securitySysController.availableCheckHand(sendSimpleMessageModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.manual.conclusion"))) {
                 // 4.3.1.22 安检仪本地手检站后台服务请求提交手检结论-返回
                 HandSerResultModel handSerResultModel = objectMapper.convertValue(result.getContent(), HandSerResultModel.class);
@@ -189,15 +189,15 @@ public class MessageListener {
                 // 4.3.2.4 判图站向后台服务发送注销信息
                 SysUnregisterModel sysUnregisterModel = objectMapper.convertValue(result.getContent(), SysUnregisterModel.class);
                 judgeSysController.sendUnregister(sysUnregisterModel);
-            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.rem.sys.start"))) {
+            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.start"))) {
                 // 4.3.2.7 判图站向后台服务发送开始工作通知
                 SysDeviceStatusModel sysDeviceStatusModel = objectMapper.convertValue(result.getContent(), SysDeviceStatusModel.class);
                 judgeSysController.deviceStart(sysDeviceStatusModel);
-            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.rem.sys.suspend"))) {
+            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.stop"))) {
                 // 4.3.2.8 判图站向后台服务发送暂停工作通知
                 SysDeviceStatusModel sysDeviceStatusModel = objectMapper.convertValue(result.getContent(), SysDeviceStatusModel.class);
                 judgeSysController.deviceStop(sysDeviceStatusModel);
-            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.rem.sys.result"))) {
+            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.result"))) {
                 // 4.3.2.9 判图站向后台服务提交判图结论
                 JudgeSerResultModel judgeSerResultModel = objectMapper.convertValue(result.getContent(), JudgeSerResultModel.class);
                 judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
@@ -254,11 +254,11 @@ public class MessageListener {
                 // 4.3.3.3 手检站向后台服务发送登出信息
                 SysLogoutModel sysLogoutModel = objectMapper.convertValue(result.getContent(), SysLogoutModel.class);
                 manualSysController.sendLogout(sysLogoutModel);
-            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.man.sys.start"))) {
+            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.start"))) {
                 // 4.3.3.4 手检站向后台服务发送开始工作通知
                 SysDeviceStatusModel sysDeviceStatusModel = objectMapper.convertValue(result.getContent(), SysDeviceStatusModel.class);
                 manualSysController.deviceStart(sysDeviceStatusModel);
-            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.man.sys.stop"))) {
+            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.stop"))) {
                 // 4.3.3.5 手检站向后台服务发送暂停工作通知
                 SysDeviceStatusModel sysDeviceStatusModel = objectMapper.convertValue(result.getContent(), SysDeviceStatusModel.class);
                 manualSysController.deviceStop(sysDeviceStatusModel);
@@ -266,7 +266,7 @@ public class MessageListener {
                 // 4.3.3.6 手检战向后台服务发送注销信息
                 SysUnregisterModel sysUnregisterModel = objectMapper.convertValue(result.getContent(), SysUnregisterModel.class);
                 manualSysController.sendUnregister(sysUnregisterModel);
-            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.man.sys.manual.conclusion"))) {
+            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.result"))) {
                 // 4.3.3.9 手检站后台服务请求提交手检结论
                 HandSerResultModel handSerResultModel = objectMapper.convertValue(result.getContent(), HandSerResultModel.class);
                 manualSysController.saveHandResult(handSerResultModel);
@@ -331,15 +331,15 @@ public class MessageListener {
                 // 4.3.1.12 安检仪向后台服务发送日志信息
                 SerDevLogModel serDevLogModel = objectMapper.convertValue(result.getContent(), SerDevLogModel.class);
                 securitySysController.saveSerDevLog(serDevLogModel);
-            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.data.synchronization"))) {
+            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.synchronization"))) {
                 // 4.3.1.14 安检仪向后台服务同步数据
                 DevSerDataSyncModel devSerDataSyncModel = objectMapper.convertValue(result.getContent(), DevSerDataSyncModel.class);
                 securitySysController.synchronizeScanResult(devSerDataSyncModel);
-            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.log"))) {
+            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.rem.log"))) {
                 // 4.3.2.5 判图站向后台服务发送日志信息
                 SerDevLogModel serDevLogModel = objectMapper.convertValue(result.getContent(), SerDevLogModel.class);
                 judgeSysController.saveSerDevLog(serDevLogModel);
-            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.log"))) {
+            } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.man.log"))) {
                 // 4.3.3.7 手检站向后台服务发送日志信息
                 SerDevLogModel serDevLogModel = objectMapper.convertValue(result.getContent(), SerDevLogModel.class);
                 manualSysController.saveSerDevLog(serDevLogModel);
@@ -375,7 +375,7 @@ public class MessageListener {
                 HardwareStatusModel hardwareStatusModel = objectMapper.convertValue(result.getContent(), HardwareStatusModel.class);
                 //4.3.1.11 安检仪向后台服务发送硬件状态（即时状态）
                 securitySysController.sendHardwareStatus(hardwareStatusModel);
-            } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.rem.sys.heartbeat"))) {
+            } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.rem.heartbeat"))) {
                 //4.3.2.6 判图站向后台服务发送心跳信息
                 HeartBeatModel heartBeatModel = objectMapper.convertValue(result.getContent(), HeartBeatModel.class);
                 judgeSysController.saveHeartBeatTime(heartBeatModel);
@@ -485,5 +485,7 @@ public class MessageListener {
             log.error(e.getMessage());
         }
     }
+
+
 
 }

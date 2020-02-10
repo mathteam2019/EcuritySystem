@@ -15,6 +15,8 @@ package com.nuctech.ecuritycheckitem.service.statistics.impl;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatisticsResponse;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.ScanStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +39,9 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
 
     @Autowired
     public EntityManager entityManager;
+
+    @Autowired
+    AuthService authService;
 
     /**
      * get hand statistcs
@@ -267,6 +272,12 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
             whereCause.add("s.SCAN_END_TIME <= '" + strDate + "'");
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
         }
         return whereCause;
     }

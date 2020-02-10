@@ -14,6 +14,7 @@ package com.nuctech.ecuritycheckitem.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.util.Random;
 
@@ -108,6 +109,16 @@ public class CryptUtil {
             sb.append(base.charAt(number));
         }
         return sb.toString();
+    }
+
+    public static String encode(CharSequence rawPassword) {
+        return rawPassword.toString();
+        //return BCrypt.hashpw(rawPassword.toString(), BCrypt.gensalt(4));
+    }
+
+    public static boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return rawPassword.toString().equals(encodedPassword);
+        //return BCrypt.checkpw(rawPassword.toString(), encodedPassword);
     }
 
 }

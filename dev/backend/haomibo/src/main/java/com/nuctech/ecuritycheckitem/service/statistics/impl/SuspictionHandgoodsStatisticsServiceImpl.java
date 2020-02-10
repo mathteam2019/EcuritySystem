@@ -14,6 +14,8 @@ package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.SuspicionHandgoodsStatisticsController;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.SuspictionHandgoodsStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +38,9 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
 
     @Autowired
     public EntityManager entityManager;
+
+    @Autowired
+    AuthService authService;
 
     /**
      * get statistics
@@ -275,6 +280,13 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
             whereCause.add("h.HAND_START_TIME <= '" + strDate + "'");
+        }
+
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
         }
 
         return whereCause;

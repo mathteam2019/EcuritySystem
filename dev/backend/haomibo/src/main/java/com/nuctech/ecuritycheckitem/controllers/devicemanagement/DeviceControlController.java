@@ -336,8 +336,6 @@ public class DeviceControlController extends BaseController {
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        int startIndex = perPage * currentPage;
-        int endIndex = perPage * (currentPage + 1);
 
         String archiveName = "";
         String deviceName = "";
@@ -362,7 +360,7 @@ public class DeviceControlController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        PageResult<SysDevice> result = deviceService.getFilterDeviceList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId, startIndex, endIndex); //get list of devices from database through deviceService
+        PageResult<SysDevice> result = deviceService.getFilterDeviceList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId, perPage, currentPage); //get list of devices from database through deviceService
         List<SysDevice> data = result.getDataList();
         long total = result.getTotal();
 
@@ -382,7 +380,6 @@ public class DeviceControlController extends BaseController {
         // Set filters.
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam")) //return all fields except specified fields from SysDevice model
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except parent from SysDeviceCategory model
         value.setFilters(filters);
 
@@ -979,8 +976,7 @@ public class DeviceControlController extends BaseController {
 
         switch (type) {
             case DeviceGetAllRequestBody.GetAllType.BARE: //case of bare
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam")) //return all fields except specified fields from SysDevice model
-                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except specified parent from SysDeviceCategory model
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except specified parent from SysDeviceCategory model
                 break;
             case DeviceGetAllRequestBody.GetAllType.WITH_CONFIG: //case of with config
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam"))//return all fields except specified fields from SysDevice model
@@ -1019,8 +1015,7 @@ public class DeviceControlController extends BaseController {
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam")) //return all fields except specified fields parent from SysDevice model
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except  parent from SysDeviceCategory model
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except  parent from SysDeviceCategory model
         value.setFilters(filters);
 
         return value;
@@ -1044,8 +1039,7 @@ public class DeviceControlController extends BaseController {
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))  //return all fields except specified fields parent from SysDevice model
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except  parent from SysDeviceCategory model
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except  parent from SysDeviceCategory model
 
         value.setFilters(filters);
 

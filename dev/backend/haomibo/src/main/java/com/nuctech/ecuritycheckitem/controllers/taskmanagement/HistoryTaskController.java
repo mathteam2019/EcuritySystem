@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
 import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
@@ -195,7 +196,7 @@ public class HistoryTaskController extends BaseController {
         currentPage --;
 
         //get paginated result from historyService
-        PageResult<HistorySimplifiedForHistoryTaskManagement> result = historyService.getHistoryTaskByFilter(
+        PageResult<HistorySimplifiedForHistoryTableManagement> result = historyService.getHistoryTaskByFilter(
                 requestBody.getFilter().getTaskNumber(), //get task number from input parameter
                 requestBody.getFilter().getMode(), //get mode id from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
@@ -209,7 +210,7 @@ public class HistoryTaskController extends BaseController {
                 perPage);
 
         long total = result.getTotal(); //set total records count
-        List<HistorySimplifiedForHistoryTaskManagement> data = result.getDataList(); //set data list
+        List<HistorySimplifiedForHistoryTableManagement> data = result.getDataList(); //set data list
 
         //make response body
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -227,15 +228,20 @@ public class HistoryTaskController extends BaseController {
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")); //only return modeName from SysWorkMode model
+//        filters.addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.filterOutAllExcept("historyId", "task", "handTaskResult", "scanStartTime", "scanEndTime", "workMode", "scanDevice", "scanPointsman"))
+//                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "field"))
+//                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
+//                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
+//                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
+//                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
 
         value.setFilters(filters);
 
         return value;
     }
 
-    private List<HistorySimplifiedForHistoryTaskManagement> getExportListFromnRequest(HistoryGenerateRequestBody requestBody, Map<String, String> sortParams) {
-        List<HistorySimplifiedForHistoryTaskManagement> taskList = new ArrayList<>();
+    private List<HistorySimplifiedForHistoryTableManagement> getExportListFromnRequest(HistoryGenerateRequestBody requestBody, Map<String, String> sortParams) {
+        List<HistorySimplifiedForHistoryTableManagement> taskList = new ArrayList<>();
         taskList = historyService.getHistoryTaskAll(
                 requestBody.getFilter().getTaskNumber(), //get task number from input parameter
                 requestBody.getFilter().getMode(), //get mode id from input parameter
@@ -247,7 +253,7 @@ public class HistoryTaskController extends BaseController {
                 sortParams.get("sortBy"), //field name
                 sortParams.get("order")); //asc or desc
 
-        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
+        List<HistorySimplifiedForHistoryTableManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
         return exportList;
     }
 
@@ -291,7 +297,7 @@ public class HistoryTaskController extends BaseController {
             }
 
             //get all pending case deal list
-            List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
+            List<HistorySimplifiedForHistoryTableManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
             List<String> cartoonImageList = new ArrayList<>();
             List<String> originalImageList = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -345,7 +351,7 @@ public class HistoryTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
+        List<HistorySimplifiedForHistoryTableManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
         setDictionary(); //set dictionary data key and values
         HistoryTaskExcelView.setMessageSource(messageSource);
         InputStream inputStream = HistoryTaskExcelView.buildExcelDocument(exportList); //get inputstream to be exported
@@ -384,7 +390,7 @@ public class HistoryTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
+        List<HistorySimplifiedForHistoryTableManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
         setDictionary(); //set dictionary data key and values
         HistoryTaskWordView.setMessageSource(messageSource);
         InputStream inputStream = HistoryTaskWordView.buildWordDocument(exportList); //get inputstream to be exported
@@ -418,7 +424,7 @@ public class HistoryTaskController extends BaseController {
             }
         }
 
-        List<HistorySimplifiedForHistoryTaskManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
+        List<HistorySimplifiedForHistoryTableManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
         setDictionary(); //set dictionary data key and values
         HistoryTaskPdfView.setMessageSource(messageSource);
         HistoryTaskPdfView.setResource(getFontResource()); //set header font
@@ -442,13 +448,13 @@ public class HistoryTaskController extends BaseController {
      * @param idList : idList to be extracted
      * @return
      */
-    private List<HistorySimplifiedForHistoryTaskManagement> getExportList(List<HistorySimplifiedForHistoryTaskManagement> taskList, boolean isAll, String idList) {
+    private List<HistorySimplifiedForHistoryTableManagement> getExportList(List<HistorySimplifiedForHistoryTableManagement> taskList, boolean isAll, String idList) {
 
-        List<HistorySimplifiedForHistoryTaskManagement> exportList = new ArrayList<>();
+        List<HistorySimplifiedForHistoryTableManagement> exportList = new ArrayList<>();
         if(isAll == false) {
             String[] splits = idList.split(","); //get ids from idList
             for(int i = 0; i < taskList.size(); i ++) {
-                HistorySimplifiedForHistoryTaskManagement task = taskList.get(i);
+                HistorySimplifiedForHistoryTableManagement task = taskList.get(i);
                 boolean isExist = false;
                 for(int j = 0; j < splits.length; j ++) {
                     if(splits[j].equals(task.getHistoryId().toString())) { //if specified id is contained idList

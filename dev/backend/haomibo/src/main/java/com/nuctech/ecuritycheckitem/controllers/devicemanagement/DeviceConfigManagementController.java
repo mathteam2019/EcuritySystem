@@ -194,8 +194,7 @@ public class DeviceConfigManagementController extends BaseController {
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceConfig));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam")) //return all fields except specified fields from SysDevice model
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except parent from SysDeviceCategory model
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except parent from SysDeviceCategory model
         value.setFilters(filters);
         return value;
     }
@@ -258,7 +257,6 @@ public class DeviceConfigManagementController extends BaseController {
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam")) // return all fields except specified fields from SysDevice model
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); // return all fields except parent from SysDeviceCategory model
         value.setFilters(filters);
 
@@ -308,7 +306,7 @@ public class DeviceConfigManagementController extends BaseController {
         sysDeviceConfig.setWomanDeviceGender(requestBody.getWomanDeviceGender());
 
         deviceConfigService.modifyDeviceConfig(sysDeviceConfig, manualDeviceIdList, judgeDeviceIdList, configDeviceIdList);
-        updateRedisValue(requestBody.getConfigId());
+        //updateRedisValue(requestBody.getConfigId());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -376,8 +374,7 @@ public class DeviceConfigManagementController extends BaseController {
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceConfigList));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam")) // return all fields except specified fields from SysDevice model
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); // return all fields except parent from SysDeviceCategory model
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); // return all fields except parent from SysDeviceCategory model
 
         value.setFilters(filters);
 

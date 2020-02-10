@@ -18,7 +18,9 @@ import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsPaginationResponse;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformCheckParamRepository;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.JudgeStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +46,9 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
 
     @Autowired
     SerPlatformCheckParamRepository serPlatformCheckParamRepository;
+
+    @Autowired
+    AuthService authService;
 
     /**
      * get judge statistcs
@@ -312,6 +317,12 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
             whereCause.add("g.JUDGE_END_TIME <= '" + strDate + "'");
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("g.CREATEDBY in (" + idListStr + ") ");
         }
         return whereCause;
     }

@@ -3,9 +3,13 @@ package com.nuctech.securitycheck.backgroundservice.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nuctech.securitycheck.backgroundservice.common.entity.SerDeviceStatus;
+import com.nuctech.securitycheck.backgroundservice.common.entity.SerHeartBeat;
 import com.nuctech.securitycheck.backgroundservice.common.entity.SerPlatformCheckParams;
+import com.nuctech.securitycheck.backgroundservice.common.entity.SerPlatformOtherParams;
 import com.nuctech.securitycheck.backgroundservice.common.enums.CommonConstant;
 import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceDefaultType;
+import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceOnlineType;
 import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceType;
 import com.nuctech.securitycheck.backgroundservice.common.models.DeviceOvertimeModel;
 import com.nuctech.securitycheck.backgroundservice.common.utils.BackgroundServiceUtil;
@@ -15,8 +19,7 @@ import com.nuctech.securitycheck.backgroundservice.common.vo.MonitoringVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.ResultMessageVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.SysMonitoringDeviceStatusInfoVO;
 import com.nuctech.securitycheck.backgroundservice.message.MessageSender;
-import com.nuctech.securitycheck.backgroundservice.service.ISerMqMessageService;
-import com.nuctech.securitycheck.backgroundservice.service.ISerPlatformCheckParamsService;
+import com.nuctech.securitycheck.backgroundservice.service.*;
 import io.github.hengyunabc.zabbix.api.DefaultZabbixApi;
 import io.github.hengyunabc.zabbix.api.Request;
 import io.github.hengyunabc.zabbix.api.RequestBuilder;
@@ -27,12 +30,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,11 +63,51 @@ public class SchedulerController {
     private ISerPlatformCheckParamsService iSerPlatformCheckParamsService;
 
     @Autowired
+    private ISerDeviceStatusService serDeviceStatusService;
+
+    @Autowired
+    private ISerPlatformOtherParamsService iSerPlatformOtherParamsService;
+
+    @Autowired
+    private ISerHeartBeatService serHeartBeatService;
+
+    @Autowired
     private ISerMqMessageService serMqMessageService;
 
     private ZabbixApi zabbixApi;
 
-    /**
+    //@Scheduled(cron = "0 * * * * ?")
+    @PostMapping("device-online")
+    public void deviceOnline() {
+        try {
+
+            //将检查参数数据上传到Redis
+            List<SerDeviceStatus> deviceStatusList = serDeviceStatusService.findAll();
+
+            //检查设备工作时间是否超过
+            for (SerDeviceStatus deviceStatus : deviceStatusList) {
+                SerHeartBeat serHeartBeat = SerHeartBeat.builder().deviceId(deviceStatus.getDeviceId()).build();
+                SerHeartBeat oldSerHeartBeat = serHeartBeatService.find(serHeartBeat);
+                if(oldSerHeartBeat == null) {
+                    deviceStatus.setDeviceOnline(DeviceOnlineType.OFFLINE.getValue());
+                } else {
+                    Date heartBeatTime = oldSerHeartBeat.getHeartBeatTime();
+                    Date curDate = new Date();
+                    long diffInMillies = Math.abs(curDate.getTime() - heartBeatTime.getTime());
+                    if(diffInMillies > CommonConstant.LIMIT_OFFLINE_TIME.getValue() * 1000) {
+                        deviceStatus.setDeviceOnline(DeviceOnlineType.OFFLINE.getValue());
+                    }
+                }
+            }
+            serDeviceStatusService.saveAll(deviceStatusList);
+
+        } catch (Exception e) {
+            log.error("随着时间的推移未能监控安全性");
+            log.error(e.getMessage());
+        }
+    }
+
+    /**.
      * 后台服务向安检仪推送工作超时提醒
      */
 //    @Scheduled(cron = "0 * * * * ?")
@@ -121,6 +166,8 @@ public class SchedulerController {
         }
     }
 
+
+
     /**
      * 后台服务向判图站推送工作超时提醒
      */
@@ -129,7 +176,7 @@ public class SchedulerController {
     @PostMapping("monitor-judge-overtime")
     public void monitorJudgeOvertime() {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.rem.overtime"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.overtime"));
 
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -186,7 +233,7 @@ public class SchedulerController {
     @PostMapping("monitor-manual-overtime")
     public void monitorManualOvertime() {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.man.overtime"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.man.overtime"));
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -236,10 +283,14 @@ public class SchedulerController {
         }
     }
 
+
+
     /**
      * Monitor Server Free Disk Space from Zabbix
      */
 //    @Scheduled(cron = "0 0/5 * * * ?")
+    @ApiOperation("zabbix free space")
+    @PostMapping("zabbix-free-space")
     public void monitorServerFreeSpace() {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.zabbix"));
@@ -275,7 +326,8 @@ public class SchedulerController {
             JSONObject obj = result.getJSONObject(0);
 
             Double curFreeSpacePercentage = NumberUtils.createDouble(obj.get("lastvalue").toString());
-            Double setting = NumberUtils.createDouble(BackgroundServiceUtil.getConfig("server.storage.limitSpace"));
+            SerPlatformOtherParams otherParams = iSerPlatformOtherParamsService.getLastOtherParams();
+            Double setting = otherParams.getStorageAlarm().doubleValue();//NumberUtils.createDouble(BackgroundServiceUtil.getConfig("server.storage.limitSpace"));
             if (setting.compareTo(curFreeSpacePercentage) > 0) {
                 msg = BackgroundServiceUtil.getConfig("notify.message.lowdiskspace");
                 resultMessageVO.setContent(msg);

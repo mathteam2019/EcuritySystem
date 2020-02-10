@@ -21,6 +21,8 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.ForbiddenTokenRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
+import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -63,6 +65,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private PathMatcher pathMatcher;
+
+    @Autowired
+    AuthService authService;
 
 
     /**
@@ -165,10 +170,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SysUser sysUser = optionalSysUser.get();
 
         // Get all available resources for user.
-        List<SysResource> availableSysResourceList = new ArrayList<>();
-        sysUser.getRoles().forEach(sysRole -> {
-            availableSysResourceList.addAll(sysRole.getResources());
-        });
+        List<SysResource> availableSysResourceList = authService.getAvailableSysResourceList(sysUser);
 
 
 

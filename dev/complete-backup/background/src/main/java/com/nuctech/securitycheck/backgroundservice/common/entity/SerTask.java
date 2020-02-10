@@ -39,6 +39,9 @@ public class SerTask extends BaseEntity implements Serializable {
     @JoinColumn(name = "MODE_ID")
     private SysWorkMode sysWorkMode;
 
+    @Column(name = "MODE_CONFIG", length = 2000)
+    private String modeConfig;
+
     @Column(name = "MODE_NAME", length = 20)
     private String sysWorkModeName;
 

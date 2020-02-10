@@ -8,6 +8,8 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * SerDeviceStatusServiceImpl
  *
@@ -43,6 +45,16 @@ public class SerDeviceStatusServiceImpl implements ISerDeviceStatusService {
     public SerDeviceStatus find(SerDeviceStatus serDeviceStatus) {
         Example<SerDeviceStatus> example = Example.of(serDeviceStatus);
         return repository.findOne(example);
+    }
+
+    @Override
+    public List<SerDeviceStatus> findAll() {
+        return repository.findAll();
+    }
+
+    @Override
+    public void saveAll(List<SerDeviceStatus> deviceStatusList) {
+        repository.save(deviceStatusList);
     }
     
 }

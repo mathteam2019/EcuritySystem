@@ -48,4 +48,13 @@ public class SysUserSimplifiedOnlyHasName extends BaseEntitySimple implements Se
     @Column(name = "USER_NAME", length = 50)
     private String userName;
 
+    @Column(name = "ORG_ID", length = 20)
+    private Long orgId;
+
+    @Column(name = "DATA_RANGE_CATEGORY", length = 10)
+    private String dataRangeCategory;
+
+    @Column(name = "USER_NUMBER", length = 50)
+    private String userNumber;
+
 }

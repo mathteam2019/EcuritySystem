@@ -22,6 +22,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 
 import java.io.ByteArrayInputStream;
@@ -37,7 +38,7 @@ public class HistoryTaskPdfView extends BasePdfView {
      * @param exportTaskList
      * @return
      */
-    public static InputStream buildPDFDocument(List<HistorySimplifiedForHistoryTaskManagement> exportTaskList) {
+    public static InputStream buildPDFDocument(List<HistorySimplifiedForHistoryTableManagement> exportTaskList) {
 
         Document document = new Document();
 
@@ -62,7 +63,7 @@ public class HistoryTaskPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
-            for (HistorySimplifiedForHistoryTaskManagement task : exportTaskList) {
+            for (HistorySimplifiedForHistoryTableManagement task : exportTaskList) {
 
                 addTableCell(table, task.getHistoryId().toString());
 

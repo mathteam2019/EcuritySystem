@@ -87,7 +87,7 @@ public class SysUser extends BaseEntity implements Serializable {
     private String userAccount;
 
     @JsonIgnore
-    @Column(name = "PASSWORD", length = 20)
+    @Column(name = "PASSWORD", length = 100)
     private String password;
 
     @Column(name = "DATA_RANGE_CATEGORY", length = 10)

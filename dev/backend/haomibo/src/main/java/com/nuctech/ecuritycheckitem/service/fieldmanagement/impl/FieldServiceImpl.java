@@ -36,10 +36,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -291,6 +288,7 @@ public class FieldServiceImpl implements FieldService {
             List<Long> userIdList = categoryUser.getUserIdList();
             predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
+
         return predicate;
     }
 

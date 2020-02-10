@@ -92,10 +92,6 @@ public class SerTask extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     private SysWorkflow workFlow;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private History history;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)

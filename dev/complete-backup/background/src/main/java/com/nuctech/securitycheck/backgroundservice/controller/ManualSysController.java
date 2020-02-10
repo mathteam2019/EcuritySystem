@@ -287,13 +287,13 @@ public class ManualSysController {
     @PostMapping("device-start")
     public ResultMessageVO deviceStart(@ApiParam("开始工作通知") @RequestBody SysDeviceStatusModel sysDeviceStatusModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.man.sys.start"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.start"));
         receivceMessageVO.setContent(sysDeviceStatusModel);
         serMqMessageService.save(receivceMessageVO, 0, sysDeviceStatusModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
 
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.man.sys.start");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.start");
         resultMessageVO.setKey(routingKey);
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysDeviceStatusModel.getGuid());
@@ -341,13 +341,13 @@ public class ManualSysController {
     @PostMapping("device-stop")
     public ResultMessageVO deviceStop(@ApiParam("暂停工作通知") @RequestBody SysDeviceStatusModel sysDeviceStatusModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.man.sys.stop"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.stop"));
         receivceMessageVO.setContent(sysDeviceStatusModel);
         serMqMessageService.save(receivceMessageVO, 0, sysDeviceStatusModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
 
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.man.sys.stop");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.stop");
         resultMessageVO.setKey(routingKey);
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysDeviceStatusModel.getGuid());
@@ -454,7 +454,7 @@ public class ManualSysController {
     @PostMapping("save-dev-log")
     public ResultMessageVO saveSerDevLog(@ApiParam("设备向后台服务发送日志信息") @RequestBody SerDevLogModel serDevLogModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.log"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.man.log"));
         receivceMessageVO.setContent(serDevLogModel);
         serMqMessageService.save(receivceMessageVO, 0, serDevLogModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
@@ -467,7 +467,7 @@ public class ManualSysController {
 
         //设置Rabbitmq的主题密钥和路由密钥
         exchangeName = BackgroundServiceUtil.getConfig("topic.inter.dev.sys.data");
-        routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.log");
+        routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.man.log");
 
         int checkResult = serDevLogModel.checkValid();
         if(checkResult == 1) {
@@ -601,7 +601,7 @@ public class ManualSysController {
     @PostMapping("save-hand-result")
     public ResultMessageVO saveHandResult(@RequestBody @ApiParam("请求报文定义") HandSerResultModel handSerResultModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.man.sys.manual.conclusion"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.result"));
         receivceMessageVO.setContent(handSerResultModel);
         serMqMessageService.save(receivceMessageVO, 0, handSerResultModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
@@ -610,7 +610,7 @@ public class ManualSysController {
         SendMessageModel sendMessageModel = new SendMessageModel();
         sendMessageModel.setGuid(handSerResultModel.getGuid());
         sendMessageModel.setImageGuid(handSerResultModel.getCheckResult().getImageGuid());
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.man.sys.manual.conclusion");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.result");
         int checkResult = handSerResultModel.checkValid();
         if(checkResult == 1) {
             sendMessageModel.setResult(CommonConstant.RESULT_EMPTY.getValue());

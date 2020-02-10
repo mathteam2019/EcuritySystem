@@ -91,8 +91,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Queue sysDevReplyQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("sys.dev.reply.queue"), false);
+    Queue devSysReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("dev.sys.reply.queue"), false);
     }
 
     @Bean
@@ -101,8 +101,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Queue devSysReplyQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("dev.sys.reply.queue"), false);
+    Queue sysDevReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("sys.dev.reply.queue"), false);
     }
 
     @Bean
@@ -111,9 +111,10 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Queue sysRemReplyQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("sys.rem.reply.queue"), false);
+    Queue remSysReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("rem.sys.reply.queue"), false);
     }
+
 
     @Bean
     Queue sysRemQueue() {
@@ -121,13 +122,26 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Queue remSysReplyQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("rem.sys.reply.queue"), false);
+    Queue sysRemReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("sys.rem.reply.queue"), false);
     }
+
 
     @Bean
     Queue manSysQueue() {
         return new Queue(BackgroundServiceUtil.getConfig("man.sys.queue"), false);
+    }
+
+    @Bean
+    Queue manSysReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("man.sys.reply.queue"), false);
+    }
+
+
+
+    @Bean
+    Queue sysManQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("sys.man.queue"), false);
     }
 
     @Bean
@@ -136,19 +150,15 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Queue sysManQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("sys.man.queue"), false);
-    }
-
-    @Bean
-    Queue manSysReplyQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("man.sys.reply.queue"), false);
-    }
-
-    @Bean
     Queue devSysDataQueue() {
         return new Queue(BackgroundServiceUtil.getConfig("dev.sys.data.queue"), false);
     }
+
+    @Bean
+    Queue devSysDataReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("dev.sys.data.reply.queue"), false);
+    }
+
 
     @Bean
     Queue devSysStatusQueue() {
@@ -156,24 +166,10 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Queue manSysDataQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("man.sys.data.queue"), false);
+    Queue devSysStatusReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("dev.sys.status.reply.queue"), false);
     }
 
-    @Bean
-    Queue manSysStatusQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("man.sys.status.queue"), false);
-    }
-
-    @Bean
-    Queue remSysDataQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("rem.sys.data.queue"), false);
-    }
-
-    @Bean
-    Queue remSysStatusQueue() {
-        return new Queue(BackgroundServiceUtil.getConfig("rem.sys.status.queue"), false);
-    }
 
     @Bean
     Queue zabbixQueue() {
@@ -186,9 +182,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Binding sysDevReplyBinding(Queue sysDevReplyQueue, TopicExchange devSysTopicExchange) {
-        return BindingBuilder.bind(sysDevReplyQueue).to(devSysTopicExchange).with("reply.sys.#");
+    Binding devSysReplyBinding(Queue devSysReplyQueue, TopicExchange devSysTopicExchange) {
+        return BindingBuilder.bind(devSysReplyQueue).to(devSysTopicExchange).with("reply.sys.#");
     }
+
+
 
     @Bean
     Binding sysDevBinding(Queue sysDevQueue, TopicExchange sysDevTopicExchange) {
@@ -196,9 +194,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Binding devSysReplyBinding(Queue devSysReplyQueue, TopicExchange sysDevTopicExchange) {
-        return BindingBuilder.bind(devSysReplyQueue).to(sysDevTopicExchange).with("reply.dev.#");
+    Binding sysDevReplyBinding(Queue sysDevReplyQueue, TopicExchange sysDevTopicExchange) {
+        return BindingBuilder.bind(sysDevReplyQueue).to(sysDevTopicExchange).with("reply.dev.#");
     }
+
+
 
     @Bean
     Binding remSysBinding(Queue remSysQueue, TopicExchange remSysTopicExchange) {
@@ -206,9 +206,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Binding sysRemReplyBinding(Queue sysRemReplyQueue, TopicExchange remSysTopicExchange) {
-        return BindingBuilder.bind(sysRemReplyQueue).to(remSysTopicExchange).with("reply.sys.#");
+    Binding remSysReplyBinding(Queue remSysReplyQueue, TopicExchange remSysTopicExchange) {
+        return BindingBuilder.bind(remSysReplyQueue).to(remSysTopicExchange).with("reply.sys.#");
     }
+
+
 
     @Bean
     Binding sysRemBinding(Queue sysRemQueue, TopicExchange sysRemTopicExchange) {
@@ -216,18 +218,22 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Binding remSysReplyBinding(Queue remSysReplyQueue, TopicExchange sysRemTopicExchange) {
-        return BindingBuilder.bind(remSysReplyQueue).to(sysRemTopicExchange).with("reply.rem.#");
+    Binding sysRemReplyBinding(Queue sysRemReplyQueue, TopicExchange sysRemTopicExchange) {
+        return BindingBuilder.bind(sysRemReplyQueue).to(sysRemTopicExchange).with("reply.rem.#");
     }
+
+
 
     @Bean
     Binding manSysBinding(Queue manSysQueue, TopicExchange manSysTopicExchange) {
         return BindingBuilder.bind(manSysQueue).to(manSysTopicExchange).with("sys.#");
     }
 
+
+
     @Bean
-    Binding sysManReplyBinding(Queue sysManReplyQueue, TopicExchange manSysTopicExchange) {
-        return BindingBuilder.bind(sysManReplyQueue).to(manSysTopicExchange).with("reply.sys.#");
+    Binding manSysReplyBinding(Queue manSysReplyQueue, TopicExchange manSysTopicExchange) {
+        return BindingBuilder.bind(manSysReplyQueue).to(manSysTopicExchange).with("reply.sys.#");
     }
 
     @Bean
@@ -236,8 +242,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Binding manSysReplyBinding(Queue manSysReplyQueue, TopicExchange sysManTopicExchange) {
-        return BindingBuilder.bind(manSysReplyQueue).to(sysManTopicExchange).with("reply.man.#");
+    Binding sysManReplyBinding(Queue sysManReplyQueue, TopicExchange sysManTopicExchange) {
+        return BindingBuilder.bind(sysManReplyQueue).to(sysManTopicExchange).with("reply.man.#");
     }
 
     @Bean
@@ -246,29 +252,20 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    Binding devSysDataReplyBinding(Queue devSysDataReplyQueue, TopicExchange devSysDataTopicExchange) {
+        return BindingBuilder.bind(devSysDataReplyQueue).to(devSysDataTopicExchange).with("reply.sys.#");
+    }
+
+    @Bean
     Binding devSysStatusBinding(Queue devSysStatusQueue, TopicExchange devSysStatusTopicExchange) {
         return BindingBuilder.bind(devSysStatusQueue).to(devSysStatusTopicExchange).with("sys.#");
     }
 
     @Bean
-    Binding manSysDataBinding(Queue manSysDataQueue, TopicExchange manSysDataTopicExchange) {
-        return BindingBuilder.bind(manSysDataQueue).to(manSysDataTopicExchange).with("sys.#");
+    Binding devSysStatusReplyBinding(Queue devSysStatusReplyQueue, TopicExchange devSysStatusTopicExchange) {
+        return BindingBuilder.bind(devSysStatusReplyQueue).to(devSysStatusTopicExchange).with("reply.sys.#");
     }
 
-    @Bean
-    Binding manSysStatusBinding(Queue manSysStatusQueue, TopicExchange manSysStatusTopicExchange) {
-        return BindingBuilder.bind(manSysStatusQueue).to(manSysStatusTopicExchange).with("sys.#");
-    }
-
-    @Bean
-    Binding remSysDataBinding(Queue remSysDataQueue, TopicExchange remSysDataTopicExchange) {
-        return BindingBuilder.bind(remSysDataQueue).to(remSysDataTopicExchange).with("sys.#");
-    }
-
-    @Bean
-    Binding remSysStatusBinding(Queue remSysStatusQueue, TopicExchange remSysStatusTopicExchange) {
-        return BindingBuilder.bind(remSysStatusQueue).to(remSysStatusTopicExchange).with("sys.#");
-    }
 
     @Bean
     Binding zabbixBinding(Queue zabbixQueue, TopicExchange zabbixTopicExchange) {
@@ -285,6 +282,9 @@ public class RabbitMQConfig {
                 BackgroundServiceUtil.getConfig("sys.rem.queue"), BackgroundServiceUtil.getConfig("sys.rem.reply.queue"),
                 BackgroundServiceUtil.getConfig("man.sys.queue"), BackgroundServiceUtil.getConfig("man.sys.reply.queue"),
                 BackgroundServiceUtil.getConfig("sys.man.queue"), BackgroundServiceUtil.getConfig("sys.man.reply.queue"),
+                BackgroundServiceUtil.getConfig("dev.sys.data.queue"), BackgroundServiceUtil.getConfig("dev.sys.data.reply.queue"),
+                BackgroundServiceUtil.getConfig("dev.sys.status.queue"), BackgroundServiceUtil.getConfig("dev.sys.status.reply.queue"),
+
                 BackgroundServiceUtil.getConfig("zabbix.queue"));
         container.setMessageListener(listenerAdapter);
         return container;

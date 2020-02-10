@@ -66,7 +66,7 @@ public class SerScanParamModel {
     @ApiModelProperty(value = "开始扫描提醒")
     private String StandSound;
 
-    @JsonProperty("StandSoundStandSound")
+    @JsonProperty("StandSound")
     public void setStandSound(String StandSound) {
         this.StandSound = StandSound;
     }

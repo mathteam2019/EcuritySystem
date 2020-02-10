@@ -14,14 +14,13 @@
 package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.History;
-import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.QHistorySimplifiedForHistoryTaskManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SerPlatformCheckParamsSimplifiedForTaskManagement;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
 import com.nuctech.ecuritycheckitem.repositories.HistoryRepository;
+import com.nuctech.ecuritycheckitem.repositories.HistoryTableRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformCheckParamRepository;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
@@ -46,6 +45,12 @@ public class HistoryServiceImpl implements HistoryService {
     HistoryRepository historyRepository;
 
     @Autowired
+    HistoryTableRepository historyTableRepository;
+
+    @Autowired
+    AuthService authService;
+
+    @Autowired
     SerPlatformCheckParamRepository serPlatformCheckParamRepository;
     /**
      * Get filter condition from input parameters
@@ -60,7 +65,7 @@ public class HistoryServiceImpl implements HistoryService {
      */
     private BooleanBuilder getPredicate(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
 
-        QHistorySimplifiedForHistoryTaskManagement builder = QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement;
+        QHistorySimplifiedForHistoryTableManagement builder = QHistorySimplifiedForHistoryTableManagement.historySimplifiedForHistoryTableManagement;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
@@ -77,9 +82,7 @@ public class HistoryServiceImpl implements HistoryService {
             predicate.and(builder.task.workflowId.eq(fieldId));
         }
         if (userName != null && !userName.isEmpty()) { //if username is input
-            Predicate scanUserName = builder.scanPointsman.userName.contains(userName)
-                    .or(builder.judgeUser.userName.contains(userName))
-                    .or(builder.judgeUser.userName.contains(userName));
+            Predicate scanUserName = builder.scanPointsman.userName.contains(userName);
             predicate.and(scanUserName);
         }
         if (startTime != null) { //if start time is input
@@ -87,6 +90,10 @@ public class HistoryServiceImpl implements HistoryService {
         }
         if (endTime != null) { //if end time is input
             predicate.and(builder.createdTime.before(endTime));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
         }
         predicate.and(builder.serCheckResultList.size().ne(0));
 
@@ -107,7 +114,7 @@ public class HistoryServiceImpl implements HistoryService {
      * @return
      */
     @Override
-    public PageResult<HistorySimplifiedForHistoryTaskManagement> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
+    public PageResult<HistorySimplifiedForHistoryTableManagement> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
 
         QHistorySimplifiedForHistoryTaskManagement builder = QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
@@ -125,10 +132,10 @@ public class HistoryServiceImpl implements HistoryService {
             }
         }
 
-        long total = historyRepository.count(predicate); //get total count from database using repsitory
-        List<HistorySimplifiedForHistoryTaskManagement> data = historyRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
+        long total = historyTableRepository.count(predicate); //get total count from database using repsitory
+        List<HistorySimplifiedForHistoryTableManagement> data = historyTableRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
 
-        return new PageResult<HistorySimplifiedForHistoryTaskManagement>(total, data);
+        return new PageResult<>(total, data);
 
     }
 
@@ -144,9 +151,8 @@ public class HistoryServiceImpl implements HistoryService {
      * @return
      */
     @Override
-    public List<HistorySimplifiedForHistoryTaskManagement> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
+    public List<HistorySimplifiedForHistoryTableManagement> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
 
-        QHistorySimplifiedForHistoryTaskManagement builder = QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
 
         Sort sort = null;
@@ -161,15 +167,15 @@ public class HistoryServiceImpl implements HistoryService {
             }
         }
 
-        List<HistorySimplifiedForHistoryTaskManagement> data = new ArrayList<>();
+        List<HistorySimplifiedForHistoryTableManagement> data = new ArrayList<>();
         if (sort != null) {
             data = StreamSupport
-                    .stream(historyRepository.findAll(predicate, sort).spliterator(), false)
+                    .stream(historyTableRepository.findAll(predicate, sort).spliterator(), false)
                     .collect(Collectors.toList());
         }
         else {
             data = StreamSupport
-                    .stream(historyRepository.findAll(predicate).spliterator(), false)
+                    .stream(historyTableRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
 

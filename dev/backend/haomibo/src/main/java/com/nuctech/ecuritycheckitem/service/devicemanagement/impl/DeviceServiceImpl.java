@@ -37,6 +37,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -287,48 +288,6 @@ public class DeviceServiceImpl implements DeviceService {
         return 2;
     }
 
-    /**
-     * get paginated and filtered device
-     * @param preDeviceList
-     * @param categoryId
-     * @param startIndex
-     * @param endIndex
-     * @return
-     */
-    private PageResult<SysDevice> getFilterDeviceByCategory(List<SysDevice> preDeviceList, Long categoryId, int startIndex, int endIndex) {
-        if(endIndex == -1) {
-            endIndex = preDeviceList.size();
-        }
-        long total = 0;
-        List<SysDevice> data = new ArrayList<>();
-        if(categoryId != null) {
-
-            for(int i = 0; i < preDeviceList.size(); i ++) {
-                SysDevice deviceData = preDeviceList.get(i);
-                try {
-                    if(deviceData.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == categoryId) {
-                        if(total >= startIndex && total < endIndex) {
-                            data.add(deviceData);
-                        }
-                        total ++;
-
-                    }
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } else {
-            for(int i = 0; i < preDeviceList.size(); i ++) {
-                SysDevice deviceData = preDeviceList.get(i);
-                if(i >= startIndex && i < endIndex) {
-                    data.add(deviceData);
-                }
-            }
-            total = preDeviceList.size();
-        }
-        PageResult<SysDevice> result = new PageResult<>(total, data);
-        return result;
-    }
 
     /**
      * get filtered device list
@@ -337,13 +296,13 @@ public class DeviceServiceImpl implements DeviceService {
      * @param status
      * @param fieldId
      * @param categoryId
-     * @param startIndex
-     * @param endIndex
+     * @param perPage
+     * @param currentPage
      * @return
      */
     @Override
     public PageResult<SysDevice> getFilterDeviceList(String sortBy, String order, String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
-                                               int startIndex, int endIndex) {
+                                                     int perPage, int currentPage) {
         QSysDevice builder = QSysDevice.sysDevice;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -365,32 +324,26 @@ public class DeviceServiceImpl implements DeviceService {
             List<Long> userIdList = categoryUser.getUserIdList();
             predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
-        /*
-        * Todo
-        *  Strange Category is null
-        *if (filter.getCategoryId() != null) {
-            predicate.and(builder.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
-        }
-        * */
 
-        Sort sort;
+        if (categoryId != null) {
+            predicate.and(builder.categoryId.eq(categoryId));
+        }
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sort = new Sort(Sort.Direction.ASC, sortBy);
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = new Sort(Sort.Direction.DESC, sortBy);
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
             }
-            List<SysDevice> allData = StreamSupport
-                    .stream(sysDeviceRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-            return getFilterDeviceByCategory(allData, categoryId, startIndex, endIndex);
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
         }
-        List<SysDevice> allData = StreamSupport
-                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
+
+        long total = sysDeviceRepository.count(predicate);
+        List<SysDevice> data = StreamSupport
+                .stream(sysDeviceRepository.findAll(predicate, pageRequest).spliterator(), false)
                 .collect(Collectors.toList());
-        return getFilterDeviceByCategory(allData, categoryId, startIndex, endIndex);
-
-
-
+        PageResult<SysDevice> result = new PageResult<>(total, data);
+        return result;
     }
 
     /**
@@ -514,6 +467,7 @@ public class DeviceServiceImpl implements DeviceService {
         } else if(category.getCategoryId() == Constants.MANUAL_CATEGORY_ID) {
             sysDevice.setDeviceType(SysDevice.DeviceType.MANUAL);
         }
+        sysDevice.setCategoryId(category.getCategoryId());
 
 
         // Add created info.
@@ -596,6 +550,7 @@ public class DeviceServiceImpl implements DeviceService {
         sysDevice.setStatus(oldSysDevice.getStatus());
         sysDevice.setCurrentStatus(oldSysDevice.getCurrentStatus());
         sysDevice.setWorkStatus(oldSysDevice.getWorkStatus());
+        sysDevice.setCategoryId(oldSysDevice.getCategoryId());
 
         String fileName = utils.saveImageFile(portraitFile);
         if(!fileName.equals("")) {
@@ -727,12 +682,14 @@ public class DeviceServiceImpl implements DeviceService {
             List<Long> userIdList = categoryUser.getUserIdList();
             predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
+        if(categoryId != null) {
+            predicate.and(builder.categoryId.eq(categoryId));
+        }
 
-        List<SysDevice> preSysDeviceList = StreamSupport
+
+        List<SysDevice> sysDeviceList = StreamSupport
                 .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
-
-        List<SysDevice> sysDeviceList = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size()).getDataList();
         return getInactiveConfigDevice(sysDeviceList);
     }
 
@@ -741,7 +698,7 @@ public class DeviceServiceImpl implements DeviceService {
         List<SysDeviceConfig> deviceConfigList = sysDeviceConfigRepository.findAll();
         for(int i = 0; i < preSysDeviceList.size(); i ++) {
             SysDevice sysDevice = preSysDeviceList.get(i);
-            if(sysDevice.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
+            if(sysDevice.getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
                 for(int j = 0; j < deviceConfigList.size(); j ++) {
                     if(deviceConfigList.get(j).getStatus().equals(SysDeviceConfig.Status.ACTIVE)) {
                         continue;
@@ -773,6 +730,9 @@ public class DeviceServiceImpl implements DeviceService {
         if(fieldId!= null) {
             predicate.and(builder.fieldId.eq(fieldId));
         }
+        if(categoryId != null) {
+            predicate.and(builder.categoryId.eq(categoryId));
+        }
 
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {
@@ -781,11 +741,10 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
 
-        List<SysDevice> preSysDeviceList = StreamSupport
+        List<SysDevice> sysDeviceList = StreamSupport
                 .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
 
-        List<SysDevice> sysDeviceList = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size()).getDataList();
         return getInactiveConfigDevice(sysDeviceList);
     }
 

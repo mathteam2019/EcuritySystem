@@ -66,9 +66,8 @@ public class DevicePdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
                 addTableCell(table, ConstantDictionary.getDataValue(device.getStatus()));
-                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null &&
-                        device.getArchive().getArchiveTemplate().getDeviceCategory() != null) {
-                    addTableCell(table, device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());
+                if(device.getCategory() != null) {
+                    addTableCell(table, device.getCategory().getCategoryName());
                 } else {
                     addTableCell(table, "无");
                 }

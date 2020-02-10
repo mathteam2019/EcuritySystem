@@ -2,6 +2,7 @@ package com.nuctech.securitycheck.backgroundservice.service;
 
 import com.nuctech.securitycheck.backgroundservice.common.models.DevSerDataSyncModel;
 import com.nuctech.securitycheck.backgroundservice.common.models.DevSerImageInfoModel;
+import com.nuctech.securitycheck.backgroundservice.common.models.SendSimpleMessageModel;
 import com.nuctech.securitycheck.backgroundservice.common.models.SerDevJudgeGraphResultModel;
 import com.nuctech.securitycheck.backgroundservice.common.vo.DispatchManualDeviceInfoVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.ScanInfoSaveResultVO;
@@ -15,7 +16,7 @@ import com.nuctech.securitycheck.backgroundservice.common.vo.ScanInfoSaveResultV
  */
 public interface ISecurityImageInfoService {
 
-    void sendInvalidResult(ScanInfoSaveResultVO scanInfoSaveResultVO);
+    void sendInvalidResult(ScanInfoSaveResultVO scanInfoSaveResultVO, String atrResult);
 
     ScanInfoSaveResultVO saveScanResult(DevSerImageInfoModel devSerImageInfo);
 
@@ -23,6 +24,6 @@ public interface ISecurityImageInfoService {
 
     SerDevJudgeGraphResultModel sendJudgeResultToSecurity(String taskNumber);
 
-    boolean checkAssignHand(DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO);
+    boolean checkAssignHand(SendSimpleMessageModel sendSimpleMessageModel);
 
 }

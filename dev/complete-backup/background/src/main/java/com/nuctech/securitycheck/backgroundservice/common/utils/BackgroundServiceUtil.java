@@ -79,9 +79,9 @@ public class BackgroundServiceUtil {
         }
     }
 
-    public static String genderConvert(Integer gender) {
+    public static String genderConvert(String gender) {
         if (gender != null) {
-            if (String.valueOf(gender).equals(DeviceGenderType.MALE.getValue())) {
+            if (gender.equals(DeviceGenderType.MALE.getValue())) {
                 return GenderType.MALE.getValue();
             } else {
                 return GenderType.FEMALE.getValue();

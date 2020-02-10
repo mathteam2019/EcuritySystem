@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -93,6 +94,7 @@ public class JudgeSysController {
     /**
      * 将设备状态上传到Redis
      */
+    @Async
     public void uploadDeviceStatus() {
         List<SysMonitoringDeviceStatusInfoVO> monitoringList = new ArrayList<SysMonitoringDeviceStatusInfoVO>();
         monitoringList = sysDeviceService.findMonitoringInfoList();
@@ -104,12 +106,12 @@ public class JudgeSysController {
     /**
      * 将设备配置上传到Redis
      */
+    @Async
     public void uploadDeviceConfig() {
-        List<SysSecurityInfoVO> sysSecurityInfoVOList = new ArrayList<SysSecurityInfoVO>();
-        sysSecurityInfoVOList = sysDeviceService.findSecurityInfoList();
-        String jsonStr = CryptUtil.getJSONString(sysSecurityInfoVOList);
-        redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"), CryptUtil.encrypt(jsonStr));
-        redisUtil.expire(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"), CommonConstant.EXPIRE_TIME.getValue());
+        List<SysJudgeInfoVO> sysJudgeInfoVOList = sysDeviceService.findJudgeInfoList();
+        List<SysManualInfoVO> sysManualInfoVOList = sysDeviceService.findManualInfoList();
+        redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.judge.info"), CryptUtil.encrypt(CryptUtil.getJSONString(sysJudgeInfoVOList)), CommonConstant.EXPIRE_TIME.getValue());
+        redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.info"), CryptUtil.encrypt(CryptUtil.getJSONString(sysManualInfoVOList)), CommonConstant.EXPIRE_TIME.getValue());
     }
 
     /**
@@ -373,7 +375,7 @@ public class JudgeSysController {
     @PostMapping("save-dev-log")
     public void saveSerDevLog(@ApiParam("设备向后台服务发送日志信息") @RequestBody SerDevLogModel serDevLogModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.log"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.rem.log"));
         receivceMessageVO.setContent(serDevLogModel);
         serMqMessageService.save(receivceMessageVO, 0, serDevLogModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
@@ -385,7 +387,7 @@ public class JudgeSysController {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         //设置Rabbitmq的主题密钥和路由密钥
         exchangeName = BackgroundServiceUtil.getConfig("topic.inter.dev.sys.data");
-        routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.log");
+        routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.log");
         int checkResult = serDevLogModel.checkValid();
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
@@ -444,7 +446,7 @@ public class JudgeSysController {
     @PostMapping("save-heartbeat")
     public void saveHeartBeatTime(@ApiParam(value = "心跳信息") @RequestBody HeartBeatModel heartBeatModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.sys.heartbeat"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.rem.heartbeat"));
         receivceMessageVO.setContent(heartBeatModel);
         serMqMessageService.save(receivceMessageVO, 0, heartBeatModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
@@ -456,7 +458,7 @@ public class JudgeSysController {
 
         //设置Rabbitmq的主题密钥和路由密钥
         exchangeName = BackgroundServiceUtil.getConfig("topic.inter.dev.sys.status");
-        routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.sys.heartbeat");
+        routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.heartbeat");
 
         int checkResult = heartBeatModel.checkValid();
         if(checkResult == 1) {
@@ -519,13 +521,13 @@ public class JudgeSysController {
     @PostMapping("device-start")
     public ResultMessageVO deviceStart(@ApiParam("工作状态通知") @RequestBody SysDeviceStatusModel sysDeviceStatusModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.sys.start"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.start"));
         receivceMessageVO.setContent(sysDeviceStatusModel);
         serMqMessageService.save(receivceMessageVO, 0, sysDeviceStatusModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
 
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.sys.start");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.start");
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysDeviceStatusModel.getGuid());
         int checkResult = sysDeviceStatusModel.checkValid();
@@ -571,13 +573,13 @@ public class JudgeSysController {
     @PostMapping("device-stop")
     public ResultMessageVO deviceStop(@ApiParam("停止工作通知") @RequestBody SysDeviceStatusModel sysDeviceStatusModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.sys.suspend"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.stop"));
         receivceMessageVO.setContent(sysDeviceStatusModel);
         serMqMessageService.save(receivceMessageVO, 0, sysDeviceStatusModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
 
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.sys.suspend");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.stop");
         resultMessageVO.setKey(routingKey);
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysDeviceStatusModel.getGuid());
@@ -610,6 +612,37 @@ public class JudgeSysController {
         return resultMessageVO;
     }
 
+    @Async
+    public void sendJudgeResultToDevice(JudgeSerResultModel judgeSerResultModel, JudgeInfoSaveResultVO saveResult) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String dispatchManualDeviceInfoStr = "";
+        if(saveResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+
+            while (StringUtils.isBlank(dispatchManualDeviceInfoStr)) {
+                dispatchManualDeviceInfoStr = redisUtil.get(BackgroundServiceUtil
+                        .getConfig("redisKey.sys.manual.assign.task.info") + saveResult.getTaskNumber());
+//                if (StringUtils.isBlank(dispatchManualDeviceInfoStr)) {
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                    }
+//                }
+            }
+
+            // 分派手检端 手检端
+            // // 4.3.3.12 后台服务向手检站推送业务数据
+            SerManImageInfoModel serManImageInfoModel = serHandResultService.sendScanInfoToHand(judgeSerResultModel.getImageResult().getImageGuid());
+            sysManualController.sendJudgeResultToHandDevice(serManImageInfoModel);
+
+        } else if(saveResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE.getValue())){
+            // 分派手检端 安检仪
+            // // 4.3.1.15 后台服务向安检仪推送判图结论
+            SerDevJudgeGraphResultModel serDevJudgeGraphResultModel = new SerDevJudgeGraphResultModel();
+            serDevJudgeGraphResultModel.setImageResult(judgeSerResultModel.getImageResult());
+            serDevJudgeGraphResultModel.setGuid(saveResult.getGuid());
+            sysSecurityController.sendJudgeResultToSecurityDevice(serDevJudgeGraphResultModel);
+        }
+    }
     /**
      * 判图站向后台服务提交判图结论
      *
@@ -621,20 +654,20 @@ public class JudgeSysController {
     @Async
     public ResultMessageVO saveJudgeGraphResult(@RequestBody @ApiParam("请求报文定义") JudgeSerResultModel judgeSerResultModel) {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
-        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.sys.result"));
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.result"));
         receivceMessageVO.setContent(judgeSerResultModel);
         serMqMessageService.save(receivceMessageVO, 0, judgeSerResultModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
 
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         SendMessageModel sendMessageModel = new SendMessageModel();
-        ObjectMapper objectMapper = new ObjectMapper();
+
 
         // 4.3.2.9 判图站向后台服务提交判图结论
 
         sendMessageModel.setGuid(judgeSerResultModel.getGuid());
         sendMessageModel.setImageGuid(judgeSerResultModel.getImageResult().getImageGuid());
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.sys.result");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.result");
         resultMessageVO.setKey(routingKey);
         int checkResult = judgeSerResultModel.checkValid();
         if(checkResult == 1) {
@@ -645,43 +678,8 @@ public class JudgeSysController {
             JudgeInfoSaveResultVO saveResult = serJudgeGraphService.saveJudgeGraphResult(judgeSerResultModel);
             if (saveResult.getIsSucceed()) {
                 sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-                String dispatchManualDeviceInfoStr = "";
-                if(saveResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
-                    resultMessageVO.setContent(sendMessageModel);
-                    messageSender.sendJudgeGraphResultReplyMessage(resultMessageVO);
-                    serMqMessageService.save(resultMessageVO, 1, judgeSerResultModel.getGuid(), judgeSerResultModel.getImageResult().getImageGuid(),
-                            String.valueOf(sendMessageModel.getResult()));
-                    while (StringUtils.isBlank(dispatchManualDeviceInfoStr)) {
-                        dispatchManualDeviceInfoStr = redisUtil.get(BackgroundServiceUtil
-                                .getConfig("redisKey.sys.manual.assign.task.info") + saveResult.getTaskNumber());
-                        if (StringUtils.isBlank(dispatchManualDeviceInfoStr)) {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                            }
-                        }
-                    }
-                    try {
-                        DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = objectMapper.readValue(dispatchManualDeviceInfoStr,
-                                DispatchManualDeviceInfoVO.class);
-                        if (dispatchManualDeviceInfoVO.getLocalRecheck()) {     // 分派手检端 安检仪
-                            // // 4.3.1.15 后台服务向安检仪推送判图结论
-                            SerDevJudgeGraphResultModel serDevJudgeGraphResultModel = new SerDevJudgeGraphResultModel();
-                            serDevJudgeGraphResultModel.setImageResult(judgeSerResultModel.getImageResult());
-                            serDevJudgeGraphResultModel.setGuid(saveResult.getGuid());
-                            sysSecurityController.sendJudgeResultToSecurityDevice(serDevJudgeGraphResultModel);
-                        } else {                                                // 分派手检端 手检端
-                            // // 4.3.3.12 后台服务向手检站推送业务数据
-                            SerManImageInfoModel serManImageInfoModel = serHandResultService.sendScanInfoToHand(judgeSerResultModel.getImageResult().getImageGuid());
-                            sysManualController.sendJudgeResultToHandDevice(serManImageInfoModel);
-                        }
-
-
-                    } catch (IOException e) {
-                        log.error(e.getMessage());
-                    }
-                    return resultMessageVO;
-                }
+                resultMessageVO.setContent(sendMessageModel);
+                sendJudgeResultToDevice(judgeSerResultModel, saveResult);
             } else {
                 sendMessageModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }

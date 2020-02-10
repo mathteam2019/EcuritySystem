@@ -221,7 +221,9 @@ public class AccessLogServiceImpl implements AccessLogService {
                 .onlineTime(onlineTime)
                 .reasonCode(reason)
                 .operateTime(new Date())
+                .createdBy(user.getUserId())
                 .build();
+
         sysAccessLogRepository.save(accessLog);
         return true;
     }

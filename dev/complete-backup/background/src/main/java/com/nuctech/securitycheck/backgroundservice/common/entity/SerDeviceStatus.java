@@ -35,6 +35,11 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     @Column(name = "FIELD_ID", length = 20)
     private Long fieldId;
 
+    @Column(name = "DEVICE_ONLINE", length = 11)
+    private Integer deviceOnline;
+
+
+
     @Column(name = "CURRENT_WORKFLOW", length = 50)
     private String currentWorkflow;
 

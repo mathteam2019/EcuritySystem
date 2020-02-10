@@ -2,6 +2,8 @@ package com.nuctech.securitycheck.backgroundservice.service;
 
 import com.nuctech.securitycheck.backgroundservice.common.entity.SerDeviceStatus;
 
+import java.util.List;
+
 /**
  * ISerDeviceStatusService
  *
@@ -14,5 +16,9 @@ public interface ISerDeviceStatusService {
     SerDeviceStatus save(SerDeviceStatus serDeviceStatus);
 
     SerDeviceStatus find(SerDeviceStatus serDeviceStatus);
+
+    List<SerDeviceStatus> findAll();
+
+    void saveAll(List<SerDeviceStatus> deviceStatusList);
 
 }

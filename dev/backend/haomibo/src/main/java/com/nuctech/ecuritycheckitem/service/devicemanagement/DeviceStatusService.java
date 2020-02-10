@@ -27,4 +27,6 @@ public interface DeviceStatusService {
      * @return
      */
     PageResult<SerDeviceStatus> getDeviceStatusByFilter(Long fieldId, String deviceName, Long categoryId, int currentPage, int perPage);
+
+    SerDeviceStatus getDeviceStatusById(Long statusId);
 }

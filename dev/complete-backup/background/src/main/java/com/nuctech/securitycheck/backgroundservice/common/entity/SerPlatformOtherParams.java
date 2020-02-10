@@ -25,7 +25,7 @@ public class SerPlatformOtherParams implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SCAN_ID", length = 20, nullable = false)
+    @Column(name = "ID", length = 20, nullable = false)
     private Long scanId;
 
     @Column(name = "INITIAL_PASSWORD", length = 255)

@@ -7,6 +7,7 @@ import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceDefaultTyp
 import com.nuctech.securitycheck.backgroundservice.common.models.*;
 import com.nuctech.securitycheck.backgroundservice.common.utils.*;
 import com.nuctech.securitycheck.backgroundservice.common.vo.CommonResultVO;
+import com.nuctech.securitycheck.backgroundservice.common.vo.JudgeInfoSaveResultVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.ResultMessageVO;
 import com.nuctech.securitycheck.backgroundservice.message.MessageSender;
 import com.nuctech.securitycheck.backgroundservice.service.*;
@@ -63,6 +64,8 @@ public class SysJudgeController {
     @Autowired
     private ISerMqMessageService serMqMessageService;
 
+
+
     /**
      * 后台服务向远程短下发配置信息
      *
@@ -73,8 +76,8 @@ public class SysJudgeController {
     @PostMapping("send-dev-config")
     public void sendDeviceConfig(@ApiParam("设备guid") @RequestParam("guid") String guid) {
         //设置Rabbitmq的主题密钥和路由密钥
-        String exchangeName = BackgroundServiceUtil.getConfig("topic.inter.dev.sys");
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.dev.userlist");
+        String exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.rem");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.rem.config");
 
         try {
             // 从数据库获取设备(get device data from database)
@@ -163,14 +166,14 @@ public class SysJudgeController {
     @Async
     @ApiOperation("4.3.2.11 后台服务向判图站推送待判图图像信息")
     @PostMapping("send-judge-image-info")
-    public void sendJudgeImageInfo(@RequestBody @ApiParam("请求报文定义") DevSerImageInfoModel devSerImageInfoModel) {
+    public void sendJudgeImageInfo(@RequestBody @ApiParam("请求报文定义") DevSerImageInfoModel devSerImageInfoModel, String workModeName) {
         String taskNumber = devSerImageInfoModel.getImageData().getImageGuid();
         log.debug("4.3.2.11 后台服务向判图站推送待判图图像信息  service started at" + System.currentTimeMillis()
                 + "params:taskNumber" + devSerImageInfoModel.getImageData().getImageGuid());
         SerJudgeImageInfoModel serJudgeImageInfoModel = serJudgeGraphService.sendJudgeImageInfo(taskNumber);
 
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.rem.imageinfo"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.image"));
         devSerImageInfoModel.setGuid(serJudgeImageInfoModel.getGuid());
         resultMessageVO.setContent(devSerImageInfoModel);
         messageSender.sendImageInfoToJudge(resultMessageVO);
@@ -200,14 +203,14 @@ public class SysJudgeController {
                     log.error("转换模型时发生错误");
                     log.error(e.getMessage());
                 }
-                if (serManImageInfo == null) {
-                    try {
-                        Thread.sleep(1000);                     // 等待？秒
-                    } catch (InterruptedException e) {
-                        log.error("无法使睡眠");
-                        e.printStackTrace();
-                    }
-                }
+//                if (serManImageInfo == null) {
+//                    try {
+//                        Thread.sleep(1000);                     // 等待？秒
+//                    } catch (InterruptedException e) {
+//                        log.error("无法使睡眠");
+//                        e.printStackTrace();
+//                    }
+//                }
                 long end = System.currentTimeMillis();
                 if (checkParamsTest.getJudgeProcessingTime() != null && (end - start) >= checkParamsTest.getJudgeProcessingTime() * 1000) {             // 是否超时
                     isProcessTimeout = true;    // 处理超时
@@ -227,10 +230,15 @@ public class SysJudgeController {
                 judgeSerResultModel.setImageResult(imageResult);
                 judgeSerResultModel.setGuid(serJudgeImageInfoModel.getGuid());
                 // 4.3.2.9 判图站向后台服务提交判图结论(提交超时结论)
-                serJudgeGraphService.saveJudgeGraphResult(judgeSerResultModel);
+                JudgeInfoSaveResultVO saveResult = serJudgeGraphService.saveJudgeGraphResult(judgeSerResultModel);
+                JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
+                judgeSysController.sendJudgeResultToDevice(judgeSerResultModel, saveResult);
+
                 //JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
                 //judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
             }
+        } else {
+
         }
 
         log.debug("4.3.2.11 后台服务向判图站推送待判图图像信息  service finished at" + System.currentTimeMillis()

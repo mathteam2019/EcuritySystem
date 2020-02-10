@@ -19,6 +19,8 @@ import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsPaginationResponse;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.HandExaminationStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +44,9 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
 
     @Autowired
     public EntityManager entityManager;
+
+    @Autowired
+    public AuthService authService;
 
     /**
      * get hand examination statistics
@@ -303,6 +308,12 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
         }
 
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+        }
         whereCause.add("s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "' ");
         return whereCause;
     }

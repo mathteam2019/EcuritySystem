@@ -72,6 +72,17 @@ public class DeviceStatusController extends BaseController {
         Filter filter;
     }
 
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceStatusGetByIdRequestBody {
+        @NotNull
+        Long statusId;
+    }
+
     /**
      * Device datatable data.
      * @param requestBody
@@ -116,11 +127,36 @@ public class DeviceStatusController extends BaseController {
         // Set filters.
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))   //return all fields except specified fields from SysDevice model
+                .addFilter(ModelJsonFilters.FILTER_SER_DEVICE_STATUS, SimpleBeanPropertyFilter.serializeAllExcept("serScanParamList", "scanList"));   //return all fields except specified fields from SysDevice model
+
+        value.setFilters(filters);
+
+        return value;
+    }
+
+    /**
+     * Device datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/get-by-id", method = RequestMethod.POST)
+    public Object deviceGetById(
+            @RequestBody @Valid DeviceStatusGetByIdRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        SerDeviceStatus status = deviceStatusService.getDeviceStatusById(requestBody.getStatusId());
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, status));
+        // Set filters.
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(ModelJsonFilters.FILTER_SER_DEVICE_STATUS, SimpleBeanPropertyFilter.serializeAllExcept("serScanParamList", "scanList"))   //return all fields except specified fields from SysDevice model
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))  //return all fields except parent from SysField model
-                .addFilter(ModelJsonFilters.FILTER_SER_ARCHIVE_TEMPLATE, SimpleBeanPropertyFilter.serializeAllExcept("archiveIndicatorsList"))  //return all fields except archiveIndicatorsList from SerArchivetemplate model
-                .addFilter(ModelJsonFilters.FILTER_SER_ARCHIVES, SimpleBeanPropertyFilter.serializeAllExcept("archiveValueList")) //return all fields except archiveValueList from SerArchive model
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except parent from SysDeviceCategory model
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("archive")); //return all fields except parent from SysDeviceCategory model
 
         value.setFilters(filters);
 

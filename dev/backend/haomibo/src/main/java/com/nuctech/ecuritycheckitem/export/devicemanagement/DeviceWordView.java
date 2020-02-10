@@ -105,9 +105,8 @@ public class DeviceWordView extends BaseWordView {
                     tableRow.getCell(2).setText("无");
                 }
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(device.getStatus()));
-                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null
-                        && device.getArchive().getArchiveTemplate().getDeviceCategory() != null) {
-                    tableRow.getCell(4).setText(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());
+                if(device.getCategory() != null) {
+                    tableRow.getCell(4).setText(device.getCategory().getCategoryName());
                 } else {
                     tableRow.getCell(4).setText("无");
                 }

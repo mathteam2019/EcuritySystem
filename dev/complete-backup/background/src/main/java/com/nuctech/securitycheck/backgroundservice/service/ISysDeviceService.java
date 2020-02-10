@@ -40,6 +40,10 @@ public interface ISysDeviceService {
 
     List<SysSecurityInfoVO> findSecurityInfoList();
 
+    List<SysJudgeInfoVO> findJudgeInfoList();
+
+    List<SysManualInfoVO> findManualInfoList();
+
     List<SysMonitoringDeviceStatusInfoVO> findMonitoringInfoList();
 
     boolean checkGuid(String guid);

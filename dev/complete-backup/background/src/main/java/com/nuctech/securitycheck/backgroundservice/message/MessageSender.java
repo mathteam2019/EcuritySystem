@@ -97,7 +97,7 @@ public class MessageSender {
     public void sendDevSysMessage(ResultMessageVO resultMessageVO, String routingKey) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
-                BackgroundServiceUtil.getConfig(routingKey),
+                routingKey,
                 getSendMqObject(resultMessageVO)
         );
     }
@@ -229,7 +229,7 @@ public class MessageSender {
     public void sendSysRemMessage(ResultMessageVO resultMessageVO, String routingKey) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.rem.sys"),
-                BackgroundServiceUtil.getConfig(routingKey),
+                routingKey,
                 getSendMqObject(resultMessageVO)
         );
     }
@@ -294,7 +294,7 @@ public class MessageSender {
     public void sendSysDevMessage(ResultMessageVO resultMessageVO, String routingKey) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.sys.dev"),
-                BackgroundServiceUtil.getConfig(routingKey),
+                routingKey,
                 getSendMqObject(resultMessageVO)
         );
     }
@@ -306,7 +306,7 @@ public class MessageSender {
      */
     public void cronJobHandOvertime(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.sys.man"),
-                BackgroundServiceUtil.getConfig("routingKey.sys.man.overtime"), getSendMqObject(resultMessageVO));
+                BackgroundServiceUtil.getConfig("routingKey.man.overtime"), getSendMqObject(resultMessageVO));
     }
 
     /**
@@ -316,7 +316,7 @@ public class MessageSender {
      */
     public void cronJobJudgeOvertime(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.sys.rem"),
-                BackgroundServiceUtil.getConfig("routingKey.sys.rem.overtime"), getSendMqObject(resultMessageVO));
+                BackgroundServiceUtil.getConfig("routingKey.rem.overtime"), getSendMqObject(resultMessageVO));
     }
 
     /**
@@ -444,7 +444,7 @@ public class MessageSender {
     public void sendSysDeviceSecurityInfoSynchronizeReplyMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.dev.sys.data"),
-                BackgroundServiceUtil.getConfig("routingKey.reply.data.synchronization"),
+                BackgroundServiceUtil.getConfig("routingKey.reply.sys.synchronization"),
                 getSendMqObject(resultMessageVO));
     }
 

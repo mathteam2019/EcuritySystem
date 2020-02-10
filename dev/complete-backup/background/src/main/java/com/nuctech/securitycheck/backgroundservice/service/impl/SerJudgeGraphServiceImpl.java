@@ -80,6 +80,8 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
     @Autowired
     private SerCheckResultRepository serCheckResultRepository;
 
+
+
     /**
      * 4.3.2.9 判图站向后台服务提交判图结论
      *
@@ -114,20 +116,18 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
             taskModel.setTaskNumber(taskNumber);
             Example<SerTask> serTaskEx = Example.of(taskModel);
             SerTask serTask = serTaskRepository.findOne(serTaskEx);
-            securityGuid = serTask.getDevice().getGuid();
-            SysDevice deviceModel = new SysDevice();
-            deviceModel.setGuid(securityGuid);
-            Example<SysDevice> serDeviceEx = Example.of(deviceModel);
-            SysDevice securityDevice = sysDeviceRepository.findOne(serDeviceEx);
+            SysDevice securityDevice = serTask.getDevice();
 
-
+            String settingModelStr = serTask.getModeConfig();
+            SerDeviceConfigSettingModel serDeviceConfigSettingModel = objectMapper.readValue(settingModelStr, SerDeviceConfigSettingModel.class);
+            SysDeviceConfig sysDeviceConfig = serDeviceConfigSettingModel.getDeviceConfig();
             // 当前安检仪的工作方式
-            SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findLatestConfig(serTask.getDevice().getDeviceId());
-            SysWorkMode sysWorkMode = sysDeviceConfig.getSysWorkMode();
+            SysWorkMode sysWorkMode = serTask.getSysWorkMode();
             result.setWorkModeName(sysWorkMode.getModeName());
             // 当前工作流
             SysWorkflow sysWorkflowModel = new SysWorkflow();
             sysWorkflowModel.setSysWorkMode(sysWorkMode);
+
             sysWorkflowModel.setTaskType(TaskType.JUDGE.getValue());
             Example<SysWorkflow> sysWorkflowEx = Example.of(sysWorkflowModel);
             SysWorkflow sysWorkflow = sysWorkflowRepository.findOne(sysWorkflowEx);
@@ -157,13 +157,16 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                         .serTask(serTask)
                         .sysWorkflow(sysWorkflow)
                         .judgeDevice(judgeDevice)
-                        .judgeResult(BackgroundServiceUtil.judgeConvert(judgeSerResult.getImageResult().getResult()))
+                        .judgeResult(judgeSerResult.getImageResult().getResult())
                         .judgeStartTime(DateUtil.stringDateToDate(judgeSerResult.getImageResult().getTime()))
                         .judgeUser(sysUser)
                         .judgeEndTime(DateUtil.getCurrentDate())
                         .judgeSubmitRects(judgeSubmitRectsStr)
                         .judgeCartoonRects(objectMapper.writeValueAsString(judgeSerResult.getImageResult().getSubmitCartoonRects()))
                         .build();
+                if(sysUser != null) {
+                    serJudgeGraph.setCreatedBy(sysUser.getUserId());
+                }
                 if(serAssign != null) {
                     serJudgeGraph.setJudgeStartTime(serAssign.getAssignEndTime());
                 }
@@ -185,32 +188,24 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                 String workMode = "";
                 // 更新目前判图站的工作状态 - free redis 里面
                 if (judgeSerResult.getGuid() != null) {
-                    List<SysSecurityInfoVO> sysSecurityInfoVOS = new ArrayList<SysSecurityInfoVO>();
-                    String sysSecurityInfoStr = redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"));
-                    JSONArray sysSecurityInfoListStr = JSONArray.parseArray(sysSecurityInfoStr);
-                    sysSecurityInfoVOS = sysSecurityInfoListStr.toJavaList(SysSecurityInfoVO.class);
                     List<SysJudgeInfoVO> judgeDeviceList = new ArrayList<SysJudgeInfoVO>();
-                    // 将对应的判断器状态设置为空闲
-                    if (sysSecurityInfoVOS != null) {
-                        for (SysSecurityInfoVO item : sysSecurityInfoVOS) {
-                            // 从GUID查找安全设备
-                            if (StringUtils.isNotBlank(item.getDeviceId().toString()) && item.getDeviceId().equals(securityDevice.getDeviceId())) {
-                                judgeDeviceList = item.getJudgeDeviceModelList();
-                                workMode = item.getWorkMode();
-                                for (SysJudgeInfoVO judgeItem : judgeDeviceList) {
-                                    if (StringUtils.isNotBlank(judgeItem.getDeviceId().toString()) && judgeItem.getDeviceId().equals(judgeDevice.getDeviceId())) {
-                                        judgeItem.setWorkStatus(DeviceWorkStatusType.FREE.getValue());
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                        }
+                    String sysJudgeInfoStr = redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.judge.info"));
+                    JSONArray sysJudgeInfoListStr = JSONArray.parseArray(sysJudgeInfoStr);
+                    judgeDeviceList = sysJudgeInfoListStr.toJavaList(SysJudgeInfoVO.class);
 
-                        //将安全服务信息更新为Redis
-                        redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"),
-                                CryptUtil.encrypt(objectMapper.writeValueAsString(sysSecurityInfoVOS)), CommonConstant.EXPIRE_TIME.getValue());
+                    // 将对应的判断器状态设置为空闲
+                    workMode = sysDeviceConfig.getSysWorkMode().getModeName();
+                    for (SysJudgeInfoVO judgeItem : judgeDeviceList) {
+                        if (StringUtils.isNotBlank(judgeItem.getDeviceId().toString()) && judgeItem.getDeviceId().equals(judgeDevice.getDeviceId())) {
+                            judgeItem.setWorkStatus(DeviceWorkStatusType.FREE.getValue());
+                            break;
+                        }
                     }
+
+                    //将安全服务信息更新为Redis
+                    redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.judge.info"),
+                            CryptUtil.encrypt(objectMapper.writeValueAsString(judgeDeviceList)), CommonConstant.EXPIRE_TIME.getValue());
+
 
                     // 将设备状态信息更新为Redis
                     String deviceListStr = redisUtil.get(BackgroundServiceUtil
@@ -271,26 +266,44 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                 String devSerImageInfoStr = redisUtil.get(key);
                 devSerImageInfoStr = CryptUtil.decrypt(devSerImageInfoStr);
                 DevSerImageInfoModel devSerImageInfo = objectMapper.readValue(devSerImageInfoStr, DevSerImageInfoModel.class);
+                boolean isFinish = false;
+                if(!(sysWorkMode.getModeName().equals(WorkModeType.SECURITY_MANUAL.getValue())) && !(sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue()))) {
+                    isFinish = true;
+                } else {
+                    if (devSerImageInfo.getImageData().getAtrResult().equals(DeviceDefaultType.TRUE.getValue())) {          // 报警、有嫌疑
+                        if (sysDeviceConfig.getAtrSwitch().equals(DeviceDefaultType.TRUE.getValue())) {       // 无嫌疑配置
+                            isFinish = true;
+                        }
+                    }
+                }
 
-                if(!(sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue()))) {
+
+
+                if(isFinish == true){
                     //将数据保存到ser_check_result
-
-                    serTask.setTaskStatus(TaskStatusType.ALL.getValue());
-                    serTaskRepository.save(serTask);
-
-                    SerCheckResult serCheckResult = SerCheckResult.builder()
+                    SerCheckResult serCheckResultModel = SerCheckResult.builder()
                             .serTask(serTask)
-                            .sysDevice(judgeDevice)
-                            .judgeResult(serJudgeGraph.getJudgeResult())
                             .build();
+                    Example<SerCheckResult> serCheckResultEx = Example.of(serCheckResultModel);
+                    SerCheckResult serCheckResult = serCheckResultRepository.findOne(serCheckResultEx);
+                    if(serCheckResult == null) {
+                        serCheckResult = SerCheckResult.builder()
+                                .serTask(serTask)
+                                .sysDevice(securityDevice)
+                                .build();
+
+                    }
                     if(isSystem == true) {
                         serCheckResult.setConclusionType(ConclusionType.SYSTEM.getValue());
                     } else {
                         serCheckResult.setConclusionType(ConclusionType.MANUAL.getValue());
                     }
+                    serCheckResult.setJudgeResult(serJudgeGraph.getJudgeResult());
                     serCheckResultRepository.save(serCheckResult);
+                    serTask.setTaskStatus(TaskStatusType.ALL.getValue());
+                    serTaskRepository.save(serTask);
                 } else {
-                    serTask.setTaskStatus(TaskStatusType.JUDGE.getValue());
+                    serTask.setTaskStatus(TaskStatusType.HAND.getValue());
                     serTaskRepository.save(serTask);
                 }
 
@@ -377,20 +390,16 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
             Example<SerTask> serTaskEx = Example.of(taskModel);
             SerTask serTask = serTaskRepository.findOne(serTaskEx);
 
-            // 客户信息
-            SerInspected serInspectedModel = SerInspected.builder()
-                    .serTask(serTask)
-                    .build();
-            Example<SerInspected> serInspectedEx = Example.of(serInspectedModel);
-            SerInspected serInspected = serInspectedRepository.findOne(serInspectedEx);
 
             // 对应的安检仪
             SysDevice securityDevice = serTask.getDevice();
 
             // 运行配置
-            SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findLatestConfig(securityDevice.getDeviceId());
-            SysWorkMode sysWorkMode = sysDeviceConfig.getSysWorkMode();
 
+            SysWorkMode sysWorkMode = serTask.getSysWorkMode();
+            String settingModelStr = serTask.getModeConfig();
+            SerDeviceConfigSettingModel serDeviceConfigSettingModel = objectMapper.readValue(settingModelStr, SerDeviceConfigSettingModel.class);
+            SysDeviceConfig sysDeviceConfig = serDeviceConfigSettingModel.getDeviceConfig();
             // 工作流程
             SysWorkflow sysWorkflowModel = new SysWorkflow();
             sysWorkflowModel.setSysWorkMode(sysWorkMode);
@@ -406,10 +415,15 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                     .assignStartTime(DateUtil.getCurrentDate())
                     .build();
 
+            String key = "dev.service.image.info" + serTask.getTaskNumber();
+            String devSerImageInfoStr = redisUtil.get(key);
+            devSerImageInfoStr = CryptUtil.decrypt(devSerImageInfoStr);
+            DevSerImageInfoModel devSerImageInfo = objectMapper.readValue(devSerImageInfoStr, DevSerImageInfoModel.class);
+
             // 性别匹配逻辑
             boolean manAvailable = false;
             boolean womanAvailable = false;
-            if (serInspected.getGender().equals(GenderType.MALE.getValue())) {
+            if (devSerImageInfo.getImageData().getImageGender().equals(DeviceGenderType.MALE.getValue())) {
                 if (sysDeviceConfig.getWomanRemoteGender().equals(GenderType.MALE.getValue())
                         || sysDeviceConfig.getWomanRemoteGender().equals(GenderType.MALE_AND_FEMALE.getValue())) {
                     womanAvailable = true;
@@ -434,7 +448,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
             SysJudgeInfoVO assignedJudgeInfo = null;
             long start = System.currentTimeMillis();
             long end = System.currentTimeMillis();
-            List<SysSecurityInfoVO> sysSecurityInfoVOS = new ArrayList<SysSecurityInfoVO>();
+            List<SysJudgeInfoVO> judgeDeviceList = new ArrayList<>();
             boolean isProcess = false;
             Long judgeProcessCount = 0L;
             String judgeProcessCountStr = "";
@@ -473,7 +487,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                         log.error(ex.getMessage());
                     }
                     if(judgeProcessCount >= CommonConstant.MAX_PROCESS.getValue()) { // 检查可以添加到队列
-                        Thread.sleep(1000);
+//                        Thread.sleep(1000);
                         continue;
                     } else {// 添加到队列
                         isProcess = true;
@@ -484,28 +498,31 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                 }
 
                 // 从设备配置中获取当前设备的判断设备列表（使用redis）
-                String sysSecurityInfoStr = redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"));
-                JSONArray sysSecurityInfoListStr = JSONArray.parseArray(sysSecurityInfoStr);
-                sysSecurityInfoVOS = sysSecurityInfoListStr.toJavaList(SysSecurityInfoVO.class);
-                List<SysJudgeInfoVO> judgeDeviceList = new ArrayList<SysJudgeInfoVO>();
-                for (SysSecurityInfoVO item : sysSecurityInfoVOS) {
-                    if (item.getDeviceId().equals(securityDevice.getDeviceId())) {
-                        judgeDeviceList = item.getJudgeDeviceModelList();                                   // 判图组
-                        break;
-                    }
-                }
+                String sysJudgeInfoStr = redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.judge.info"));
+                JSONArray sysJudgeInfoListStr = JSONArray.parseArray(sysJudgeInfoStr);
+                judgeDeviceList = sysJudgeInfoListStr.toJavaList(SysJudgeInfoVO.class);
+
 
                 //随机洗牌
                 Collections.shuffle(judgeDeviceList);
 
-
+                //identityKey = taskNumber;
                 // 检查已经为当前安检仪设备运行的进程
                 log.info("任务" + taskNumber + "正在等待分配判图设备");
                 boolean lockResult = redisUtil.aquirePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.judge.process.running.info") + identityKey,
-                        taskNumber, checkParamsTest.getJudgeProcessingTime().intValue());
+                        taskNumber, CommonConstant.MAX_MANUAL_REDIS_LOCK.getValue());
                 if(lockResult == true) {
                     log.info("任务" + taskNumber + "正在检查判图设备");
                     for (SysJudgeInfoVO item : judgeDeviceList) {
+                        boolean isExist = false;
+                        for(Long judgeDeviceId: serDeviceConfigSettingModel.getJudgeDeviceIdList()) {
+                            if(item.getDeviceId() == judgeDeviceId) {
+                                isExist = true;
+                            }
+                        }
+                        if(isExist == false) {
+                            continue;
+                        }
 
                         //检查可以判断使用状态和性别
                         if (item.getCurrentStatus().equals(DeviceStatusType.LOGIN.getValue())
@@ -541,7 +558,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                 if (!isAssigned) {          // 还没分派 等等 空闲
                     redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.judge.process.running.info") + identityKey,
                             taskNumber);
-                    Thread.sleep(1000);
+//                    Thread.sleep(1000);
                     end = System.currentTimeMillis();
                     long judgeAssignTime = checkParamsTest.getJudgeAssignTime();
                     if (checkParamsTest.getJudgeAssignTime() != null && (end - start) >= judgeAssignTime * 1000) {         // 超时 true
@@ -578,8 +595,12 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
 
                 //添加到ser_assign
                 SysDevice assignedDevice = null;//new SysDevice();
+                if(sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+                    serTask.setTaskStatus(TaskStatusType.HAND.getValue());
+                } else {
+                    serTask.setTaskStatus(TaskStatusType.ALL.getValue());
+                }
 
-                serTask.setTaskStatus(TaskStatusType.ASSIGN.getValue());
                 serTaskRepository.save(serTask);
 
                 serAssign.setAssignUser(assignUser);
@@ -590,10 +611,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                 serAssignRepository.save(serAssign);
 
                 // 从redis获取扫描数据
-                String key = "dev.service.image.info" + serTask.getTaskNumber();
-                String devSerImageInfoStr = redisUtil.get(key);
-                devSerImageInfoStr = CryptUtil.decrypt(devSerImageInfoStr);
-                DevSerImageInfoModel devSerImageInfo = objectMapper.readValue(devSerImageInfoStr, DevSerImageInfoModel.class);
+
 
                 JudgeSerResultModel judgeSerResultModel = new JudgeSerResultModel();
                 judgeSerResultModel.setImageResult(new ImageResultModel());
@@ -604,7 +622,9 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                 judgeSerResultModel.getImageResult().setUserName(BackgroundServiceUtil.getConfig("default.user"));      // 默认用户
 
                 // 4.3.2.9 判图站向后台服务提交判图结论(超时结论)
-                saveJudgeGraphResult(judgeSerResultModel);
+                JudgeInfoSaveResultVO saveResult = saveJudgeGraphResult(judgeSerResultModel);
+                JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
+                judgeSysController.sendJudgeResultToDevice(judgeSerResultModel, saveResult);
                 //JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
                 //judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
 
@@ -649,7 +669,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                 Example<SysDevice> sysDeviceEx = Example.of(sysDeviceModel);
                 SysDevice assignedDevice = sysDeviceRepository.findOne(sysDeviceEx);
 
-                serTask.setTaskStatus(TaskStatusType.ASSIGN.getValue());
+                serTask.setTaskStatus(TaskStatusType.JUDGE.getValue());
                 serTaskRepository.save(serTask);
 
 
@@ -682,19 +702,15 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                                 .getConfig("redisKey.sys.monitoring.device.status.info"),
                         CryptUtil.encrypt(objectMapper.writeValueAsString(deviceList)), CommonConstant.EXPIRE_TIME.getValue());
 
-                sysSecurityInfoVOS = sysDeviceService.findSecurityInfoList();
                 redisUtil.set(BackgroundServiceUtil
-                                .getConfig("redisKey.sys.security.info"),
-                        CryptUtil.encrypt(objectMapper.writeValueAsString(sysSecurityInfoVOS)), CommonConstant.EXPIRE_TIME.getValue());
+                                .getConfig("redisKey.sys.judge.info"),
+                        CryptUtil.encrypt(objectMapper.writeValueAsString(judgeDeviceList)), CommonConstant.EXPIRE_TIME.getValue());
 
                 redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.judge.process.running.info") + identityKey,
                         taskNumber);
 
                 // 从redis获取扫描数据
-                String key = "dev.service.image.info" + serTask.getTaskNumber();
-                String devSerImageInfoStr = redisUtil.get(key);
-                devSerImageInfoStr = CryptUtil.decrypt(devSerImageInfoStr);
-                DevSerImageInfoModel devSerImageInfo = objectMapper.readValue(devSerImageInfoStr, DevSerImageInfoModel.class);
+
 
                 SerJudgeImageInfoModel serJudgeImageInfo = SerJudgeImageInfoModel.builder()
                         .guid(assignedDevice.getGuid())

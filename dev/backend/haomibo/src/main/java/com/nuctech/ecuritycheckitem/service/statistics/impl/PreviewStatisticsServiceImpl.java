@@ -23,6 +23,8 @@ import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistic
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsModelForPreview;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsForPreview;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.PreviewStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +48,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     @Autowired
     public EntityManager entityManager;
 
+    @Autowired
+    AuthService authService;
+
+    private CategoryUser categoryUser;
+
 
     /**
      * get judge statistcs
@@ -63,6 +70,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     public TotalStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
+        categoryUser = authService.getDataCategoryUserList();
 
         //.... Get Total Statistics
         String strQuery = makeQuery().replace(":whereScan", getWhereCauseScan(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
@@ -267,6 +275,12 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
+        }
+
         if (userCategory != null && !userCategory.isEmpty()) {
 
             stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
@@ -290,10 +304,12 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
 
 
+
         if (!whereCause.isEmpty()) {
 
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
+
 
         return stringBuilder.toString();
     }
@@ -337,6 +353,12 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         if (userCategory != null && !userCategory.isEmpty()) {
 
             whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
+        }
+
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("j.CREATEDBY in (" + idListStr + ") ");
         }
 
         if (userCategory != null && !userCategory.isEmpty()) {
@@ -409,6 +431,12 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         if (userCategory != null && !userCategory.isEmpty()) {
 
             whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
+        }
+
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
         }
 
         if (userCategory != null && !userCategory.isEmpty()) {

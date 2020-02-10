@@ -90,6 +90,9 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
     @Autowired
     private ISerPlatformCheckParamsService serPlatformCheckParamsService;
 
+    @Autowired
+    private SysDeviceDetailRepository sysDeviceDetailRepository;
+
     /**
      * 通过判断设备和手动检查点获取所有安全设备信息
      * findSecurityInfoList
@@ -230,6 +233,73 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
         return result;
     }
 
+    @Override
+    public List<SysJudgeInfoVO> findJudgeInfoList() {
+        //获取所有设备列表
+        Date startTime = new Date();
+        List<SysJudgeDevice> sysDeviceList = sysJudgeDeviceRepository.findAll();
+        List<SysJudgeInfoVO> sysJudgeInfoVOS = new ArrayList<SysJudgeInfoVO>();
+        for (SysJudgeDevice item : sysDeviceList) {
+                // 获取安全设备的判断设备列表和手检站列表
+            SysDevice judgeDevice = item.getDevice();
+            if (judgeDevice != null) {
+                SysJudgeInfoVO sysJudgeInfoVO = new SysJudgeInfoVO();
+                sysJudgeInfoVO.setGuid(judgeDevice.getGuid());
+                sysJudgeInfoVO.setDeviceId(judgeDevice.getDeviceId());
+                sysJudgeInfoVO.setDeviceName(judgeDevice.getDeviceName());
+                sysJudgeInfoVO.setDeviceSerial(judgeDevice.getDeviceSerial());
+                sysJudgeInfoVO.setCurrentStatus(judgeDevice.getCurrentStatus());
+                sysJudgeInfoVO.setWorkStatus(judgeDevice.getWorkStatus());
+                sysJudgeInfoVO.setDeviceCheckerGender(item.getDeviceCheckGender());
+                sysJudgeInfoVO.setConfigInfo(null);
+                SerLoginInfo serLoginInfo = item.getLoginInfo();
+                if (serLoginInfo != null) {
+                    if (serLoginInfo.getLoginCategory().equals(LogType.LOGIN.getValue())) {
+                        sysJudgeInfoVO.setLogInedUserId(serLoginInfo.getUserId());
+                    }
+                }
+
+                sysJudgeInfoVOS.add(sysJudgeInfoVO);
+            }
+        }
+        Date endTime = new Date();
+        long calTime = endTime.getTime() - startTime.getTime();
+
+        return sysJudgeInfoVOS;
+    }
+
+    @Override
+    public List<SysManualInfoVO> findManualInfoList() {
+        //获取所有设备列表
+        List<SysManualDevice> sysDeviceList = sysManualDeviceRepository.findAll();
+        List<SysManualInfoVO> sysManualInfoVOS = new ArrayList<SysManualInfoVO>();
+        for (SysManualDevice item : sysDeviceList) {
+
+            SysDevice manualDevice = item.getDevice();
+            if (manualDevice != null) {
+                SysManualInfoVO sysManualInfoVO = new SysManualInfoVO();
+                sysManualInfoVO.setGuid(manualDevice.getGuid());
+                sysManualInfoVO.setDeviceId(manualDevice.getDeviceId());
+                sysManualInfoVO.setDeviceName(manualDevice.getDeviceName());
+                sysManualInfoVO.setDeviceSerial(manualDevice.getDeviceSerial());
+                sysManualInfoVO.setCurrentStatus(manualDevice.getCurrentStatus());
+                sysManualInfoVO.setWorkStatus(manualDevice.getWorkStatus());
+                sysManualInfoVO.setDeviceCheckerGender(item.getDeviceCheckGender());
+                sysManualInfoVO.setConfigInfo(null);
+
+                SerLoginInfo serLoginInfo = item.getLoginInfo();
+                if (serLoginInfo != null) {
+                    if (serLoginInfo.getLoginCategory().equals(LogType.LOGIN.getValue())) {
+                        sysManualInfoVO.setLogInedUserId(serLoginInfo.getUserId());
+                    }
+                }
+                sysManualInfoVOS.add(sysManualInfoVO);
+            }
+        }
+
+        return sysManualInfoVOS;
+    }
+
     /**
      * 设备端 保存
      *
@@ -288,6 +358,8 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
         Example<SerTask> serTaskEx = Example.of(taskModel);
         SerTask serTask = serTaskRepository.findOne(serTaskEx);
 
+        String settingModelStr = serTask.getModeConfig();
+
         Integer timeLimit = 0;
 
         String identityKey = "";
@@ -300,32 +372,37 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
         } else {
             identityKey = securityDevice.getGuid();
         }
+
+
         try {
 
             SerAssign assign = new SerAssign();
             SerTask task = SerTask.builder()
                     .taskId(taskInfoVO.getTaskId()).build();
             //SysWorkflow workflow = SysWorkflow.builder().workflowId(securityDeviceModel.getConfigInfo().getModeId()).build();
-
+            SerDeviceConfigSettingModel serDeviceConfigSettingModel = objectMapper.readValue(settingModelStr, SerDeviceConfigSettingModel.class);
+            SysDeviceConfig deviceConfigInfo = serDeviceConfigSettingModel.getDeviceConfig();
             Date assignStartTime = DateUtil.getCurrentDate();
 
             loop:
             while (true) {
-                ObjectMapper objectRedisMapper = new ObjectMapper();
-                String dataStr = CryptUtil.decrypt(redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.security.info")));
 
-                JSONArray dataContent = JSONArray.parseArray(dataStr);
-                List<SysSecurityInfoVO> securityDeviceModelList = dataContent.toJavaList(SysSecurityInfoVO.class);
                 log.info("任务" + taskInfoVO.getTaskNumber() + "正在等待分配手检站");
                 boolean lockResult = redisUtil.aquirePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
                         taskInfoVO.getTaskNumber(), CommonConstant.MAX_MANUAL_REDIS_LOCK.getValue());
 
                 if(!lockResult) {
                     log.error("任务" + taskInfoVO.getTaskNumber() + "无法检查手检站");
-                    Thread.sleep(100);
+                    //Thread.sleep(100);
                     continue;
                 }
+
                 log.info("任务" + taskInfoVO.getTaskNumber() + "正在检查手检站");
+                ObjectMapper objectRedisMapper = new ObjectMapper();
+                String dataStr = CryptUtil.decrypt(redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.manual.info")));
+
+                JSONArray dataContent = JSONArray.parseArray(dataStr);
+                List<SysManualInfoVO> manualDeviceModelList = dataContent.toJavaList(SysManualInfoVO.class);
 
                 //是否已分派
                 DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = isManualDeviceDispatched(taskInfoVO.getTaskNumber());
@@ -335,154 +412,87 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
 
                     return dispatchManualDeviceInfoVO;
                 }
-                for (SysSecurityInfoVO securityDeviceModel : securityDeviceModelList) {
-                    if (securityDeviceModel.getGuid().equals(guid) && (securityDeviceModel.getWorkMode().equals(WorkModeType.SECURITY_MANUAL.getValue()) ||
-                            securityDeviceModel.getWorkMode().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue()))) {
-
-
-                        List<SysManualInfoVO> manualDeviceModelList = securityDeviceModel.getManualDeviceModelList();
-                        Collections.shuffle(manualDeviceModelList);
-                        for (SysManualInfoVO manualModel : manualDeviceModelList) {
-                            //是否有资源
-                            if ((manualModel.getCurrentStatus().equals(DeviceStatusType.LOGIN.getValue()) ||
-                                    manualModel.getCurrentStatus().equals(DeviceStatusType.START.getValue())) &&
-                                    manualModel.getWorkStatus().equals(DeviceWorkStatusType.FREE.getValue())) {
-                                //引导员性别匹配
-                                if (genderCheck(manualModel.getDeviceCheckerGender(), taskInfoVO, securityDeviceModel)) {
-                                    ret.setLocalRecheck(false);
-                                    ret.setRecheckNumber(manualModel.getDeviceSerial());
-                                    internalData.setLocalRecheck(false);
-                                    internalData.setRecheckNumber(manualModel.getDeviceSerial());
-
-                                    //insert & update db
-                                    //SysWorkflow workflow = SysWorkflow.builder().workflowId(securityDeviceModel.getConfigInfo().getModeId()).build();
-                                    SysWorkMode workMode = SysWorkMode.builder()
-                                            .modeId(securityDeviceModel.getConfigInfo().getModeId()).build();
-
-                                    SysWorkflow sysWorkflowModel = new SysWorkflow();
-                                    sysWorkflowModel.setSysWorkMode(workMode);
-                                    sysWorkflowModel.setTaskType(TaskType.HAND.getValue());
-                                    Example<SysWorkflow> sysWorkflowEx = Example.of(sysWorkflowModel);
-                                    SysWorkflow sysWorkflow = sysWorkflowRepository.findOne(sysWorkflowEx);
-
-                                    SysDevice manualDeviceModel = new SysDevice();
-                                    manualDeviceModel.setDeviceId(manualModel.getDeviceId());
-                                    Example<SysDevice> manualDeviceEx = Example.of(manualDeviceModel);
-                                    SysDevice manualDevice = sysDeviceRepository.findOne(manualDeviceEx);
-                                    manualDevice.setWorkStatus(DeviceWorkStatusType.BUSY.getValue());
-
-                                    serTask.setTaskStatus(TaskStatusType.ASSIGN.getValue());
-                                    serTaskRepository.save(serTask);
-                                    SysUser logInedUser = SysUser.builder()
-                                            .userId(manualModel.getLogInedUserId()).build();
-
-                                    assign.setSerTask(task);
-                                    assign.setSysWorkflow(sysWorkflow);
-                                    assign.setSysWorkMode(workMode);
-                                    assign.setAssignUser(logInedUser);
-                                    assign.setAssignHandDevice(manualDevice);
-                                    assign.setAssignEndTime(DateUtil.getCurrentDate());
-                                    assign.setAssignStartTime(assignStartTime);
-
-                                    serAssignRepository.save(assign);
-                                    sysDeviceRepository.save(manualDevice);
-
-                                    manualModel.setWorkStatus(DeviceWorkStatusType.BUSY.getValue());
-                                    securityDeviceModel.setManualDeviceModelList(manualDeviceModelList);
-
-                                    redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"),
-                                            CryptUtil.encrypt(objectRedisMapper.writeValueAsString(findSecurityInfoList())),
-                                            CommonConstant.EXPIRE_TIME.getValue());
-
-                                    internalData.setAssignId(assign.getAssignId());
-                                    redisUtil.set(BackgroundServiceUtil.getConfig(
-                                            "redisKey.sys.manual.assign.guid.info") + manualDevice.getDeviceId(),
-                                            CryptUtil.encrypt(objectRedisMapper.writeValueAsString(internalData)), CommonConstant.EXPIRE_TIME.getValue());
-
-                                    redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.info") + taskInfoVO.getTaskNumber(),
-                                            CryptUtil.encrypt(objectRedisMapper.writeValueAsString(internalData)), CommonConstant.EXPIRE_TIME.getValue());
-                                    break loop;
-                                }
-                            }
+                for (SysManualInfoVO manualModel : manualDeviceModelList) {
+                    boolean isExist = false;
+                    for(Long manualDeviceId: serDeviceConfigSettingModel.getManualDeviceIdList()) {
+                        if(manualDeviceId == manualModel.getDeviceId()) {
+                            isExist = true;
                         }
+                    }
+                    if(isExist == false) {
+                        continue;
+                    }
 
-                        //安检仪能否处理
-                        if (securityDeviceModel.getConfigInfo().getManualSwitch().equals(DeviceInfoDefaultType.TRUE.getValue())) {
-                            String key = "dev.service.image.result.info" + serTask.getTaskNumber();
-                            String str = CryptUtil.decrypt(redisUtil.get(key));
+                    //是否有资源
+                    if ((manualModel.getCurrentStatus().equals(DeviceStatusType.LOGIN.getValue()) ||
+                            manualModel.getCurrentStatus().equals(DeviceStatusType.START.getValue())) &&
+                            manualModel.getWorkStatus().equals(DeviceWorkStatusType.FREE.getValue())) {
+                        //引导员性别匹配
+                        if (genderCheck(manualModel.getDeviceCheckerGender(), taskInfoVO, deviceConfigInfo)) {
+                            ret.setLocalRecheck(false);
+                            ret.setRecheckNumber(manualModel.getDeviceSerial());
+                            internalData.setLocalRecheck(false);
+                            internalData.setRecheckNumber(manualModel.getDeviceSerial());
 
-                            SerManImageInfoModel serImgInfoModel = null;
-                            try {
-                                serImgInfoModel = objectMapper.readValue(str, SerManImageInfoModel.class);
-                            }catch(Exception ex) {
-                                log.error("无法解析扫描图像信息");
-                                log.error(ex.getMessage());
-                                //ex.printStackTrace();
-                            }
-                            //是否有判图结论
-                            if (serImgInfoModel == null) {
-                                redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
-                                        taskInfoVO.getTaskNumber());
-                                Thread.sleep(1000);
-                                continue;
-                            }
+                            //insert & update db
+                            //SysWorkflow workflow = SysWorkflow.builder().workflowId(securityDeviceModel.getConfigInfo().getModeId()).build();
+                            SysWorkMode workMode = deviceConfigInfo.getSysWorkMode();
 
-                            SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(securityDeviceModel.getDeviceId());
-                            SysUser sysUser = new SysUser();
-                            sysUser.setUserId(serLoginInfo.getUserId());
-                            sysUser = sysUserRepository.findOne(Example.of(sysUser));
-                            //引导员性别匹配
-                            if (genderCheck(sysUser.getGender(), taskInfoVO, securityDeviceModel)) {
-                                ret.setLocalRecheck(true);
-                                ret.setRecheckNumber(securityDeviceModel.getDeviceSerial());
-                                internalData.setLocalRecheck(true);
-                                internalData.setRecheckNumber(securityDeviceModel.getDeviceSerial());
+                            SysWorkflow sysWorkflowModel = new SysWorkflow();
+                            sysWorkflowModel.setSysWorkMode(workMode);
+                            sysWorkflowModel.setTaskType(TaskType.HAND.getValue());
+                            Example<SysWorkflow> sysWorkflowEx = Example.of(sysWorkflowModel);
+                            SysWorkflow sysWorkflow = sysWorkflowRepository.findOne(sysWorkflowEx);
 
-                                //insert & update db
-                                //SysWorkflow workflow = SysWorkflow.builder().workflowId(securityDeviceModel.getConfigInfo().getModeId()).build();
-                                SysWorkMode workMode = SysWorkMode.builder()
-                                        .modeId(securityDeviceModel.getConfigInfo().getModeId()).build();
+                            SysDevice manualDeviceModel = new SysDevice();
+                            manualDeviceModel.setDeviceId(manualModel.getDeviceId());
+                            Example<SysDevice> manualDeviceEx = Example.of(manualDeviceModel);
+                            SysDevice manualDevice = sysDeviceRepository.findOne(manualDeviceEx);
+                            manualDevice.setWorkStatus(DeviceWorkStatusType.BUSY.getValue());
 
-                                SysWorkflow sysWorkflowModel = new SysWorkflow();
-                                sysWorkflowModel.setSysWorkMode(workMode);
-                                sysWorkflowModel.setTaskType(TaskType.HAND.getValue());
-                                Example<SysWorkflow> sysWorkflowEx = Example.of(sysWorkflowModel);
-                                SysWorkflow sysWorkflow = sysWorkflowRepository.findOne(sysWorkflowEx);
+                            serTask.setTaskStatus(TaskStatusType.HAND.getValue());
+                            serTaskRepository.save(serTask);
+                            SysUser logInedUser = SysUser.builder()
+                                    .userId(manualModel.getLogInedUserId()).build();
 
-                                serTask.setTaskStatus(TaskStatusType.ASSIGN.getValue());
-                                serTaskRepository.save(serTask);
+                            assign.setSerTask(task);
+                            assign.setSysWorkflow(sysWorkflow);
+                            assign.setSysWorkMode(workMode);
+                            assign.setAssignUser(logInedUser);
+                            assign.setAssignHandDevice(manualDevice);
+                            assign.setAssignEndTime(DateUtil.getCurrentDate());
+                            assign.setAssignStartTime(assignStartTime);
 
-                                SysDevice manualDevice = SysDevice.builder()
-                                        .deviceId(securityDeviceModel.getDeviceId())
-                                        .build();
-                                SysUser logInedUser = SysUser.builder()
-                                        .userId(securityDeviceModel.getLogInedUserId()).build();
+                            serAssignRepository.save(assign);
+                            sysDeviceRepository.save(manualDevice);
 
-                                assign.setSerTask(task);
-                                assign.setSysWorkflow(sysWorkflow);
-                                assign.setSysWorkMode(workMode);
-                                assign.setAssignUser(logInedUser);
-                                assign.setAssignHandDevice(manualDevice);
-                                assign.setAssignEndTime(DateUtil.getCurrentDate());
+                            manualModel.setWorkStatus(DeviceWorkStatusType.BUSY.getValue());
 
-                                serAssignRepository.save(assign);
+                            redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.info"),
+                                    CryptUtil.encrypt(objectRedisMapper.writeValueAsString(manualDeviceModelList)),
+                                    CommonConstant.EXPIRE_TIME.getValue());
 
-                                internalData.setAssignId(assign.getAssignId());
-                                redisUtil.set(BackgroundServiceUtil.getConfig(
-                                        "redisKey.sys.manual.assign.guid.info") + securityDeviceModel.getDeviceId(),
-                                        CryptUtil.encrypt(objectRedisMapper.writeValueAsString(internalData)), CommonConstant.EXPIRE_TIME.getValue());
-                                redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.info") + taskInfoVO.getTaskNumber(),
-                                        CryptUtil.encrypt(objectRedisMapper.writeValueAsString(internalData)), CommonConstant.EXPIRE_TIME.getValue());
+                            internalData.setAssignId(assign.getAssignId());
+                            redisUtil.set(BackgroundServiceUtil.getConfig(
+                                    "redisKey.sys.manual.assign.guid.info") + manualDevice.getDeviceId(),
+                                    CryptUtil.encrypt(objectRedisMapper.writeValueAsString(internalData)), CommonConstant.EXPIRE_TIME.getValue());
 
-                                break loop;
-                            }
+                            redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.info") + taskInfoVO.getTaskNumber(),
+                                    CryptUtil.encrypt(objectRedisMapper.writeValueAsString(internalData)), CommonConstant.EXPIRE_TIME.getValue());
+
+                            redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.status.info") + taskInfoVO.getTaskNumber(),
+                                    DeviceDefaultType.TRUE.getValue(), CommonConstant.EXPIRE_TIME.getValue());
+                            break loop;
                         }
-
                     }
                 }
+
+                redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.status.info") + taskInfoVO.getTaskNumber(),
+                        DeviceDefaultType.FALSE.getValue(), CommonConstant.EXPIRE_TIME.getValue());
                 redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
                         taskInfoVO.getTaskNumber());
-                Thread.sleep(1000);
+
+                //Thread.sleep(1000);
             }
 
             log.info("任务" + taskInfoVO.getTaskNumber() + "是分配手检站");
@@ -497,7 +507,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             internalData.setRecheckNumber(null);
         }
 
-        return ret;
+            return ret;
     }
 
     /**
@@ -505,15 +515,22 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
      * @param taskInfoVO: 检查的用户信息
      * @return boolean : is able to check
      */
-    public Boolean genderCheck(String gender, TaskInfoVO taskInfoVO, SysSecurityInfoVO securityDeviceModel) {
+    public Boolean genderCheck(String gender, TaskInfoVO taskInfoVO, SysDeviceConfig deviceConfig) {
         String checkerGender = gender;
         String configGender = GenderType.MALE_AND_FEMALE.getValue();
-        String customerGender = taskInfoVO.getCustomerGender();
+        String customerGender = "";
+
+        // 得到性别
+        if (taskInfoVO.getCustomerGender().equals(DeviceGenderType.MALE.getValue())) {
+            customerGender = GenderType.MALE.getValue();
+        } else if (taskInfoVO.getCustomerGender().equals(DeviceGenderType.FEMALE.getValue())) {
+            customerGender = GenderType.FEMALE.getValue();
+        }
         Boolean ret;
         if (checkerGender.equals(GenderType.MALE.getValue())) {
-            configGender = securityDeviceModel.getConfigInfo().getManManualGender();
+            configGender = deviceConfig.getManManualGender();
         } else if (checkerGender.equals(GenderType.FEMALE.getValue())) {
-            configGender = securityDeviceModel.getConfigInfo().getWomanManualGender();
+            configGender = deviceConfig.getWomanManualGender();
         }
 
         if (configGender.equals(GenderType.MALE_AND_FEMALE.getValue()))
@@ -867,24 +884,23 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
      */
     @Override
     public List<SysMonitoringDeviceStatusInfoVO> findMonitoringInfoList() {
+        Date startTime = new Date();
         List<SysMonitoringDeviceStatusInfoVO> result = new ArrayList<SysMonitoringDeviceStatusInfoVO>();
-        List<SysDevice> sysDeviceList = sysDeviceRepository.findAll();
-        for (SysDevice sysDevice : sysDeviceList) {
+        List<SysDeviceDetail> sysDeviceList = sysDeviceDetailRepository.findAll();
+        for (SysDeviceDetail sysDevice : sysDeviceList) {
             SysMonitoringDeviceStatusInfoVO info = new SysMonitoringDeviceStatusInfoVO();
 
-            SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(sysDevice.getDeviceId());
+            SerLoginInfoDetail serLoginInfo = sysDevice.getLoginInfo();
             if (serLoginInfo != null) {
                 if (serLoginInfo.getLoginCategory() != null && serLoginInfo.getLoginCategory().equals(LogType.LOGIN.getValue())) {
-                    SysUser sysUser = new SysUser();
-                    sysUser.setUserId(serLoginInfo.getUserId());
-                    sysUser = sysUserRepository.findOne(Example.of(sysUser));
+                    SysUser sysUser = serLoginInfo.getSysUser();
 
                     if (sysUser != null) {
                         info.setLoginUser(sysUser);
 
                         SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
                         serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
-                        serDeviceStatus = serDeviceStatusRepository.findOne(Example.of(serDeviceStatus));
+                        serDeviceStatus = sysDevice.getDeviceStatus();
                         if (serDeviceStatus != null) {
                             info.setLoginTime(serDeviceStatus.getLoginTime());
                         }
@@ -901,6 +917,8 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
 
             result.add(info);
         }
+        Date endTime = new Date();
+        long calTime = endTime.getTime() - startTime.getTime();
         return result;
     }
 

@@ -84,9 +84,8 @@ public class DeviceFieldExcelView extends BaseExcelView {
                 row.createCell(1).setCellValue(device.getDeviceSerial());
 
                 row.createCell(2).setCellValue(device.getDeviceName());
-                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null
-                        && device.getArchive().getArchiveTemplate().getDeviceCategory() != null) {
-                    row.createCell(3).setCellValue(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());
+                if(device.getCategory() != null) {
+                    row.createCell(3).setCellValue(device.getCategory().getCategoryName());
                 } else {
                     row.createCell(3).setCellValue("无");
                 }

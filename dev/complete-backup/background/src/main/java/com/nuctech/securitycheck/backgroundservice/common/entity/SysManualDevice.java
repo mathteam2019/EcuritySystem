@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JoinFormula;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -39,5 +42,17 @@ public class SysManualDevice extends BaseEntity implements Serializable {
 
     @Column(name = "DEVICE_CHECKER_GENDER", length = 10)
     private String deviceCheckGender;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MANUAL_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysDevice device;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinFormula("(SELECT login.LOGIN_INFO_ID FROM ser_login_info login WHERE login.DEVICE_ID = MANUAL_DEVICE_ID ORDER BY login.TIME DESC LIMIT 1)")
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SerLoginInfo loginInfo;
+
+
 
 }

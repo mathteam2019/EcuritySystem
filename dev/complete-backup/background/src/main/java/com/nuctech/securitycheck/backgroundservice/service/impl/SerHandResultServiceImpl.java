@@ -8,6 +8,7 @@ import com.nuctech.securitycheck.backgroundservice.common.entity.*;
 import com.nuctech.securitycheck.backgroundservice.common.enums.*;
 import com.nuctech.securitycheck.backgroundservice.common.models.DevSerImageInfoModel;
 import com.nuctech.securitycheck.backgroundservice.common.models.HandSerResultModel;
+import com.nuctech.securitycheck.backgroundservice.common.models.SerDeviceConfigSettingModel;
 import com.nuctech.securitycheck.backgroundservice.common.models.SerManImageInfoModel;
 import com.nuctech.securitycheck.backgroundservice.common.utils.BackgroundServiceUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.CryptUtil;
@@ -97,8 +98,11 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
 
 
             // 获取设备工作流程
-            SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findLatestConfig(serTask.getDevice().getDeviceId());
-            SysWorkMode sysWorkMode = sysDeviceConfig.getSysWorkMode();
+            String settingModelStr = serTask.getModeConfig();
+            SerDeviceConfigSettingModel serDeviceConfigSettingModel = objectMapper.readValue(settingModelStr, SerDeviceConfigSettingModel.class);
+            SysDeviceConfig sysDeviceConfig = serDeviceConfigSettingModel.getDeviceConfig();
+
+            SysWorkMode sysWorkMode = serTask.getSysWorkMode();
             SysWorkflow sysWorkflowModel = new SysWorkflow();
             sysWorkflowModel.setSysWorkMode(sysWorkMode);
             sysWorkflowModel.setTaskType(TaskType.HAND.getValue());
@@ -141,27 +145,25 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
             }
 
             // 从redis获取相应安全设备的设备配置信息
-            List<SysSecurityInfoVO> sysSecurityInfoVOS;
-            String sysSecurityInfoStr = redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"));
-            JSONArray sysSecurityInfoListStr = JSONArray.parseArray(sysSecurityInfoStr);
-            sysSecurityInfoVOS = sysSecurityInfoListStr.toJavaList(SysSecurityInfoVO.class);
             List<SysManualInfoVO> manualDeviceList;
-            if (sysSecurityInfoVOS != null) {
-                for (SysSecurityInfoVO item : sysSecurityInfoVOS) {
-                    manualDeviceList = item.getManualDeviceModelList();
-                    if (manualDeviceList != null) {
-                        for (SysManualInfoVO manualItem : manualDeviceList) {
-                            // 检查guid并获取用户信息并将其状态更新为免费
-                            if (StringUtils.isNotBlank(manualItem.getDeviceId().toString()) && manualItem.getDeviceId().equals(handDevice.getDeviceId())) {
-                                manualItem.setWorkStatus(DeviceWorkStatusType.FREE.getValue());
-                                break;
-                            }
-                        }
+            String sysManualInfoStr = redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.manual.info"));
+            JSONArray sysManualInfoListStr = JSONArray.parseArray(sysManualInfoStr);
+            manualDeviceList = sysManualInfoListStr.toJavaList(SysManualInfoVO.class);
+
+
+            if (manualDeviceList != null) {
+                for (SysManualInfoVO manualItem : manualDeviceList) {
+                    // 检查guid并获取用户信息并将其状态更新为免费
+                    if (StringUtils.isNotBlank(manualItem.getDeviceId().toString()) && manualItem.getDeviceId().equals(handDevice.getDeviceId())) {
+                        manualItem.setWorkStatus(DeviceWorkStatusType.FREE.getValue());
+                        break;
                     }
                 }
-                redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"),
-                        CryptUtil.encrypt(objectMapper.writeValueAsString(sysSecurityInfoVOS)), CommonConstant.EXPIRE_TIME.getValue());
             }
+
+            redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.info"),
+                    CryptUtil.encrypt(objectMapper.writeValueAsString(manualDeviceList)), CommonConstant.EXPIRE_TIME.getValue());
+
 
 
 
@@ -198,6 +200,9 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
             if(serAssign != null) {
                 serHandExamination.setHandStartTime(serAssign.getAssignEndTime());
             }
+            if(sysUser != null) {
+                serHandExamination.setCreatedBy(sysUser.getUserId());
+            }
             serHandExamination = serHandExaminationRepository.save(serHandExamination);
 
             serTask.setTaskStatus(TaskStatusType.ALL.getValue());
@@ -218,19 +223,26 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
             } else if (handSerResult.getCheckResult().getImageJudge2().equals(DeviceImageJudgeType.LEAKJUDGE.getValue())) {
                 imageJudgeTypeSecond = ImageJudgeType.LEAKJUDGE.getValue();
             }
-            SerCheckResult serCheckResult = SerCheckResult.builder()
+            SerCheckResult serCheckResultModel = SerCheckResult.builder()
                     .serTask(serTask)
-                    .sysDevice(handDevice)
-                    .conclusionType(ConclusionType.HAND.getValue())
-                    .handTaskResult((handSerResult.getCheckResult().getResult()))
-                    .handGoods(handSerResult.getCheckResult().getChecklist())
-                    .handCollectSign((handSerResult.getCheckResult().getImageKeep()))
-                    .handAppraise(imageJudgeType)
-                    .handAppraiseSecond(imageJudgeTypeSecond)
-                    .handAttached(handSerResult.getCheckResult().getFiles())
-                    .handSubmitRects(handSubmitRectsStr)
-                    .handCartoonRects(objectMapper.writeValueAsString(handSerResult.getCheckResult().getSubmitCartoonRects()))
                     .build();
+            Example<SerCheckResult> serCheckResultEx = Example.of(serCheckResultModel);
+            SerCheckResult serCheckResult = serCheckResultRepository.findOne(serCheckResultEx);
+            if(serCheckResult == null) {
+                serCheckResult = SerCheckResult.builder()
+                        .serTask(serTask)
+                        .sysDevice(serTask.getDevice())
+                        .build();
+            }
+            serCheckResult.setConclusionType(ConclusionType.HAND.getValue());
+            serCheckResult.setHandTaskResult((handSerResult.getCheckResult().getResult()));
+            serCheckResult.setHandGoods(handSerResult.getCheckResult().getChecklist());
+            serCheckResult.setHandCollectSign((handSerResult.getCheckResult().getImageKeep()));
+            serCheckResult.setHandAppraise(imageJudgeType);
+            serCheckResult.setHandAppraiseSecond(imageJudgeTypeSecond);
+            serCheckResult.setHandAttached(handSerResult.getCheckResult().getFiles());
+            serCheckResult.setHandSubmitRects(handSubmitRectsStr);
+            serCheckResult.setHandCartoonRects(objectMapper.writeValueAsString(handSerResult.getCheckResult().getSubmitCartoonRects()));
             serCheckResult.setNote(handSerResult.getCheckResult().getNote());
             serCheckResultRepository.save(serCheckResult);
 
@@ -312,12 +324,12 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
             while (StringUtils.isBlank(assignInfoStr)) {
                 i++;
                 assignInfoStr = redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.info") + taskNumber);
-                if (StringUtils.isBlank(assignInfoStr)) {
-                    Thread.sleep(1000);
-                }
-                if (i == 15) {
-                    throw new Exception("There is no assignable hand checker for this task now.");
-                }
+//                if (StringUtils.isBlank(assignInfoStr)) {
+//                    Thread.sleep(1000);
+//                }
+//                if (i == 15) {
+//                    throw new Exception("There is no assignable hand checker for this task now.");
+//                }
             }
             DispatchManualDeviceInfoVO assignInfo = objectMapper.readValue(assignInfoStr, DispatchManualDeviceInfoVO.class);
 

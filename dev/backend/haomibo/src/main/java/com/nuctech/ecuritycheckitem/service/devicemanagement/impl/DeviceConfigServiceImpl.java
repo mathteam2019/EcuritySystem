@@ -186,14 +186,18 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         if (mode != null) {
             predicate.and(builder.modeId.eq(mode));
         }
+        categoryId = 3L;
+        predicate.and(builder.device.categoryId.eq(categoryId));
         predicate.and(builder.device.status.eq(SysDevice.Status.ACTIVE));
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
 
-        Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sortBy = "device.deviceSerial";
-            sort = new Sort(Sort.Direction.ASC, sortBy);
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = new Sort(Sort.Direction.DESC, sortBy);
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
@@ -202,69 +206,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
 
-        /*
-        * Todo
-        *  strange category
-        *
-        * if (filter.getCategoryId() != null) {
-            predicate.and(builder.device.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
-        }
-        * */
 
-        int startIndex = perPage * currentPage;
-        int endIndex = perPage * (currentPage + 1);
 
-        long total = 0;
-        List<SysDeviceConfig> allData;
-        if(sort != null) {
-            allData = StreamSupport
-                    .stream(sysDeviceConfigRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        } else {
-            allData = StreamSupport
-                    .stream(sysDeviceConfigRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-
-        List<SysDeviceConfig> data = new ArrayList<>();
-
-        for (int i = 0; i < allData.size(); i++) {
-            SysDeviceConfig config = allData.get(i);
-            if (config.getFromConfigIdList() != null && config.getFromConfigIdList().size() > 0) {
-                Long fromDeviceId = config.getFromConfigIdList().get(0).getFromDeviceId();
-                SysDevice device = sysDeviceRepository.findOne(QSysDevice.sysDevice
-                        .deviceId.eq(fromDeviceId)).orElse(null);
-                if (device != null) {
-                    config.setFromConfigDeviceName(device.getDeviceName());
-                }
-            }
-        }
-
-        categoryId = 3L;
-
-        if (categoryId != null) {
-            for (int i = 0; i < allData.size(); i++) {
-                SysDeviceConfig deviceConfigData = allData.get(i);
-                try {
-                    if (deviceConfigData.getDevice().getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == categoryId) {
-                        if (total >= startIndex && total < endIndex) {
-                            data.add(deviceConfigData);
-                        }
-                        total++;
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } else {
-            for (int i = 0; i < allData.size(); i++) {
-                SysDeviceConfig deviceConfigData = allData.get(i);
-                if (i >= startIndex && i < endIndex) {
-                    data.add(deviceConfigData);
-                }
-            }
-            total = allData.size();
-        }
+        long total = sysDeviceConfigRepository.count(predicate);
+        List<SysDeviceConfig> data = sysDeviceConfigRepository.findAll(predicate, pageRequest).getContent();
         return new PageResult<SysDeviceConfig>(total, data);
     }
 
@@ -429,7 +374,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
         for (int i = 0; i < preSysDeviceConfigList.size(); i++) {
             if (preSysDeviceConfigList.get(i).getDeviceId() != deviceId) {
-                if(preSysDeviceConfigList.get(i).getDevice().getArchive().getArchiveTemplate().getCategoryId() == 3) {
+                if(preSysDeviceConfigList.get(i).getDevice().getCategoryId() == 3) {
                     sysDeviceConfigList.add(preSysDeviceConfigList.get(i));
                 }
 

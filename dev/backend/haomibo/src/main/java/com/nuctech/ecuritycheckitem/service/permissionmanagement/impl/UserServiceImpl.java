@@ -25,6 +25,7 @@ import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
+import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
@@ -525,7 +526,7 @@ public class UserServiceImpl implements UserService {
         if(sysUser.getStatus().equals(SysUser.Status.PENDING)) {
             String valueBefore = getJsonFromUser(sysUser);
             sysUser.setStatus(SysUser.Status.ACTIVE);
-            sysUser.setPassword(password);
+            sysUser.setPassword(CryptUtil.encode(password));
             sysUser.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
             sysUserRepository.save(sysUser);

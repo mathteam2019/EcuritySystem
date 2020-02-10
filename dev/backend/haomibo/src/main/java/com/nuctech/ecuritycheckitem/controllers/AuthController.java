@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
+import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -179,7 +180,8 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USER_NON_ACTIVE_STATUS);
         }
 
-        if (!sysUser.getPassword().equals(requestBody.getPassword())) {
+        if (CryptUtil.matches(requestBody.getPassword(), sysUser.getPassword()) == false) {
+        //if (!sysUser.getPassword().equals(requestBody.getPassword())) {
             // This is when the password is incorrect.
             int checkValue = authService.checkPendingUser(sysUser, requestBody.getCount());
             if(checkValue == 2) {
@@ -277,11 +279,12 @@ public class AuthController extends BaseController {
 
         SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
 
-        if(!sysUser.getPassword().equals(requestBody.getOldPassword())) {
+        if (CryptUtil.matches(requestBody.getOldPassword(), sysUser.getPassword()) == false) {
+        //if(!sysUser.getPassword().equals(requestBody.getOldPassword())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
         }
 
-        boolean result = authService.modifyPassword(sysUser.getUserId(), requestBody.getPassword());
+        boolean result = authService.modifyPassword(sysUser.getUserId(), CryptUtil.encode(requestBody.getPassword()));
         if(result == false) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }

@@ -23,6 +23,8 @@ import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistic
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsModelForPreview;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsForPreview;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,11 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
     @Autowired
     public EntityManager entityManager;
 
+    @Autowired
+    AuthService authService;
+
+    CategoryUser categoryUser;
+
     /**
      * get total statistics by device
      * @param modeId : workmode id
@@ -59,7 +66,7 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
     public TotalStatisticsResponse getStatistics(String sortBy, String order, String modeId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
-
+        categoryUser = authService.getDataCategoryUserList();
         //.... Get Total Statistics
         String strQuery = makeQuery(modeId, userName, startTime, endTime);
         TotalStatistics totalStatistics = getTotalStatistics(strQuery);
@@ -387,6 +394,12 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
 
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
+        }
+
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
                 "\t\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id ");
 
@@ -431,6 +444,12 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
 
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("j.CREATEDBY in (" + idListStr + ") ");
+        }
+
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
                 "\t\tLEFT JOIN sys_user u ON j.JUDGE_USER_ID = u.user_id ");
         if (!whereCause.isEmpty()) {
@@ -472,6 +491,12 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         }
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+        }
+
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
         }
 
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +

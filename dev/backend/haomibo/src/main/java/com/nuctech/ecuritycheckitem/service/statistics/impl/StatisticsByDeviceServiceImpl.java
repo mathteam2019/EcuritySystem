@@ -22,6 +22,8 @@ import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistic
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsModelForPreview;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsForPreview;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByDeviceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,11 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
     @Autowired
     public EntityManager entityManager;
 
+    @Autowired
+    AuthService authService;
+
+    CategoryUser categoryUser;
+
     /**
      * get total statistics by device
      *
@@ -61,6 +68,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 
         //.... Get Total Statistics
+        categoryUser = authService.getDataCategoryUserList();
         String strQuery = makeQuery(deviceType, deviceName, startTime, endTime);
         TotalStatistics totalStatistics = getTotalStatistics(strQuery);
         response.setTotalStatistics(totalStatistics);
@@ -319,9 +327,17 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
         }
 
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
+        }
+
         if (!whereCause.isEmpty()) {
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
+
+
 
         return stringBuilder.toString();
     }
@@ -357,9 +373,17 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
         }
 
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("j.CREATEDBY in (" + idListStr + ") ");
+        }
+
         if (!whereCause.isEmpty()) {
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
+
+
 
         return stringBuilder.toString();
     }
@@ -393,6 +417,12 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         }
         if (deviceType != null && !deviceType.isEmpty()) {
             whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
+        }
+
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
         }
 
         if (!whereCause.isEmpty()) {

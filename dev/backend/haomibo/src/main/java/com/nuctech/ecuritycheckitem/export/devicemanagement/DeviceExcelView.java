@@ -98,9 +98,8 @@ public class DeviceExcelView extends BaseExcelView {
                     row.createCell(2).setCellValue("无");
                 }
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(device.getStatus()));
-                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null
-                        && device.getArchive().getArchiveTemplate().getDeviceCategory() != null) {
-                    row.createCell(4).setCellValue(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());
+                if(device.getCategory() != null) {
+                    row.createCell(4).setCellValue(device.getCategory().getCategoryName());
                 } else {
                     row.createCell(4).setCellValue("无");
                 }

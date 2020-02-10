@@ -21,6 +21,8 @@ import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeStatisticsPaginationResponse;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
 
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.EvaluateJudgeStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +47,9 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
     @Autowired
     public EntityManager entityManager;
 
+    @Autowired
+    private AuthService authService;
+
 
     /**
      * get evaluate judge statistics
@@ -60,6 +65,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
      */
     @Override
     public EvaluateJudgeStatisticsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+
 
         StringBuilder queryBuilder = new StringBuilder();
         String groupBy = "hour";
@@ -314,6 +320,12 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
         }
         whereCause.add("s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "' ");
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+        }
 
         return whereCause;
     }

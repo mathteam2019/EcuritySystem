@@ -59,7 +59,7 @@ public class PersonDataModel {
                 || StringUtils.isBlank(face) || StringUtils.isBlank(face)) {
             return 1;
         }
-        if(!checkValidValue(type, false) || !checkValidValue(sex, true)) {
+        if(!checkValidValue(type, false)) {
             return 2;
         }
         return 0;
