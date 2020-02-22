@@ -242,7 +242,7 @@ public class HistoryTaskController extends BaseController {
 
     private List<HistorySimplifiedForHistoryTableManagement> getExportListFromnRequest(HistoryGenerateRequestBody requestBody, Map<String, String> sortParams) {
         List<HistorySimplifiedForHistoryTableManagement> taskList = new ArrayList<>();
-        taskList = historyService.getHistoryTaskAll(
+        taskList = historyService.getExportHistoryTask(
                 requestBody.getFilter().getTaskNumber(), //get task number from input parameter
                 requestBody.getFilter().getMode(), //get mode id from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
@@ -251,10 +251,11 @@ public class HistoryTaskController extends BaseController {
                 requestBody.getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getEndTime(), //get end time from input parameter
                 sortParams.get("sortBy"), //field name
-                sortParams.get("order")); //asc or desc
+                sortParams.get("order"),
+                requestBody.getIdList()); //asc or desc
 
-        List<HistorySimplifiedForHistoryTableManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
-        return exportList;
+        //List<HistorySimplifiedForHistoryTableManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
+        return taskList;
     }
 
     /**
@@ -427,6 +428,7 @@ public class HistoryTaskController extends BaseController {
         List<HistorySimplifiedForHistoryTableManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
         setDictionary(); //set dictionary data key and values
         HistoryTaskPdfView.setMessageSource(messageSource);
+        //HistoryTaskPdfView.setResourceFile(resourceFile);
         HistoryTaskPdfView.setResource(getFontResource()); //set header font
 
         InputStream inputStream = HistoryTaskPdfView.buildPDFDocument(exportList); //get inputstream of datas to be printed

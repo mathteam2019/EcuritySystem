@@ -61,12 +61,7 @@ public class DeviceArchivePdfView extends BasePdfView {
             for (SerArchive archive : exportArchiveList) {
                 addTableCell(table, archive.getArchiveId().toString());
                 addTableCell(table, archive.getArchivesNumber());
-
-                if(archive.getArchiveTemplate() != null) {
-                    addTableCell(table, archive.getArchiveTemplate().getTemplateName());
-                } else {
-                    addTableCell(table, "无");
-                }
+                addTableCell(table, archive.getArchivesName());
                 addTableCell(table, ConstantDictionary.getDataValue(archive.getStatus()));
                 if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
                     addTableCell(table, archive.getArchiveTemplate().getDeviceCategory().getCategoryName());

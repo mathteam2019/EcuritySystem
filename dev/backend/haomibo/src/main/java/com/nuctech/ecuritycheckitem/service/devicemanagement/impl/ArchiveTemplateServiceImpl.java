@@ -438,7 +438,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         }
 
         Long archiveTemplateId = serArchiveIndicators.getArchivesTemplateId();
-        if (checkArchiveExist(archiveTemplateId)) {
+        if (archiveTemplateId != null && checkArchiveExist(archiveTemplateId)) {
             return 1;
 
         }
@@ -521,6 +521,12 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
                 sort = new Sort(Sort.Direction.DESC, sortBy);
             }
         }
+        String[] splits = idList.split(",");
+        List<Long> templateIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            templateIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSerArchiveTemplate.serArchiveTemplate.archivesTemplateId.in(templateIdList));
         //get all archive list
         List<SerArchiveTemplate> archiveTemplateList;
         if(sort != null) {
@@ -533,8 +539,9 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
                     .collect(Collectors.toList());
         }
 
-        List<SerArchiveTemplate> exportList = getExportList(archiveTemplateList, isAll, idList);
-        return exportList;
+
+        //List<SerArchiveTemplate> exportList = getExportList(archiveTemplateList, isAll, idList);
+        return archiveTemplateList;
     }
 
 }

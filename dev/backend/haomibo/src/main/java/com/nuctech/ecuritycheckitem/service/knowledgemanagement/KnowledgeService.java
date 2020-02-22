@@ -20,12 +20,14 @@ import java.util.List;
 
 public interface KnowledgeService {
     PageResult<SerKnowledgeCaseDeal> getDealListByFilter(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
-                                                         String fieldDesignation, String handGoods, int currentPage, int perPage);
+                                                         Long fieldId, String handGoods, int currentPage, int perPage);
 
     List<SerKnowledgeCaseDeal> getDealExportList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
-                                                 String fieldDesignation, String handGoods, boolean isAll, String idList);
+                                                 Long fieldId, String handGoods, boolean isAll, String idList);
 
     boolean checkKnowledgeExist(Long caseId);
+
+    boolean checkKnowledgeExistByTask(Long taskId);
 
     void updateStatus(Long caseId, String status);
 

@@ -299,6 +299,12 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, boolean isAll, String idList) {
         BooleanBuilder predicate = getRolePredicate(roleName);
+        String[] splits = idList.split(",");
+        List<Long> roleIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            roleIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSysRole.sysRole.roleId.in(roleIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = new Sort(Sort.Direction.ASC, sortBy);
@@ -320,8 +326,8 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
 
-        List<SysRole> exportList = getRoleExportList(roleList, isAll, idList);
-        return exportList;
+        //List<SysRole> exportList = getRoleExportList(roleList, isAll, idList);
+        return roleList;
     }
 
     /**
@@ -636,7 +642,12 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<SysDataGroup> getExportGroupListByFilter(String sortBy, String order, String dataGroupName, boolean isAll, String idList) {
         BooleanBuilder predicate = getDataGroupPredicate(dataGroupName);
-
+        String[] splits = idList.split(",");
+        List<Long> dataGroupIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            dataGroupIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSysDataGroup.sysDataGroup.dataGroupId.in(dataGroupIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = new Sort(Sort.Direction.ASC, sortBy);

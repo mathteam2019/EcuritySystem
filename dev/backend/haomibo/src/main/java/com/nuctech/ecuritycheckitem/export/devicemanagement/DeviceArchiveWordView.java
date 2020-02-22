@@ -102,11 +102,8 @@ public class DeviceArchiveWordView extends BaseWordView {
 
                 tableRow.getCell(0).setText(archive.getArchiveId().toString());
                 tableRow.getCell(1).setText(archive.getArchivesNumber());
-                if(archive.getArchiveTemplate() != null) {
-                    tableRow.getCell(2).setText(archive.getArchiveTemplate().getTemplateName());
-                } else {
-                    tableRow.getCell(2).setText("无");
-                }
+                tableRow.getCell(2).setText(archive.getArchivesName());
+
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(archive.getStatus()));
                 if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
                     tableRow.getCell(4).setText(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());

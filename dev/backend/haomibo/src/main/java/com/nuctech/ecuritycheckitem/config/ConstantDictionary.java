@@ -30,7 +30,9 @@ public class ConstantDictionary {
         }
     }
 
-    private static Dictionary[] dictionaryList = {
+    private static Dictionary[] dictionaryList = {};
+
+    public static Dictionary[] originalDictionaryList = {
         new Dictionary("active", "生效"),
             new Dictionary("inactive", "未生效"),
             new Dictionary("male", "男"),
@@ -47,8 +49,8 @@ public class ConstantDictionary {
             new Dictionary("1000000506", "组内所有人数据"),
             new Dictionary("1000000901", "同方"),
             new Dictionary("1000000902", "威视"),
-            new Dictionary("noseizure", "无查获"),
-            new Dictionary("seized", "有查获"),
+            new Dictionary("FALSE", "无查获"),
+            new Dictionary("TRUE", "有查获"),
             new Dictionary("doubt", "有嫌疑"),
             new Dictionary("nodoubt", "无嫌疑"),
             new Dictionary("pending_dispatch", "待分派"),
@@ -56,11 +58,6 @@ public class ConstantDictionary {
             new Dictionary("while_review", "审图中"),
             new Dictionary("pending_inspection", "待查验"),
             new Dictionary("while_inspection", "查验中"),
-
-
-
-
-
     };
 
     public static void setDictionaryList(Dictionary[] newDictionaryList) {

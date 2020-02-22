@@ -14,6 +14,7 @@
 package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
@@ -195,6 +196,60 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
+     * get all filtered records of process task
+     *
+     * @param taskNumber : task number
+     * @param modeId     : workmode id
+     * @param taskStatus : task status
+     * @param fieldId    : scene id
+     * @param userName   : user name
+     * @param startTime  : start time
+     * @param endTime    : end time
+     * @return
+     */
+    @Override
+    public List<SerTaskSimplifiedForProcessTaskManagement> getExportProcessTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+
+        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
+        predicate.and(builder.serCheckResultList.size().eq(0));
+        String[] splits = idList.split(",");
+        List<Long> fieldIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            fieldIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement.taskId.in(fieldIdList));
+
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("scanStartTime")) {
+                sortBy = "serScan.scanStartTime";
+            } else if(sortBy.equals("scanEndTime")) {
+                sortBy = "serScan.scanEndTime";
+            }
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+
+        List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();
+        if (sort != null) {
+            data = StreamSupport
+                    .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+        else {
+            data = StreamSupport
+                    .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
+        return data;
+    }
+
+    /**
      * get detailed info of an invalid task
      *
      * @param taskId
@@ -286,6 +341,60 @@ public class TaskServiceImpl implements TaskService {
         QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
+
+        Sort sort = null;
+
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("scanStartTime")) {
+                sortBy = "serScan.scanStartTime";
+            } else if(sortBy.equals("scanEndTime")) {
+                sortBy = "serScan.scanEndTime";
+            }
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+
+        List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();
+        if (sort != null) {
+            data = StreamSupport
+                    .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+        else {
+            data = StreamSupport
+                    .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
+        return data;
+    }
+
+    /**
+     * get all filtered records of invalid task
+     *
+     * @param taskNumber : task number
+     * @param modeId     : workmode id
+     * @param taskStatus : task status
+     * @param fieldId    : scene id
+     * @param userName   : user name
+     * @param startTime  : start time
+     * @param endTime    : end time
+     * @return
+     */
+    @Override
+    public List<SerTaskSimplifiedForProcessTaskManagement> getExportInvalidTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+
+        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
+        String[] splits = idList.split(",");
+        List<Long> taskIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            taskIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement.taskId.in(taskIdList));
 
         Sort sort = null;
 

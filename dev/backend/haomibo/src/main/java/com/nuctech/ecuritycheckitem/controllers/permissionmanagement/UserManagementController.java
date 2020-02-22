@@ -27,6 +27,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
 import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -71,6 +72,9 @@ public class UserManagementController extends BaseController {
 
     @Autowired
     public MessageSource messageSource;
+
+    @Autowired
+    PlatformOtherService platformOtherService;
 
 
 
@@ -457,8 +461,12 @@ public class UserManagementController extends BaseController {
 
             return new CommonResponseBody(ResponseMessage.USED_MOBILE);
         }
-
         SysUser sysUser = requestBody.convert2SysUser();
+        if(UserCreateRequestBody.PasswordType.DEFAULT.equals(requestBody.getPasswordType())) {
+            sysUser.setPassword(platformOtherService.findAll().get(0).getInitialPassword());
+        }
+
+
         sysUser.setPassword(CryptUtil.encode(sysUser.getPassword()));
         userService.createUser(sysUser, requestBody.getPortrait());
         return new CommonResponseBody(ResponseMessage.OK);
@@ -518,6 +526,9 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USED_EMAIL);
         }
         SysUser sysUser = requestBody.convert2SysUser();
+        if(UserCreateRequestBody.PasswordType.DEFAULT.equals(requestBody.getPasswordType())) {
+            sysUser.setPassword(platformOtherService.findAll().get(0).getInitialPassword());
+        }
         sysUser.setPassword(CryptUtil.encode(sysUser.getPassword()));
         userService.modifyUser(sysUser, requestBody.getPortrait());
         return new CommonResponseBody(ResponseMessage.OK);

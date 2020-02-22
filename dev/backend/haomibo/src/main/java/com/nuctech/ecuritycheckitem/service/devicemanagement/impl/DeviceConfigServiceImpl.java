@@ -240,7 +240,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 boolean isExist = false;
                 SysDeviceConfig deviceConfig = null;
                 for (int j = 0; j < deviceConfigList.size(); j++) {
-                    if (deviceConfigList.get(j).getDeviceId() == configDeviceIdList.get(i)) {
+                    if (deviceConfigList.get(j).getDeviceId().equals(configDeviceIdList.get(i))) {
                         deviceConfig = deviceConfigList.get(j);
                         deviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                         isExist = true;

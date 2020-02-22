@@ -44,8 +44,9 @@ public class InvalidTaskExcelView extends BaseExcelView {
         Cell headerCellTaskNumber = header.createCell(1);
         headerCellTaskNumber.setCellValue(messageSource.getMessage("TaskNumber", null, currentLocale));
 
-        Cell headerCellWorkMode = header.createCell(2);
-        headerCellWorkMode.setCellValue(messageSource.getMessage("WorkMode", null, currentLocale));
+        Cell headerCellWorkingMode = header.createCell(2);
+        headerCellTaskNumber.setCellValue(messageSource.getMessage("WorkMode", null, currentLocale));
+
 
         Cell headerCellField = header.createCell(3);
         headerCellField.setCellValue(messageSource.getMessage("Scene", null, currentLocale));
@@ -96,16 +97,14 @@ public class InvalidTaskExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(task.getTaskId());
 
                 row.createCell(1).setCellValue(task.getTaskNumber());
-
-                if (task.getWorkFlow() != null) {
-                    if (task.getWorkFlow().getWorkMode() != null) {
-                        row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
-                    } else {
-                        row.createCell(2).setCellValue("无");
-                    }
+                if (task.getWorkFlow() != null && task.getWorkFlow().getWorkMode()!= null) {
+                    row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                 } else {
-
+                    row.createCell(2).setCellValue("无");
                 }
+
+
+
 
                 if (task.getField() != null) {
                     row.createCell(3).setCellValue(task.getField().getFieldDesignation());

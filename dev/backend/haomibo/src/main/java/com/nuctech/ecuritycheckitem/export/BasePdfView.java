@@ -21,6 +21,7 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.Resource;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -30,6 +31,9 @@ import java.util.Locale;
 public class BasePdfView {
 
     private static URL fontResource;
+
+
+    private static Resource resourceFile;
 
     public static MessageSource messageSource;
     public static Locale currentLocale = Locale.CHINESE;
@@ -59,11 +63,20 @@ public class BasePdfView {
     }
 
     /**
+     * set font resource
+     * @param res_other
+     */
+    public static void setResourceFile(Resource res_other) {
+        resourceFile = res_other;
+    }
+
+    /**
      * get base font
      * @return
      */
     public static BaseFont getBaseFont() {
         try {
+            //BaseFont baseFont = BaseFont.createFont(resourceFile.getFile().getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             BaseFont baseFont = BaseFont.createFont(fontResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             return baseFont;
         }catch(Exception ex) {

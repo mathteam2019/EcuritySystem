@@ -23,17 +23,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 
 import java.util.List;
@@ -60,29 +50,29 @@ public class SysOrg extends BaseEntity implements Serializable {
         public static final String INACTIVE = "1000000702";
     }
 
-    /**
-     * Generates children org list.
-     *
-     * @return List of Children org.
-     */
-    public List<SysOrg> generateChildrenList() {
-
-        List<SysOrg> children = new ArrayList<>();
-
-        Queue<SysOrg> queue = new LinkedList<>();
-
-        queue.add(this);
-
-        while (!queue.isEmpty()) {
-            SysOrg head = queue.remove();
-            if (head.children != null) {
-                queue.addAll(head.children);
-            }
-            children.add(head.toBuilder().parent(null).children(null).build());
-        }
-
-        return children;
-    }
+//    /**
+//     * Generates children org list.
+//     *
+//     * @return List of Children org.
+//     */
+//    public List<SysOrg> generateChildrenList() {
+//
+//        List<SysOrg> children = new ArrayList<>();
+//
+//        Queue<SysOrg> queue = new LinkedList<>();
+//
+//        queue.add(this);
+//
+//        while (!queue.isEmpty()) {
+//            SysOrg head = queue.remove();
+//            if (head.children != null) {
+//                queue.addAll(head.children);
+//            }
+//            children.add(head.toBuilder().parent(null).children(null).build());
+//        }
+//
+//        return children;
+//    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -116,16 +106,18 @@ public class SysOrg extends BaseEntity implements Serializable {
     private SysOrg parent;
 
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "parent")
-    @NotFound(action = NotFoundAction.IGNORE)
-    private Set<SysOrg> children;
-
-
-    @ToString.Exclude
-    @OneToMany(mappedBy = "org")
-    @NotFound(action = NotFoundAction.IGNORE)
-    private Set<SysUser> users;
+//    @ToString.Exclude
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "ORG_ID", referencedColumnName = "PARENT_ORG_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private Set<SysOrg> children;
+//
+//
+//    @ToString.Exclude
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "ORG_ID", referencedColumnName = "ORG_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private Set<SysUser> users;
 
 
 }

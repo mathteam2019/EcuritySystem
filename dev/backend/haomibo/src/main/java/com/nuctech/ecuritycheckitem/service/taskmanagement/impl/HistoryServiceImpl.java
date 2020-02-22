@@ -14,6 +14,7 @@
 package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
@@ -155,6 +156,43 @@ public class HistoryServiceImpl implements HistoryService {
 
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
 
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("taskNumber")) {
+                sortBy = "task.taskNumber";
+            }
+
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+
+        List<HistorySimplifiedForHistoryTableManagement> data = new ArrayList<>();
+        if (sort != null) {
+            data = StreamSupport
+                    .stream(historyTableRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+        else {
+            data = StreamSupport
+                    .stream(historyTableRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
+        return data;
+    }
+
+    @Override
+    public List<HistorySimplifiedForHistoryTableManagement> getExportHistoryTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
+        String[] splits = idList.split(",");
+        List<Long> historyIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            historyIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QHistorySimplifiedForHistoryTableManagement.historySimplifiedForHistoryTableManagement.historyId.in(historyIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if(sortBy.equals("taskNumber")) {

@@ -69,12 +69,8 @@ public class InvalidTaskPdfView extends BasePdfView {
 
                 addTableCell(table, task.getTaskNumber());
 
-                if (task.getWorkFlow() != null) {
-                    if (task.getWorkFlow().getWorkMode() != null) {
-                        addTableCell(table, ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
-                    } else {
-                        addTableCell(table, "无");
-                    }
+                if (task.getWorkFlow() != null && task.getWorkFlow().getWorkMode()!= null) {
+                    addTableCell(table, ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                 } else {
                     addTableCell(table, "无");
                 }

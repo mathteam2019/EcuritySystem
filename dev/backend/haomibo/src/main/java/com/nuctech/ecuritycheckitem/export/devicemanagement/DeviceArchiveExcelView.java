@@ -91,11 +91,8 @@ public class DeviceArchiveExcelView extends BaseExcelView {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(archive.getArchiveId().toString());
                 row.createCell(1).setCellValue(archive.getArchivesNumber());
-                if(archive.getArchiveTemplate() != null) {
-                    row.createCell(2).setCellValue(archive.getArchiveTemplate().getTemplateName());
-                } else {
-                    row.createCell(2).setCellValue("无");
-                }
+                row.createCell(2).setCellValue(archive.getArchivesName());
+
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(archive.getStatus()));
                 if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
                     row.createCell(4).setCellValue(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());

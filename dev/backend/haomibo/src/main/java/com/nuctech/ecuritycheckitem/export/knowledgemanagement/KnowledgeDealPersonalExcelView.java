@@ -105,8 +105,16 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
                 } else {
                     row.createCell(4).setCellValue("无");
                 }
-
-                row.createCell(5).setCellValue(deal.getHandResult());
+                String goods = deal.getHandGoods();
+                String[] split = goods.split(",");
+                String convertGoods = "";
+                for(int id = 0; id < split.length; id ++) {
+                    if(id > 0) {
+                        convertGoods += ",";
+                    }
+                    convertGoods += ConstantDictionary.getDataValue(split[id]);
+                }
+                row.createCell(5).setCellValue(convertGoods);
             }
 
             workbook.write(out);

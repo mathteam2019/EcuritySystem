@@ -132,7 +132,16 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
                 } else {
                     row.createCell(7).setCellValue("无");
                 }
-                row.createCell(8).setCellValue(deal.getHandResult());
+                String goods = deal.getHandGoods();
+                String[] split = goods.split(",");
+                String convertGoods = "";
+                for(int i = 0; i < split.length; i ++) {
+                    if(i > 0) {
+                        convertGoods += ",";
+                    }
+                    convertGoods += ConstantDictionary.getDataValue(split[i]);
+                }
+                row.createCell(8).setCellValue(convertGoods);
             }
 
             workbook.write(out);

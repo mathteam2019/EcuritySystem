@@ -88,7 +88,8 @@ public enum ResponseMessage {
     DEVICE_CONFIG_ACTIVE("device_config_active"),//response message if device config is active for update status of device
     DEVICE_SCAN_ACTIVE("device_scan_active"),//response message if device scan param is active for update status of device
     DEVICE_ONLINE("device_online"),// response message if device is online
-    DEVICE_NOT_FIELD("device_not_field"); //response message if device not have field(using device config update status)
+    DEVICE_NOT_FIELD("device_not_field"), //response message if device not have field(using device config update status)
+    EXIST_KNOWLEDGE("exist_knowledge"); //response message if device not have field(using device config update status)
 
 
     private final String value;

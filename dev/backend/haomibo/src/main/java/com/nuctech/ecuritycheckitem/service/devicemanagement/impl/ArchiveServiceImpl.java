@@ -454,6 +454,12 @@ public class ArchiveServiceImpl implements ArchiveService {
                 sort = new Sort(Sort.Direction.DESC, sortBy);
             }
         }
+        String[] splits = idList.split(",");
+        List<Long> archiveIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            archiveIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSerArchive.serArchive.archiveId.in(archiveIdList));
         List<SerArchive> archiveList;
         if(sort != null) {
             archiveList = StreamSupport
@@ -465,7 +471,7 @@ public class ArchiveServiceImpl implements ArchiveService {
                     .collect(Collectors.toList());
         }
 
-        List<SerArchive> exportList = getExportList(archiveList, isAll, idList);
-        return exportList;
+        //List<SerArchive> exportList = getExportList(archiveList, isAll, idList);
+        return archiveList;
     }
 }

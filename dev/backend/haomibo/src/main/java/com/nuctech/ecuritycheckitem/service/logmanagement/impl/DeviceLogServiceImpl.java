@@ -191,6 +191,12 @@ public class DeviceLogServiceImpl implements DeviceLogService {
     public List<SerDevLog> getExportList(String sortBy, String order, String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
                                          Date operateEndTime, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(deviceType, deviceName, userName, category, level, operateStartTime, operateEndTime);
+        String[] splits = idList.split(",");
+        List<Long> logIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            logIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSerDevLog.serDevLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if(!sortBy.equals("time")) {
@@ -212,7 +218,7 @@ public class DeviceLogServiceImpl implements DeviceLogService {
                     .collect(Collectors.toList());
         }
 
-        return getExportList(logList, isAll, idList);
+        return logList;//getExportList(logList, isAll, idList);
 
     }
 }

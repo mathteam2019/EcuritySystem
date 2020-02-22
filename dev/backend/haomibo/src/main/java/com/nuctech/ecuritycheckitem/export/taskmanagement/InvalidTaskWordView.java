@@ -104,14 +104,10 @@ public class InvalidTaskWordView extends BaseWordView {
                 tableRow.getCell(0).setText(task.getTaskId().toString());
                 tableRow.getCell(1).setText(task.getTaskNumber());
 
-                if (task.getWorkFlow() != null) {
-                    if (task.getWorkFlow().getWorkMode() != null) {
-                        tableRow.getCell(2).setText(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
-                    } else {
-                        tableRow.getCell(2).setText("无");
-                    }
+                if (task.getWorkFlow() != null && task.getWorkFlow().getWorkMode()!= null) {
+                    tableRow.getCell(2).setText(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                 } else {
-
+                    tableRow.getCell(2).setText("无");
                 }
 
                 if (task.getField() != null) {

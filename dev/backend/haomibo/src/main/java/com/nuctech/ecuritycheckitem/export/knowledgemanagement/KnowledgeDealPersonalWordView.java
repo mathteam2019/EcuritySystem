@@ -116,7 +116,17 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
                     tableRow.getCell(4).setText("无");
                 }
 
-                tableRow.getCell(5).setText(deal.getHandResult());
+                String goods = deal.getHandGoods();
+                String[] split = goods.split(",");
+                String convertGoods = "";
+                for(int id = 0; id < split.length; id ++) {
+                    if(id > 0) {
+                        convertGoods += ",";
+                    }
+                    convertGoods += ConstantDictionary.getDataValue(split[id]);
+                }
+
+                tableRow.getCell(5).setText(convertGoods);
             }
 
             document.write(out);

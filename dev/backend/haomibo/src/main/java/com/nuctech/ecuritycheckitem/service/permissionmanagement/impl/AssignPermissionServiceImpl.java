@@ -402,15 +402,16 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
         if (orgId != null) {
 
-            // Build query if the user's org is under the org.
-            sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(orgId)).ifPresent(parentSysOrg -> {
-
-                List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
-                List<Long> parentOrgIdList = parentOrgList.stream().map(SysOrg::getOrgId).collect(Collectors.toList());
-
-                predicate.and(builder.orgId.in(parentOrgIdList));
-
-            });
+//            // Build query if the user's org is under the org.
+//            sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(orgId)).ifPresent(parentSysOrg -> {
+//
+//                List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
+//                List<Long> parentOrgIdList = parentOrgList.stream().map(SysOrg::getOrgId).collect(Collectors.toList());
+//
+//                predicate.and(builder.orgId.in(parentOrgIdList));
+//
+//            });
+            predicate.and(builder.orgId.eq(orgId));
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {

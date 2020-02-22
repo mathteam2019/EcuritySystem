@@ -48,6 +48,20 @@ public interface TaskService {
      * @param endTime
      * @return
      */
+    List<SerTaskSimplifiedForProcessTaskManagement> getExportInvalidTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
+
+
+    /**
+     * get all listof invalid task with filter
+     * @param taskNumber
+     * @param modeId
+     * @param taskStatus
+     * @param fieldId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     List<SerTaskSimplifiedForProcessTaskManagement> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
 
     /**
@@ -77,6 +91,20 @@ public interface TaskService {
      * @return
      */
     List<SerTaskSimplifiedForProcessTaskManagement> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
+
+    /**
+     * get All list of process task with filter
+     * @param taskNumber
+     * @param modeId
+     * @param taskStatus
+     * @param fieldId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List<SerTaskSimplifiedForProcessTaskManagement> getExportProcessTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
+
 
     /**
      * get detailed information of a process task with ID

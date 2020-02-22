@@ -101,7 +101,7 @@ public class KnowledgeDealManagementController extends BaseController {
             String taskNumber;
             String modeName;
             String taskResult;
-            String fieldDesignation;
+            Long fieldId;
             String handGoods;
             @Pattern(regexp = SerKnowledgeCase.Status.SUBMIT_APPROVAL + "|" + SerKnowledgeCase.Status.DISMISS
                     + "|" + SerKnowledgeCase.Status.SUCCESS_APPROVAL)
@@ -205,6 +205,13 @@ public class KnowledgeDealManagementController extends BaseController {
             auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
                     messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(knowledgeService.checkKnowledgeExistByTask(history.getTaskId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
+                    messageSource.getMessage("ExistKnowledge", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -322,14 +329,14 @@ public class KnowledgeDealManagementController extends BaseController {
         String modeName = "";
         String taskNumber = "";
         String taskResult = "";
-        String fieldDesignation = "";
+        Long fieldId = null;
         String handGoods = "";
         if (filter != null) {
             caseStatus = filter.getCaseStatus(); //get case status from input parameter
             modeName = filter.getModeName(); //get mode name from input parameter
             taskNumber = filter.getTaskNumber(); //get task number from input parameter
             taskResult = filter.getTaskResult(); //get task result from input parameter
-            fieldDesignation = filter.getFieldDesignation(); //get field name from input parameter
+            fieldId = filter.getFieldId(); //get field name from input parameter
             handGoods = filter.getHandGoods(); //get handgoods from input parameter
         }
 
@@ -344,7 +351,7 @@ public class KnowledgeDealManagementController extends BaseController {
             }
         }
         PageResult<SerKnowledgeCaseDeal> result = knowledgeService.getDealListByFilter(sortBy, order, caseStatus, taskNumber, modeName, taskResult,
-                fieldDesignation, handGoods, currentPage, perPage); //get result from database through service
+                fieldId, handGoods, currentPage, perPage); //get result from database through service
         long total = result.getTotal();
         List<SerKnowledgeCaseDeal> data = result.getDataList();
 
@@ -442,18 +449,18 @@ public class KnowledgeDealManagementController extends BaseController {
         String modeName = "";
         String taskNumber = "";
         String taskResult = "";
-        String fieldDesignation = "";
+        Long fieldId = null;
         String handGoods = "";
         if (filter != null) {
             caseStatus = filter.getCaseStatus(); //get case status from input parameter
             modeName = filter.getModeName(); //get mode name from input parameter
             taskNumber = filter.getTaskNumber(); //get task number from input parameter
             taskResult = filter.getTaskResult(); //get task result from input parameter
-            fieldDesignation = filter.getFieldDesignation(); //get field name from input parameter
+            fieldId = filter.getFieldId(); //get field name from input parameter
             handGoods = filter.getHandGoods(); //get handgoods from input parameter
         }
         List<SerKnowledgeCaseDeal> exportList = knowledgeService.getDealExportList(sortBy, order, caseStatus, modeName, taskNumber, taskResult,
-                fieldDesignation, handGoods, isAll, idList); //get export list from service
+                fieldId, handGoods, isAll, idList); //get export list from service
         return exportList;
     }
 
@@ -651,6 +658,7 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowledgeDealPendingPdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
         KnowledgeDealPendingPdfView.setMessageSource(messageSource);
+        //KnowledgeDealPendingPdfView.setResourceFile(resourceFile);
         InputStream inputStream = KnowledgeDealPendingPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

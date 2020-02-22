@@ -220,26 +220,22 @@ public class BaseController {
 
     public void setDictionary() {
         List<SysDictionaryData> dictionaryDataList = authService.findAllDictionary();
-        List<SysDeviceDictionaryData> deviceDictionaryDataList = authService.findAllDeviceDictionary();
-        ConstantDictionary.Dictionary[] dictionaryList = new ConstantDictionary.Dictionary[dictionaryDataList.size() +
-                deviceDictionaryDataList.size()];
+        ConstantDictionary.Dictionary[] dictionaryList = new ConstantDictionary.Dictionary[dictionaryDataList.size() + ConstantDictionary.originalDictionaryList.length];
         int index = 0;
+        for(int i = 0; i < ConstantDictionary.originalDictionaryList.length; i ++) {
+            dictionaryList[index ++] = ConstantDictionary.originalDictionaryList[i];
+        }
         for(int i = 0; i < dictionaryDataList.size(); i ++) {
-            ConstantDictionary.Dictionary dictioinary = new ConstantDictionary.Dictionary(dictionaryDataList.get(i).getDataCode(),
+            ConstantDictionary.Dictionary dictionary = new ConstantDictionary.Dictionary(dictionaryDataList.get(i).getDataCode(),
                     dictionaryDataList.get(i).getDataValue());
-            dictionaryList[index ++] = dictioinary;
+            dictionaryList[index ++] = dictionary;
         }
 
-        for(int i = 0; i < deviceDictionaryDataList.size(); i ++) {
-            ConstantDictionary.Dictionary dictioinary = new ConstantDictionary.Dictionary(deviceDictionaryDataList.get(i).getDataCode(),
-                    deviceDictionaryDataList.get(i).getDataValue(), deviceDictionaryDataList.get(i).getDictionaryName());
-            dictionaryList[index ++] = dictioinary;
-        }
         ConstantDictionary.setDictionaryList(dictionaryList);
     }
 
     @Value(Constants.PDF_HEADER_FONT_RESOURCE_PATH)
-    Resource resourceFile;
+    public Resource resourceFile;
 
     public URL getFontResource() {
 //        try {

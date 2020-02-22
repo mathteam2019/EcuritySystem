@@ -69,6 +69,7 @@ public class DeviceWordView extends BaseWordView {
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Device", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Name", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Status", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Archive.Name", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Category", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Manufacturer", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.OriginalModel", null, currentLocale));
@@ -99,23 +100,25 @@ public class DeviceWordView extends BaseWordView {
 
                 tableRow.getCell(0).setText(device.getDeviceId().toString());
                 tableRow.getCell(1).setText(device.getDeviceSerial());
-                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null) {
-                    tableRow.getCell(2).setText(device.getArchive().getArchiveTemplate().getTemplateName());
-                } else {
-                    tableRow.getCell(2).setText("无");
-                }
+                tableRow.getCell(2).setText(device.getDeviceName());
+
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(device.getStatus()));
-                if(device.getCategory() != null) {
-                    tableRow.getCell(4).setText(device.getCategory().getCategoryName());
+                if(device.getArchive() != null) {
+                    tableRow.getCell(4).setText(device.getArchive().getArchivesName());
                 } else {
                     tableRow.getCell(4).setText("无");
                 }
-                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null) {
-                    tableRow.getCell(5).setText(device.getArchive().getArchiveTemplate().getManufacturer());
-                    tableRow.getCell(6).setText(device.getArchive().getArchiveTemplate().getOriginalModel());
+                if(device.getCategory() != null) {
+                    tableRow.getCell(5).setText(device.getCategory().getCategoryName());
                 } else {
                     tableRow.getCell(5).setText("无");
+                }
+                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null) {
+                    tableRow.getCell(6).setText(ConstantDictionary.getDataValue(device.getArchive().getArchiveTemplate().getManufacturer()));
+                    tableRow.getCell(7).setText(device.getArchive().getArchiveTemplate().getOriginalModel());
+                } else {
                     tableRow.getCell(6).setText("无");
+                    tableRow.getCell(7).setText("无");
                 }
             }
 

@@ -50,13 +50,18 @@ public class DeviceExcelView extends BaseExcelView {
         Cell headerCellStatus = header.createCell(3);
         headerCellStatus.setCellValue(messageSource.getMessage("Device.Status", null, currentLocale));
 
-        Cell headerCellCategory = header.createCell(4);
+        Cell headerCellArchive = header.createCell(4);
+        headerCellArchive.setCellValue(messageSource.getMessage("Device.Archive.Name", null, currentLocale));
+
+
+
+        Cell headerCellCategory = header.createCell(5);
         headerCellCategory.setCellValue(messageSource.getMessage("Device.Category", null, currentLocale));
 
-        Cell headerCellManufacturer = header.createCell(5);
+        Cell headerCellManufacturer = header.createCell(6);
         headerCellManufacturer.setCellValue(messageSource.getMessage("Device.Manufacturer", null, currentLocale));
 
-        Cell headerCellOriginalModel = header.createCell(6);
+        Cell headerCellOriginalModel = header.createCell(7);
         headerCellOriginalModel.setCellValue(messageSource.getMessage("Device.OriginalModel", null, currentLocale));
     }
 
@@ -92,23 +97,25 @@ public class DeviceExcelView extends BaseExcelView {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(device.getDeviceId().toString());
                 row.createCell(1).setCellValue(device.getDeviceSerial());
-                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null) {
-                    row.createCell(2).setCellValue(device.getArchive().getArchiveTemplate().getTemplateName());
-                } else {
-                    row.createCell(2).setCellValue("无");
-                }
+                row.createCell(2).setCellValue(device.getDeviceName());
+
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(device.getStatus()));
-                if(device.getCategory() != null) {
-                    row.createCell(4).setCellValue(device.getCategory().getCategoryName());
+                if(device.getArchive() != null) {
+                    row.createCell(4).setCellValue(device.getArchive().getArchivesName());
                 } else {
                     row.createCell(4).setCellValue("无");
                 }
-                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null) {
-                    row.createCell(5).setCellValue(device.getArchive().getArchiveTemplate().getManufacturer());
-                    row.createCell(6).setCellValue(device.getArchive().getArchiveTemplate().getOriginalModel());
+                if(device.getCategory() != null) {
+                    row.createCell(5).setCellValue(device.getCategory().getCategoryName());
                 } else {
                     row.createCell(5).setCellValue("无");
+                }
+                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null) {
+                    row.createCell(6).setCellValue(ConstantDictionary.getDataValue(device.getArchive().getArchiveTemplate().getManufacturer()));
+                    row.createCell(7).setCellValue(device.getArchive().getArchiveTemplate().getOriginalModel());
+                } else {
                     row.createCell(6).setCellValue("无");
+                    row.createCell(7).setCellValue("无");
                 }
 
             }

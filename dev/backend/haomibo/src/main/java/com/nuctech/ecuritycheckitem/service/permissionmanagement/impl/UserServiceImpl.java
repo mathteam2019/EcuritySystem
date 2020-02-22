@@ -364,13 +364,15 @@ public class UserServiceImpl implements UserService {
         if (orgId != null) {
 
             // Build query if the user's org is under the org.
-            sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(orgId)).ifPresent(parentSysOrg -> {
+//            sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(orgId)).ifPresent(parentSysOrg -> {
+//
+//                List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
+//                List<Long> parentOrgIdList = parentOrgList.stream().map(SysOrg::getOrgId).collect(Collectors.toList());
+//
+//
+//            });
 
-                List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
-                List<Long> parentOrgIdList = parentOrgList.stream().map(SysOrg::getOrgId).collect(Collectors.toList());
-
-                predicate.and(builder.orgId.in(parentOrgIdList));
-            });
+            predicate.and(builder.orgId.eq(orgId));
         }
 
         CategoryUser categoryUser = authService.getDataCategoryUserList();
@@ -462,6 +464,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<SysUser> getExportUserListByPage(String sortBy, String order, String userName, String status, String gender, Long orgId, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(userName, status, gender, orgId);
+        String[] splits = idList.split(",");
+        List<Long> userIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            userIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSysUser.sysUser.userId.in(userIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = new Sort(Sort.Direction.ASC, sortBy);
@@ -483,8 +491,8 @@ public class UserServiceImpl implements UserService {
 
 
 
-        List<SysUser> exportList = getExportList(userList, isAll, idList);
-        return exportList;
+        //List<SysUser> exportList = getExportList(userList, isAll, idList);
+        return userList;
     }
 
     /**
@@ -682,6 +690,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<SysUserGroup> getExportUserGroupListByPage(String sortBy, String order, String groupName, boolean isAll, String idList) {
         BooleanBuilder predicate = getUserGroupPredicate(groupName);
+        String[] splits = idList.split(",");
+        List<Long> userGroupIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            userGroupIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSysUserGroup.sysUserGroup.userGroupId.in(userGroupIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = new Sort(Sort.Direction.ASC, sortBy);
@@ -702,8 +716,8 @@ public class UserServiceImpl implements UserService {
         }
 
 
-        List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, isAll, idList);
-        return exportList;
+        //List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, isAll, idList);
+        return userGroupList;
     }
 
     /**

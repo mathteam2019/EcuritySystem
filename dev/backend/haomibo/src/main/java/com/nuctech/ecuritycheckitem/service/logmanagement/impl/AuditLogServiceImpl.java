@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
@@ -30,9 +31,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -183,6 +182,12 @@ public class AuditLogServiceImpl implements AuditLogService {
     public List<SysAuditLog> getExportList(String sortBy, String order, String clientIp, String operateResult, String operateObject, Date operateStartTime,
                                     Date operateEndTime, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(clientIp, operateResult, operateObject, operateStartTime, operateEndTime);
+        String[] splits = idList.split(",");
+        List<Long> logIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            logIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSysAuditLog.sysAuditLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = new Sort(Sort.Direction.ASC, sortBy);
@@ -201,8 +206,9 @@ public class AuditLogServiceImpl implements AuditLogService {
                     .collect(Collectors.toList());
         }
 
-        return getExportList(logList, isAll, idList);
+        return logList;//getExportList(logList, isAll, idList);
     }
+
 
     /**
      *
@@ -216,6 +222,11 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Override
     public boolean saveAudioLog(String action, String result, String content, String fieldName, String reason, String object, Long onlineTime, boolean isSuccess, String valueBefore, String valueAfter) {
         SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+        if(isSuccess) {
+            result = "1";
+        } else {
+            result = "0";
+        }
         SysAuditLog auditLog = SysAuditLog.builder()
                 .clientIp(utils.ipAddress)
                 .action(action)
@@ -231,14 +242,48 @@ public class AuditLogServiceImpl implements AuditLogService {
         auditLog.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysAuditLogRepository.save(auditLog);
         if(isSuccess) {
-            SysAuditLogDetail auditLogDetail = SysAuditLogDetail.builder()
-                    .auditLogId(auditLog.getId())
-                    .fieldName(object)
-                    .valueBefore(valueBefore)
-                    .valueAfter(valueAfter)
-                    .build();
-            auditLogDetail.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            sysAuditLogDetailRepository.save(auditLogDetail);
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            try {
+                Map<String, Object> mapBefore = objectMapper.readValue(valueBefore, HashMap.class);
+                Map<String, Object> mapAfter = objectMapper.readValue(valueAfter, HashMap.class);
+                Map<String, Object> mapDifferentBefore = new HashMap<>();
+                Map<String, Object> mapDifferentAfter = new HashMap<>();
+                Set<String> keys = mapBefore.keySet();
+                Set<String> keysAfter = mapAfter.keySet();
+                for(String key: keysAfter) {
+                    if(!keys.contains(key)) {
+                        keys.add(key);
+                    }
+                }
+                for(String key: keys) {
+                    Object beforeValue = mapBefore.get(key);
+                    Object afterValue = mapAfter.get(key);
+                    if(beforeValue == null) {
+                        if(afterValue == null) {
+                            continue;
+                        }
+                    } else if(beforeValue.equals(afterValue)){
+                        continue;
+                    }
+                    mapDifferentBefore.put(key, beforeValue);
+                    mapDifferentAfter.put(key, afterValue);
+                }
+                String strDifferentBefore = objectMapper.writeValueAsString(mapDifferentBefore);
+                String strDifferentAfter = objectMapper.writeValueAsString(mapDifferentAfter);
+
+                SysAuditLogDetail auditLogDetail = SysAuditLogDetail.builder()
+                        .auditLogId(auditLog.getId())
+                        .fieldName(object)
+                        .valueBefore(strDifferentBefore)
+                        .valueAfter(strDifferentAfter)
+                        .build();
+                auditLogDetail.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                sysAuditLogDetailRepository.save(auditLogDetail);
+            } catch(Exception ex) {
+                ex.printStackTrace();
+
+            }
         }
         return true;
     }

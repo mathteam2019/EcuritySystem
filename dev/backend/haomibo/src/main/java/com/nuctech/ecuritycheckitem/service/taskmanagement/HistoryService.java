@@ -51,6 +51,19 @@ public interface HistoryService {
     List<HistorySimplifiedForHistoryTableManagement> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
 
     /**
+     * get All history task with filter
+     * @param taskNumber : task number
+     * @param modeId : mode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @return
+     */
+    List<HistorySimplifiedForHistoryTableManagement> getExportHistoryTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
+
+    /**
      * Get one history task with id
      * @param taskId
      * @return

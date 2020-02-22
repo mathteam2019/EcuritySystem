@@ -95,12 +95,12 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      * @param taskNumber
      * @param modeName
      * @param taskResult
-     * @param fieldDesignation
+     * @param fieldId
      * @param handGoods
      * @return
      */
     private BooleanBuilder getPredicate(String caseStatus, String taskNumber, String modeName, String taskResult,
-                                        String fieldDesignation, String handGoods) {
+                                        Long fieldId, String handGoods) {
         QSerKnowledgeCaseDeal builder = QSerKnowledgeCaseDeal.serKnowledgeCaseDeal;
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
@@ -116,8 +116,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         if (!StringUtils.isEmpty(taskResult)) {
             predicate.and(builder.handTaskResult.eq(taskResult));
         }
-        if (!StringUtils.isEmpty(fieldDesignation)) {
-            predicate.and(builder.scanDevice.field.fieldDesignation.contains(fieldDesignation));
+        if (fieldId != null) {
+            predicate.and(builder.scanDevice.field.fieldId.eq(fieldId));
         }
         if (!StringUtils.isEmpty(handGoods)) {
             predicate.and(builder.handGoods.contains(handGoods));
@@ -172,7 +172,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      * @param taskNumber
      * @param modeName
      * @param taskResult
-     * @param fieldDesignation
+     * @param fieldId
      * @param handGoods
      * @param currentPage
      * @param perPage
@@ -180,8 +180,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      */
     @Override
     public PageResult<SerKnowledgeCaseDeal> getDealListByFilter(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
-                                                                String fieldDesignation, String handGoods, int currentPage, int perPage) {
-        BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldDesignation, handGoods);
+                                                                Long fieldId, String handGoods, int currentPage, int perPage) {
+        BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldId, handGoods);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -204,7 +204,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      * @param taskNumber
      * @param modeName
      * @param taskResult
-     * @param fieldDesignation
+     * @param fieldId
      * @param handGoods
      * @param isAll
      * @param idList
@@ -212,8 +212,14 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      */
     @Override
     public List<SerKnowledgeCaseDeal> getDealExportList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
-                                                        String fieldDesignation, String handGoods, boolean isAll, String idList) {
-        BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldDesignation, handGoods);
+                                                        Long fieldId, String handGoods, boolean isAll, String idList) {
+        BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldId, handGoods);
+        String[] splits = idList.split(",");
+        List<Long> caseDealIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            caseDealIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSerKnowledgeCaseDeal.serKnowledgeCaseDeal.caseDealId.in(caseDealIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sortBy = "task.taskNumber";
@@ -233,8 +239,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
                     .collect(Collectors.toList());
         }
 
-        List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, isAll, idList);
-        return exportList;
+        //List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, isAll, idList);
+        return dealList;
     }
 
     /**
@@ -245,6 +251,11 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Override
     public boolean checkKnowledgeExist(Long caseId) {
         return serKnowledgeCaseRepository.exists(QSerKnowledgeCase.serKnowledgeCase.caseId.eq(caseId));
+    }
+
+    @Override
+    public boolean checkKnowledgeExistByTask(Long taskId) {
+        return serKnowledgeCaseRepository.exists(QSerKnowledgeCase.serKnowledgeCase.taskId.eq(taskId));
     }
 
     @Override

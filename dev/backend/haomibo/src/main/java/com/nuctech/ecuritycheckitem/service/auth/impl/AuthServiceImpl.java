@@ -70,6 +70,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     SysDataGroupRepository sysDataGroupRepository;
 
+    @Autowired
+    SysOrgRepository sysOrgRepository;
+
 
     /**
      * Find user by his user account
@@ -205,7 +208,7 @@ public class AuthServiceImpl implements AuthService {
         for(int i = 0; i < availableSysResourceListPre.size(); i ++) {
             boolean isExist = false;
             for(int j = 0; j < availableSysResourceList.size(); j ++) {
-                if(availableSysResourceList.get(j).getResourceId() == availableSysResourceListPre.get(i).getResourceId()) {
+                if(availableSysResourceList.get(j).getResourceId().equals(availableSysResourceListPre.get(i).getResourceId())) {
                     isExist = true;
                     break;
                 }
@@ -357,14 +360,22 @@ public class AuthServiceImpl implements AuthService {
             relateOrgIdList.add(sysUser.getOrg().getOrgId());
         } else if(levelUser.equals(SysUser.DataRangeCategory.ORG_DESC.getValue())) {
             SysOrg parentOrg = sysUser.getOrg();
+            List<SysOrg> allOrg = sysOrgRepository.findAll();
             Queue<SysOrg> queue = new LinkedList<>();
+
             queue.add(parentOrg);
-            while(!queue.isEmpty()) {
+
+            while (!queue.isEmpty()) {
                 SysOrg head = queue.remove();
                 relateOrgIdList.add(head.getOrgId());
-                for(SysOrg child: head.getChildren()) {
-                    queue.add(child);
+                for(int i = 0; i < allOrg.size(); i ++) {
+                    if(allOrg.get(i).getParentOrgId().equals(head.getOrgId())) {
+                        queue.add(allOrg.get(i));
+                    }
                 }
+            }
+            for(int i = 0; i < allOrg.size(); i ++) {
+                relateOrgIdList.add(allOrg.get(i).getOrgId());
             }
         } else {
             relateUserList.add(sysUser.getUserId());
@@ -388,7 +399,7 @@ public class AuthServiceImpl implements AuthService {
         for(Long relateUserId: relateUserList) {
             boolean isExist = false;
             for(Long checkUserId: answerUserIdList) {
-                if(checkUserId == relateUserId) {
+                if(checkUserId.equals(relateUserId)) {
                     isExist = true;
                     break;
                 }

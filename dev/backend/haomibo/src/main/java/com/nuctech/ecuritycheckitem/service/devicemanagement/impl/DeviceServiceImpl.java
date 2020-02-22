@@ -288,21 +288,7 @@ public class DeviceServiceImpl implements DeviceService {
         return 2;
     }
 
-
-    /**
-     * get filtered device list
-     * @param archiveName
-     * @param deviceName
-     * @param status
-     * @param fieldId
-     * @param categoryId
-     * @param perPage
-     * @param currentPage
-     * @return
-     */
-    @Override
-    public PageResult<SysDevice> getFilterDeviceList(String sortBy, String order, String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
-                                                     int perPage, int currentPage) {
+    private BooleanBuilder getPredicate(String archiveName, String deviceName, String status, Long fieldId, Long categoryId) {
         QSysDevice builder = QSysDevice.sysDevice;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -328,6 +314,25 @@ public class DeviceServiceImpl implements DeviceService {
         if (categoryId != null) {
             predicate.and(builder.categoryId.eq(categoryId));
         }
+        return predicate;
+    }
+
+
+    /**
+     * get filtered device list
+     * @param archiveName
+     * @param deviceName
+     * @param status
+     * @param fieldId
+     * @param categoryId
+     * @param perPage
+     * @param currentPage
+     * @return
+     */
+    @Override
+    public PageResult<SysDevice> getFilterDeviceList(String sortBy, String order, String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
+                                                     int perPage, int currentPage) {
+        BooleanBuilder predicate = getPredicate(archiveName, deviceName, status, fieldId, categoryId);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if (order.equals(Constants.SortOrder.ASC)) {
@@ -395,8 +400,17 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public List<SysDevice> getExportDataList(String sortBy, String order, String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
                                              boolean isAll, String idList) {
-        List<SysDevice> preList = getFilterDeviceList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId, 0, -1).getDataList();
-        return getExportList(preList, isAll, idList);
+        BooleanBuilder predicate = getPredicate(archiveName, deviceName, status, fieldId, categoryId);
+        String[] splits = idList.split(",");
+        List<Long> deviceIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            deviceIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSysDevice.sysDevice.deviceId.in(deviceIdList));
+        List<SysDevice> preList = StreamSupport
+                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        return preList;
     }
 
     /**
@@ -703,7 +717,9 @@ public class DeviceServiceImpl implements DeviceService {
                     if(deviceConfigList.get(j).getStatus().equals(SysDeviceConfig.Status.ACTIVE)) {
                         continue;
                     }
-                    if(deviceConfigList.get(j).getDeviceId() == sysDevice.getDeviceId()) {
+                    Long configDeviceId = deviceConfigList.get(j).getDeviceId();
+                    Long deviceId = sysDevice.getDeviceId();
+                    if(configDeviceId.equals(deviceId)) {
                         sysDeviceList.add(sysDevice);
                     }
                 }

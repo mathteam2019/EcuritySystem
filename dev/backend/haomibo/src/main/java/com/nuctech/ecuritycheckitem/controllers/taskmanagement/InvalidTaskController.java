@@ -276,7 +276,7 @@ public class InvalidTaskController extends BaseController {
 
     private List<SerTaskSimplifiedForProcessTaskManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
         List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
-        taskList = taskService.getInvalidTaskAll(
+        taskList = taskService.getExportInvalidTask(
                 requestBody.getFilter().getTaskNumber(),//get task numer from request body
                 requestBody.getFilter().getMode(),//get mode id from request body
                 requestBody.getFilter().getStatus(), //get status from request body
@@ -285,10 +285,11 @@ public class InvalidTaskController extends BaseController {
                 requestBody.getFilter().getStartTime(),//get start time from request body
                 requestBody.getFilter().getEndTime(), //get end time from request body
                 sortParams.get("sortBy"), //field name
-                sortParams.get("order")); //asc or desc
+                sortParams.get("order"),
+                requestBody.getIdList()); //asc or desc
 
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-        return exportList;
+        //List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        return taskList;
     }
 
     /**

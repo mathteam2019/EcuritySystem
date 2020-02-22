@@ -376,6 +376,12 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public List<SysField> getExportList(String sortBy, String order, String designation, String status, String parentDesignation, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(designation, status, parentDesignation);
+        String[] splits = idList.split(",");
+        List<Long> fieldIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            fieldIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSysField.sysField.fieldId.in(fieldIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = new Sort(Sort.Direction.ASC, sortBy);
@@ -396,7 +402,7 @@ public class FieldServiceImpl implements FieldService {
         }
 
 
-        List<SysField> exportList = getExportList(fieldList, isAll, idList);
-        return exportList;
+        //List<SysField> exportList = getExportList(fieldList, isAll, idList);
+        return fieldList;
     }
 }

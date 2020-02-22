@@ -85,8 +85,17 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
                 } else {
                     addTableCell(table, "无");
                 }
+                String goods = deal.getHandGoods();
+                String[] split = goods.split(",");
+                String convertGoods = "";
+                for(int i = 0; i < split.length; i ++) {
+                    if(i > 0) {
+                        convertGoods += ",";
+                    }
+                    convertGoods += ConstantDictionary.getDataValue(split[i]);
+                }
 
-                addTableCell(table, deal.getHandResult());
+                addTableCell(table, convertGoods);
             }
 
             document.add(table);

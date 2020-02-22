@@ -179,6 +179,12 @@ public class AccessLogServiceImpl implements AccessLogService {
     public List<SysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
                                          Date operateEndTime, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
+        String[] splits = idList.split(",");
+        List<Long> logIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            logIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSysAccessLog.sysAccessLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = new Sort(Sort.Direction.ASC, sortBy);
@@ -197,7 +203,7 @@ public class AccessLogServiceImpl implements AccessLogService {
                     .collect(Collectors.toList());
         }
 
-        return getExportList(logList, isAll, idList);
+        return logList;//getExportList(logList, isAll, idList);
 
     }
 
