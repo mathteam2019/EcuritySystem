@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.export.logmanagement;
 
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
+import com.nuctech.ecuritycheckitem.models.es.EsSysAccessLog;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -58,7 +59,7 @@ public class AccessLogExcelView extends BaseExcelView {
      * @param exportLogList
      * @return
      */
-    public static InputStream buildExcelDocument(List<SysAccessLog> exportLogList) {
+    public static InputStream buildExcelDocument(List<EsSysAccessLog> exportLogList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
 
@@ -80,7 +81,7 @@ public class AccessLogExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
-            for (SysAccessLog log : exportLogList) {
+            for (EsSysAccessLog log : exportLogList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(log.getId().toString());
                 row.createCell(1).setCellValue(formatDate(log.getOperateTime()));

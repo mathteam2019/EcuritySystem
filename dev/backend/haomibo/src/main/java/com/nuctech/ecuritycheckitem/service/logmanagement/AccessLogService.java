@@ -14,6 +14,7 @@ package com.nuctech.ecuritycheckitem.service.logmanagement;
 
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.es.EsSysAccessLog;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 import java.util.Date;
@@ -32,8 +33,8 @@ public interface AccessLogService {
      * @param perPage
      * @return
      */
-    PageResult<SysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
-                                                      Date operateEndTime, int currentPage, int perPage);
+    PageResult<EsSysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+                                                        Date operateEndTime, int currentPage, int perPage);
 
     /**
      * get access log export list
@@ -45,7 +46,7 @@ public interface AccessLogService {
      * @param idList
      * @return
      */
-    List<SysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+    List<EsSysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
                                   Date operateEndTime, boolean isAll, String idList);
 
     /**

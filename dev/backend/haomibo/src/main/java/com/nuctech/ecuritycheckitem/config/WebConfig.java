@@ -20,6 +20,8 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -32,6 +34,8 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @Configuration
+@EnableJpaRepositories("com.nuctech.ecuritycheckitem.repositories")
+@EnableElasticsearchRepositories(basePackages = "com.nuctech.ecuritycheckitem.es.repositories")
 public class WebConfig implements WebMvcConfigurer {
 
     @Autowired

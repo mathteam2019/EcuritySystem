@@ -774,7 +774,7 @@ public class UserManagementController extends BaseController {
                     , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        if(requestBody.getStatus().equals(SysOrg.Status.INACTIVE)) {
+        if(requestBody.getStatus().equals(SysUser.Status.INACTIVE)) {
             if (userService.checkParentUserGroupExist(requestBody.getUserId())) { // Check if org is existing.
                 auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                         , "", messageSource.getMessage("HaveUserGroup", null, currentLocale), requestBody.getUserId().toString(),null);

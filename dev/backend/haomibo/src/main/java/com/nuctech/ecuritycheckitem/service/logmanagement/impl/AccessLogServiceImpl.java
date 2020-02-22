@@ -13,27 +13,36 @@
 package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.es.repositories.EsSysAccessLogRepository;
 import com.nuctech.ecuritycheckitem.models.db.QSysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.es.EsSysAccessLog;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysAccessLogRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.DocValueFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +52,10 @@ import java.util.stream.StreamSupport;
 public class AccessLogServiceImpl implements AccessLogService {
 
     @Autowired
-    SysAccessLogRepository sysAccessLogRepository;
+    SysAccessLogRepository originalSysAccessLogRepository;
+
+    @Autowired
+    EsSysAccessLogRepository sysAccessLogRepository;
 
     @Autowired
     SerPlatformOtherParamRepository platformOtherParamRepository;
@@ -65,34 +77,48 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @param operateEndTime
      * @return
      */
-    private BooleanBuilder getPredicate(String clientIp, String operateAccount, Date operateStartTime, Date operateEndTime) {
-        QSysAccessLog builder = QSysAccessLog.sysAccessLog;
+    private BoolQueryBuilder getPredicate(String clientIp, String operateAccount, Date operateStartTime, Date operateEndTime) {
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        BoolQueryBuilder builder = QueryBuilders.boolQuery();
+//                .should(
+//                        QueryBuilders.queryStringQuery(text)
+//                                .lenient(true)
+//                                .field("name")
+//                                .field("teamName")
+//                ).should(QueryBuilders.queryStringQuery("*" + text + "*")
+//                        .lenient(true)
+//                        .field("name")
+//                        .field("teamName"));
 
         if (!StringUtils.isEmpty(clientIp)) {
-            predicate.and(builder.clientIp.contains(clientIp));
+            builder.must(QueryBuilders.matchQuery("client_ip", clientIp));
         }
 
         if (!StringUtils.isEmpty(operateAccount)) {
-            predicate.and(builder.operateAccount.contains(operateAccount));
+            builder.must(QueryBuilders.matchQuery("operate_account", operateAccount));
         }
 
         if(operateStartTime != null) {
-            predicate.and(builder.operateTime.after(operateStartTime));
-
+            builder.must(QueryBuilders.rangeQuery("operate_time").gte(operateStartTime.getTime()));
         }
         if(operateEndTime != null){
-            predicate.and(builder.operateTime.before(operateEndTime));
+            builder.must(QueryBuilders.rangeQuery("operate_time").lte(operateEndTime.getTime()));
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {
             List<Long> userIdList = categoryUser.getUserIdList();
-            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+            TermsQueryBuilder createdTerms = QueryBuilders.termsQuery("createdby", userIdList);
+            TermsQueryBuilder editedTerms = QueryBuilders.termsQuery("editedby", userIdList);
+            BoolQueryBuilder builderUserId = new BoolQueryBuilder()
+                    .minimumShouldMatch(1)
+                    .should(createdTerms)
+                    .should(editedTerms);
+
+            builder.should(builderUserId);
         }
 
 
-        return predicate;
+        return builder;
     }
 
     /**
@@ -147,10 +173,10 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @return
      */
     @Override
-    public PageResult<SysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+    public PageResult<EsSysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
                                                           Date operateEndTime, int currentPage, int perPage) {
 
-        BooleanBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
+        BoolQueryBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if (order.equals(Constants.SortOrder.ASC)) {
@@ -159,9 +185,12 @@ public class AccessLogServiceImpl implements AccessLogService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("id").ascending());
         }
-        long total = sysAccessLogRepository.count(predicate);
-        List<SysAccessLog> data = sysAccessLogRepository.findAll(predicate, pageRequest).getContent();
+        Page<EsSysAccessLog> pageResult = sysAccessLogRepository.search(predicate, pageRequest);
+        long total = pageResult.getTotalElements();
+        List<EsSysAccessLog> data = pageResult.getContent();
         return new PageResult<>(total, data);
     }
 
@@ -176,33 +205,31 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @return
      */
     @Override
-    public List<SysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+    public List<EsSysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
                                          Date operateEndTime, boolean isAll, String idList) {
-        BooleanBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
+        BoolQueryBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
+
         String[] splits = idList.split(",");
         List<Long> logIdList = new ArrayList<>();
         for(String idStr: splits) {
             logIdList.add(Long.valueOf(idStr));
         }
-        predicate.and(QSysAccessLog.sysAccessLog.id.in(logIdList));
+        predicate.must( QueryBuilders.termsQuery("id", logIdList));
         Sort sort = null;
+        PageRequest pageRequest = PageRequest.of(0, Integer.MAX_VALUE);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sort = new Sort(Sort.Direction.ASC, sortBy);
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = new Sort(Sort.Direction.DESC, sortBy);
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(sortBy).ascending());
             }
-        }
-        List<SysAccessLog> logList;
-        if(sort != null) {
-            logList = StreamSupport
-                    .stream(sysAccessLogRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
+            else {
+                pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(sortBy).descending());
+            }
         } else {
-            logList = StreamSupport
-                    .stream(sysAccessLogRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
+            pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id").ascending());
         }
-
+        List<EsSysAccessLog> logList = StreamSupport
+                .stream(sysAccessLogRepository.search(predicate, pageRequest).spliterator(), false)
+                .collect(Collectors.toList());
         return logList;//getExportList(logList, isAll, idList);
 
     }
@@ -230,7 +257,7 @@ public class AccessLogServiceImpl implements AccessLogService {
                 .createdBy(user.getUserId())
                 .build();
 
-        sysAccessLogRepository.save(accessLog);
+        originalSysAccessLogRepository.save(accessLog);
         return true;
     }
 }

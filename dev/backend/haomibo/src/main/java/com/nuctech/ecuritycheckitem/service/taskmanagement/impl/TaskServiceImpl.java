@@ -34,10 +34,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -174,9 +171,9 @@ public class TaskServiceImpl implements TaskService {
             } else if(sortBy.equals("scanEndTime")) {
                 sortBy = "serScan.scanEndTime";
             }
-            sort = new Sort(Sort.Direction.ASC, sortBy);
+            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
             if (order.equals(Constants.SortOrder.DESC)) {
-                sort = new Sort(Sort.Direction.DESC, sortBy);
+                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
             }
         }
 
@@ -228,9 +225,9 @@ public class TaskServiceImpl implements TaskService {
             } else if(sortBy.equals("scanEndTime")) {
                 sortBy = "serScan.scanEndTime";
             }
-            sort = new Sort(Sort.Direction.ASC, sortBy);
+            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
             if (order.equals(Constants.SortOrder.DESC)) {
-                sort = new Sort(Sort.Direction.DESC, sortBy);
+                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
             }
         }
 
@@ -350,9 +347,9 @@ public class TaskServiceImpl implements TaskService {
             } else if(sortBy.equals("scanEndTime")) {
                 sortBy = "serScan.scanEndTime";
             }
-            sort = new Sort(Sort.Direction.ASC, sortBy);
+            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
             if (order.equals(Constants.SortOrder.DESC)) {
-                sort = new Sort(Sort.Direction.DESC, sortBy);
+                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
             }
         }
 
@@ -404,9 +401,9 @@ public class TaskServiceImpl implements TaskService {
             } else if(sortBy.equals("scanEndTime")) {
                 sortBy = "serScan.scanEndTime";
             }
-            sort = new Sort(Sort.Direction.ASC, sortBy);
+            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
             if (order.equals(Constants.SortOrder.DESC)) {
-                sort = new Sort(Sort.Direction.DESC, sortBy);
+                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
             }
         }
 

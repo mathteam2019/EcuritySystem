@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.export.logmanagement;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
+import com.nuctech.ecuritycheckitem.models.es.EsSysAccessLog;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -76,7 +77,7 @@ public class AccessLogWordView extends BaseWordView {
      * @param exportList
      * @return
      */
-    public static InputStream buildWordDocument(List<SysAccessLog> exportList) {
+    public static InputStream buildWordDocument(List<EsSysAccessLog> exportList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -92,7 +93,7 @@ public class AccessLogWordView extends BaseWordView {
 
             for (Integer i = 0; i < exportList.size(); i ++) {
 
-                SysAccessLog log = exportList.get(i);
+                EsSysAccessLog log = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 

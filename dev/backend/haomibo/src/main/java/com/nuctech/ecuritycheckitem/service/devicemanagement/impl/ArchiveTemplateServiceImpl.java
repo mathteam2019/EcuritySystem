@@ -45,10 +45,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -516,9 +513,9 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         BooleanBuilder predicate = getPredicate(templateName, status, categoryId);
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sort = new Sort(Sort.Direction.ASC, sortBy);
+            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
             if (order.equals(Constants.SortOrder.DESC)) {
-                sort = new Sort(Sort.Direction.DESC, sortBy);
+                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
             }
         }
         String[] splits = idList.split(",");

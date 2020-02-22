@@ -384,9 +384,9 @@ public class FieldServiceImpl implements FieldService {
         predicate.and(QSysField.sysField.fieldId.in(fieldIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sort = new Sort(Sort.Direction.ASC, sortBy);
+            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
             if (order.equals(Constants.SortOrder.DESC)) {
-                sort = new Sort(Sort.Direction.DESC, sortBy);
+                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
             }
         }
         //get all field list

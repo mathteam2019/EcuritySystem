@@ -36,6 +36,7 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -76,9 +77,9 @@ public class AuditLogController extends BaseController {
             String clientIp;
             String operateResult;
             String operateObject;
-            @JsonFormat(pattern = Constants.LOG_DATETIME_FORMAT)
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date operateStartTime;
-            @JsonFormat(pattern = Constants.LOG_DATETIME_FORMAT)
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date operateEndTime;
         }
 

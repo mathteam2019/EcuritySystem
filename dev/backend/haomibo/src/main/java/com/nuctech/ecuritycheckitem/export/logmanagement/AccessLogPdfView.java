@@ -22,6 +22,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
+import com.nuctech.ecuritycheckitem.models.es.EsSysAccessLog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +37,7 @@ public class AccessLogPdfView extends BasePdfView {
      * @param exportLogList
      * @return
      */
-    public static InputStream buildPDFDocument(List<SysAccessLog> exportLogList) {
+    public static InputStream buildPDFDocument(List<EsSysAccessLog> exportLogList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -60,7 +61,7 @@ public class AccessLogPdfView extends BasePdfView {
                     });
 
 
-            for (SysAccessLog log : exportLogList) {
+            for (EsSysAccessLog log : exportLogList) {
                 addTableCell(table, log.getId().toString());
                 addTableCell(table, formatDate(log.getOperateTime()));
                 addTableCell(table, log.getAction());
