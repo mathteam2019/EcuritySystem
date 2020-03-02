@@ -47,7 +47,7 @@ public class DataGroupPdfView extends BasePdfView {
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(4);
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("DataGroup.No", "DataGroup.Number", "DataGroup.Name", "DataGroup.Range")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

@@ -54,7 +54,7 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
 
             PdfPTable table = new PdfPTable(17);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("ID", "StatWidth", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge", "IntelligenceJudgeMistake", "IntelligenceJudgeMistakeRate", "IntelligenceJudgeMissing", "IntelligenceJudgeMissingRate")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

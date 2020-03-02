@@ -71,7 +71,7 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
             }
 
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             strHeaderList
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

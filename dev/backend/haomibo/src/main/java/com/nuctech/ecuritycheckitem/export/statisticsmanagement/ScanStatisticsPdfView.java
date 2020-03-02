@@ -54,7 +54,7 @@ public class ScanStatisticsPdfView extends BasePdfView {
 
             PdfPTable table = new PdfPTable(11);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("ID", "StatWidth", "TotalScan", "ValidScans", "ValidScanRate", "InvalidScans", "InvalidScanRate", "PassedScans", "PassedScanRate", "AlarmScans", "AlarmScanRate")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

@@ -49,7 +49,7 @@ public class AuditLogPdfView extends BasePdfView {
             document.add(getTime());
             PdfPTable table = new PdfPTable(9);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("AuditLog.No", "AuditLog.OperatorId", "AuditLog.ClientIp", "AuditLog.OperateObject", "AuditLog.Action", "AuditLog.OperateContent", "AuditLog.OperateResult", "AuditLog.ReasonCode", "AuditLog.OperateTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

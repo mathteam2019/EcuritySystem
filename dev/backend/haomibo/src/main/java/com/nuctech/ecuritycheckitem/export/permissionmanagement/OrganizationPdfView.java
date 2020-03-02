@@ -51,7 +51,7 @@ public class OrganizationPdfView extends BasePdfView {
 
             PdfPTable table = new PdfPTable(9);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("Organization.No", "Organization.Number", "Organization.Name", "Organization.Status", "Organization.ParentNumber", "Organization.ParentName", "Organization.Leader", "Organization.Mobile", "Organization.Note")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

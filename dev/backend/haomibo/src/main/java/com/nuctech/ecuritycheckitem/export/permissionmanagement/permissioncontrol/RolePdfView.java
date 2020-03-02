@@ -49,7 +49,7 @@ public class RolePdfView extends BasePdfView {
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(3);
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("Role.No", "Role.Number", "Role.Name")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

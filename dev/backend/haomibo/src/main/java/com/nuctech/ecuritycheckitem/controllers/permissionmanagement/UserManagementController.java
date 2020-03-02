@@ -462,9 +462,9 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USED_MOBILE);
         }
         SysUser sysUser = requestBody.convert2SysUser();
-        if(UserCreateRequestBody.PasswordType.DEFAULT.equals(requestBody.getPasswordType())) {
-            sysUser.setPassword(platformOtherService.findAll().get(0).getInitialPassword());
-        }
+//        if(UserCreateRequestBody.PasswordType.DEFAULT.equals(requestBody.getPasswordType())) {
+//            sysUser.setPassword(platformOtherService.findAll().get(0).getInitialPassword());
+//        }
 
 
         sysUser.setPassword(CryptUtil.encode(sysUser.getPassword()));
@@ -526,9 +526,9 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USED_EMAIL);
         }
         SysUser sysUser = requestBody.convert2SysUser();
-        if(UserCreateRequestBody.PasswordType.DEFAULT.equals(requestBody.getPasswordType())) {
-            sysUser.setPassword(platformOtherService.findAll().get(0).getInitialPassword());
-        }
+//        if(UserCreateRequestBody.PasswordType.DEFAULT.equals(requestBody.getPasswordType())) {
+//            sysUser.setPassword(platformOtherService.findAll().get(0).getInitialPassword());
+//        }
         sysUser.setPassword(CryptUtil.encode(sysUser.getPassword()));
         userService.modifyUser(sysUser, requestBody.getPortrait());
         return new CommonResponseBody(ResponseMessage.OK);

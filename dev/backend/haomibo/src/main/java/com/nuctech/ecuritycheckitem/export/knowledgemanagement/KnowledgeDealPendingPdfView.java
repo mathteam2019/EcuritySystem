@@ -50,7 +50,7 @@ public class KnowledgeDealPendingPdfView extends BasePdfView {
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(9);
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("KnowledgeDealPending.No", "KnowledgeDealPending.Number", "KnowledgeDealPending.Mode", "KnowledgeDealPending.Result", "KnowledgeDealPending.Field", "KnowledgeDealPending.ScanDevice", "KnowledgeDealPending.JudgeDevice", "KnowledgeDealPending.HandDevice", "KnowledgeDealPending.Goods")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

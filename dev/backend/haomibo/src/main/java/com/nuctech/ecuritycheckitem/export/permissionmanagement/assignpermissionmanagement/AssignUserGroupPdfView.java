@@ -51,7 +51,7 @@ public class AssignUserGroupPdfView extends BasePdfView {
             document.add(getTime());
             PdfPTable table = new PdfPTable(5);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("AssignUserGroup.No", "AssignUserGroup.Name", "AssignUserGroup.User", "AssignUserGroup.Role", "AssignUserGroup.Category")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

@@ -47,7 +47,7 @@ public class UserGroupPdfView extends BasePdfView {
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(3);
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("UserGroup.No", "UserGroup.Number", "UserGroup.Name")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

@@ -54,8 +54,8 @@ public class AccessLogServiceImpl implements AccessLogService {
     @Autowired
     SysAccessLogRepository originalSysAccessLogRepository;
 
-    @Autowired
-    EsSysAccessLogRepository sysAccessLogRepository;
+//    @Autowired
+//    EsSysAccessLogRepository sysAccessLogRepository;
 
     @Autowired
     SerPlatformOtherParamRepository platformOtherParamRepository;
@@ -188,9 +188,9 @@ public class AccessLogServiceImpl implements AccessLogService {
         } else {
             pageRequest = PageRequest.of(currentPage, perPage, Sort.by("id").ascending());
         }
-        Page<EsSysAccessLog> pageResult = sysAccessLogRepository.search(predicate, pageRequest);
-        long total = pageResult.getTotalElements();
-        List<EsSysAccessLog> data = pageResult.getContent();
+        //Page<EsSysAccessLog> pageResult = sysAccessLogRepository.search(predicate, pageRequest);
+        long total = 0;//pageResult.getTotalElements();
+        List<EsSysAccessLog> data = new ArrayList<>();//pageResult.getContent();
         return new PageResult<>(total, data);
     }
 
@@ -227,9 +227,9 @@ public class AccessLogServiceImpl implements AccessLogService {
         } else {
             pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id").ascending());
         }
-        List<EsSysAccessLog> logList = StreamSupport
-                .stream(sysAccessLogRepository.search(predicate, pageRequest).spliterator(), false)
-                .collect(Collectors.toList());
+        List<EsSysAccessLog> logList = new ArrayList<>();//StreamSupport
+//                .stream(sysAccessLogRepository.search(predicate, pageRequest).spliterator(), false)
+//                .collect(Collectors.toList());
         return logList;//getExportList(logList, isAll, idList);
 
     }

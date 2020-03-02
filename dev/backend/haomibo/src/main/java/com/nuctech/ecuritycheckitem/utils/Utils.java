@@ -24,16 +24,22 @@ import com.nuctech.ecuritycheckitem.models.reusables.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.swagger.annotations.ApiParam;
+import org.apache.commons.net.ftp.FTP;
 import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -48,7 +54,22 @@ public class Utils {
     @Value("${jwt.secret}")
     public String jwtSecret; // This is loaded from application.properties file.
 
+    @Value("${ftp.server.host}")
+    private String host;
+
+    @Value("${ftp.server.user}")
+    private String user;
+
+    @Value("${ftp.server.password}")
+    private String password;
+
+    @Value("${ftp.server.port}")
+    private int port;
+
     public String ipAddress;
+
+    @Value("${server.port}")
+    String serverPort;
 
 
     /**
@@ -188,10 +209,11 @@ public class Utils {
                 String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
 
                 boolean isSucceeded = saveFile(directoryPath, fileName, bytes);
-
+                String ip = "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + serverPort;
                 if (isSucceeded) {
                     // Save file name.
-                    return Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName;
+                    //return ip + Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName;
+                    return ip + Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -309,6 +331,31 @@ public class Utils {
         params.put("order", sortParams[1]);
 
         return params;
+    }
+
+    public boolean fileUpload(@ApiParam("注册信息") MultipartFile file) {
+        try {
+            FTPSClient ftpClient = new FTPSClient();
+            ftpClient.connect(host, port);
+            ftpClient.login(user, password);
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+            LocalDate currentDate = LocalDate.now();
+            String directoryName = "upload/" + currentDate.getYear() + "/" + currentDate.getMonth() + "/" + currentDate.getDayOfMonth();
+            ftpClient.makeDirectory(directoryName);
+
+            String firstRemoteFile = file.getOriginalFilename();
+            BufferedInputStream inStream = new BufferedInputStream(file.getInputStream());
+            boolean done = ftpClient.storeFile(firstRemoteFile, inStream);
+            inStream.close();
+            if (done) {
+                return true;
+            }
+        } catch (Exception e) {
+        }
+
+        return false;
     }
 
 

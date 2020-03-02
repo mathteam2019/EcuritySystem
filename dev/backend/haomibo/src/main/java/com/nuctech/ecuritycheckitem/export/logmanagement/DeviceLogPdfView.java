@@ -51,7 +51,7 @@ public class DeviceLogPdfView extends BasePdfView {
             document.add(getTime());
             PdfPTable table = new PdfPTable(8);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("DeviceLog.No", "DeviceLog.Device", "DeviceLog.Account", "DeviceLog.UserName", "DeviceLog.Category", "DeviceLog.Level", "DeviceLog.Content", "DeviceLog.Time")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

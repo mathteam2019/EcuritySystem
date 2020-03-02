@@ -52,7 +52,7 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
 
             PdfPTable table = new PdfPTable(6);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("KnowledgeDealPersonal.No", "KnowledgeDealPersonal.Number", "KnowledgeDealPersonal.Result", "KnowledgeDealPersonal.Field", "KnowledgeDealPersonal.DevicePassageWay", "KnowledgeDealPersonal.Goods")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

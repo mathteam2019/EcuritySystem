@@ -55,7 +55,8 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
      * @return
      */
     @Override
-    public ScanStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+    public ScanStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, String workMode,
+                                                Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
         StringBuilder queryBuilder = new StringBuilder();
 
@@ -68,7 +69,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
 
         //.... Get Total Statistics
         queryBuilder.append(getSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
-        List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth);
+        List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, workMode, startTime, endTime, statWidth);
         if (!whereCause.isEmpty()) {
             queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
@@ -248,7 +249,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
      * @param statWidth : (hour, day, week, month, quarter, year)
      * @return
      */
-    private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
+    private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, String workMode, Date startTime, Date endTime, String statWidth) {
         
         List<String> whereCause = new ArrayList<String>();
 
@@ -259,6 +260,9 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             whereCause.add("s.SCAN_DEVICE_ID = " + deviceId);
         }
         if (userName != null && !userName.isEmpty()) {
+            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+        }
+        if (workMode != null && !workMode.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
         if (startTime != null) {

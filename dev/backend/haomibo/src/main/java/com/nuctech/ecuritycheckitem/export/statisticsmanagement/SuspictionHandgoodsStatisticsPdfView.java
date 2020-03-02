@@ -54,7 +54,7 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
 
             PdfPTable table = new PdfPTable(SuspicionHandgoodsStatisticsController.handGoodsIDList.size() + 2);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
 
             PdfPCell headerNo = new PdfPCell();
             headerNo.setBorderWidth(2);

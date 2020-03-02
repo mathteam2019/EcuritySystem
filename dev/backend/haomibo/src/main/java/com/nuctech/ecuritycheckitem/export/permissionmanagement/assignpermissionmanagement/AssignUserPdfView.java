@@ -50,7 +50,7 @@ public class AssignUserPdfView extends BasePdfView {
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(7);
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("AssignUser.No", "AssignUser.Name", "AssignUser.Gender", "AssignUser.Account", "AssignUser.Group", "AssignUser.Role", "AssignUser.Category")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

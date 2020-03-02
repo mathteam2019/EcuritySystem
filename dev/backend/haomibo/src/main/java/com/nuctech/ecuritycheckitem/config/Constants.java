@@ -22,9 +22,9 @@ public class Constants {
     public static final long MAX_JWT_VALIDITY_SECONDS = 60 * 60;
     public static final String REQUEST_HEADER_AUTH_TOKEN_KEY = "X-AUTH-TOKEN";
     public static final long TASK_PERIOD_SECONDS_CLEAN_FORBIDDEN_TOKEN_TABLE = 24 * 60 * 60;
-    public static final String DEFAULT_PASSWORD_FOR_NEW_SYS_USER = "123456";
+    public static final String DEFAULT_PASSWORD_FOR_NEW_SYS_USER = "default";
 
-    public static final String PORTRAIT_FILE_UPLOAD_DIRECTORY = "storage" + File.separator + "portrait";
+    public static final String PORTRAIT_FILE_UPLOAD_DIRECTORY = "portrait";//"storage" + File.separator + "portrait";
     public static final String PORTRAIT_FILE_SERVING_BASE_URL = "/portrait/";
 
     public static final int JUDGE_CATEGORY_ID = 2;

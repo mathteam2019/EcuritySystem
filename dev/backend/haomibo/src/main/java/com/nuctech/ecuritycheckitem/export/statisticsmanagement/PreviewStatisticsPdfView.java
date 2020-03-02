@@ -54,7 +54,7 @@ public class PreviewStatisticsPdfView extends BasePdfView {
 
             PdfPTable table = new PdfPTable(13);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("ID", "StatWidth", "TotalScan", "InvalidScans", "InvalidScanRate", "TotalJudge", "TotalHands", "Nosuspicion", "ScanNosuspictionRate", "NoSeizure", "NoSeizureRate", "Seizure", "SeizureRate")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

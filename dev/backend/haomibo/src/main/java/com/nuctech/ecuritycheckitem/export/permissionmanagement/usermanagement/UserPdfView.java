@@ -44,11 +44,12 @@ public class UserPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
+
             document.add(getTitle(messageSource.getMessage("User.Title", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(7);
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("User.No", "User.Number", "User.Name", "User.Gender", "User.Status", "User.Category", "User.Account")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

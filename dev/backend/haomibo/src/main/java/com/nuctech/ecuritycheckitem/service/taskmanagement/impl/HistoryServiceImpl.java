@@ -128,6 +128,8 @@ public class HistoryServiceImpl implements HistoryService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("historyId").descending());
         }
 
         long total = historyTableRepository.count(predicate); //get total count from database using repsitory

@@ -73,6 +73,7 @@ public class ScanStatisticsController extends BaseController {
             Long deviceId; //device id
             Long userCategory; //user category id
             String userName; //user name
+            String workMode; //work mode
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date startTime; //start time
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
@@ -138,6 +139,7 @@ public class ScanStatisticsController extends BaseController {
                 requestBody.getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getUserCategory(),//get user category id from input parameter
                 requestBody.getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getWorkMode(),//get work mode from input parameter
                 requestBody.getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getStatWidth(),//get statistics width from input parameter
@@ -176,6 +178,7 @@ public class ScanStatisticsController extends BaseController {
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
                 requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getFilter().getWorkMode(),//get work mode from input parameter
                 requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
@@ -224,6 +227,7 @@ public class ScanStatisticsController extends BaseController {
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
                 requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getFilter().getWorkMode(),//get work mode from input parameter
                 requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
@@ -273,6 +277,7 @@ public class ScanStatisticsController extends BaseController {
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
                 requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getFilter().getWorkMode(),//get work mode from input parameter
                 requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter

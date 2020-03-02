@@ -54,7 +54,7 @@ public class JudgeStatisticsPdfView extends BasePdfView {
 
             PdfPTable table = new PdfPTable(19);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("ID", "StatWidth", "TotalJudge", "ArtificialResult", "ArtificialResultRate", "AssignTimoutResult", "AssignTimeoutResultRate", "JudgeTimeoutResult", "JudgeTimeoutResultRate", "ScanResult", "ScanResultRate", "NoSuspicion", "NoSuspicionRate", "Suspicion", "SuspicionRate", "ArtificialJudgeDefaultTime", "ArtificialJudgeAvgTime", "ArtificialJudgeMaxTime", "ArtificialJudgeMinTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

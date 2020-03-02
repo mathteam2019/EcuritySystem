@@ -50,7 +50,7 @@ public class AccessLogPdfView extends BasePdfView {
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(5);
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("AccessLog.No", "AccessLog.OperateTime", "AccessLog.Action", "AccessLog.ClientIp", "AccessLog.OperateAccount")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

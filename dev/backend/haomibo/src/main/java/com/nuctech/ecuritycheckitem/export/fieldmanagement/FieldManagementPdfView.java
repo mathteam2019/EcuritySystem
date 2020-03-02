@@ -50,7 +50,7 @@ public class FieldManagementPdfView extends BasePdfView {
             document.add(getTime());
             PdfPTable table = new PdfPTable(9);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
 
             Stream.of("FieldManagement.No", "FieldManagement.Serial", "FieldManagement.Designation", "FieldManagement.Status", "FieldManagement.ParentSerial", "FieldManagement.ParentDesignation", "FieldManagement.Leader", "FieldManagement.Mobile", "FieldManagement.Note")
                     .forEach(columnTitle -> {

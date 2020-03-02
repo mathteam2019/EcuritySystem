@@ -179,8 +179,12 @@ public class AuthController extends BaseController {
                     , messageSource.getMessage("NonActive", null, currentLocale), null);
             return new CommonResponseBody(ResponseMessage.USER_NON_ACTIVE_STATUS);
         }
+        String password = sysUser.getPassword();
+        if(password.equals(Constants.DEFAULT_PASSWORD_FOR_NEW_SYS_USER)) {
+            password = platformOtherService.findAll().get(0).getInitialPassword();
+        }
 
-        if (CryptUtil.matches(requestBody.getPassword(), sysUser.getPassword()) == false) {
+        if (CryptUtil.matches(requestBody.getPassword(), password) == false) {
         //if (!sysUser.getPassword().equals(requestBody.getPassword())) {
             // This is when the password is incorrect.
             int checkValue = authService.checkPendingUser(sysUser, requestBody.getCount());
@@ -278,8 +282,11 @@ public class AuthController extends BaseController {
         }
 
         SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-
-        if (CryptUtil.matches(requestBody.getOldPassword(), sysUser.getPassword()) == false) {
+        String password = sysUser.getPassword();
+        if(password.equals(Constants.DEFAULT_PASSWORD_FOR_NEW_SYS_USER)) {
+            password = platformOtherService.findAll().get(0).getInitialPassword();
+        }
+        if (CryptUtil.matches(requestBody.getOldPassword(), password) == false) {
         //if(!sysUser.getPassword().equals(requestBody.getOldPassword())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
         }

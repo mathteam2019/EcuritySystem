@@ -53,7 +53,7 @@ public class InvalidTaskPdfView extends BasePdfView {
 
             PdfPTable table = new PdfPTable(8);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("ID", "TaskNumber", "WorkMode", "Scene", "ScanDeviceName", "ScanUserName", "ScanStartTime", "ScanEndTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

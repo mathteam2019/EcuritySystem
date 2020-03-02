@@ -49,7 +49,7 @@ public class DeviceCategoryPdfView extends BasePdfView {
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(7);
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("DeviceCategory.No", "DeviceCategory.Number", "DeviceCategory.Name", "DeviceCategory.Status", "DeviceCategory.ParentNumber", "DeviceCategory.ParentName", "DeviceCategory.Note")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

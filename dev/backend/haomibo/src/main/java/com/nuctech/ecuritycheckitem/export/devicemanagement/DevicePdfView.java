@@ -45,7 +45,7 @@ public class DevicePdfView extends BasePdfView {
             document.add(getTime());
             PdfPTable table = new PdfPTable(8);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("Device.No", "Device.Device", "Device.Name", "Device.Status", "Device.Archive.Name", "Device.Category", "Device.Manufacturer", "Device.OriginalModel")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

@@ -135,6 +135,8 @@ public class TaskServiceImpl implements TaskService {
             } else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("taskId").descending());
         }
 
         long total = serTaskRepository.count(predicate);

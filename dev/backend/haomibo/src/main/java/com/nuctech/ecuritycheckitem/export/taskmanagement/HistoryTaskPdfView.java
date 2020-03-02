@@ -53,7 +53,7 @@ public class HistoryTaskPdfView extends BasePdfView {
             document.add(getTime());
             PdfPTable table = new PdfPTable(9);
 
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(99);
             Stream.of("ID", "TaskNumber", "WorkMode", "TaskResult", "Scene", "ScanDeviceName", "ScanUserName", "ScanStartTime", "ScanEndTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
