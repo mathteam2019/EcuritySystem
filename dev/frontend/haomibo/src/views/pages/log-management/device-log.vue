@@ -70,13 +70,13 @@
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
                       <date-picker v-model="deviceFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm"
-                                   valueType="YYYY-MM-DD HH:mm:ss" placeholder=""/>
+                                   placeholder=""/>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
                       <date-picker v-model="deviceFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm"
-                                   valueType="YYYY-MM-DD HH:mm:ss" placeholder=""/>
+                                   placeholder=""/>
                     </b-form-group>
                   </b-col>
                   <b-col/>
@@ -114,6 +114,7 @@
                     pagination-path="pagination"
                     track-by="id"
                     class="table-striped"
+                    @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onSecurityLogTablePaginationData"
                   >
                   </vuetable>
@@ -123,7 +124,7 @@
                     ref="securityLogPagination"
                     @vuetable-pagination:change-page="onsecurityLogTableChangePage"
                     :initial-per-page="securityLogTableItems.perPage"
-                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
+                    @onUpdatePerPage="securityLogTableItems.perPage = Number($event)"
                   />
                 </div>
               </b-col>
@@ -221,6 +222,7 @@
                     pagination-path="pagination"
                     class="table-striped"
                     track-by="id"
+                    @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                     @vuetable:pagination-data="ondecisionLogTablePaginationData"
                   >
                   </vuetable>
@@ -328,7 +330,7 @@
                     pagination-path="pagination"
                     class="table-striped"
                     track-by="id"
-                    @onUpdatePerPage="handCheckLogTableItems.perPage = Number($event)"
+                    @vuetable:checkbox-toggled="onCheckStatusChangeHand"
                     @vuetable:pagination-data="onhandCheckLogTablePaginationData"
                   >
                   </vuetable>
@@ -338,6 +340,7 @@
                     ref="handCheckLogPagination"
                     @vuetable-pagination:change-page="onhandCheckLogTableChangePage"
                     :initial-per-page="handCheckLogTableItems.perPage"
+                    @onUpdatePerPage="handCheckLogTableItems.perPage = Number($event)"
                   />
                 </div>
               </b-col>
@@ -434,6 +437,9 @@
         params: {},
         name: '',
         fileSelection : [],
+        renderedCheckList:[],
+        renderedCheckListGroup:[],
+        renderedCheckListHand:[],
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
@@ -657,18 +663,138 @@
       }
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      selectAll(value){
+        this.$refs.securityLogTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.securityLogTable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.securityLogTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.securityLogTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.securityLogTable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      selectAllGroup(value){
+        this.$refs.decisionLogTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.decisionLogTable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.decisionLogTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNoneGroup(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.decisionLogTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatusGroup(){
+        let selectList = this.$refs.decisionLogTable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNoneGroup();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAllGroup(true);
+            }
+          }
+        }
+        else {
+          this.selectNoneGroup();
+        }
+
+      },
+      selectAllHand(value){
+        this.$refs.handCheckLogTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.handCheckLogTable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.handCheckLogTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNoneHand(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.handCheckLogTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatusHand(){
+        let selectList = this.$refs.handCheckLogTable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNoneHand();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAllHand(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
+      onCheckStatusChangeGroup(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatusGroup();
+        }
+        else {
+          this.selectNoneGroup();
+        }
+      },
+      onCheckStatusChangeHand(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatusHand();
+        }
+        else {
+          this.selectNoneHand();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -716,6 +842,7 @@
 
       transformTable(response) {
         let transformed = {};
+        this.renderedCheckList =[];
         let data = response.data;
         transformed.pagination = {
           total: data.total,
@@ -732,6 +859,7 @@
           temp.deviceName = temp.device.deviceName;
           temp.operateTime  = getDateTimeWithFormat(temp.time,this.$i18n.locale);
           temp.deviceSerial = temp.device.deviceSerial;
+          this.renderedCheckList.push(data.data[i].id);
           transformed.data.push(temp);
         }
         return transformed
@@ -751,6 +879,7 @@
         };
       },
       securityLogTableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckList =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.securityLogTableItems.perPage,
@@ -760,9 +889,11 @@
       },
       onSecurityLogTablePaginationData(paginationData) {
         this.$refs.securityLogPagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onsecurityLogTableChangePage(page) {
         this.$refs.securityLogTable.changePage(page);
+        this.changeCheckAllStatus();
       },
 
       //second tab
@@ -781,6 +912,7 @@
         };
       },
       decisionLogTableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckList =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.decisionLogTableItems.perPage,
@@ -790,9 +922,11 @@
       },
       ondecisionLogTablePaginationData(paginationData) {
         this.$refs.decisionLogPagination.setPaginationData(paginationData);
+        this.changeCheckAllStatusGroup();
       },
       ondecisionLogTableChangePage(page) {
         this.$refs.decisionLogTable.changePage(page);
+        this.changeCheckAllStatusGroup();
       },
 
       //third tab
@@ -811,6 +945,7 @@
         };
       },
       handCheckLogTableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckList =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.handCheckLogTableItems.perPage,
@@ -820,9 +955,25 @@
       },
       onhandCheckLogTablePaginationData(paginationData) {
         this.$refs.handCheckLogPagination.setPaginationData(paginationData);
+        this.changeCheckAllStatusHand();
       },
       onhandCheckLogTableChangePage(page) {
         this.$refs.handCheckLogTable.changePage(page);
+        this.changeCheckAllStatusHand();
+      },
+    },
+    watch: {
+      'securityLogTableItems.perPage': function (newVal) {
+        this.$refs.securityLogTable.refresh();
+        this.changeCheckAllStatus();
+      },
+      'decisionLogTableItems.perPage': function (newVal) {
+        this.$refs.decisionLogTable.refresh();
+        this.changeCheckAllStatusGroup();
+      },
+      'handCheckLogTableItems.perPage': function (newVal) {
+        this.$refs.handCheckLogTable.refresh();
+        this.changeCheckAllStatusHand();
       },
     }
   }

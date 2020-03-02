@@ -4,6 +4,11 @@
       height: 100%;
     }
   }
+  .img-rotate{
+    -ms-transform: rotate(-15deg); /* IE 9 */
+    -webkit-transform: rotate(-15deg); /* Safari 3-8 */
+    transform: rotate(-15deg);
+  }
 </style>
 <template>
   <div class="device-classify">
@@ -15,13 +20,13 @@
       </b-row>
     </div>
     <b-card v-show="!isLoading" class="main-without-tab">
-      <div v-show="pageStatus=='list'" class="h-100 flex-column" :class="pageStatus === 'list'?'d-flex':''">
+      <div v-show="pageStatus==='list'" class="h-100 flex-column" :class="pageStatus === 'list'?'d-flex':''">
         <b-row class="pt-2">
           <b-col cols="6">
             <b-row>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-classify-item.classify')">
-                  <b-form-input v-model="filterOption.categoryName"></b-form-input>
+                  <b-form-input v-model="filterOption.categoryName"/>
                 </b-form-group>
               </b-col>
 
@@ -33,26 +38,26 @@
 
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-classify-item.super-classify')">
-                  <b-form-input v-model="filterOption.parentCategoryName" ></b-form-input>
+                  <b-form-input v-model="filterOption.parentCategoryName"/>
                 </b-form-group>
               </b-col>
             </b-row>
           </b-col>
           <b-col cols="6" class="d-flex justify-content-end align-items-center">
             <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-              <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+              <i class="icofont-search-1"/>&nbsp;{{ $t('permission-management.search') }}
             </b-button>
             <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-              <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+              <i class="icofont-ui-reply"/>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
             <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_category_export')">
-              <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+              <i class="icofont-share-alt"/>&nbsp;{{ $t('permission-management.export') }}
             </b-button>
             <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('device_category_print')">
-              <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+              <i class="icofont-printer"/>&nbsp;{{ $t('permission-management.print') }}
             </b-button>
             <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default" :disabled="checkPermItem('device_category_create')">
-              <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+              <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
             </b-button>
           </b-col>
         </b-row>
@@ -78,29 +83,29 @@
                   <b-button @click="onAction('edit',props.rowData)"
                             size="sm" :disabled="props.rowData.status === '1000000701' || checkPermItem('device_category_modify')"
                             variant="primary default btn-square">
-                    <i class="icofont-edit"></i>
+                    <i class="icofont-edit"/>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='1000000702'"
+                    v-if="props.rowData.status==='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)" :disabled="checkPermItem('device_category_update_status')"
                     variant="success default btn-square"
                   >
-                    <i class="icofont-check-circled"></i>
+                    <i class="icofont-check-circled"/>
                   </b-button>
                   <b-button
                     @click="onAction('inactivate',props.rowData)"
-                    v-if="props.rowData.status=='1000000701'"
+                    v-if="props.rowData.status==='1000000701'"
                     size="sm"
                     :disabled="props.rowData.parentCategoryId === 0 || checkPermItem('device_category_update_status')"
                     variant="warning default btn-square" >
-                    <i class="icofont-ban"></i>
+                    <i class="icofont-ban"/>
                   </b-button>
                   <b-button
                     size="sm"
                     @click="onAction('delete',props.rowData)"
                     variant="danger default btn-square"
                     :disabled="props.rowData.status === '1000000701' || checkPermItem('device_category_delete')">
-                    <i class="icofont-bin"></i>
+                    <i class="icofont-bin"/>
                   </b-button>
                 </div>
               </vuetable>
@@ -111,7 +116,7 @@
                 @vuetable-pagination:change-page="onChangePage"
                 :initial-per-page="deviceClassifyTableItems.perPage"
                 @onUpdatePerPage="deviceClassifyTableItems.perPage = Number($event)"
-              ></vuetable-pagination-bootstrap>
+              />
             </div>
           </b-col>
         </b-row>
@@ -128,7 +133,7 @@
                   </template>
                   <b-form-input
                     :state="!$v.classifyForm.categoryNumber.$invalid"
-                    v-model="classifyForm.categoryNumber"></b-form-input>
+                    v-model="classifyForm.categoryNumber"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.classifyForm.categoryNumber.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -142,7 +147,7 @@
                   </template>
                   <b-form-input
                     :state="!$v.classifyForm.categoryName.$invalid"
-                    v-model="classifyForm.categoryName"></b-form-input>
+                    v-model="classifyForm.categoryName"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.classifyForm.categoryName.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -156,7 +161,7 @@
                   <template slot="label">{{$t('device-management.device-classify-item.parent-device-number')}}<span
                     class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="classifyForm.parentCategoryNumber" disabled></b-form-input>
+                  <b-form-input v-model="classifyForm.parentCategoryNumber" disabled/>
                   <div class="invalid-feedback d-block">
                     {{ "&nbsp;"}}
                   </div>
@@ -182,30 +187,34 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device-classify-item.remark')}}
                   </template>
-                  <b-form-textarea :rows="3" v-model="classifyForm.note"></b-form-textarea>
+                  <b-form-textarea :rows="3" v-model="classifyForm.note"/>
                 </b-form-group>
               </b-col>
             </b-row>
           </b-col>
           <b-col cols="12 text-right mt-3 " class="align-self-end">
-            <b-button size="sm" @click="saveCategoryItem()" variant="info default"><i class="icofont-save"></i>
+            <b-button size="sm" @click="saveCategoryItem()" variant="info default"><i class="icofont-save"/>
               {{$t('device-management.save')}}
             </b-button>
             <b-button @click="onAction('delete',classifyForm)" size="sm" variant="danger default" :disabled="checkPermItem('device_category_delete')"
                       v-if="pageStatus !== 'create'">
-              <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
+              <i class="icofont-bin"/> {{$t('system-setting.delete')}}
             </b-button>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
-              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+              class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
             </b-button>
           </b-col>
-          <div class="position-absolute" style="left: 3%;bottom: 17%">
+          <div v-if="getLocale()==='zh'" class="position-absolute" style="left: 3%;bottom: 17%">
             <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
             <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
+          <div v-if="getLocale()==='en'" class="position-absolute" style="left: 3%;bottom: 17%">
+            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+          </div>
         </b-row>
       </div>
-      <div v-if="pageStatus=='show'" class="h-100 d-flex flex-column">
+      <div v-if="pageStatus==='show'" class="h-100 d-flex flex-column">
         <b-row class="form-section d-flex">
           <b-col cols="6">
             <b-row>
@@ -214,8 +223,7 @@
                   <template slot="label">{{$t('device-management.device-classify-item.device-number')}}<span
                     class="text-danger">*</span>
                   </template>
-                  <b-form-input
-                    v-model="classifyForm.categoryNumber"></b-form-input>
+                  <b-form-input v-model="classifyForm.categoryNumber"/>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
@@ -223,7 +231,7 @@
                   <template slot="label">{{$t('device-management.device-classify-item.device')}}<span
                     class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="classifyForm.categoryName"></b-form-input>
+                  <b-form-input v-model="classifyForm.categoryName"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -233,7 +241,7 @@
                   <template slot="label">{{$t('device-management.device-classify-item.parent-device-number')}}<span
                     class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-model="classifyForm.parentCategoryNumber"></b-form-input>
+                  <b-form-input disabled v-model="classifyForm.parentCategoryNumber"/>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
@@ -242,7 +250,7 @@
                     class="text-danger">*</span>
                   </template>
                   <b-form-select v-if="classifyForm.parentCategoryId > 0" disabled v-model="classifyForm.parentCategoryId" :options="parentClassifyOptions" plain/>
-                  <b-form-input v-if="classifyForm.parentCategoryId === 0" disabled v-model="classifyForm.parentCategoryNumber"></b-form-input>
+                  <b-form-input v-if="classifyForm.parentCategoryId === 0" disabled v-model="classifyForm.parentCategoryNumber"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -251,7 +259,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device-classify-item.remark')}}
                   </template>
-                  <b-form-textarea :rows="3" v-model="classifyForm.note"></b-form-textarea>
+                  <b-form-textarea :rows="3" v-model="classifyForm.note"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -259,22 +267,26 @@
           <b-col cols="12 text-right mt-3 " class="align-self-end">
             <b-button v-if="classifyForm.status === '1000000701' && classifyForm.parentCategoryId !== 0" :disabled="checkPermItem('device_category_update_status')" @click="onAction('inactivate',classifyForm)" size="sm"
                       variant="warning default">
-              <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
+              <i class="icofont-ban"/> {{$t('system-setting.status-inactive')}}
             </b-button>
             <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('activate',classifyForm)" :disabled="checkPermItem('device_category_update_status')" size="sm" variant="success default">
-              <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
+              <i class="icofont-check-circled"/> {{$t('system-setting.status-active')}}
             </b-button>
             <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('delete',classifyForm)" size="sm" :disabled="checkPermItem('device_category_delete')"
                       variant="danger default">
-              <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
+              <i class="icofont-bin"/> {{$t('system-setting.delete')}}
             </b-button>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
-              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+              class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
             </b-button>
           </b-col>
-          <div class="position-absolute" style="left: 3%;bottom: 17%">
+          <div v-if="getLocale()==='zh'" class="position-absolute" style="left: 3%;bottom: 17%">
             <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
             <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+          </div>
+          <div v-if="getLocale()==='en'" class="position-absolute" style="left: 3%;bottom: 17%">
+            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
           </div>
         </b-row>
       </div>
@@ -313,7 +325,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
-  import {checkPermissionItem} from "../../../utils";
+  import {checkPermissionItem, getLocale} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -467,6 +479,9 @@
       }
     },
     methods: {
+      getLocale() {
+        return getLocale();
+      },
       checkPermItem(value) {
         return checkPermissionItem(value);
       },

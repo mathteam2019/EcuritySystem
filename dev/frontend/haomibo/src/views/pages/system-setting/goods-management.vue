@@ -129,7 +129,7 @@
 
                   <div class="d-flex align-items-end justify-content-end pt-3">
                     <div>
-                      <b-button @click="onClickSaveGoods" size="sm" variant="info default" class="mr-3">
+                      <b-button :disabled="selectedGoods" @click="onClickSaveGoods" size="sm" variant="info default" class="mr-3">
                         <i class="icofont-save"/>
                         {{$t('permission-management.permission-control.save')}}
                       </b-button>
@@ -234,7 +234,13 @@
   import {responseMessages} from '../../../constants/response-messages';
 
   import staticUserTableData from '../../../data/user'
-  import {downLoadFileFromServer, getApiManager, getDateTimeWithFormat, printFileFromServer} from "../../../api";
+  import {
+    downLoadFileFromServer,
+    getApiManager,
+    getApiManagerError,
+    getDateTimeWithFormat,
+    printFileFromServer
+  } from "../../../api";
 
   export default {
     components: {
@@ -391,7 +397,7 @@
     methods: {
 
       getOptions(){
-        getApiManager()
+        getApiManagerError()
           .post(`${apiBaseUrl}/dictionary-management/dictionary-data/get-by-id`, {
           'dictionaryId': 14
         })
@@ -408,7 +414,7 @@
           .catch((error) => {
           });
 
-        getApiManager()
+        getApiManagerError()
           .post(`${apiBaseUrl}/dictionary-management/dictionary-data/get-by-id`, {
             'dictionaryId': 15
           })
@@ -424,7 +430,7 @@
           .catch((error) => {
           });
 
-        getApiManager()
+        getApiManagerError()
           .post(`${apiBaseUrl}/dictionary-management/dictionary-data/get-by-id`, {
             'dictionaryId': 16
           })
@@ -471,6 +477,7 @@
         this.goods = '';
       },
       onClickCreateGoods() {
+        this.showable = false;
         this.selectedGoods = null;
         this.goodsForm = {
           visible : true,
@@ -482,11 +489,26 @@
       onClickSaveGoods() {
 
           if(this.$v.goodsForm.$invalid){
-            if(this.goodsForm.goodsGrade===""||this.goodsForm.goodsCategory===""||this.goodsForm.goodsName===""){
+            if(this.goodsForm.goodsName===""){
               this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.goods-invalid`), {
                 duration: 3000,
                 permanent: false
               });
+              return;
+            }
+            if(this.goodsForm.goodsGrade===""){
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.goods-grade-invalid`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            if(this.goodsForm.goodsCategory===""){
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.goods-category-invalid`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
             }
             return;
           }

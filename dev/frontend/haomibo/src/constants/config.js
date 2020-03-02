@@ -8,16 +8,16 @@ export const menuHiddenBreakpoint = 768;
 export const defaultLocale = 'zh';
 export const defaultDirection = 'ltr';
 export const localeOptions = [
-  {id: 'en', name: 'English LTR', direction: 'ltr', icon: '/assets/img/flags/united-kingdom.svg'},
-  {id: 'zh', name: '中文', direction: 'ltr', icon: '/assets/img/flags/china.svg'},
-  {id: 'es', name: 'Español', direction: 'ltr', icon: '/assets/img/flags/spain.svg'},
-  {id: 'enrtl', name: 'English RTL', direction: 'rtl', icon: '/assets/img/flags/united-kingdom.svg'}
+  {id: 'en', name: 'English', direction: 'ltr', icon: '/assets/img/flags/united-kingdom.svg'},
+  {id: 'zh', name: '中文', direction: 'ltr', icon: '/assets/img/flags/china.svg'}
 ];
 
 export const apiBaseUrl = 'http://59.110.233.165:9090/ecuritycheck/';
-//export const apiBaseUrl = 'http://192.168.1.108:4546';
-export const apiParamUrl = 'http://59.110.233.165:8081/api/sys-security/save-checkparam';
-//export const apiBaseUrl = 'http://39.97.175.200:8080/ecuritycheckitem-0.0.1-SNAPSHOT';
+//export const apiBaseUrl = 'http://10.0.20.51:4546';
+//export const apiBaseUrl = 'http://192.168.1.112:4546';
+// export const apiBaseUrl = 'http://39.97.175.200:8080/ecuritycheckitem-0.0.1-SNAPSHOT';
+//export const apiImageUrl = 'http://localhost:8080';
+export const apiImageUrl = 'http://39.97.175.200';
 
 export const refreshTokenTimeDiff = 30;
 

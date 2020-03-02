@@ -61,6 +61,7 @@
                 :per-page="vuetableItems.perPage"
                 pagination-path="pagination"
                 track-by="archivesTemplateId"
+                @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onPaginationData"
                 class="table-striped text-center"
               >
@@ -78,17 +79,17 @@
                     v-if="props.rowData.status==='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)"
                     :disabled="checkPermItem('device_template_update_status')"
-                    variant="success default btn-square"
+                    variant="warning default btn-square"
                   >
-                    <i class="icofont-check-circled"/>
+                    <i class="icofont-ban"/>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status==='1000000701'"
                     :disabled="checkPermItem('device_template_update_status')"
                     size="sm" @click="onAction('inactivate',props.rowData)"
-                    variant="warning default btn-square"
+                    variant="success default btn-square"
                   >
-                    <i class="icofont-ban"/>
+                    <i class="icofont-check-circled"/>
                   </b-button>
                   <b-button @click="onAction('delete',props.rowData)"
                             size="sm"
@@ -113,7 +114,7 @@
       </div>
       <div v-show="pageStatus !== 'list'" class="h-100">
         <div class="form-section d-flex flex-column">
-          <b-row>
+          <b-row class="h-100">
             <b-col xxs="12" md="4" lg="3">
               <b-form-group>
                 <template slot="label">{{$t('device-management.template-number')}}<span class="text-danger">*</span>
@@ -160,10 +161,9 @@
               </b-form-group>
             </b-col>
             <b-col xxs="12" md="8" lg="9">
-              <b-row>
+              <b-row class="h-100">
                 <b-col v-if="pageStatus!=='show'" cols="12" class="d-flex justify-content-between mb-2">
                   <label class="font-weight-bold" style="line-height: 28px">{{$t('device-management.document-template.device-show-list')}}</label>
-
                 </b-col>
                 <b-col v-if="pageStatus!=='show'" cols="12">
                   <b-row>
@@ -192,7 +192,7 @@
                     </b-col>
                   </b-row>
                 </b-col>
-                <b-col cols="12" class="table-responsive text-center">
+                <b-col v-if="pageStatus!=='show'" cols="12" class="table-responsive text-center" style="height: 75%">
 
                   <vuetable
                     ref="indicatorTable"
@@ -230,10 +230,57 @@
                       </b-button>
                     </div>
                   </vuetable>
+                  <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
                     ref="indicatorTablePagination"
                     @vuetable-pagination:change-page="onIndicatorTableChangePage"
                   />
+                  </div>
+                </b-col>
+                <b-col v-else cols="12" class="table-responsive text-center" style="height: 100%">
+
+                  <vuetable
+                    ref="indicatorTable"
+                    :api-mode="false"
+                    :fields="indicatorTableItems.fields"
+                    :data-manager="indicatorTableDataManager"
+                    :per-page="indicatorTableItems.perPage"
+                    pagination-path="pagination"
+                    @vuetable:pagination-data="onIndicatorTablePaginationData"
+                    class="table-striped text-center"
+                  >
+                    <div slot="number" slot-scope="props">
+                      <span class="cursor-p text-primary">{{ props.rowData.indicatorsName }}</span>
+                    </div>
+                    <div slot="required" slot-scope="props">
+                      <b-button v-if="props.rowData.isNull === '1000000601'"
+                                :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
+                                size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
+                                variant="success default">
+                        <i class="icofont-check-alt"/>&nbsp;{{$t('device-management.document-template.yes')}}
+                      </b-button>
+                      <b-button v-if="props.rowData.isNull === '1000000602'"
+                                :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
+                                size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
+                                variant="light default">
+                        <i class="icofont-close-line"/>&nbsp;{{$t('device-management.document-template.no')}}
+                      </b-button>
+                    </div>
+                    <div slot="action" slot-scope="props">
+                      <b-button
+                        size="sm" @click="onDeleteIcon(props.rowData,props.rowIndex)"
+                        :disabled="checkPermItem('device_indicator_delete') || pageStatus==='show'"
+                        variant="danger default btn-square">
+                        <i class="icofont-bin"/>
+                      </b-button>
+                    </div>
+                  </vuetable>
+                  <div class="pagination-wrapper">
+                    <vuetable-pagination-bootstrap
+                      ref="indicatorTablePagination"
+                      @vuetable-pagination:change-page="onIndicatorTableChangePage"
+                    />
+                  </div>
                 </b-col>
               </b-row>
             </b-col>
@@ -266,9 +313,13 @@
               </b-button>
             </b-col>
           </b-row>
-          <div class="position-absolute" style="left: 3%;bottom: 10%">
+          <div v-if="getLocale()==='zh'" class="position-absolute" style="left: 3%;bottom: 10%">
             <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
             <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+          </div>
+          <div v-if="getLocale()==='en'" class="position-absolute" style="left: 3%;bottom: 10%">
+            <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+            <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
           </div>
         </div>
       </div>
@@ -282,6 +333,16 @@
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
+    <b-modal centered id="modal-active" ref="modal-active" :title="$t('system-setting.prompt')">
+      {{$t('device-management.document-template.make-active-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="updateItemStatus('1000000701')" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-active')">{{$t('system-setting.cancel')}}
         </b-button>
       </template>
     </b-modal>
@@ -348,9 +409,9 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import {responseMessages} from '../../../constants/response-messages';
-  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, getApiManagerError, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
-  import {checkPermissionItem, getDicDataByDicIdForOptions, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDicDataByDicIdForOptions, getDirection, getLocale} from "../../../utils";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
@@ -401,6 +462,7 @@
         params: {},
         name: '',
         fileSelection: [],
+        renderedCheckList:[],
         indicatorDataDel:null,
         indicatorId : null,
         direction: getDirection().direction,
@@ -567,18 +629,53 @@
       this.$refs.vuetable.$parent.transform = this.transformTemplateTable.bind(this);
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      getLocale() {
+        return getLocale();
+      },
+      selectAll(value){
+        this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.vuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.vuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -632,7 +729,7 @@
         this.$refs[modal].hide();
       },
       getCategoryData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -675,7 +772,8 @@
             break;
           case 'activate':
             this.initialize(data, false);
-            this.updateItemStatus('1000000701');
+            this.$refs['modal-active'].show();
+            //this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
             this.initialize(data, false);
@@ -703,6 +801,7 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          this.renderedCheckList.push(data.data[i].archivesTemplateId);
           temp.category = temp.deviceCategory.categoryName;
           temp.manufacturerName = getManufacturerName(this.manufacturerOptions, temp.manufacturer);
           transformed.data.push(temp);
@@ -710,12 +809,15 @@
         return transformed
       },
       onPaginationData(paginationData) {
-        this.$refs.pagination.setPaginationData(paginationData)
+        this.$refs.pagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onChangePage(page) {
-        this.$refs.vuetable.changePage(page)
+        this.$refs.vuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
       vuetableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
@@ -775,6 +877,27 @@
         this.submitted = true;
         this.$v.basicForm.$touch();
         if (this.$v.basicForm.$invalid) {
+          if(this.$v.basicForm.archivesTemplateNumber.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.template-number-placeholder`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.basicForm.templateName.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.template-name-placeholder`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.basicForm.categoryId.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-classify-placeholder`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           return;
         }
         this.indicatorData.forEach((item) => {
@@ -881,6 +1004,7 @@
           .catch((error) => {
           });
         this.$refs['modal-inactive'].hide();
+        this.$refs['modal-active'].hide();
       },
       //remove
       removeItem() {
@@ -1047,9 +1171,10 @@
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+        this.changeCheckAllStatus();
       },
       'indicatorTableItems.perPage': function (newVal) {
-        console.log("d");
+
         this.$refs.indicatorTable.refresh();
       },
 
@@ -1077,3 +1202,10 @@
     }
   }
 </script>
+<style>
+  .img-rotate{
+    -ms-transform: rotate(-15deg); /* IE 9 */
+    -webkit-transform: rotate(-15deg); /* Safari 3-8 */
+    transform: rotate(-15deg);
+  }
+</style>

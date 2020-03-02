@@ -1,4 +1,4 @@
-<style lang="scss">
+  <style lang="scss">
 
   .operating-log {
     .rounded-span {
@@ -28,7 +28,7 @@
         <b-row v-if="pageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
-              <b-col cols="6">
+              <b-col cols="8">
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.access-ip')">
@@ -37,12 +37,14 @@
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="accessFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""/>
+                      <date-picker v-model="accessFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   placeholder=""/>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="accessFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""/>
+                      <date-picker v-model="accessFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   valueType="YYYY-MM-DD HH:mm:ss" placeholder=""/>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -50,9 +52,10 @@
                       <b-form-input v-model="accessFilter.operateAccount"/>
                     </b-form-group>
                   </b-col>
+                  <b-col></b-col>
                 </b-row>
               </b-col>
-              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+              <b-col cols="4" class="d-flex justify-content-end align-items-center">
                 <div>
                   <b-button size="sm" class="ml-2" variant="info default" @click="onAccessSearchButton()">
                     <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
@@ -60,10 +63,12 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onAccessResetButton()">
                     <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('access_log_export')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()"
+                            :disabled="checkPermItem('access_log_export')">
                     <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintAccessButton()" :disabled="checkPermItem('access_log_print')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintAccessButton()"
+                            :disabled="checkPermItem('access_log_print')">
                     <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -81,6 +86,7 @@
                     track-by="id"
                     pagination-path="pagination"
                     class="table-striped"
+                    @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onvueTablePaginationData"
                   >
                   </vuetable>
@@ -106,12 +112,14 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="operatingFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""/>
+                      <date-picker v-model="operatingFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   placeholder=""/>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="operatingFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""/>
+                      <date-picker v-model="operatingFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   placeholder=""/>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -152,10 +160,12 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onOperatingResetButton()">
                     <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('audit_log_export')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()"
+                            :disabled="checkPermItem('audit_log_export')">
                     <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintOperatingButton()" :disabled="checkPermItem('audit_log_print')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintOperatingButton()"
+                            :disabled="checkPermItem('audit_log_print')">
                     <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -172,6 +182,7 @@
                     pagination-path="pagination"
                     track-by="id"
                     class="table-striped"
+                    @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                     @vuetable:pagination-data="onOperatingLogTablePaginationData"
                   >
                   </vuetable>
@@ -191,10 +202,11 @@
       </b-tab>
 
     </b-tabs>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -253,8 +265,8 @@
       Modal
     },
     mixins: [validationMixin],
-    validations : {
-      fileSelection : {
+    validations: {
+      fileSelection: {
         required
       },
     },
@@ -267,16 +279,18 @@
         isExpanded: false,
         pageStatus: 'table',
         direction: getDirection().direction,
-        tabStatus : 'access',
+        tabStatus: 'access',
         link: '',
         params: {},
         name: '',
-        fileSelection : [],
+        fileSelection: [],
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
+        renderedCheckList: [],
+        renderedCheckListGroup: [],
         isModalVisible: false,
         accessFilter: {
           clientIp: null,
@@ -286,7 +300,7 @@
         },
         operatingFilter: {
           clientIp: "",
-          operateResult: "",
+          operateResult: null,
           operateObject: "",
           operateStartTime: null,
           operateEndTime: null
@@ -294,8 +308,8 @@
         },
         statusSelectData: [
           {value: null, text: this.$t('log-management.operating-log.status-all')},
-          {value: 'active', text: this.$t('log-management.operating-log.status-success')},
-          {value: 'inactive', text: this.$t('log-management.operating-log.status-failure')},
+          {value: '1', text: this.$t('log-management.operating-log.status-success')},
+          {value: '0', text: this.$t('log-management.operating-log.status-failure')},
         ],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/log-management/operating-log/access/get-by-filter-and-page`,
@@ -306,7 +320,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'operateId',
+              name: 'id',
               title: this.$t('log-management.operating-log.number'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -391,6 +405,14 @@
               title: this.$t('log-management.operating-log.operating-result'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  '1': `<span class="text-success">${this.$t('log-management.operating-log.status-success')}</span>`,
+                  '0': `<span class="text-muted">${this.$t('log-management.operating-log.status-failure')}</span>`,
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
             },
             {
               name: 'reasonCode',
@@ -410,18 +432,96 @@
       }
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      selectAll(value) {
+        this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.vuetable.isCheckAllStatus = value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone() {
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus() {
+        let selectList = this.$refs.vuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if (selectList.length >= renderedList.length) {
+          let isEqual = false;
+          for (let i = 0; i < renderedList.length; i++) {
+            isEqual = false;
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
+            }
+            if (isEqual === false) {
+              this.selectNone();
+              break;
+            }
+            if (i === renderedList.length - 1) {
+              this.selectAll(true);
+            }
+          }
+        } else {
+          this.selectNone();
+        }
+
+      },
+      selectAllGroup(value) {
+        this.$refs.operatingLogTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.operatingLogTable.isCheckAllStatus = value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.operatingLogTable.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNoneGroup() {
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.operatingLogTable.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatusGroup() {
+        let selectList = this.$refs.operatingLogTable.selectedTo;
+        let renderedList = this.renderedCheckListGroup;
+        if (selectList.length >= renderedList.length) {
+          let isEqual = false;
+          for (let i = 0; i < renderedList.length; i++) {
+            isEqual = false;
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
+            }
+            if (isEqual === false) {
+              this.selectNoneGroup();
+              break;
+            }
+            if (i === renderedList.length - 1) {
+              this.selectAllGroup(true);
+            }
+          }
+        } else {
+          this.selectNoneGroup();
+        }
+
+      },
+      onCheckStatusChange(isChecked) {
+        if (isChecked) {
+          this.changeCheckAllStatus();
+        } else {
+          this.selectNone();
+        }
+      },
+      onCheckStatusChangeGroup(isChecked) {
+        if (isChecked) {
+          this.changeCheckAllStatusGroup();
+        } else {
+          this.selectNoneGroup();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -431,19 +531,19 @@
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
-        if(this.tabStatus==='access'){
+        if (this.tabStatus === 'access') {
           this.onExportAccess();
         }
-        if(this.tabStatus==='operating'){
+        if (this.tabStatus === 'operating') {
           this.onExportOperating();
         }
         this.isModalVisible = true;
       },
       onExportButtonModel() {
-        if(this.tabStatus==='access'){
+        if (this.tabStatus === 'access') {
           this.onExportAccess();
         }
-        if(this.tabStatus==='operating'){
+        if (this.tabStatus === 'operating') {
           this.onExportOperating();
         }
 
@@ -530,12 +630,14 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime,this.$i18n.locale);
+          temp.operateTimeFormat = getDateTimeWithFormat(temp.operateTime, this.$i18n.locale);
           transformed.data.push(temp);
+          this.renderedCheckList.push(data.data[i].id);
         }
         return transformed
       },
       vuetableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
@@ -545,9 +647,11 @@
       },
       onvueTablePaginationData(paginationData) {
         this.$refs.vuetablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onvueTableChangePage(page) {
         this.$refs.vuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
 
       transformOperatingTable(response) {
@@ -565,12 +669,14 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime);
+          temp.operateTimeFormat = getDateTimeWithFormat(temp.operateTime);
           transformed.data.push(temp);
+          this.renderedCheckListGroup.push(data.data[i].id);
         }
         return transformed
       },
       operatingTableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckListGroup = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.operatingLogTableItems.perPage,
@@ -584,7 +690,7 @@
       onOperatingResetButton() {
         this.operatingFilter = {
           clientIp: "",
-          operateResult: "",
+          operateResult: null,
           operateObject: "",
           operateStartTime: null,
           operateEndTime: null
@@ -592,17 +698,21 @@
       },
       onOperatingLogTablePaginationData(paginationData) {
         this.$refs.operatingLogPagination.setPaginationData(paginationData);
+        this.changeCheckAllStatusGroup();
       },
       onOperatingLogTableChangePage(page) {
         this.$refs.operatingLogTable.changePage(page);
+        this.changeCheckAllStatus();
       },
     },
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+        this.changeCheckAllStatus();
       },
       'operatingLogTableItems.perPage': function (newVal) {
         this.$refs.operatingLogTable.refresh();
+        this.changeCheckAllStatusGroup();
       },
 
     }

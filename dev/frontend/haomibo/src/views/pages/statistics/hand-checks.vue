@@ -122,7 +122,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.noSeizure/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.noSeizureRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>无查获率</span></div>
@@ -155,7 +155,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.seizure/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.seizureRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>查获率</span></div>
@@ -299,6 +299,7 @@
               track-by="time"
               pagination-path="pagination"
               class="table-hover"
+              @vuetable:checkbox-toggled="onCheckStatusChange"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
             >
             </vuetable>
@@ -370,14 +371,14 @@
             <b-col cols="1"><b>现场:</b></b-col>
             <b-col cols="11">
               <span v-if="filter.fieldId === null">{{this.allField}}</span>
-                  <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
+              <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>安检仪:</b></b-col>
             <b-col cols="11">
-                  <span v-if="filter.deviceId === null">{{allDevice}}</span>
-                  <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
+              <span v-if="filter.deviceId === null">{{allDevice}}</span>
+              <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
@@ -387,7 +388,7 @@
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>操作员:</b></b-col>
             <b-col cols="11">
-                  <span v-if="filter.userName===null">全部</span>
+              <span v-if="filter.userName===null">全部</span>
               <span v-else>{{filter.userName}}</span>
             </b-col>
           </b-row>
@@ -418,6 +419,7 @@
               track-by="time"
               pagination-path="pagination"
               class="table-hover"
+              @vuetable:checkbox-toggled="onCheckStatusChange2"
               @vuetable:pagination-data="onTaskVuetable2PaginationData"
             >
             </vuetable>
@@ -655,13 +657,13 @@
               name: '无查获',
               type: 'bar',
               data: [0],
-              barGap:'0%',
+              barGap: '0%',
             },
             {
               name: '查获',
               type: 'bar',
               data: [0],
-              barGap:'0%',
+              barGap: '0%',
             },
           ]
         },
@@ -727,6 +729,8 @@
         name: '',
         pageStatus2: 'charts',
         fileSelection: [],
+        renderedCheckList: [],
+        renderedCheckList2: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -750,7 +754,7 @@
         isCheckAll2: false,
         siteData: [],
         allField: '',
-        allDevice:'',
+        allDevice: '',
         preViewData: [],
         manualDeviceOptions: [],
         wordCloudData: [],
@@ -810,7 +814,7 @@
             },
             {
               name: 'time',
-              title: '时间段',
+              title: '期间',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -824,13 +828,18 @@
               name: 'noSeizure',
               title: '无查获量',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+
             },
             {
               name: 'noSeizureRate',
               title: '无查获率',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (noSeizureRate) => {
+                if (noSeizureRate == null) return '';
+                return noSeizureRate.toFixed(1);
+              }
             },
             {
               name: 'seizure',
@@ -842,7 +851,11 @@
               name: 'seizureRate',
               title: '查获率',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (seizureRate) => {
+                if (seizureRate == null) return '';
+                return seizureRate.toFixed(1);
+              }
             },
             {
               name: 'avgDuration',
@@ -888,7 +901,7 @@
             },
             {
               name: 'time',
-              title: '时间段',
+              title: '期间',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -930,12 +943,11 @@
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
+        this.changeCheckAllStatus();
       },
       'taskVuetable2Items.perPage': function (newVal) {
         this.$refs.taskVuetable2.refresh();
-      },
-      'operatingLogTableItems.perPage': function (newVal) {
-        this.$refs.operatingLogTable.refresh();
+        this.changeCheckAllStatus2();
       },
       siteData: function (newVal, oldVal) {
 
@@ -956,6 +968,96 @@
       }
     },
     methods: {
+      selectAll(value) {
+        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.taskVuetable.isCheckAllStatus = value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone() {
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus() {
+        let selectList = this.$refs.taskVuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if (selectList.length >= renderedList.length) {
+          let isEqual = false;
+          for (let i = 0; i < renderedList.length; i++) {
+            isEqual = false;
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
+            }
+            if (isEqual === false) {
+              this.selectNone();
+              break;
+            }
+            if (i === renderedList.length - 1) {
+              this.selectAll(true);
+            }
+          }
+        } else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked) {
+        if (isChecked) {
+          this.changeCheckAllStatus();
+        } else {
+          this.selectNone();
+        }
+      },
+      selectAll2(value) {
+        this.$refs.taskVuetable2.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.taskVuetable2.isCheckAllStatus = value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable2.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone2() {
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable2.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus2() {
+        let selectList = this.$refs.taskVuetable2.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if (selectList.length >= renderedList.length) {
+          let isEqual = false;
+          for (let i = 0; i < renderedList.length; i++) {
+            isEqual = false;
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
+            }
+            if (isEqual === false) {
+              this.selectNone2();
+              break;
+            }
+            if (i === renderedList.length - 1) {
+              this.selectAll2(true);
+            }
+          }
+        } else {
+          this.selectNone2();
+        }
+
+      },
+      onCheckStatusChange2(isChecked) {
+        if (isChecked) {
+          this.changeCheckAllStatus2();
+        } else {
+          this.selectNone2();
+        }
+      },
       checkPermItem(value) {
         return checkPermissionItem(value);
       },
@@ -981,25 +1083,6 @@
           }, []);
 
         this.wordCloudChartOptions.series.data = this.wordCloudData;
-
-        // var data = text.split(/[,\. ]+/g);
-        // data=data.reduce(data,function (arr, word) {
-        //     var obj = arr.find(function (obj) {
-        //       return obj.name === word;
-        //     });
-        //     if (obj) {
-        //       obj.weight += 1;
-        //     } else {
-        //       obj = {
-        //         name: word,
-        //         weight: 1
-        //       };
-        //       arr.push(obj);
-        //     }
-        //     return arr;
-        //   }, []);
-        //
-        //
         Highcharts.chart('wordCloudy', {
           series: [{
             type: 'wordcloud',
@@ -1009,18 +1092,6 @@
             text: '词云图'
           }
         });
-
-        // var options = {
-        //   chart: {
-        //     renderTo: 'container',
-        //     type: 'line'
-        //   },
-        //   series: [{
-        //     name: '小明',
-        //     data: [1, 0, 4]
-        //   }]
-        // }
-
       },
 
       getDataCodeValue(value) {
@@ -1034,41 +1105,30 @@
         if (!dictionary.hasOwnProperty(value)) return '';
         return dictionary[value];
       },
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
-      getSiteLabel(value){
-        if(value===null||this.onSiteOption===null) return "";
-        else{
-          for(let i=0; i<this.onSiteOption.length; i++){
-            if(this.onSiteOption[i].value===value)
+
+      getSiteLabel(value) {
+        if (value === null || this.onSiteOption === null) return "";
+        else {
+          for (let i = 0; i < this.onSiteOption.length; i++) {
+            if (this.onSiteOption[i].value === value)
               return this.onSiteOption[i].text;
           }
         }
       },
-      getDeviceLabel(value){
-        if(value===null||this.manualDeviceOptions===null) return "";
-        else{
-          for(let i=0; i<this.manualDeviceOptions.length; i++){
-            if(this.manualDeviceOptions[i].value===value)
+      getDeviceLabel(value) {
+        if (value === null || this.manualDeviceOptions === null) return "";
+        else {
+          for (let i = 0; i < this.manualDeviceOptions.length; i++) {
+            if (this.manualDeviceOptions[i].value === value)
               return this.manualDeviceOptions[i].text;
           }
         }
       },
-      getCategoryLabel(value){
-        if(value===null||this.operatorTypeOptions===null) return "";
-        else{
-          for(let i=0; i<this.operatorTypeOptions.length; i++){
-            if(this.operatorTypeOptions[i].value===value)
+      getCategoryLabel(value) {
+        if (value === null || this.operatorTypeOptions === null) return "";
+        else {
+          for (let i = 0; i < this.operatorTypeOptions.length; i++) {
+            if (this.operatorTypeOptions[i].value === value)
               return this.operatorTypeOptions[i].text;
           }
         }
@@ -1093,14 +1153,10 @@
               let cnt = data.length;
 
               allFieldStr = allFieldStr + data[0].device.deviceName;
-              //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
               for (let i = 1; i < cnt; i++) {
-
                 allFieldStr = allFieldStr + ", " + data[i].device.deviceName;
-
               }
               this.allDevice = allFieldStr;
-
               this.manualDeviceOptions = options;
               this.manualDeviceOptions.push({
                 text: this.$t('personal-inspection.all'),
@@ -1117,8 +1173,7 @@
       },
 
       onExportButton(value) {
-        // this.fileSelection = [];
-        // this.$refs['model-export'].show();
+
         this.button = value;
         if (this.button === 'hand') {
           this.onExportButton1();
@@ -1153,12 +1208,6 @@
         };
         this.link = `task/statistics/handexamination/generate`;
         this.name = 'Statistics-Hand';
-        // if (this.pageStatus1 !== 'charts' && checkedIds.length === 0) {
-        //
-        // } else {
-        //   downLoadFileFromServer(link, params, 'Statistics-Hand', this.fileSelection);
-        //   this.hideModal('model-export')
-        // }
       },
 
       hideModal(modal) {
@@ -1187,7 +1236,6 @@
           printFileFromServer(link, params);
         }
       },
-
 
       onExportButton2() {
         let checkedAll, checkedIds;
@@ -1274,21 +1322,18 @@
             this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.seizure;
             this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSeizure;
           }
-          // if (this.filter.statWidth === 'year') {
-          //   this.barChart2Options.xAxis.data = this.xHour;
-          // } else {
-            //this.xDay = [];
-            this.xDay = Object.keys(this.preViewData.detailedStatistics);
 
-            this.barChart2Options.xAxis.data = this.xDay;
-            for (let i = 0; i < this.xDay.length; i++) {
-              let key = this.xDay[i];
+          this.xDay = Object.keys(this.preViewData.detailedStatistics);
 
-              if (this.preViewData.detailedStatistics[key] != null) {
-                this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].noSeizure;
-                this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].seizure;
-              }
+          this.barChart2Options.xAxis.data = this.xDay;
+          for (let i = 0; i < this.xDay.length; i++) {
+            let key = this.xDay[i];
+
+            if (this.preViewData.detailedStatistics[key] != null) {
+              this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].noSeizure;
+              this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].seizure;
             }
+          }
           //}
         });
       },
@@ -1357,21 +1402,22 @@
           endTime: null,
           statWidth: 'hour',
         };
-        //this.getPreviewData();
-        //this.$refs.taskVuetable.refresh();
-
       },
       onTaskVuetablePaginationData(paginationData) {
-        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onTaskVuetableChangePage(page) {
-        this.$refs.taskVuetable.changePage(page)
+        this.$refs.taskVuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
       onTaskVuetable2PaginationData(paginationData) {
-        this.$refs.taskVuetable2Pagination.setPaginationData(paginationData)
+        this.$refs.taskVuetable2Pagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus2();
       },
       onTaskVuetable2ChangePage(page) {
-        this.$refs.taskVuetable2.changePage(page)
+        this.$refs.taskVuetable2.changePage(page);
+        this.changeCheckAllStatus2();
       },
       onDisplaceButton1() {
         if (this.pageStatus1 === 'charts') {
@@ -1409,6 +1455,7 @@
           let j = transformed.tKey[i - 1];
 
           temp = data.detailedStatistics[j];
+          this.renderedCheckList.push(data.detailedStatistics[j].time);
           transformed.data.push(temp)
         }
 
@@ -1416,6 +1463,7 @@
 
       },
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+        this.renderedCheckList = [];
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
@@ -1424,6 +1472,7 @@
         });
       },
       taskVuetable2HttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+        this.renderedCheckList = [];
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,

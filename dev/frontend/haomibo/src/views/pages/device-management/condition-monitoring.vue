@@ -4,6 +4,15 @@
     @return #{$remSize}rem;
   }
 
+  .no-item {
+    background-color: #e9e9e9;
+    padding-top: 30vh;
+  }
+  .no-item-data {
+    font-size: 1rem;
+    color: silver;
+  }
+
   .device-monitoring {
     $item-height: calc(50% - 0.3rem);
     $item-width: 25% ;
@@ -116,7 +125,7 @@
                 display: flex;
                 label {
                   white-space: pre;
-                  overflow: hidden;
+                  overflow: visible;
                   text-overflow: ellipsis;
                   max-width: 100%;
                   color: #606266;
@@ -346,6 +355,13 @@
       }
     }
   }
+  .item-wrapper-height{
+    position: relative;
+    padding-bottom: 1.25rem;
+    padding-left: 1.25rem;
+    display: inline-block;
+    width: 25%;
+  }
 </style>
 <template>
   <div class="device-monitoring">
@@ -389,10 +405,11 @@
           </b-col>
         </b-row>
 
-        <div class="flex-grow-1 m-0">
+        <div class="flex-grow-1 m-0" v-if="isExist">
+
           <div class="item-wrapper" v-for="(item, index) in items"
                :class="index%4===0?(index===0?'pl-0':'pl-0'):index%4===3?(index>4?'slide-left':'slide-left'):(index>4?'':'')">
-            <div class="item d-flex flex-column">
+            <div class="item d-flex flex-column" @click="onDetailClick(item.statusId, index)">
               <div class="item-header">
                 <div class="label">{{item.deviceNumber}}</div>
                 <div class="action-list">
@@ -425,7 +442,7 @@
                     </div>
                   </b-col>
                   <b-col cols="8" class="right-side d-flex flex-column">
-                    <label class="text-top">{{$t('device-management.device-monitoring.running-time')}}
+                    <label v-if="item.device.currentStatus==='1000002003' ||item.device.currentStatus==='1000002005'" class="text-top">{{$t('device-management.device-monitoring.running-time')}}
                       {{item.runningTimeValue}}</label>
                     <div class="flex-grow-1 d-flex content flex-column justify-content-end">
                       <div class="w-100">
@@ -465,7 +482,7 @@
               </div>
 
             </div>
-            <div class="item-extra-info flex-column d-flex">
+            <div  v-if="item.device.deviceType === '1000001901' && item.detailStatus===true" class="item-extra-info flex-column d-flex">
               <div class="w-100 d-flex">
                 <div>PLC:</div>
                 <div v-if="item.plcStatus === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
@@ -535,6 +552,11 @@
               </div>
             </div>
           </div>
+
+
+        </div>
+        <div class="flex-grow-1 m-0 no-item" v-if="!isExist">
+          <div class="text-center no-item-data">No Data Available</div>
         </div>
         <div class="d-flex align-items-center justify-content-between footer-pager">
           <label>{{$t('vuetable.total')}} {{pagination.total}} {{$t('vuetable.record')}}</label>
@@ -575,7 +597,7 @@
   import Vue from 'vue'
   import ECharts from 'vue-echarts'
   import 'echarts/lib/chart/line';
-  import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {getApiManager, getApiManagerError, getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
 
   let getSiteFullName = orgData => {
@@ -605,15 +627,28 @@
     components: {
       'v-chart': ECharts
     },
+    created() {
+      //this.onSearchButton();
+      this.timer = setInterval(this.autoUpdate, 20000)
+
+      //this.timer = setInterval(() => this.onTaskVuetableChangePage(this.httpOption.params.page), 15000);
+      //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
+
+    },
+    beforeDestroy() {
+      clearInterval(this.timer)
+    },
     mounted() {
       this.getCategoryData();
       this.getSiteData();
-      this.getDataFetch();
+      this.getDataFetch(false);
       this.getDeviceDicData();
     },
     data() {
       return {
         isLoading: false,
+        isExist:true,
+        detailDevice:false,
         manufacturerDicData: [],
         currentFlowDicData: [],
         currentStatusDicData: [],
@@ -711,6 +746,55 @@
       }
     },
     methods: {
+      autoUpdate() {
+        this.getDataFetchRefresh();
+      },
+      onDetailClick(statusId, index){
+
+        this.items[index].detailStatus = true;
+        getApiManagerError().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-id`, {
+          statusId: statusId
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.items[index].lineChartOptions = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
+              this.items[index].maxScanCount = Math.max.apply(Math, data.record.countList);
+              this.items[index].deviceNumber = data.device.deviceName;
+              this.items[index].device = data.device;
+              this.items[index].fieldName = data.device && data.device.field ? data.device.field.fieldDesignation : '';
+              this.items[index].landTime = getDateTimeWithFormat(data.loginTime, 'monitor');
+              this.items[index].category = data.device ? data.device.category.categoryName : '';
+              this.items[index].manufacturerName = findDicTextData(this.manufacturerDicData, data.device.archive.archiveTemplate.manufacturer);
+              this.items[index].currentWorkFlowName = findDicTextData(this.currentFlowDicData, data.currentWorkFlow);
+              this.items[index].currentStatusName = findDicTextData(this.currentStatusDicData, data.currentStatus);
+              this.items[index].imageUrl = data.device && data.device.imageUrl ? apiBaseUrl + data.device.imageUrl : null;
+              this.items[index].plcStatusName = findDicTextData(this.deviceStatusDicData, data.plcStatus);
+              this.items[index].masterCardStatusName = findDicTextData(this.deviceStatusDicData, data.masterCardStatus);
+              this.items[index].slaveCardStatusName = findDicTextData(this.deviceStatusDicData, data.slaveCardStatus);
+              this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
+              this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
+              this.items[index].emergencyStopName = findDicTextData(this.deviceStatusDicData, data.emergencyStop);
+              this.items[index].footWarningName = findDicTextData(this.footStatusDicData, data.footWarning);
+
+              this.items[index].runningTimeValue = getDateTimeWithFormat(data.loginTime, 'monitor-diff', this.$i18n.locale);
+              this.items[index].deviceTrafficHigh = data.deviceTrafficHigh;
+              this.items[index].deviceStorageAlarm = data.deviceStorageAlarm;
+              this.items[index].plcStatus = data.plcStatus;
+              this.items[index].slaveCardStatus = data.slaveCardStatus;
+              this.items[index].masterCardStatus = data.masterCardStatus;
+              this.items[index].footWarning = data.footWarning;
+              this.items[index].deviceOnline = data.deviceOnline;
+              this.items[index].servo = data.servo;
+              this.items[index].slidePosition = data.slidePosition;
+              this.items[index].emergencyStop = data.emergencyStop;
+
+              break;
+          }
+        });
+
+      },
       getDeviceDicData() {
         this.manufacturerDicData = getDicDataByDicIdForOptions(9);
         this.currentFlowDicData = getDeviceDicDataByDicIdForOptions(10);
@@ -737,7 +821,7 @@
       },
       //getting all device category options
       getCategoryData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -751,7 +835,7 @@
       },
       //getting all site options
       getSiteData() {
-        getApiManager().post(`${apiBaseUrl}/site-management/field/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/site-management/field/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -777,35 +861,62 @@
         let result = [];
         this.pagination.total = data.total;
         this.pagination.lastPage = data.last_page;
-        let temp;
-        for (let i = 0; i < data.data.length; i++) {
-          temp = data.data[i];
-          if(temp.device == null)
-            continue;
-          temp.deviceNumber = temp.device ? temp.device.deviceSerial : 'Unknown';
-          temp.fieldName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
-          temp.landTime = getDateTimeWithFormat(temp.loginTime, 'monitor');
-          temp.category = temp.device ? temp.device.archive.archiveTemplate.deviceCategory.categoryName : '';
-          temp.manufacturerName = findDicTextData(this.manufacturerDicData, temp.device.archive.archiveTemplate.manufacturer);
-          temp.currentWorkFlowName = findDicTextData(this.currentFlowDicData, temp.currentWorkFlow);
-          temp.currentStatusName = findDicTextData(this.currentStatusDicData, temp.currentStatus);
-          temp.imageUrl = temp.device && temp.device.imageUrl ? apiBaseUrl + temp.device.imageUrl : null;
-          temp.plcStatusName = findDicTextData(this.deviceStatusDicData, temp.plcStatus);
-          temp.masterCardStatusName = findDicTextData(this.deviceStatusDicData, temp.masterCardStatus);
-          temp.slaveCardStatusName = findDicTextData(this.deviceStatusDicData, temp.slaveCardStatus);
-          temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
-          temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
-          temp.emergencyStopName = findDicTextData(this.deviceStatusDicData, temp.emergencyStop);
-          temp.footWarningName = findDicTextData(this.footStatusDicData, temp.footWarning);
-          temp.lineChartOptions = this.generateChartData(temp.record, temp.deviceTrafficHigh, temp.deviceTrafficMiddle);
-          temp.maxScanCount = Math.max.apply(Math, temp.record.countList);
-          temp.runningTimeValue = getDateTimeWithFormat(temp.deviceLoginTime, 'monitor-diff', this.$i18n.locale);
-          result.push(temp);
+        if(data.total===0){
+          this.isExist = false;
         }
-        this.items = result;
+        else {
+          this.isExist = true;
+          let temp;
+          for (let i = 0; i < data.data.length; i++) {
+            temp = data.data[i];
+            if (temp.device == null)
+              continue;
+            temp.deviceNumber = temp.device ? temp.device.deviceName : 'Unknown';
+            temp.fieldName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
+            temp.landTime = getDateTimeWithFormat(temp.loginTime, 'monitor');
+            temp.category = temp.device ? temp.device.category.categoryName : '';
+            temp.manufacturerName = findDicTextData(this.manufacturerDicData, temp.device.archive.archiveTemplate.manufacturer);
+            temp.currentWorkFlowName = findDicTextData(this.currentFlowDicData, temp.currentWorkFlow);
+            temp.currentStatusName = findDicTextData(this.currentStatusDicData, temp.currentStatus);
+            temp.imageUrl = temp.device && temp.device.imageUrl ? apiBaseUrl + temp.device.imageUrl : null;
+            temp.plcStatusName = findDicTextData(this.deviceStatusDicData, temp.plcStatus);
+            temp.masterCardStatusName = findDicTextData(this.deviceStatusDicData, temp.masterCardStatus);
+            temp.slaveCardStatusName = findDicTextData(this.deviceStatusDicData, temp.slaveCardStatus);
+            temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
+            temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
+            temp.emergencyStopName = findDicTextData(this.deviceStatusDicData, temp.emergencyStop);
+            temp.footWarningName = findDicTextData(this.footStatusDicData, temp.footWarning);
+            //temp.lineChartOptions = this.generateChartData(temp.record, temp.deviceTrafficHigh, temp.deviceTrafficMiddle);
+            //temp.maxScanCount = Math.max.apply(Math, temp.record.countList);
+            temp.lineChartOptions = [];
+            temp.maxScanCount = [];
+            temp.runningTimeValue = getDateTimeWithFormat(temp.loginTime, 'monitor-diff', this.$i18n.locale);
+            temp.detailStatus = false;
+            result.push(temp);
+          }
+          this.items = result;
+        }
       },
-      getDataFetch() { // customize data loading for table from server
+      getDataFetch(isCurrentPage=false) { // customize data loading for table from server
         this.isLoading = true;
+        getApiManager().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-filter-and-page`,
+          {
+            currentPage: isCurrentPage=true ? this.pagination.currentPage : 1,
+            perPage: this.pagination.perPage,
+            filter: this.filter
+          }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.transformData(data);
+              this.isLoading = false;
+              break;
+          }
+          this.isLoading = false;
+        });
+      },
+      getDataFetchRefresh() { // customize data loading for table from server
         getApiManager().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-filter-and-page`,
           {
             currentPage: this.pagination.currentPage,
@@ -820,9 +931,7 @@
               this.isLoading = false;
               break;
           }
-          this.isLoading = false;
         });
-
       },
       //pagination methods
       pageRange() {
@@ -861,7 +970,7 @@
     },
     watch: {
       'pagination.currentPage': function (newVal, oldVal) {
-        this.getDataFetch();
+        this.getDataFetch(true);
       },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 

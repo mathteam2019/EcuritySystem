@@ -70,6 +70,7 @@
                     :per-page="vuetableItems.perPage"
                     pagination-path="pagination"
                     track-by="fieldId"
+                    @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onPaginationData"
                     class="table-striped"
                   >
@@ -89,17 +90,17 @@
                         :disabled="checkPermItem('field_update_status')"
                         v-if="props.rowData.status === '1000000702'"
                         size="sm" @click="onAction('activate',props.rowData)"
-                        variant="success default btn-square">
-                        <i class="icofont-check-circled"/>
+                        variant="warning default btn-square">
+                        <i class="icofont-ban"/>
                       </b-button>
 
                       <b-button
                         v-if="props.rowData.status === '1000000701'"
                         size="sm" @click="onAction('inactivate',props.rowData)"
-                        variant="warning default btn-square"
+                        variant="success default btn-square"
                         :disabled="props.rowData.parentFieldId === 0 || checkPermItem('field_update_status')"
                       >
-                        <i class="icofont-ban"/>
+                        <i class="icofont-check-circled"/>
                       </b-button>
 
                       <b-button
@@ -324,7 +325,7 @@
             <b-row class="flex-grow-1 align-items-end">
               <b-col cols="12" class="d-flex justify-content-end">
                 <div class="mr-3">
-                  <b-button v-if="siteForm.status === '1000000701' && siteForm.parentFieldId !=0"
+                  <b-button v-if="siteForm.status === '1000000701'"
                             @click="onAction('inactivate',siteForm)" size="sm"
                             variant="warning default" :disabled="checkPermItem('field_update_status')">
                     <i class="icofont-ban"/> {{$t('system-setting.status-inactive')}}
@@ -344,9 +345,13 @@
                 </div>
               </b-col>
             </b-row>
-            <div class="position-absolute" style="bottom: 4%;left: 28%">
+            <div v-if="getLocale()==='zh'"  class="position-absolute" style="bottom: 4%;left: 28%">
               <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
               <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+            </div>
+            <div v-if="getLocale()==='en'" class="position-absolute" style="lbottom: 4%;left: 28%">
+              <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+              <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
             </div>
           </b-col>
         </b-row>
@@ -376,6 +381,16 @@
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
+    <b-modal centered id="modal-active" ref="modal-active" :title="$t('system-setting.prompt')">
+      {{$t('site-management.make-active-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="updateItemStatus('1000000701')" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-active')">{{$t('system-setting.cancel')}}
         </b-button>
       </template>
     </b-modal>
@@ -424,7 +439,6 @@
   </div>
 </template>
 
-
 <script>
 
   import Vuetable from '../../../components/Vuetable2/Vuetable'
@@ -434,9 +448,15 @@
   import {validationMixin} from 'vuelidate';
 
   import {apiBaseUrl} from "../../../constants/config";
-  import {downLoadFileFromServer, getApiManager, isPhoneValid, printFileFromServer} from '../../../api';
+  import {
+    downLoadFileFromServer,
+    getApiManager,
+    getApiManagerError,
+    isPhoneValid,
+    printFileFromServer
+  } from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
-  import {checkPermissionItem, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
@@ -488,6 +508,7 @@
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+        this.changeCheckAllStatus();
       },
       'siteForm.parentFieldId': function (newVal) {
         this.selectedParentSerial = getParentSerialName(this.siteData, newVal);
@@ -552,6 +573,7 @@
         params: {},
         name: '',
         fileSelection : [],
+        renderedCheckList:[],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -671,6 +693,7 @@
         superSiteOptions: [],
         treeData: {},
         siteForm: {
+          status:'',
           fieldId: 0,
           fieldSerial: '',
           fieldDesignation: '',
@@ -702,19 +725,53 @@
       }
     },
     methods: {
+      getLocale() {
+        return getLocale();
+      },
+      selectAll(value){
+        this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.vuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.vuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
 
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -762,7 +819,7 @@
       },
 
       getSiteData() {
-        getApiManager().post(`${apiBaseUrl}/site-management/field/get-all-field`).then((response) => {
+        getApiManagerError().post(`${apiBaseUrl}/site-management/field/get-all-field`).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
           switch (message) {
@@ -787,7 +844,8 @@
             break;
           case 'activate':
             this.siteForm = data;
-            this.updateItemStatus('1000000701');
+            this.$refs['modal-active'].show();
+            //this.updateItemStatus('1000000701');
             break;
           case 'show':
             this.initialize(data);
@@ -810,6 +868,7 @@
       initialize(data = null) {
         if (data == null) {
           this.siteForm = {
+            status:'',
             fieldSerial: '',
             fieldDesignation: '',
             parentFieldId: '',
@@ -823,6 +882,7 @@
         } else {
           // this.siteForm = data;
           this.siteForm = {
+            status: data.status,
             fieldSerial: data.fieldSerial,
             fieldDesignation: data.fieldDesignation,
             parentFieldId: data.parentFieldId,
@@ -853,6 +913,34 @@
         //this.submitted = true;
         this.$v.siteForm.$touch();
         if (this.$v.siteForm.$invalid) {
+          if(this.$v.siteForm.fieldSerial.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.please-enter-site-no`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.siteForm.fieldDesignation.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.please-enter-site-name`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.siteForm.parentFieldId.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.please-select-parent-organization`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.siteForm.mobile.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-mobile`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           return;
         }
         this.isLoading = true;
@@ -891,6 +979,12 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['has-children']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-children`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
             this.isLoading = false;
           })
@@ -903,6 +997,7 @@
 
       siteTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
+        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
@@ -928,6 +1023,7 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          this.renderedCheckList.push(data.data[i].fieldId);
           temp.parentFieldSerial = temp.parent != null ? temp.parent.fieldSerial : null;
           temp.parentFieldDesignation = temp.parent != null ? temp.parent.fieldDesignation : null;
           transformed.data.push(temp);
@@ -938,9 +1034,11 @@
       },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onChangePage(page) {
         this.$refs.vuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
 
       updateItemStatus(statusValue) {
@@ -985,6 +1083,7 @@
           .catch((error) => {
           });
         this.$refs['modal-inactive'].hide();
+        this.$refs['modal-active'].hide();
       },
 
       removeItem() {
@@ -1054,3 +1153,10 @@
     }
   }
 </script>
+<style>
+  .img-rotate{
+    -ms-transform: rotate(-15deg); /* IE 9 */
+    -webkit-transform: rotate(-15deg); /* Safari 3-8 */
+    transform: rotate(-15deg);
+  }
+</style>

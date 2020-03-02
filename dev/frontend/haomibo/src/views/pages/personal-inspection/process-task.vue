@@ -102,6 +102,7 @@
                 :per-page="taskVuetableItems.perPage"
                 pagination-path="pagination"
                 class="table-hover"
+                @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
               >
                 <template slot="taskNumber" slot-scope="props">
@@ -185,8 +186,12 @@
                   class="icofont-star"/></span>
                 <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
+                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='FALSE'">
+                  <b-img src="/assets/img/system_scan.svg" style="width: 20px; height: 22px;"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
+                <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000001'"><i
+                  class="icofont-male" style="color: darkblue;"/></span>
               </b-col>
             </b-row>
             <b-row style="margin-bottom: 0.5rem;">
@@ -194,7 +199,7 @@
                 <canvas id="firstcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
               </b-col>
               <b-col style="padding-right: 1rem; padding-left: 0.5rem;">
-                <canvas id="secondcanvas"  style="height: 24vw;" class="img-fluid w-100 "/>
+                <canvas id="secondcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
                   <div v-if="power===false">
                     <b-img :disabled="power===false" src="/assets/img/previous_cartoon.png" class="operation-icon"
@@ -277,15 +282,15 @@
             </b-row>
             <b-row style="height: 15px !important;">
               <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
-<!--                <VueSlideBar-->
-<!--                  v-model="slidebar2value"-->
-<!--                  :min="-50"-->
-<!--                  :max="50"-->
-<!--                  :processStyle="slider.processStyle"-->
-<!--                  :lineHeight="slider.lineHeight"-->
-<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
-<!--                  class="slide-class">-->
-<!--                </VueSlideBar>-->
+                <!--                <VueSlideBar-->
+                <!--                  v-model="slidebar2value"-->
+                <!--                  :min="-50"-->
+                <!--                  :max="50"-->
+                <!--                  :processStyle="slider.processStyle"-->
+                <!--                  :lineHeight="slider.lineHeight"-->
+                <!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+                <!--                  class="slide-class">-->
+                <!--                </VueSlideBar>-->
                 <vue-slider
                   v-model="slidebar2value"
                   :min="-50"
@@ -302,15 +307,15 @@
                   :dot-options="dotOptions"
                   :order="false"
                 />
-<!--                <VueSlideBar-->
-<!--                  v-model="slidebar1value"-->
-<!--                  :min="-50"-->
-<!--                  :max="50"-->
-<!--                  :processStyle="slider.processStyle"-->
-<!--                  :lineHeight="slider.lineHeight"-->
-<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
-<!--                  class="slide-class">-->
-<!--                </VueSlideBar>-->
+                <!--                <VueSlideBar-->
+                <!--                  v-model="slidebar1value"-->
+                <!--                  :min="-50"-->
+                <!--                  :max="50"-->
+                <!--                  :processStyle="slider.processStyle"-->
+                <!--                  :lineHeight="slider.lineHeight"-->
+                <!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+                <!--                  class="slide-class">-->
+                <!--                </VueSlideBar>-->
               </b-col>
             </b-row>
           </b-card>
@@ -328,9 +333,9 @@
                   <div class="left">
                     <div>{{$t('menu.start')}}</div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Start</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Start</div>-->
+                  <!--                  </div>-->
                 </div>
 
                 <div class="part">
@@ -342,9 +347,9 @@
                       <div v-else>{{showPage.serScan.scanPointsman.userName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Scanning</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Scanning</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label
                       v-if="showPage.serScan != null">{{this.getDateTimeFormat2(showPage.serScan.scanStartTime)}}</label>
@@ -365,10 +370,10 @@
                       <div v-else>{{judgeUserName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Decision</div>-->
-<!--                    <div>diagram</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Decision</div>-->
+                  <!--                    <div>diagram</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label v-if="judgeStartTime==null"/>
                     <label
@@ -390,9 +395,9 @@
                       <div v-else>{{handUserName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Inspection</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Inspection</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label v-if="handStartTime == null"/>
                     <label
@@ -409,9 +414,9 @@
                   <div class="left">
                     <div>{{$t('menu.end')}}</div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>End</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>End</div>-->
+                  <!--                  </div>-->
                 </div>
 
               </div>
@@ -512,7 +517,8 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="judgeUserId===null || judgeUserId === defaultUserId" :value="$t('maintenance-management.process-task.system')"/>
+                                v-if="judgeUserId===null || judgeUserId === defaultUserId"
+                                :value="$t('maintenance-management.process-task.system')"/>
                   <b-form-input disabled class="form-input-border" v-else
                                 :value="$t('maintenance-management.process-task.artificial')"/>
                 </b-form-group>
@@ -646,10 +652,11 @@
         <span class="switch-action" @click="finishVideoShow()"><i class="icofont-close-line"/></span>
       </div>
     </div>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -674,32 +681,36 @@
     <Modal
       ref="exportModal"
       v-if="isModalVisible"
-      :link="link" :params="params" :name="name"
+      :link="link" :params="params" :name="name" :imgLink="imgUrl"
       @close="closeModal"
     />
 
   </div>
 </template>
 <style lang="scss">
-  .col-30{
+  .col-30 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 30%;
     flex: 0 0 30%;
     max-width: 30%;
   }
-  .col-70{
+
+  .col-70 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 70%;
     flex: 0 0 70%;
     max-width: 70%;
   }
-  .form-group-margin{
+
+  .form-group-margin {
     margin-bottom: 1.5rem;
   }
-  .form-input-border{
+
+  .form-input-border {
     background-color: white !important;
     border: 1px solid #ebebeb;
   }
+
   span.cursor-p {
     cursor: pointer !important;
   }
@@ -884,7 +895,13 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
-  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
+  import {
+    getApiManager,
+    getDateTimeWithFormat,
+    downLoadFileFromServer,
+    printFileFromServer,
+    getApiManagerError
+  } from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css'
   import Switches from 'vue-switches';
@@ -936,16 +953,18 @@
         }],
         link: '',
         timer: '',
-        timeout:5000,
+        timeout: 5000,
         params: {},
         name: '',
+        imgUrl:[],
         isExpanded: false,
         pageStatus: 'table',
         power: true,
         siteData: [],
         showPage: [],
+        renderedCheckList:[],
 
-        fileSelection : [],
+        fileSelection: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -995,8 +1014,8 @@
         cartoonRectL: [],
         cntCartoon: 0,
         orderCartoon: 0,
-        mode:null,
-        conclusionType:null,
+        mode: null,
+        conclusionType: null,
 
         videoOptions: {
           autoplay: true,
@@ -1020,7 +1039,7 @@
           {value: '1000002703', label: '差'},
           {value: '1000002704', label: '非常差'}
         ],
-        collectionLabelOption:[],
+        collectionLabelOption: [],
 
         isCheckAll: false,
         filter: {
@@ -1072,15 +1091,15 @@
 
         onSiteOption: [],
 
-        httpOption:null,
-        apiUrl:null,
+        httpOption: null,
+        apiUrl: null,
 
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: '4', text: '安检仪+审图端+手检端'},
           {value: '1', text: '安检仪+(本地手检)'},
           {value: '2', text: '安检仪+手检端'},
           {value: '3', text: '安检仪+审图端'},
+          {value: '4', text: '安检仪+审图端+手检端'},
         ],
 
         statusOptions: [
@@ -1169,7 +1188,7 @@
             },
             {
               name: 'serScan',
-              sortField : 'scanStartTime',
+              sortField: 'scanStartTime',
               title: this.$t('personal-inspection.scan-start-time'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -1180,7 +1199,7 @@
             },
             {
               name: 'serScan',
-              sortField : 'scanEndTime',
+              sortField: 'scanEndTime',
               title: this.$t('personal-inspection.scan-end-time'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -1194,28 +1213,22 @@
         },
       }
     },
-
-    created () {
-      //this.onSearchButton();
+    created() {
       this.timer = setInterval(this.autoUpdate, 15000)
-
-      //this.timer = setInterval(() => this.onTaskVuetableChangePage(this.httpOption.params.page), 15000);
-      //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
-
     },
-    beforeDestroy () {
+    beforeDestroy() {
       clearInterval(this.timer)
     },
-
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
+        this.changeCheckAllStatus();
       },
 
-      pageStatus(newval){
-        if(newval==='show'){
+      pageStatus(newval) {
+        if (newval === 'show') {
           clearInterval(this.timer);
-        }else{
+        } else {
           this.timer = setInterval(() => this.autoUpdate(), 15000);
         }
       },
@@ -1247,47 +1260,77 @@
 
       slidebar1value(newsValue, oldValue) {
 
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
+        if (oldValue[1] < newsValue[1]) {
+          for (let i = oldValue[1]; i < newsValue[1]; i++) {
             this.filterId(5);
           }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
+        } else {
+          for (let i = newsValue[1]; i < oldValue[1]; i++) {
             this.filterId(6);
           }
         }
       },
       slidebar2value(newsValue, oldValue) {
 
-        console.log(oldValue[1]);
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
+        if (oldValue[1] < newsValue[1]) {
+          for (let i = oldValue[1]; i < newsValue[1]; i++) {
             this.filterId(7);
           }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
+        } else {
+          for (let i = newsValue[1]; i < oldValue[1]; i++) {
             this.filterId(8);
           }
         }
       },
     },
-
     methods: {
-      cancelAutoUpdate () { clearInterval(this.timer) },
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      cancelAutoUpdate() {
+        clearInterval(this.timer)
+      },
+      selectAll(value){
+        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.taskVuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.taskVuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1330,7 +1373,7 @@
       },
 
       filterId(id) {
-        if(id<5||id>8) {
+        if (id < 5 || id > 8) {
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
         }
@@ -1343,7 +1386,7 @@
         let url1 = '';
         let url2 = '';
         this.slidebar1value = [0, 0];
-        this.slidebar2value= [0, 0];
+        this.slidebar2value = [0, 0];
         if (this.power === true) {
 
           if (this.imagesInfo[0] !== undefined) {
@@ -1361,62 +1404,72 @@
 
           if (this.cartoonsInfo[k] !== undefined) {
             url1 = this.cartoonsInfo[k].imageUrl;
-            for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
-              this.cartoonRectL.push({
-                x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
-                y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
-                width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
-                height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
-                colour: this.cartoonsInfo[k].colorRect,
-              });
+            if(this.cartoonsInfo[k].imageRect!=null) {
+              for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
+                this.cartoonRectL.push({
+                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
+                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
+                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
+                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
+                  colour: this.cartoonsInfo[k].colorRect,
+                });
+              }
             }
-
+            if (this.cartoonsInfo[k].rectsAdd != null) {
             for (let i = 0; i < this.cartoonsInfo[k].rectsAdd.length; i++) {
-              this.cartoonRectL.push({
-                x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
-                y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].y,
-                width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].width,
-                height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].height,
-                colour: this.cartoonsInfo[k].colorAdd,
-              });
+
+                this.cartoonRectL.push({
+                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
+                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].y,
+                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].width,
+                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].height,
+                  colour: this.cartoonsInfo[k].colorAdd,
+                });
+              }
             }
 
             if (this.cartoonsInfo[k].displayDel === '1000000601') {
-              for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
-                this.cartoonRectL.push({
-                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].x,
-                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].y,
-                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].width,
-                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].height,
-                  colour: this.cartoonsInfo[k].colorDel,
-                });
+              if (this.cartoonsInfo[k].rectsDel != null) {
+                for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
+                  this.cartoonRectL.push({
+                    x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].x,
+                    y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].y,
+                    width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].width,
+                    height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].height,
+                    colour: this.cartoonsInfo[k].colorDel,
+                  });
+                }
               }
             }
           }
 
           if (this.cartoonsInfo[k + 1] !== undefined) {
             url2 = this.cartoonsInfo[k + 1].imageUrl;
-            for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
-              this.cartoonRectR.push({
-                x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
-                y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
-                width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
-                height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
-                colour: this.cartoonsInfo[k + 1].colorRect,
-              });
+            if (this.cartoonsInfo[k + 1].imageRect != null) {
+              for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
+                this.cartoonRectR.push({
+                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
+                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
+                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
+                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
+                  colour: this.cartoonsInfo[k + 1].colorRect,
+                });
+              }
             }
 
-            for (let i = 0; i < this.cartoonsInfo[k + 1].rectsAdd.length; i++) {
-              this.cartoonRectR.push({
-                x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].x,
-                y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].y,
-                width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].width,
-                height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].height,
-                colour: this.cartoonsInfo[k + 1].colorAdd,
-              });
+            if (this.cartoonsInfo[k + 1].rectsAdd != null) {
+              for (let i = 0; i < this.cartoonsInfo[k + 1].rectsAdd.length; i++) {
+                this.cartoonRectR.push({
+                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].x,
+                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].y,
+                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].width,
+                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].height,
+                  colour: this.cartoonsInfo[k + 1].colorAdd,
+                });
+              }
             }
 
-            if (this.cartoonsInfo[k + 1].displayDel === '1000000601') {
+            if (this.cartoonsInfo[k + 1].displayDel === '1000000601' && this.cartoonsInfo[k + 1].rectsDel != null) {
               for (let i = 0; i < this.cartoonsInfo[k + 1].rectsDel.length; i++) {
                 this.cartoonRectR.push({
                   x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsDel[i].x,
@@ -1510,21 +1563,22 @@
         // this.$refs['model-export'].show();
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
-        let checkedData = this.$refs.taskVuetable.selectedData;
+        this.imgUrl = [];
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
         this.link = `task/process-task/generate`;
+        this.imgUrl = `task/process-task/generate/image`;
         this.name = 'Process-Task';
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : false,
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
@@ -1543,14 +1597,13 @@
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : false,
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
         let link = `task/process-task/generate`;
-        if (checkedIds.length > 0) {
-          printFileFromServer(link, params);
-        }
+        printFileFromServer(link, params);
+
       },
 
       getSiteOption() {
@@ -1563,7 +1616,7 @@
               this.siteData = data;
               break;
           }
-        })
+          })
           .catch((error) => {
           });
 
@@ -1586,12 +1639,9 @@
         this.handUserName = null;
         let url1 = '';
         let url2 = '';
-        let rateWidth, rateHeight;
         let deviceImage, submitRects;
         let colourInfo = null;
-        // let imagesInfo, cartoonsInfo;
-        // let imageRectR, imageRectL, cartoonRectR, cartoonRectL;
-        // this.loadImage(url, url2);
+        let handGood = null, handAttached = null;
 
         // call api
         getApiManager()
@@ -1605,19 +1655,19 @@
               case responseMessages['ok']:
                 this.showPage = response.data.data;
                 this.apiBaseURL = apiBaseUrl;
-                if(this.showPage.serCheckResult!==null){
-                  this.pageStatus='table';
+                if (this.showPage.serCheckResult !== null) {
+                  this.pageStatus = 'table';
                   this.$refs.taskVuetable.reload();
                 }
                 //if(this.showPage.workFlow.modeName
                 let modeName;
-                if(this.showPage.serJudgeGraph !== null) {
+                if (this.showPage.serJudgeGraph !== null) {
                   // this.judgeStartTime = this.showPage.serJudgeGraph.judgeStartTime;
                   // this.judgeDeviceName = this.showPage.serJudgeGraph.judgeDevice.deviceName;
                   this.judgeUserId = this.showPage.serJudgeGraph.judgeUserId;
                   this.judgeUserName = this.showPage.serJudgeGraph.judgeUser.userName;
                 }
-                if(this.showPage.serHandExamination !== null) {
+                if (this.showPage.serHandExamination !== null) {
                   //this.handStartTime = this.showPage.serHandExamination.handStartTime;
                   //this.handDeviceName = this.showPage.serHandExamination.handDevice.deviceName;
                   this.handUserName = this.showPage.serHandExamination.handUser.userName;
@@ -1625,7 +1675,7 @@
 
                 for (let i = 0; i < this.showPage.serAssignList.length; i++) {
                   if (this.showPage.serAssignList[i].handDevice !== null) {
-                    if(this.handUserName===null) {
+                    if (this.handUserName === null) {
                       this.handUserName = this.showPage.serAssignList[i].assignUser.userName;
                     }
                     this.handStartTime = this.showPage.serAssignList[i].assignEndTime;
@@ -1634,7 +1684,7 @@
                     if (this.showPage.serAssignList[i].judgeDevice !== null) {
                       this.judgeDeviceName = this.showPage.serAssignList[i].judgeDevice.deviceName;
                     }
-                    if(this.judgeUserName===null) {
+                    if (this.judgeUserName === null) {
                       this.judgeUserName = this.showPage.serAssignList[i].assignUser.userName;
                       this.judgeUserId = this.showPage.serAssignList[i].assignUser.userId;
                     }
@@ -1645,7 +1695,7 @@
 
                 this.thumbs = [];
                 this.videos = [];
-                this.images =[];
+                this.images = [];
                 this.imgRect = [];
                 this.cartoonRect = [];
                 this.rRects = [];
@@ -1655,28 +1705,27 @@
                 this.imageRectL = [];
                 this.cartoonRectR = [];
                 this.cartoonRectL = [];
-                this.handGoodExpanded=[];
+                this.handGoodExpanded = [];
                 this.handGoodDataCodeExpanded = [];
 
                 // this.conclusionType = null;
                 // if(this.judgeUserId===this.defaultUserId) {
                 //   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
                 // }
-                //console.log(this.conclusionType);
 
-                deviceImage=[];
-                submitRects=[];
+                deviceImage = [];
+                submitRects = [];
                 colourInfo = this.showPage.platFormCheckParams;
 
-                if(this.showPage.serScan!==undefined && this.showPage.serScan!==null) {
-                  if(this.showPage.serScan.scanDeviceImages!== null) {
+                if (this.showPage.serScan !== undefined && this.showPage.serScan !== null) {
+                  if (this.showPage.serScan.scanDeviceImages !== null) {
                     deviceImage = this.showPage.serScan.scanDeviceImages;
                     deviceImage = JSON.parse(deviceImage);
                   }
                 }
 
-                if(this.showPage.serJudgeGraph!==undefined && this.showPage.serJudgeGraph!==null) {
-                  if(this.showPage.serJudgeGraph.judgeSubmitrects!==null) {
+                if (this.showPage.serJudgeGraph !== undefined && this.showPage.serJudgeGraph !== null) {
+                  if (this.showPage.serJudgeGraph.judgeSubmitrects !== null) {
                     submitRects = this.showPage.serJudgeGraph.judgeSubmitrects;
                     submitRects = JSON.parse(submitRects);
                   }
@@ -1684,71 +1733,81 @@
 
                 this.cntCartoon = Math.floor(deviceImage.length / 2);
 
-                if(deviceImage!==null&& submitRects!==null) {
+                if (deviceImage !== null) {
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: 168 / deviceImage[i].width,
-                        rateHeight: 300 / deviceImage[i].height,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 248 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 521 / deviceImage[i].height :0,
                         imageUrl: deviceImage[i].image,
                         imageRect: deviceImage[i].imageRects,
                         colorRect: colourInfo.scanRecogniseColour
                       });
                     }
 
-                    if (submitRects[i] !== undefined && submitRects[i] !== null) {
+
                       this.cartoonsInfo.push({
-                        rateWidth: 168 / deviceImage[i].width,
-                        rateHeight: 300 / deviceImage[i].height,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 205 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ?  426 / deviceImage[i].height :0,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour,
                         colorAdd: colourInfo.judgeRecogniseColour,
                         colorDel: colourInfo.displayDeleteSuspicionColour,
                         displayDel: colourInfo.displayDeleteSuspicion,
-                        rectsAdd: submitRects[i].rectsAdded,
-                        rectsDel: submitRects[i].rectsDeleted
+                        rectsAdd: submitRects !=null && submitRects[i] != undefined? submitRects[i].rectsAdded : null,
+                        rectsDel: submitRects !=null && submitRects[i] != undefined?  submitRects[i].rectsDeleted : null
                       });
-                    }
+
                   }
                 }
 
+
                 if (this.imagesInfo[0] !== undefined) {
-                  for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
-                    this.imageRectL.push({
-                      x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
-                      y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
-                      width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
-                      height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
-                      colour: this.imagesInfo[0].colorRect,
-                    });
+                  if (this.imagesInfo[0].imageRect != null) {
+                    for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
+                      this.imageRectL.push({
+                        x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
+                        y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
+                        width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
+                        height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
+                        colour: this.imagesInfo[0].colorRect,
+                      });
+                    }
                   }
                   url1 = this.imagesInfo[0].imageUrl;
                 }
 
+                console.log(this.imagesInfo[1]);
                 if (this.imagesInfo[1] !== undefined) {
-                  for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
-                    this.imageRectR.push({
-                      x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
-                      y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
-                      width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
-                      height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
-                      colour: this.imagesInfo[1].colorRect,
-                    });
+                  if (this.imagesInfo[1].imageRect != null) {
+                    for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
+                      this.imageRectR.push({
+                        x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
+                        y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
+                        width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
+                        height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
+                        colour: this.imagesInfo[1].colorRect,
+                      });
+                    }
                   }
                   url2 = this.imagesInfo[1].imageUrl;
                 }
+
 
                 loadImageCanvas(url1, url2, this.imageRectL, this.imageRectR, this.power);
 
                 let handGoodsStr = this.showPage.serCheckResult.handGoods;
                 let handAttactedStr = this.showPage.serCheckResult.handAttached;
-                if(handGoodsStr!==null && handAttactedStr!==null) {
-                let handGood = handGoodsStr.split(",");
-                let handAttached = handAttactedStr.split(",");
+                if (handGoodsStr !== null) {
+                  handGood = handGoodsStr.split(",");
                 }
-                let k=0;
-                if(handGood !==null) {
+
+                if (handAttactedStr !== null) {
+                  handAttached = handAttactedStr.split(",");
+                }
+                let k = 0;
+                if (handGood !== null) {
                   for (let i = 0; i < handGood.length; i++) {
                     for (let j = 0; j < 5; j++) {
                       if (handGood[i] === this.handGoodDataCode[j]) {
@@ -1759,10 +1818,8 @@
                     }
                   }
                 }
-
-
                 //getting media data from server.
-                if(handAttached !==null) {
+                if (handAttached !== null) {
                   for (let i = 0; i < handAttached.length; i++) {
                     let iHandAttached = handAttached[i].split(".");
                     if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {
@@ -1796,14 +1853,14 @@
       },
 
       getDateTimeFormat2(dataTime) {
-        if(dataTime==null){
+        if (dataTime == null) {
           return '';
         }
         return getDateTimeWithFormat(dataTime);
       },
 
       getDateTimeFormat(dataTime) {
-        if(dataTime==null){
+        if (dataTime == null) {
           return '';
         }
         return getDateTimeWithFormat(dataTime, 'monitor');
@@ -1812,7 +1869,7 @@
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
-      autoUpdate(){
+      autoUpdate() {
         this.$refs.taskVuetable.reload();
       },
 
@@ -1848,6 +1905,7 @@
 
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          this.renderedCheckList.push(data.data[i].taskId);
           transformed.data.push(temp);
         }
 
@@ -1857,9 +1915,7 @@
 
       //:row-class="rowColour(props.rowData)"
       rowColour(dataItem, index) {
-        // if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
-        //   return 'bg-orange';
-        // }
+
         if (dataItem.workFlow !== null) {
           if (dataItem.workFlow.workMode !== null) {
             if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('all')) {
@@ -1890,21 +1946,24 @@
 
         this.apiUrl = apiUrl;
         this.httpOption = httpOptions;
+        this.renderedCheckList = [];
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           filter: this.filter,
-          sort:httpOptions.params.sort,
+          sort: httpOptions.params.sort,
           perPage: this.taskVuetableItems.perPage,
         });
       },
 
       onTaskVuetablePaginationData(paginationData) {
-        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
 
       onTaskVuetableChangePage(page) {
-        this.$refs.taskVuetable.changePage(page)
+        this.$refs.taskVuetable.changePage(page);
+        this.changeCheckAllStatus();
       }
     }
   }

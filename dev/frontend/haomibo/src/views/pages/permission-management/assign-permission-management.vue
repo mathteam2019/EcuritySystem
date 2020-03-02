@@ -91,9 +91,9 @@
                     :per-page="userVuetableItems.perPage"
                     class="table-striped"
                     :http-fetch="userVuetableFetch"
-                    data-path="data.data"
-                    pagination-path="data"
+                    pagination-path="userPagination"
                     track-by="userId"
+                    @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onUserPaginationData"
                   >
                     <template slot="userName" slot-scope="props">
@@ -203,7 +203,6 @@
                       <v-select
                         class="v-select-custom-style"
                         v-model="userForm.roles" multiple
-                        :state="rolesValid || (!$v.userForm.roles.$dirty? [] : !$v.userForm.roles.$invalid)"
                         :options="roleSelectData" :dir="direction"
                         :searchable="false"
                         :disabled="pageStatus === 'show'"
@@ -248,7 +247,7 @@
                                            :disabled="userForm.dataRangeCategory !== '1000000505'"
                             />
                             <div
-                              v-if="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid">
+                              v-if="userForm.dataRangeCategory !== '1000000505' || !$v.userForm.selectedDataGroupId.$invalid">
                               &nbsp;
                             </div>
                             <b-form-invalid-feedback>
@@ -350,6 +349,7 @@
                     track-by="userGroupId"
                     class="table-hover"
                     :per-page="userGroupTableItems.perPage"
+                    @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
 
                   >
@@ -460,7 +460,7 @@
                           </b-form-radio-group>
                         </div>
                         <div class="align-self-end flex-grow-1 pl-5">
-                          <b-form-select class="mw-100" :disabled="groupForm.dataRange!='specified'"
+                          <b-form-select class="mw-100" :disabled="groupForm.dataRange!='1000000505'"
                                          v-model="groupForm.filterGroup"
                                          :options="dataGroupSelectData" plain/>
                         </div>
@@ -563,7 +563,7 @@
   import 'vue-select/dist/vue-select.css'
   import {checkPermissionItem, getDirection} from "../../../utils";
   import {validationMixin} from 'vuelidate';
-  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, getApiManagerError, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import Modal from '../../../components/Modal/modal'
 
@@ -646,7 +646,7 @@
         return result;
       };
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
         type: 'with_parent'
       }).then((response) => {
         let message = response.data.message;
@@ -664,7 +664,7 @@
       ////////////// Load user list from server /////////////////
       ///////////////////////////////////////////////////////////
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {}).then((response) => {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -680,7 +680,7 @@
       //////////// Load role list from server ////////////////////
       ////////////////////////////////////////////////////////////
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/assign-permission-management/role/get-all`, {}).then((response) => {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/assign-permission-management/role/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -700,7 +700,7 @@
       //////////// Load data group from the server ///////////////
       ////////////////////////////////////////////////////////////
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/permission-control/data-group/get-all`, {}).then((response) => {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/permission-control/data-group/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -719,7 +719,7 @@
       ///////////////////////////////////////////////////////////
       ////////////// Load user group list from server /////////////////
       ///////////////////////////////////////////////////////////
-      getApiManager().post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/get-all`, {}).then((response) => {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -735,6 +735,7 @@
         }
       });
 
+      this.$refs.userVuetable.$parent.transform = this.transform.bind(this);
       this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
 
     },
@@ -753,6 +754,8 @@
           {value: 'pdf', label: 'PDF'},
         ],
         isModalVisible: false,
+        renderedCheckList: [],
+        renderedCheckListGroup: [],
         userFilter: {
           userName: '',
           orgId: null,
@@ -911,7 +914,7 @@
             text: this.$t('permission-management.assign-permission-management.group.one-user-data')
           },
           {
-            value: '1000000503',
+            value: '1000000506',
             text: this.$t('permission-management.assign-permission-management.group.group-user-data')
           },
           {
@@ -996,6 +999,8 @@
                   return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
                 } else if (dataRangeCategory === '1000000505') {
                   return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
+                } else if (dataRangeCategory === '1000000506') {
+                  return this.$t('permission-management.assign-permission-management.group.group-user-data');
                 } else {
                   return '';
                 }
@@ -1014,9 +1019,11 @@
     watch: {
       'userVuetableItems.perPage': function (newVal) {
         this.$refs.userVuetable.refresh();
+        this.changeCheckAllStatus();
       },
       'userGroupTableItems.perPage': function (newVal) {
         this.$refs.userGroupTable.refresh();
+        this.changeCheckAllStatusGroup();
       },
       'userForm.orgId': function (newVal) {
         this.userSelectData = this.userList.filter(user => user.orgId === newVal)
@@ -1071,18 +1078,94 @@
       }
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      selectAll(value){
+        this.$refs.userVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.userVuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.userVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.userVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.userVuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      selectAllGroup(value){
+        this.$refs.userGroupTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.userGroupTable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.userGroupTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNoneGroup(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.userGroupTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatusGroup(){
+        let selectList = this.$refs.userGroupTable.selectedTo;
+        let renderedList = this.renderedCheckListGroup;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNoneGroup();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAllGroup(true);
+            }
+          }
+        }
+        else {
+          this.selectNoneGroup();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
+      onCheckStatusChangeGroup(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatusGroup();
+        }
+        else {
+          this.selectNoneGroup();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1162,7 +1245,7 @@
       },
 
       userVuetableFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
+        this.renderedCheckList =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.userVuetableItems.perPage,
@@ -1176,10 +1259,12 @@
         });
       },
       onUserPaginationData(paginationData) {
-        this.$refs.userPagination.setPaginationData(paginationData)
+        this.$refs.userPagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onUserChangePage(page) {
-        this.$refs.userVuetable.changePage(page)
+        this.$refs.userVuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
       hideModal(modal) {
         // hide modal
@@ -1191,13 +1276,32 @@
 
             this.$v.userForm.$touch();
             // this.$v.groupForm.$invalid
-            if (this.$v.userForm.roles.$invalid) {
-              this.rolesValid = false;
-              console.log(this.userForm.roles);
-              return;
-            }
 
-            if (!this.$v.userForm.userId.$invalid && (this.userForm.dataRangeCategory !== 'specified' || !this.$v.userForm.selectedDataGroupId.$invalid)) {
+              if(this.$v.userForm.orgId.$invalid){
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.please-select-user-organization`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              if(this.$v.userForm.userId.$invalid) {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.please-select-user`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              if(this.$v.userForm.roles.$invalid) {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.please-select-user-role`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+
+              //this.rolesValid = false;
+
+            if (!this.$v.userForm.userId.$invalid && (this.userForm.dataRangeCategory !== '1000000505' || !this.$v.userForm.selectedDataGroupId.$invalid)) {
               this.isLoading = true;
               if (this.pageStatus === 'create') {
                 getApiManager()
@@ -1395,7 +1499,7 @@
         this.groupPageStatus = 'create';
       },
       userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
+        this.renderedCheckListGroup =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.userGroupTableItems.perPage,
@@ -1409,11 +1513,13 @@
         });
       },
       onUserGroupTablePaginationData(paginationData) {
-        this.$refs.userGroupTablePagination.setPaginationData(paginationData)
+        this.$refs.userGroupTablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatusGroup();
       },
 
       onUserGroupTableChangePage(page) {
-        this.$refs.userGroupTable.changePage(page)
+        this.$refs.userGroupTable.changePage(page);
+        this.changeCheckAllStatusGroup();
       },
       fnShowUserGroupItem(userGroupItem) {
         this.selectedUserGroupItem = userGroupItem;
@@ -1478,6 +1584,20 @@
         this.submitted = true;
         this.$v.groupForm.$touch();
         if (this.$v.groupForm.$invalid) {
+          if(this.$v.groupForm.userGroup.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.assign-permission-management.group.please-enter-user-group`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.groupForm.role.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.assign-permission-management.group.please-enter-group-role`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           return;
         }
         let dataRangeGroupID = 0;
@@ -1567,6 +1687,33 @@
 
       },
 
+      transform(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.userPagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          transformed.data.push(temp);
+          this.renderedCheckList.push(data.data[i].userId);
+        }
+
+        return transformed
+
+      },
+
       fnTransformUserGroupTable(response) {
         let transformed = {};
 
@@ -1584,6 +1731,7 @@
         transformed.data = [];
         let temp;
         for (let i = 0; i < data.data.length; i++) {
+          this.renderedCheckListGroup.push(data.data[i].userGroupId);
           temp = data.data[i];
           let userMembers = [];
           temp.users.forEach(user => {
@@ -1594,7 +1742,12 @@
             groupRoles.push(role.roleName);
           });
           temp.groupRole = groupRoles.join(',');
-          temp.groupMember = userMembers.join(',');
+          //temp.groupMember = userMembers.join(',');
+          let groupMember = userMembers.join(',');
+          if(groupMember.length>40){
+            groupMember = groupMember.substr(0, 40) + "···"; // Gets the first part
+          }
+          temp.groupMember =groupMember;
           transformed.data.push(temp);
         }
 

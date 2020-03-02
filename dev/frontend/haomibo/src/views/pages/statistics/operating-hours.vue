@@ -250,6 +250,7 @@
               track-by="id"
               pagination-path="pagination"
               class="table-hover"
+                      @vuetable:checkbox-toggled="onCheckStatusChange"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
             >
               <template slot="period" slot-scope="props">
@@ -505,6 +506,7 @@
         name: '',
 
         fileSelection: [],
+        renderedCheckList:[],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -665,7 +667,7 @@
               dataClass: 'text-center',
               callback: (scanStatistics) => {
                 if (scanStatistics == null) return '';
-                return scanStatistics.invalidScanRate;
+                return scanStatistics.invalidScanRate.toFixed(1);
               }
             },
             {
@@ -705,7 +707,7 @@
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
                 if (judgeStatistics == null) return '';
-                return judgeStatistics.noSuspictionJudgeRate;
+                return judgeStatistics.noSuspictionJudgeRate.toFixed(1);
               }
             },
             {
@@ -725,7 +727,7 @@
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.noSeizureHandExaminationRate;
+                return handExaminationStatistics.noSeizureHandExaminationRate.toFixed(1);
               }
             },
             {
@@ -745,7 +747,7 @@
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.seizureHandExaminationRate;
+                return handExaminationStatistics.seizureHandExaminationRate.toFixed(1);
               }
             },
           ],
@@ -757,6 +759,7 @@
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
+        this.changeCheckAllStatus();
       },
       'operatingLogTableItems.perPage': function (newVal) {
         this.$refs.operatingLogTable.refresh();
@@ -781,18 +784,50 @@
 
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+       selectAll(value){
+        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.taskVuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.taskVuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1024,10 +1059,12 @@
 
       },
       onTaskVuetablePaginationData(paginationData) {
-        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onTaskVuetableChangePage(page) {
-        this.$refs.taskVuetable.changePage(page)
+        this.$refs.taskVuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
       onDisplaceButton() {
         if (this.pageStatus === 'charts') {
@@ -1058,7 +1095,8 @@
           let j = transformed.tKey[i - 1];
 
           temp = data.detailedStatistics[j];
-          transformed.data.push(temp)
+          this.renderedCheckList.push(data.detailedStatistics[j].id);
+          transformed.data.push(temp);
         }
 
         return transformed
@@ -1067,7 +1105,7 @@
 
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
+        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.taskVuetableItems.perPage,

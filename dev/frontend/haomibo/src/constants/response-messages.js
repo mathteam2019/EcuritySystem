@@ -16,6 +16,7 @@ export const responseMessages = {
   'used-user-number': 'used_user_number',
   'exist-user':'exist_user',
   'exist-user-group':'exist_user_group',
+  'exist-knowledge':'exist_knowledge',
   'has-users': 'has_users',
   'user-not-lock':'user_not_lock',
   'has-archives': 'has_archives',

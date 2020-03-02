@@ -32,6 +32,11 @@
       }
     }
   }
+  .img-rotate{
+    -ms-transform: rotate(-15deg); /* IE 9 */
+    -webkit-transform: rotate(-15deg); /* Safari 3-8 */
+    transform: rotate(-15deg);
+  }
 </style>
 <template>
   <div class="document-management">
@@ -93,6 +98,7 @@
                 :per-page="vuetableItems.perPage"
                 pagination-path="pagination"
                 track-by="archiveId"
+                @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onPaginationData"
                 class="table-striped"
               >
@@ -109,15 +115,15 @@
                   <b-button
                     v-if="props.rowData.status==='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
-                    variant="success default btn-square">
-                    <i class="icofont-check-circled"/>
+                    variant="warning default btn-square">
+                    <i class="icofont-ban"/>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status==='1000000701'"
                     size="sm" @click="onAction('inactivate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
-                    variant="warning default btn-square"
+                    variant="success default btn-square"
                   >
-                    <i class="icofont-ban"/>
+                    <i class="icofont-check-circled"/>
                   </b-button>
                   <b-button
                     size="sm" @click="onAction('delete',props.rowData)"
@@ -228,9 +234,13 @@
               <img v-if="archivesForm.image!=null&&archivesForm.image!==''" :src="archivesForm.image"/>
               <img v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')"
                    src="../../../assets/img/device.png">
-              <div class="position-absolute" style="bottom: -18%;left: -41%">
+              <div  v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
                 <img v-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
                 <img v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+              </div>
+              <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
+                <img v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img v-else-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
               </div>
             </div>
             <input type="file" ref="imgFile" @change="onFileChange" accept="image/*" style="display: none"/>
@@ -273,6 +283,16 @@
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
+    <b-modal centered id="modal-active" ref="modal-active" :title="$t('system-setting.prompt')">
+      {{$t('device-management.document-management.make-active-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="updateItemStatus('1000000701')" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-active')">{{$t('system-setting.cancel')}}
         </b-button>
       </template>
     </b-modal>
@@ -327,9 +347,9 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import {responseMessages} from '../../../constants/response-messages';
-  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, getApiManagerError, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
-  import {checkPermissionItem, getDicDataByDicIdForOptions, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDicDataByDicIdForOptions, getDirection, getLocale} from "../../../utils";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
@@ -386,6 +406,7 @@
         params: {},
         name: '',
         fileSelection : [],
+        renderedCheckList:[],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -454,7 +475,7 @@
             },
             {
               name: 'archivesName',
-              title: this.$t('device-management.device-list.template'),
+              title: this.$t('device-management.device-list.archive'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -509,21 +530,53 @@
       }
     },
     methods: {
-      ///////////////////////////////////////////
-      ////////   loading      Options ///////////
-      ///////////////////////////////////////////
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      getLocale() {
+        return getLocale();
+      },
+      selectAll(value){
+        this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.vuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.vuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -577,7 +630,7 @@
       },
       //get device category data
       getCategoryData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -592,7 +645,7 @@
       },
       //get document template list
       getTemplateData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/document-template/archive-template/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/document-template/archive-template/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -631,7 +684,8 @@
             this.pageStatus = 'list';
             break;
           case 'activate':
-            this.updateItemStatus('1000000701');
+            //this.updateItemStatus('1000000701');
+            this.$refs['modal-active'].show();
             break;
           case 'inactivate':
             //this.updateItemStatus('1000000702');
@@ -728,6 +782,27 @@
         this.submitted = true;
         this.$v.archivesForm.$touch();
         if (this.$v.archivesForm.$invalid) {
+          if(this.$v.archivesForm.archivesNumber.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.file-number-placeholder`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.archivesForm.archivesName.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.file-name-placeholder`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.archivesForm.archivesTemplateId.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.template-name-select`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           return;
         }
         this.invalidIndicators = [];
@@ -837,6 +912,7 @@
           .catch((error) => {
           });
         this.$refs['modal-inactive'].hide();
+        this.$refs['modal-active'].hide();
       },
       //remove archives
       removeItem() {
@@ -895,6 +971,7 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          this.renderedCheckList.push(data.data[i].archiveId);
           temp.categoryName = temp.archiveTemplate ? temp.archiveTemplate.deviceCategory.categoryName : '';
           temp.manufacturerName = temp.archiveTemplate ? getManufacturerName(this.manufacturerOptions,temp.archiveTemplate.manufacturer) : '';
           temp.originalModelName = temp.archiveTemplate ? temp.archiveTemplate.originalModel : '';
@@ -903,6 +980,7 @@
         return transformed
       },
       vuetableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
@@ -912,15 +990,18 @@
       },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData);
+	this.changeCheckAllStatus();
       },
       onChangePage(page) {
         this.$refs.vuetable.changePage(page);
+	this.changeCheckAllStatus();
       },
 
     },
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+        this.changeCheckAllStatus();
       },
 
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server

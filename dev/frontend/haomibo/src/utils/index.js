@@ -3,6 +3,7 @@ import {getApiManager} from "../api";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
 import Chobi from "../data/Chobi";
+import axios from 'axios';
 
 var imgObj = null;
 var imgObj2 = null;
@@ -179,10 +180,57 @@ export const setDirection = localValue => {
 export const getLocale = () => {
   return localStorage.getItem('currentLanguage');
 };
+export const setLocale = localValue => {
+
+  localStorage.setItem('currentLanguage', localValue);
+  console.log(localStorage);
+};
 
 
-export const saveLoginInfo = (loginInfo) => {
+export const saveLoginInfo = (loginInfo, account) => {
   localStorage.setItem('loginInfo', JSON.stringify(loginInfo));
+  localStorage.setItem('loginAccount', account);
+};
+
+export const saveLanguageInfo = () => {
+  let account =  localStorage.getItem('loginAccount');
+
+  let currentLanguage = localStorage.getItem('currentLanguage');
+
+  let data, tmp=false;
+  if(localStorage.getItem('languageInfo')===null) {
+    data = [];
+  }else {
+    data = JSON.parse(localStorage.getItem('languageInfo'));
+  }
+  for(let i=0; i<data.length; i++){
+    if(data[i].account===account){
+      data[i].currentLanguage = currentLanguage;
+      tmp = true;
+    }
+  }
+  if(tmp===false) {
+    data.push({
+      account: account,
+      currentLanguage: currentLanguage
+    });
+  }
+  localStorage.setItem('languageInfo', JSON.stringify(data));
+
+};
+
+export const getLanguageInfo= (account) => {
+  if(localStorage.getItem('languageInfo')===null){
+    return null;
+  }else{
+    let data = JSON.parse(localStorage.getItem('languageInfo'));
+    for(let i=0; i<data.length; i++) {
+      if (data[i].account === account)
+        return data[i].currentLanguage;
+    }
+    return null;
+  }
+
 };
 
 export const setInvalidCount = (account) => {
@@ -249,6 +297,8 @@ export const removeLoginInfo = () => {
   localStorage.removeItem('loginInfo');
   localStorage.removeItem('permInfo'); //remove permission Info too
   localStorage.removeItem('permInfoId');
+  localStorage.removeItem('loginAccount');
+ // localStorage.removeItem('languageInfo');
 };
 
 export const saveDicDataGroupByDicId = (data) => {
@@ -351,23 +401,23 @@ export const doRefreshToken = () => {
     return;
   }
 
-  // getApiManager().post(`${apiBaseUrl}/auth/refresh-token`).then((response) => {
-  //   let message = response.data.message;
-  //   let data = response.data.data;
-  //   switch (message) {
-  //     case responseMessages['ok']:
-  //
-  //       let loginInfo = getLoginInfo();
-  //       loginInfo.token = data;
-  //
-  //       saveLoginInfo(loginInfo);
-  //
-  //       scheduleRefreshToken();
-  //
-  //       break;
-  //   }
-  //
-  // });
+  getApiManager().post(`${apiBaseUrl}/auth/refresh-token`).then((response) => {
+    let message = response.data.message;
+    let data = response.data.data;
+    switch (message) {
+      case responseMessages['ok']:
+
+        // let loginInfo = getLoginInfo();
+        // loginInfo.token = data;
+        //
+        // saveLoginInfo(loginInfo);
+        //
+        // scheduleRefreshToken();
+
+        break;
+    }
+
+  });
 };
 
 export const scheduleRefreshToken = () => {
@@ -401,6 +451,17 @@ export const scheduleRefreshToken = () => {
 
 };
 
+export function toDataUrl(url, callback) {
+  axios({
+    url: url,
+    method: 'GET'
+  }).then((response) => {
+    callback(response.data);
+  }).catch(error => {
+    callback(null);
+  });
+}
+
 export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => {
   if(url1==null){
     url1 = '';
@@ -408,18 +469,43 @@ export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => 
   if(url2==null){
     url2 = '';
   }
+  console.log(url1);
 
-  imgObj = new Chobi(url1, isToggled, true);
-  imgObj.ready(function () {
-    this.canvas = document.getElementById("firstcanvas");
-    this.loadImageToCanvas(null, rectInfoL, isToggled, true);
+  url1 = apiBaseUrl + url1;
+  url2 = apiBaseUrl + url2;
+
+  toDataUrl(url1, function (url) {
+    console.log(url);
+    if(url != null){
+      let urlspl = url.split(':');
+      url1 = 'data:image/png' + urlspl[1];
+    }
+    imgObj = new Chobi(url1, isToggled, true);
+    imgObj.ready(function () {
+      this.canvas = document.getElementById("firstcanvas");
+      this.loadImageToCanvas(null, rectInfoL, isToggled, true);
+    });
   });
 
-  imgObj2 = new Chobi(url2, isToggled);
-  imgObj2.ready(function () {
-    this.canvas = document.getElementById("secondcanvas");
-    this.loadImageToCanvas(null, rectInfoR, isToggled, false);
+  toDataUrl(url2, function (url) {
+    console.log(url);
+    if(url != null){
+      let urlspl = url.split(':');
+      url2 = 'data:image/png' + urlspl[1];
+    }
+    imgObj2 = new Chobi(url2, isToggled);
+    imgObj2.ready(function () {
+      this.canvas = document.getElementById("secondcanvas");
+      this.loadImageToCanvas(null, rectInfoR, isToggled, false);
+    });
   });
+
+
+  // imgObj2 = new Chobi(url2, isToggled);
+  // imgObj2.ready(function () {
+  //   this.canvas = document.getElementById("secondcanvas");
+  //   this.loadImageToCanvas(null, rectInfoR, isToggled, false);
+  // });
 };
 
 export const imageFilterById = (id, rectInfoL, rectInfoR) => {

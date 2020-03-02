@@ -101,6 +101,7 @@
                 :per-page="taskVuetableItems.perPage"
                 pagination-path="pagination"
                 class="table-hover"
+                @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
               >
                 <template slot="task" slot-scope="props">
@@ -185,8 +186,12 @@
                   class="icofont-star"/></span>
                 <span v-if="showPage.judgeResult!=null && showPage.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
+                <span v-if="showPage.serJudgeGraph!=null && showPage.judgeResult==='FALSE'">
+                  <b-img src="/assets/img/system_scan.svg" style="width: 20px; height: 22px;"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
+                <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000001'"><i
+                  class="icofont-male" style="color: darkblue;"/></span>
               </b-col>
             </b-row>
             <b-row style="margin-bottom: 0.5rem;">
@@ -194,7 +199,7 @@
                 <canvas id="firstcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
               </b-col>
               <b-col style="padding-right: 1rem; padding-left: 0.5rem;">
-                <canvas id="secondcanvas"  style="height: 24vw;" class="img-fluid w-100 "/>
+                <canvas id="secondcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
                   <div v-if="power===false">
                     <b-img :disabled="power===false" src="/assets/img/previous_cartoon.png" class="operation-icon"
@@ -277,15 +282,6 @@
             </b-row>
             <b-row style="height: 15px !important;">
               <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
-<!--                <VueSlideBar-->
-<!--                  v-model="slidebar2value"-->
-<!--                  :min="-50"-->
-<!--                  :max="50"-->
-<!--                  :processStyle="slider.processStyle"-->
-<!--                  :lineHeight="slider.lineHeight"-->
-<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
-<!--                  class="slide-class">-->
-<!--                </VueSlideBar>-->
                 <vue-slider
                   v-model="slidebar2value"
                   :min="-50"
@@ -302,15 +298,6 @@
                   :dot-options="dotOptions"
                   :order="false"
                 />
-<!--                <VueSlideBar-->
-<!--                  v-model="slidebar1value"-->
-<!--                  :min="-50"-->
-<!--                  :max="50"-->
-<!--                  :processStyle="slider.processStyle"-->
-<!--                  :lineHeight="slider.lineHeight"-->
-<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
-<!--                  class="slide-class">-->
-<!--                </VueSlideBar>-->
               </b-col>
             </b-row>
           </b-card>
@@ -328,9 +315,9 @@
                   <div class="left">
                     <div>{{$t('menu.start')}}</div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Start</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Start</div>-->
+                  <!--                  </div>-->
                 </div>
 
                 <div class="part">
@@ -340,9 +327,9 @@
                       <div v-if="showPage.scanPointsmanName != null">{{showPage.scanPointsmanName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Scanning</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Scanning</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label
                       v-if="showPage.scanStartTime != null">{{this.getDateTimeFormat2(showPage.scanStartTime)}}</label>
@@ -362,10 +349,10 @@
                       <div v-else>{{$t('maintenance-management.process-task.default-user')}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Decision</div>-->
-<!--                    <div>diagram</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Decision</div>-->
+                  <!--                    <div>diagram</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label v-if="showPage.judgeStartTime==null"/>
                     <label
@@ -386,9 +373,9 @@
                       <div v-else>{{showPage.handUser.userName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Inspection</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Inspection</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label v-if="showPage.handUserId === null || showPage.handStartTime ===null"/>
                     <label
@@ -405,9 +392,9 @@
                   <div class="left">
                     <div>{{$t('menu.end')}}</div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>End</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>End</div>-->
+                  <!--                  </div>-->
                 </div>
 
               </div>
@@ -508,7 +495,8 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="conclusionType == null" :value="$t('maintenance-management.process-task.system')"/>
+                                v-if="conclusionType == null"
+                                :value="$t('maintenance-management.process-task.system')"/>
                   <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(conclusionType)"/>
                 </b-form-group>
@@ -526,6 +514,16 @@
                 </b-form-group>
               </b-col>
               <b-col>
+                <b-form-group class="form-group-margin">
+                  <template slot="label">
+                    {{$t('personal-inspection.history-offline')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input disabled class="form-input-border"
+                                v-if="showPage.serScan == null || showPage.serScan.scanOffLine==null" :value="getOptionValue(0)"/>
+                  <b-form-input disabled class="form-input-border" v-else
+                                :value="getOptionValue(showPage.serScan.scanOffLine)"/>
+                </b-form-group>
               </b-col>
               <b-col>
               </b-col>
@@ -606,7 +604,8 @@
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
-                  <b-col v-if="getLocale()==='zh'" cols="12" class="align-self-end text-right mt-3" style="width: 100%; height: 130px !important;">
+                  <b-col v-if="getLocale()==='zh' || getLocale() === null" cols="12" class="align-self-end text-right mt-3"
+                         style="width: 100%; height: 130px !important;">
                     <div v-if="showPage.handResult !== null">
                       <b-img v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid.png"
                              class="align-self-end img-result"/>
@@ -645,8 +644,8 @@
                 </b-row>
                 <b-row style="margin-top: 1rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
-                    <b-button size="sm" variant="orange default" :disabled="checkPermItem('history_task_save')"
-                              :hidden="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"
+                    <b-button size="sm" variant="orange default"
+                              :disabled="checkPermItem('history_task_save')||(showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null)"
                               @click="showCollectionView()">
                       <i class="icofont-gift"/>
                       {{ $t('personal-inspection.collection') }}
@@ -675,17 +674,12 @@
       <b-modal centered id="model-collection" ref="model-collection">
         <template slot="modal-header">
           <h2 id="modal-reset___BV_modal_title_" style="font-size: 1.7rem; font-weight: bold;" class="modal-title">
-            標簽</h2>
-          <button type="button" aria-label="Close" @click="hideModal('modal-reset')" class="close">×</button>
+            {{$t('system-setting.prompt')}}</h2>
+          <button type="button" aria-label="Close" @click="hideModal('model-collection')" class="close">×</button>
         </template>
-        <!--        <b-row>-->
-        <!--          <b-col cols="12" class="d-flex justify-content-center">-->
-        <!--            <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">標簽</h3>-->
-        <!--          </b-col>-->
-        <!--        </b-row>-->
         <b-row style="height : 100px;">
           <b-col style="margin-top: 1rem; margin-left: 5rem; margin-right: 5rem;">
-            <b-form-group class="mw-100 w-100" label="標簽">
+            <b-form-group class="mw-100 w-100" label="标签">
               <v-select v-model="collectionLabel" :options="collectionLabelOptions"
                         class="v-select1" multiple :searchable="false" :dir="direction"/>
             </b-form-group>
@@ -731,34 +725,46 @@
     <Modal
       ref="exportModal"
       v-if="isModalVisible"
-      :link="link" :params="params" :name="name"
+      :link="link" :params="params" :name="name" :imgLink="imgUrl"
       @close="closeModal"
     />
+    <b-modal centered id="modal-image" ref="modal-image" :title="$t('system-setting.prompt')">
+      {{$t('device-management.device-list.make-inactive-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="downLoadImage" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-image')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
   </div>
 </template>
 <style lang="scss">
-.col-30{
+  .col-30 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 30%;
     flex: 0 0 30%;
     max-width: 30%;
   }
-  .col-70{
+
+  .col-70 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 70%;
     flex: 0 0 70%;
     max-width: 70%;
   }
 
-  .form-group-margin{
+  .form-group-margin {
     margin-bottom: 1.5rem;
   }
-  .form-input-border{
+
+  .form-input-border {
     background-color: white !important;
     border: 1px solid #ebebeb;
   }
 
-  .img-result{
+  .img-result {
     width: 130px;
     height: 130px;
   }
@@ -1003,7 +1009,13 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import vSelect from 'vue-select';
-  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
+  import {
+    getApiManager,
+    getDateTimeWithFormat,
+    downLoadFileFromServer,
+    printFileFromServer,
+    downLoadImageFromUrl
+  } from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css'
   import Switches from 'vue-switches';
@@ -1050,7 +1062,7 @@
       return {
         value1: 0,
         value2: [0, 0],
-        timer:'',
+        timer: '',
         dotOptions: [{
           disabled: true
         }, {
@@ -1059,11 +1071,15 @@
         link: '',
         params: {},
         name: '',
+        imgUrl: [],
+        isExport:false,
         isExpanded: false,
         pageStatus: 'table',
         power: true,
         siteData: [],
         showPage: [],
+        renderedCheckList:[],
+
         fileSelection: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
@@ -1114,8 +1130,8 @@
         cartoonRectL: [],
         cntCartoon: 0,
         orderCartoon: 0,
-        mode:null,
-        conclusionType:null,
+        mode: null,
+        conclusionType: null,
 
         videoOptions: {
           autoplay: true,
@@ -1188,15 +1204,15 @@
 
         onSiteOption: [],
 
-        httpOption:null,
-        apiUrl:null,
+        httpOption: null,
+        apiUrl: null,
 
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: '4', text: '安检仪+审图端+手检端'},
           {value: '1', text: '安检仪+(本地手检)'},
           {value: '2', text: '安检仪+手检端'},
           {value: '3', text: '安检仪+审图端'},
+          {value: '4', text: '安检仪+审图端+手检端'},
         ],
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -1252,7 +1268,7 @@
                 };
 
                 if (handTaskResult == null) return '';
-                if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
+                if (!dictionary.hasOwnProperty(handTaskResult)) return '';
                 return dictionary[handTaskResult];
               }
             },
@@ -1315,27 +1331,23 @@
       }
     },
 
-    created () {
-      //this.onSearchButton();
+    created() {
       this.timer = setInterval(this.autoUpdate, 15000)
-
-      //this.timer = setInterval(() => this.onTaskVuetableChangePage(this.httpOption.params.page), 15000);
-      //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
-
     },
-    beforeDestroy () {
+    beforeDestroy() {
       clearInterval(this.timer)
     },
 
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
+        this.changeCheckAllStatus();
       },
 
-      pageStatus(newval){
-        if(newval==='show'){
+      pageStatus(newval) {
+        if (newval === 'show') {
           clearInterval(this.timer);
-        }else{
+        } else {
           this.timer = setInterval(() => this.autoUpdate(), 15000);
         }
       },
@@ -1367,27 +1379,24 @@
 
       slidebar1value(newsValue, oldValue) {
 
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
+        if (oldValue[1] < newsValue[1]) {
+          for (let i = oldValue[1]; i < newsValue[1]; i++) {
             this.filterId(5);
           }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
+        } else {
+          for (let i = newsValue[1]; i < oldValue[1]; i++) {
             this.filterId(6);
           }
         }
       },
       slidebar2value(newsValue, oldValue) {
 
-        console.log(oldValue[1]);
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
+        if (oldValue[1] < newsValue[1]) {
+          for (let i = oldValue[1]; i < newsValue[1]; i++) {
             this.filterId(7);
           }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
+        } else {
+          for (let i = newsValue[1]; i < oldValue[1]; i++) {
             this.filterId(8);
           }
         }
@@ -1395,20 +1404,53 @@
     },
 
     methods: {
-      cancelAutoUpdate () { clearInterval(this.timer) },
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/history-task/generate`;
-      //   this.name = 'History-Task';
-      //   console.log("s");
-      //   this.isModalVisible = true;
-      // },
+      cancelAutoUpdate() {
+        clearInterval(this.timer)
+      },
+      selectAll(value){
+        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.taskVuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.taskVuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1464,7 +1506,7 @@
         let url1 = '';
         let url2 = '';
         this.slidebar1value = [0, 0];
-        this.slidebar2value= [0, 0];
+        this.slidebar2value = [0, 0];
         if (this.power === true) {
 
           if (this.imagesInfo[0] !== undefined) {
@@ -1482,62 +1524,72 @@
 
           if (this.cartoonsInfo[k] !== undefined) {
             url1 = this.cartoonsInfo[k].imageUrl;
-            for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
-              this.cartoonRectL.push({
-                x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
-                y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
-                width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
-                height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
-                colour: this.cartoonsInfo[k].colorRect,
-              });
+            if(this.cartoonsInfo[k].imageRect!=null) {
+              for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
+                this.cartoonRectL.push({
+                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
+                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
+                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
+                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
+                  colour: this.cartoonsInfo[k].colorRect,
+                });
+              }
             }
-
+            if (this.cartoonsInfo[k].rectsAdd != null) {
             for (let i = 0; i < this.cartoonsInfo[k].rectsAdd.length; i++) {
-              this.cartoonRectL.push({
-                x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
-                y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].y,
-                width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].width,
-                height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].height,
-                colour: this.cartoonsInfo[k].colorAdd,
-              });
+
+                this.cartoonRectL.push({
+                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
+                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].y,
+                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].width,
+                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].height,
+                  colour: this.cartoonsInfo[k].colorAdd,
+                });
+              }
             }
 
             if (this.cartoonsInfo[k].displayDel === '1000000601') {
-              for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
-                this.cartoonRectL.push({
-                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].x,
-                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].y,
-                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].width,
-                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].height,
-                  colour: this.cartoonsInfo[k].colorDel,
-                });
+              if (this.cartoonsInfo[k].rectsDel != null) {
+                for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
+                  this.cartoonRectL.push({
+                    x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].x,
+                    y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].y,
+                    width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].width,
+                    height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].height,
+                    colour: this.cartoonsInfo[k].colorDel,
+                  });
+                }
               }
             }
           }
 
           if (this.cartoonsInfo[k + 1] !== undefined) {
             url2 = this.cartoonsInfo[k + 1].imageUrl;
-            for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
-              this.cartoonRectR.push({
-                x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
-                y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
-                width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
-                height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
-                colour: this.cartoonsInfo[k + 1].colorRect,
-              });
+            if (this.cartoonsInfo[k + 1].imageRect != null) {
+              for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
+                this.cartoonRectR.push({
+                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
+                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
+                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
+                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
+                  colour: this.cartoonsInfo[k + 1].colorRect,
+                });
+              }
             }
 
-            for (let i = 0; i < this.cartoonsInfo[k + 1].rectsAdd.length; i++) {
-              this.cartoonRectR.push({
-                x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].x,
-                y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].y,
-                width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].width,
-                height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].height,
-                colour: this.cartoonsInfo[k + 1].colorAdd,
-              });
+            if (this.cartoonsInfo[k + 1].rectsAdd != null) {
+              for (let i = 0; i < this.cartoonsInfo[k + 1].rectsAdd.length; i++) {
+                this.cartoonRectR.push({
+                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].x,
+                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].y,
+                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].width,
+                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].height,
+                  colour: this.cartoonsInfo[k + 1].colorAdd,
+                });
+              }
             }
 
-            if (this.cartoonsInfo[k + 1].displayDel === '1000000601') {
+            if (this.cartoonsInfo[k + 1].displayDel === '1000000601' && this.cartoonsInfo[k + 1].rectsDel != null) {
               for (let i = 0; i < this.cartoonsInfo[k + 1].rectsDel.length; i++) {
                 this.cartoonRectR.push({
                   x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsDel[i].x,
@@ -1594,7 +1646,9 @@
           "1000002302": `${this.$t('maintenance-management.process-task.artificial')}`,
           "1000002303": `${this.$t('maintenance-management.process-task.artificial')}`,
           "1000001801": `${this.$t('maintenance-management.process-task.underreport')}`,
-          "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`
+          "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`,
+          "0": `${this.$t('maintenance-management.process-task.online')}`,
+          "1": `${this.$t('maintenance-management.process-task.offline')}`
         };
         if (!dictionary.hasOwnProperty(dataCode)) return '';
         return dictionary[dataCode];
@@ -1639,17 +1693,26 @@
         return dictionary[value];
       },
 
+      downLoadImage(){
+        if(this.imgUrl!==null) {
+          for (let i = 0; i < this.imgUrl.length; i++) {
+            downLoadImageFromUrl(this.imgUrl[i]);
+          }
+        }
+        this.$refs['modal-image'].hide();
+      },
+
       onExportButton() {
-        // this.fileSelection = [];
-        // this.$refs['model-export'].show();
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
+        this.imgUrl = [];
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
         this.link = `task/history-task/generate`;
+        this.imgUrl = `task/history-task/generate/image`;
         this.name = 'History-Task';
         this.isModalVisible = true;
       },
@@ -1678,9 +1741,9 @@
         };
 
         let link = `task/history-task/generate`;
-        if (checkedIds.length > 0) {
+
           printFileFromServer(link, params);
-        }
+
       },
 
       getSiteOption() {
@@ -1700,6 +1763,7 @@
       },
 
       getLocale() {
+
         return getLocale();
       },
 
@@ -1740,22 +1804,6 @@
                 this.handDeviceName = null;
                 this.handUserName = null;
 
-                // for (let i = 0; i < this.showPage.serAssignList.length; i++) {
-                //   if (this.showPage.serAssignList[i].handDevice !== null) {
-                //     this.handDeviceName = this.showPage.serAssignList[i].handDevice.deviceName;
-                //     this.handUserName = this.showPage.serAssignList[i].assignUser.userName;
-                //     this.handStartTime = this.showPage.serAssignList[i].assignEndTime;
-                //   } else {
-                //     if (this.showPage.serAssignList[i].judgeDevice !== null) {
-                //       this.judgeDeviceName = this.showPage.serAssignList[i].judgeDevice.deviceName;
-                //     }
-                //     this.judgeUserName = this.showPage.serAssignList[i].assignUser.userName;
-                //     this.judgeStartTime = this.showPage.serAssignList[i].assignEndTime;
-                //     this.judgeUserId = this.showPage.serAssignList[i].assignUser.userId;
-                //   }
-                // }
-
-
                 this.thumbs = [];
                 this.videos = [];
                 this.images = [];
@@ -1773,10 +1821,9 @@
                 this.handGoodDataCodeExpanded = [];
 
                 this.conclusionType = null;
-                if(this.showPage.serCheckResultList.length !==0) {
+                if (this.showPage.serCheckResultList.length !== 0) {
                   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
                 }
-                console.log(this.conclusionType);
 
                 deviceImage = [];
                 submitRects = [];
@@ -1798,57 +1845,61 @@
 
                 this.cntCartoon = Math.floor(deviceImage.length / 2);
 
-                if (deviceImage !== null && submitRects !== null) {
+                if (deviceImage !== null) {
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: 168 / deviceImage[i].width,
-                        rateHeight: 300 / deviceImage[i].height,
+                        rateWidth: 248 / deviceImage[i].width,
+                        rateHeight: 521 / deviceImage[i].height,
                         imageUrl: deviceImage[i].image,
                         imageRect: deviceImage[i].imageRects,
                         colorRect: colourInfo.scanRecogniseColour
                       });
                     }
 
-                    if (submitRects[i] !== undefined && submitRects[i] !== null) {
+
                       this.cartoonsInfo.push({
-                        rateWidth: 168 / deviceImage[i].width,
-                        rateHeight: 300 / deviceImage[i].height,
+                        rateWidth: 205 / deviceImage[i].width,
+                        rateHeight: 426 / deviceImage[i].height,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour,
                         colorAdd: colourInfo.judgeRecogniseColour,
                         colorDel: colourInfo.displayDeleteSuspicionColour,
                         displayDel: colourInfo.displayDeleteSuspicion,
-                        rectsAdd: submitRects[i].rectsAdded,
-                        rectsDel: submitRects[i].rectsDeleted
+                        rectsAdd: submitRects !=null && submitRects[i] != undefined? submitRects[i].rectsAdded : null,
+                        rectsDel: submitRects !=null && submitRects[i] != undefined?  submitRects[i].rectsDeleted : null
                       });
-                    }
+
                   }
                 }
 
                 if (this.imagesInfo[0] !== undefined) {
-                  for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
-                    this.imageRectL.push({
-                      x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
-                      y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
-                      width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
-                      height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
-                      colour: this.imagesInfo[0].colorRect,
-                    });
+                  if (this.imagesInfo[0].imageRect != null) {
+                    for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
+                      this.imageRectL.push({
+                        x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
+                        y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
+                        width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
+                        height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
+                        colour: this.imagesInfo[0].colorRect,
+                      });
+                    }
                   }
                   url1 = this.imagesInfo[0].imageUrl;
                 }
 
                 if (this.imagesInfo[1] !== undefined) {
-                  for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
-                    this.imageRectR.push({
-                      x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
-                      y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
-                      width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
-                      height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
-                      colour: this.imagesInfo[1].colorRect,
-                    });
+                  if (this.imagesInfo[1].imageRect != null) {
+                    for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
+                      this.imageRectR.push({
+                        x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
+                        y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
+                        width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
+                        height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
+                        colour: this.imagesInfo[1].colorRect,
+                      });
+                    }
                   }
                   url2 = this.imagesInfo[1].imageUrl;
                 }
@@ -1857,11 +1908,16 @@
 
                 let handGoodsStr = this.showPage.task.serCheckResult.handGoods;
                 let handAttactedStr = this.showPage.task.serCheckResult.handAttached;
+                console.log(handAttactedStr);
 
-                if (handGoodsStr !== null && handAttactedStr !== null) {
+                if (handGoodsStr !== null) {
                   handGood = handGoodsStr.split(",");
+                }
+
+                if (handAttactedStr !== null) {
                   handAttached = handAttactedStr.split(",");
                 }
+
                 let k = 0;
                 if (handGood !== null) {
                   for (let i = 0; i < handGood.length; i++) {
@@ -1945,6 +2001,12 @@
                 this.hideModal('model-collection');
                 this.onRowClicked(history_id);
                 break;
+              case responseMessages['exist-knowledge']:
+                this.$notify('warning', this.$t('permission-management.success'), this.$t(`personal-inspection.exist-knowledge`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
 
             }
           })
@@ -1969,7 +2031,7 @@
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
-      autoUpdate(){
+      autoUpdate() {
         this.$refs.taskVuetable.reload();
       },
 
@@ -2005,6 +2067,7 @@
 
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          this.renderedCheckList.push(data.data[i].historyId);
           transformed.data.push(temp);
         }
 
@@ -2016,6 +2079,7 @@
 
         this.apiUrl = apiUrl;
         this.httpOption = httpOptions;
+        this.renderedCheckList = [];
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
@@ -2027,10 +2091,12 @@
 
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+        this.changeCheckAllStatus();
       },
 
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page)
+        this.changeCheckAllStatus();
       }
     }
   }

@@ -702,6 +702,7 @@
                   track-by="time"
                   pagination-path="pagination"
                   class="table-hover"
+                  @vuetable:checkbox-toggled="onCheckStatusChange"
                   @vuetable:pagination-data="onTaskVuetablePaginationData"
                 >
                 </vuetable>
@@ -961,6 +962,7 @@
         params: {},
         name: '',
         fileSelection: [],
+        renderedCheckList:[],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -1064,7 +1066,7 @@
             },
             {
               name: 'time',
-              title: '时间段',
+              title: '期间',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -1084,7 +1086,11 @@
               name: 'missingReportRate',
               title: '误报率',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (missingReportRate) => {
+                if (missingReportRate == null) return '';
+                return missingReportRate.toFixed(1);
+              }
             },
             {
               name: 'mistakeReport',
@@ -1114,7 +1120,11 @@
               name: 'artificialJudgeMissingRate',
               title: '人工判图误报率',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (artificialJudgeMissingRate) => {
+                if (artificialJudgeMissingRate == null) return '';
+                return artificialJudgeMissingRate.toFixed(1);
+              }
             },
             {
               name: 'artificialJudgeMistake',
@@ -1126,7 +1136,11 @@
               name: 'artificialJudgeMistakeRate',
               title: '人工判图漏报率',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (artificialJudgeMistakeRate) => {
+                if (artificialJudgeMistakeRate == null) return '';
+                return artificialJudgeMistakeRate.toFixed(1);
+              }
             },
             {
               name: 'intelligenceJudge',
@@ -1144,7 +1158,11 @@
               name: 'intelligenceJudgeMissingRate',
               title: '智能判图误报率',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (intelligenceJudgeMissingRate) => {
+                if (intelligenceJudgeMissingRate == null) return '';
+                return intelligenceJudgeMissingRate.toFixed(1);
+              }
             },
             {
               name: 'intelligenceJudgeMistake',
@@ -1156,7 +1174,11 @@
               name: 'intelligenceJudgeMistakeRate',
               title: '智能判图漏报率',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (intelligenceJudgeMistakeRate) => {
+                if (intelligenceJudgeMistakeRate == null) return '';
+                return intelligenceJudgeMistakeRate.toFixed(1);
+              }
             }
           ],
           perPage: 10,
@@ -1166,9 +1188,7 @@
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
-      },
-      'operatingLogTableItems.perPage': function (newVal) {
-        this.$refs.operatingLogTable.refresh();
+        this.changeCheckAllStatus();
       },
       siteData: function (newVal, oldVal) {
 
@@ -1189,18 +1209,50 @@
       }
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      selectAll(value){
+        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.taskVuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.taskVuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1335,7 +1387,6 @@
 
       },
 
-
       getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
@@ -1414,10 +1465,12 @@
       },
 
       onTaskVuetableChangePage(page) {
-        this.$refs.taskVuetable.changePage(page)
+        this.$refs.taskVuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
       onTaskVuetablePaginationData(paginationData) {
-        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
 
       onDisplaceButton() {
@@ -1452,6 +1505,7 @@
           let j = transformed.tKey[i - 1];
 
           temp = data.detailedStatistics[j];
+          this.renderedCheckList.push(data.detailedStatistics[j].time);
           transformed.data.push(temp)
         }
 
@@ -1459,6 +1513,7 @@
 
       },
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+        this.renderedCheckList = [];
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,

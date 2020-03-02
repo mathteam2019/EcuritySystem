@@ -3,9 +3,12 @@
   import 'vue-select/dist/vue-select.css'
   import {getDirection} from "../../utils";
   import {validationMixin} from "vuelidate";
-  import {downLoadFileFromServer} from "../../api";
+  import {downLoadFileFromServer, downLoadImageFromUrl, getApiManagerError} from "../../api";
+  import {apiBaseUrl} from "../../constants/config";
+  import {responseMessages} from "../../constants/response-messages";
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
+  //const fs = require('fs-extra');
 
   export default {
     name: 'modal',
@@ -18,7 +21,13 @@
       },
       name: {
         type: String
-      }
+      },
+      url: {
+        type: Array
+      },
+      imgLink: {
+        type: String
+      },
     },
     components: {
       'v-select': vSelect,
@@ -33,6 +42,7 @@
     data() {
       return {
         fileSelection: [],
+        imgUrl :[],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -43,18 +53,97 @@
     },
 
     methods: {
+      setDownloadPath(){
+        //downloadPath();
+        window.location.href = result;
+      },
+      downLoadImage(){
+        if(this.imgUrl.length!==0) {
+          for (let i = 0; i < this.imgUrl.length; i++) {
+            downLoadImageFromUrl(this.imgUrl[i]);
+          }
+        }
+      },
       exportFile() {
+        //this.exported = true;
+        let url="/assets/img/profile.png";
+        //console.log(this.url);
+        // if(this.url!==undefined){
+        //   if(this.url!==null) {
+        //     for (let i = 0; i < this.url.length; i++) {
+        //       downLoadImageFromUrl(this.url[i]);
+        //     }
+        //   }
+        // }
+        //downLoadImageFromUrl(url);
         if(this.params.isAll===true&&this.params.idList===""){
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-messages.select-data`), {
             duration: 3000,
             permanent: false
           });
         }
+        if(this.fileSelection.length === 0){
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-messages.select-file-type`), {
+            duration: 3000,
+            permanent: false
+          });
+        }
         if (this.fileSelection.length !== 0 && !(this.params.isAll===true&&this.params.idList==="")) {
+          this.imgUrl = [];
+          if(this.imgLink!==undefined) {
+            getApiManagerError()
+              .post(`${apiBaseUrl}/` + this.imgLink, this.params).then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']:
+                  if (data.enabledCartoon) {
+                    data.cartoonImageList.forEach(item => {
+                      this.imgUrl.push(item);
+                    });
+                  }
+                  if (data.enabledOriginal) {
+                    //this.imgUrl = data.originalImageList;
+                    data.originalImageList.forEach(item => {
+                      this.imgUrl.push(item);
+                    });
+                  }
+                  this.downLoadImage();
+                  break;
+              }
+              })
+              .catch((error) => {
+              });
+          }
           downLoadFileFromServer(this.link, this.params, this.name, this.fileSelection);
           this.close();
         }
       },
+
+      // readDirectory() {
+      //   fs.readdir(this.dir, (err, dir) => {
+      //     console.log(dir);
+      //     for(let filePath of dir)
+      //       console.log(filePath)
+      //     this.files = dir
+      //   })
+      // },
+      // selectFolder(e) {
+      //   // var theFiles = e.target.files;
+      //   // var relativePath = theFiles[0].webkitRelativePath;
+      //   // var folder = relativePath.split("/");
+      //   // alert(folder[0]);
+      //   // const ipc = require('electron').ipcMain
+      //   // const dialog = require('electron').dialog
+      //   // ipc.on('open-file-dialog', function (event) {
+      //   //   dialog.showOpenDialog({
+      //   //     properties: ['openFile']
+      //   //   }, function (files) {
+      //   //     if (files) event.sender.send('selected-file', files)
+      //   //   })
+      //   // })
+      // },
+
       close() {
         this.$emit('close');
       },
@@ -64,6 +153,10 @@
 </script>
 
 <template>
+
+<!--  <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{-->
+<!--    $t('permission-management.upload-image')}}-->
+<!--  </b-button>-->
   <div class="modal-backdrop" style="display:block;">
     <div class="modal modal-select">
       <header class="modal-header header-font">
@@ -87,7 +180,7 @@
                       :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
-          <input type="file" ref="imgFile" webkitdirectory directory style="display: none"/>
+<!--          <input type="file" ref="imgFile" webkitdirectory directory style="display: none"/>-->
         </slot>
       </section>
       <footer class="modal-footer">
@@ -172,13 +265,6 @@
     font-weight: bold;
     color: #000000;
     background: transparent;
-  }
-
-  .btn-green {
-    color: white;
-    background: #000000;
-    border: 1px solid #000000;
-    border-radius: 2px;
   }
 
 </style>

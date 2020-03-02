@@ -221,7 +221,7 @@
                   <b-form-input
                     v-model="dicDataForm.dicDataCode"
                     :state="!$v.dicDataForm.dicDataCode.$invalid"
-                    placeholder="请输入字典编号"/>
+                    :placeholder="$t('system-setting.dictionary-number-input')"/>
                 </b-form-group>
 
                 <b-form-group>
@@ -232,7 +232,7 @@
                   <b-form-input
                     v-model="dicDataForm.dicDataValue"
                     :state="!$v.dicDataForm.dicDataValue.$invalid"
-                    placeholder="请输入字典值"/>
+                    :placeholder="$t('system-setting.dictionary-value-input')"/>
                 </b-form-group>
 
                 <b-form-group>
@@ -708,6 +708,31 @@
       onClickSaveDicData() {
 
         if (this.$v.dicDataForm.$invalid) {
+          if (this.$v.dicDataForm.dicDataCode.$invalid) {
+            if(this.$v.dicDataForm.dicDataCode==='') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.dictionary-number-input`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.dictionary-number-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+          }
+          if (this.$v.dicDataForm.dicDataValue.$invalid) {
+
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.dictionary-value-input`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+
+          }
           return;
         }
         this.isLoading = true;

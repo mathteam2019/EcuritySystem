@@ -36,7 +36,7 @@
               </b-col>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.seized-item')">
-                  <b-form-input v-model="filter.handGoods"/>
+                  <b-form-select v-model="filter.handGoods" :options="onHandGoodsOption" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -72,6 +72,7 @@
                 :http-fetch="pendingListTableHttpFetch"
                 :per-page="pendingListTableItems.perPage"
                 pagination-path="pagination"
+                @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
                 class="table-striped"
               >
@@ -173,8 +174,12 @@
                 <span><i class="icofont-star"/></span>
                 <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
+                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='FALSE'">
+                  <b-img src="/assets/img/system_scan.svg" style="width: 20px; height: 22px;"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
+                <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000001'"><i
+                  class="icofont-male" style="color: darkblue;"/></span>
               </b-col>
             </b-row>
             <b-row style="margin-bottom: 0.5rem;">
@@ -521,6 +526,17 @@
                 </b-form-group>
               </b-col>
               <b-col>
+                <b-form-group class="form-group-margin">
+                  <template slot="label">
+                    {{$t('personal-inspection.history-offline')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input disabled class="form-input-border"
+                                v-if="showPage.serScan == null || showPage.serScan.scanOffLine==null"
+                                :value="getOptionValue(0)"/>
+                  <b-form-input disabled class="form-input-border" v-else
+                                :value="getOptionValue(showPage.serScan.scanOffLine)"/>
+                </b-form-group>
               </b-col>
               <b-col>
               </b-col>
@@ -689,7 +705,7 @@
     <Modal
       ref="exportModal"
       v-if="isModalVisible"
-      :link="link" :params="params" :name="name"
+      :link="link" :params="params" :name="name" :imgLink="imgUrl"
       @close="closeModal"
     />
 
@@ -899,7 +915,13 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
-  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
+  import {
+    getApiManager,
+    getDateTimeWithFormat,
+    downLoadFileFromServer,
+    printFileFromServer,
+    getApiManagerError
+  } from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css'
   import Switches from 'vue-switches';
@@ -942,7 +964,7 @@
     },
     data() {
       return {
-        actionId:null,
+        actionId: null,
         value1: 0,
         value2: [0, 0],
         dotOptions: [{
@@ -965,10 +987,11 @@
         power: true,
         siteData: [],
         showPage: [],
-
+        renderedCheckList: [],
         link: '',
         params: {},
         name: '',
+        imgUrl: [],
         fileSelection: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
@@ -1026,10 +1049,10 @@
 
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: '1000001304', text: '安检仪+审图端+手检端'},
           {value: '1000001301', text: '安检仪+(本地手检)'},
           {value: '1000001302', text: '安检仪+手检端'},
           {value: '1000001303', text: '安检仪+审图端'},
+          {value: '1000001304', text: '安检仪+审图端+手检端'},
         ],
 
         handResultOption: [
@@ -1039,6 +1062,14 @@
         ],
 
         onSiteOption: [],
+        onHandGoodsOption: [
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: '1000001601', text: '安眠药'},
+          {value: '1000001602', text: '仿真枪'},
+          {value: '1000001603', text: '玩具枪'},
+          {value: '1000001604', text: '气枪'},
+          {value: '1000001605', text: '打火机'}
+        ],
         pendingListTableItems: {
           apiUrl: `${apiBaseUrl}/knowledge-base/get-by-filter-and-page`,
           perPage: 10,
@@ -1082,7 +1113,7 @@
                 };
 
                 if (handTaskResult == null) return '';
-                if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
+                if (!dictionary.hasOwnProperty(handTaskResult)) return '';
                 return dictionary[handTaskResult];
               }
             },
@@ -1131,7 +1162,11 @@
               name: 'handGoods',
               title: this.$t('knowledge-base.seized-item'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (handGoods) => {
+                if (handGoods == null) return '';
+                return this.getHandGoodString(handGoods);
+              }
             },
             {
               name: '__slot:operating',
@@ -1181,6 +1216,7 @@
     watch: {
       'pendingListTableItems.perPage': function (newVal) {
         this.$refs.pendingListTable.refresh();
+        this.changeCheckAllStatus();
       },
 
       siteData: function (newVal, oldVal) {
@@ -1221,7 +1257,6 @@
 
       slidebar2value(newsValue, oldValue) {
 
-        console.log(oldValue[1]);
         if (oldValue[1] < newsValue[1]) {
           for (let i = oldValue[1]; i < newsValue[1]; i++) {
             this.filterId(7);
@@ -1234,18 +1269,51 @@
       },
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      selectAll(value) {
+        this.$refs.pendingListTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.pendingListTable.isCheckAllStatus = value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.pendingListTable.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone() {
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.pendingListTable.uuid;
+        let checkAllButton = document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus() {
+        let selectList = this.$refs.pendingListTable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if (selectList.length >= renderedList.length) {
+          let isEqual = false;
+          for (let i = 0; i < renderedList.length; i++) {
+            isEqual = false;
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
+            }
+            if (isEqual === false) {
+              this.selectNone();
+              break;
+            }
+            if (i === renderedList.length - 1) {
+              this.selectAll(true);
+            }
+          }
+        } else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked) {
+        if (isChecked) {
+          this.changeCheckAllStatus();
+        } else {
+          this.selectNone();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1321,62 +1389,72 @@
 
           if (this.cartoonsInfo[k] !== undefined) {
             url1 = this.cartoonsInfo[k].imageUrl;
-            for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
-              this.cartoonRectL.push({
-                x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
-                y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
-                width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
-                height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
-                colour: this.cartoonsInfo[k].colorRect,
-              });
+            if(this.cartoonsInfo[k].imageRect!=null) {
+              for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
+                this.cartoonRectL.push({
+                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
+                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
+                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
+                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
+                  colour: this.cartoonsInfo[k].colorRect,
+                });
+              }
             }
-
+            if (this.cartoonsInfo[k].rectsAdd != null) {
             for (let i = 0; i < this.cartoonsInfo[k].rectsAdd.length; i++) {
-              this.cartoonRectL.push({
-                x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
-                y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].y,
-                width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].width,
-                height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].height,
-                colour: this.cartoonsInfo[k].colorAdd,
-              });
+
+                this.cartoonRectL.push({
+                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
+                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].y,
+                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].width,
+                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].height,
+                  colour: this.cartoonsInfo[k].colorAdd,
+                });
+              }
             }
 
             if (this.cartoonsInfo[k].displayDel === '1000000601') {
-              for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
-                this.cartoonRectL.push({
-                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].x,
-                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].y,
-                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].width,
-                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].height,
-                  colour: this.cartoonsInfo[k].colorDel,
-                });
+              if (this.cartoonsInfo[k].rectsDel != null) {
+                for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
+                  this.cartoonRectL.push({
+                    x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].x,
+                    y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].y,
+                    width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].width,
+                    height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].height,
+                    colour: this.cartoonsInfo[k].colorDel,
+                  });
+                }
               }
             }
           }
 
           if (this.cartoonsInfo[k + 1] !== undefined) {
             url2 = this.cartoonsInfo[k + 1].imageUrl;
-            for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
-              this.cartoonRectR.push({
-                x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
-                y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
-                width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
-                height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
-                colour: this.cartoonsInfo[k + 1].colorRect,
-              });
+            if (this.cartoonsInfo[k + 1].imageRect != null) {
+              for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
+                this.cartoonRectR.push({
+                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
+                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
+                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
+                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
+                  colour: this.cartoonsInfo[k + 1].colorRect,
+                });
+              }
             }
 
-            for (let i = 0; i < this.cartoonsInfo[k + 1].rectsAdd.length; i++) {
-              this.cartoonRectR.push({
-                x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].x,
-                y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].y,
-                width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].width,
-                height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].height,
-                colour: this.cartoonsInfo[k + 1].colorAdd,
-              });
+            if (this.cartoonsInfo[k + 1].rectsAdd != null) {
+              for (let i = 0; i < this.cartoonsInfo[k + 1].rectsAdd.length; i++) {
+                this.cartoonRectR.push({
+                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].x,
+                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].y,
+                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].width,
+                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].height,
+                  colour: this.cartoonsInfo[k + 1].colorAdd,
+                });
+              }
             }
 
-            if (this.cartoonsInfo[k + 1].displayDel === '1000000601') {
+            if (this.cartoonsInfo[k + 1].displayDel === '1000000601' && this.cartoonsInfo[k + 1].rectsDel != null) {
               for (let i = 0; i < this.cartoonsInfo[k + 1].rectsDel.length; i++) {
                 this.cartoonRectR.push({
                   x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsDel[i].x,
@@ -1407,6 +1485,25 @@
         }
       },
 
+      getHandGoodString(string) {
+        if (string === '') return '';
+        let handGood = string.split(",");
+        let k = 0, handGoodStr = '';
+        for (let j = 0; j < 5; j++) {
+          if (handGood[0] === this.handGoodDataCode[j]) {
+            handGoodStr = this.handGoodDataCodeValue[this.handGoodDataCode[j]].text;
+          }
+        }
+        for (let i = 1; i < handGood.length; i++) {
+          for (let j = 0; j < 5; j++) {
+            if (handGood[i] === this.handGoodDataCode[j]) {
+              handGoodStr += ',' + this.handGoodDataCodeValue[this.handGoodDataCode[j]].text;
+            }
+          }
+        }
+        return handGoodStr;
+      },
+
       getOptionValue(dataCode) {
         const dictionary = {
           "1000000001": `${this.$t('permission-management.male')}`,
@@ -1431,7 +1528,9 @@
           "1000002302": `${this.$t('maintenance-management.process-task.artificial')}`,
           "1000002303": `${this.$t('maintenance-management.process-task.artificial')}`,
           "1000001801": `${this.$t('maintenance-management.process-task.underreport')}`,
-          "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`
+          "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`,
+          "0": `${this.$t('maintenance-management.process-task.online')}`,
+          "1": `${this.$t('maintenance-management.process-task.offline')}`
         };
         if (!dictionary.hasOwnProperty(dataCode)) return '';
         return dictionary[dataCode];
@@ -1490,12 +1589,10 @@
         this.caseDealId = data.caseDealId;
         let url1 = '';
         let url2 = '';
-        let rateWidth, rateHeight;
         let deviceImage, submitRects;
         let colourInfo = null;
-        // let imagesInfo, cartoonsInfo;
-        // let imageRectR, imageRectL, cartoonRectR, cartoonRectL;
-        // this.loadImage(url, url2);
+        let handGood = null, handAttached = null;
+
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/task/process-task/get-one`, {
@@ -1537,6 +1634,7 @@
 
                 this.thumbs = [];
                 this.videos = [];
+                this.images = [];
                 this.imgRect = [];
                 this.cartoonRect = [];
                 this.rRects = [];
@@ -1546,11 +1644,15 @@
                 this.imageRectL = [];
                 this.cartoonRectR = [];
                 this.cartoonRectL = [];
+                this.collectionLabel = [];
+                this.handGoodExpanded = [];
+                this.handGoodDataCodeExpanded = [];
+
                 this.conclusionType = null;
                 if (this.showPage.serCheckResultList.length !== 0) {
                   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
                 }
-                console.log(this.conclusionType);
+
 
                 deviceImage = [];
                 submitRects = [];
@@ -1572,101 +1674,106 @@
 
                 this.cntCartoon = Math.floor(deviceImage.length / 2);
 
-                if (deviceImage !== null && submitRects !== null) {
+                if (deviceImage !== null) {
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: 168 / deviceImage[i].width,
-                        rateHeight: 300 / deviceImage[i].height,
+                        rateWidth: 248 / deviceImage[i].width,
+                        rateHeight: 521 / deviceImage[i].height,
                         imageUrl: deviceImage[i].image,
                         imageRect: deviceImage[i].imageRects,
                         colorRect: colourInfo.scanRecogniseColour
                       });
                     }
 
-                    if (submitRects[i] !== undefined && submitRects[i] !== null) {
+
                       this.cartoonsInfo.push({
-                        rateWidth: 168 / deviceImage[i].width,
-                        rateHeight: 300 / deviceImage[i].height,
+                        rateWidth: 205 / deviceImage[i].width,
+                        rateHeight: 426 / deviceImage[i].height,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour,
                         colorAdd: colourInfo.judgeRecogniseColour,
                         colorDel: colourInfo.displayDeleteSuspicionColour,
                         displayDel: colourInfo.displayDeleteSuspicion,
-                        rectsAdd: submitRects[i].rectsAdded,
-                        rectsDel: submitRects[i].rectsDeleted
+                        rectsAdd: submitRects !=null && submitRects[i] != undefined? submitRects[i].rectsAdded : null,
+                        rectsDel: submitRects !=null && submitRects[i] != undefined?  submitRects[i].rectsDeleted : null
                       });
-                    }
+
                   }
                 }
 
                 if (this.imagesInfo[0] !== undefined) {
-                  for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
-                    this.imageRectL.push({
-                      x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
-                      y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
-                      width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
-                      height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
-                      colour: this.imagesInfo[0].colorRect,
-                    });
+                  if (this.imagesInfo[0].imageRect != null) {
+                    for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
+                      this.imageRectL.push({
+                        x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
+                        y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
+                        width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
+                        height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
+                        colour: this.imagesInfo[0].colorRect,
+                      });
+                    }
                   }
                   url1 = this.imagesInfo[0].imageUrl;
                 }
 
                 if (this.imagesInfo[1] !== undefined) {
-                  for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
-                    this.imageRectR.push({
-                      x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
-                      y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
-                      width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
-                      height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
-                      colour: this.imagesInfo[1].colorRect,
-                    });
+                  if (this.imagesInfo[1].imageRect != null) {
+                    for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
+                      this.imageRectR.push({
+                        x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
+                        y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
+                        width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
+                        height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
+                        colour: this.imagesInfo[1].colorRect,
+                      });
+                    }
                   }
                   url2 = this.imagesInfo[1].imageUrl;
                 }
 
                 loadImageCanvas(url1, url2, this.imageRectL, this.imageRectR, this.power);
 
-                //loadImageCanvas(url1, url1, this.imgRect, this.rRects, this.power);
-                // this.imageUrls[0] = url1;
-                // this.imageUrls[1] = url2;
-
                 let handGoodsStr = this.showPage.serCheckResult.handGoods;
                 let handAttactedStr = this.showPage.serCheckResult.handAttached;
-                let handGood = handGoodsStr.split(",");
-                let handAttached = handAttactedStr.split(",");
+                if (handGoodsStr !== null) {
+                  handGood = handGoodsStr.split(",");
+                }
+
+                if (handAttactedStr !== null) {
+                  handAttached = handAttactedStr.split(",");
+                }
                 let k = 0;
-                for (let i = 0; i < handGood.length; i++) {
-                  for (let j = 0; j < 5; j++) {
-                    if (handGood[i] === this.handGoodDataCode[j]) {
-                      this.handGoodExpanded[k] = true;
-                      this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
-                      k++;
+                if(handGood !== null) {
+                  for (let i = 0; i < handGood.length; i++) {
+                    for (let j = 0; j < 5; j++) {
+                      if (handGood[i] === this.handGoodDataCode[j]) {
+                        this.handGoodExpanded[k] = true;
+                        this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
+                        k++;
+                      }
                     }
                   }
                 }
 
                 //getting media data from server.
-                for (let i = 0; i < handAttached.length; i++) {
-                  let iHandAttached = handAttached[i].split(".");
-                  if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {
-                    this.thumbs.push({
-                      name: iHandAttached[0],
-                      src: handAttached[i]
-                    });
-                    this.images.push(handAttached[i]);
-                    /* this.thumbs[k].name = iHandAttached[0];
-                     this.thumbs[k].src = handAttached[i];
-                     this.images[k] = handAttached[i];*/
-
-                  } else {
-                    this.videos.push({
-                      name: iHandAttached[0],
-                      src: handAttached[i],
-                      poster: '',//todo if client need to show different poster for each videos, should get its poster image from server.
-                    });
+                if(handAttached !==null) {
+                  for (let i = 0; i < handAttached.length; i++) {
+                    let iHandAttached = handAttached[i].split(".");
+                    if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {
+                      this.thumbs.push({
+                        name: iHandAttached[0],
+                        src: handAttached[i]
+                      });
+                      this.images.push(handAttached[i]);
+                    } else {
+                      this.videos.push({
+                        name: iHandAttached[0],
+                        src: handAttached[i],
+                        poster: '',//todo if client need to show different poster for each videos, should get its poster image from server.
+                      });
+                    }
                   }
                 }
                 break;// okay
@@ -1698,6 +1805,7 @@
         this.filter = {
           taskNumber: null,
           modeName: null,
+          caseStatus: "1000002501",
           taskResult: null,
           fieldId: null,
           fieldDesignation: null,
@@ -1706,8 +1814,7 @@
       },
 
       onExportButton() {
-        // this.fileSelection = [];
-        // this.$refs['model-export'].show();
+
         let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
         let checkedIds = this.$refs.pendingListTable.selectedTo;
         this.params = {
@@ -1716,7 +1823,9 @@
           'idList': checkedIds.join()
         };
         this.link = `knowledge-base/generate/pending`;
+        this.imgUrl = `knowledge-base/generate/image`;
         this.name = 'Knowledge-Pending';
+
         this.isModalVisible = true;
       },
       onExport() {
@@ -1748,9 +1857,9 @@
           'idList': checkedIds.join()
         };
         let link = `knowledge-base/generate/pending`;
-        if (checkedIds.length > 0) {
-          printFileFromServer(link, params);
-        }
+
+        printFileFromServer(link, params);
+
       },
 
 
@@ -1774,6 +1883,7 @@
         let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          this.renderedCheckList.push(data.data[i].caseDealId);
           transformed.data.push(temp);
           this.idList.push(idTemp);
           if (this.isCheckAll === true) {
@@ -1787,6 +1897,8 @@
 
       pendingListTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
+        this.renderedCheckList = [];
+
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.pendingListTableItems.perPage,
@@ -1796,9 +1908,11 @@
       },
       onBlackListTablePaginationData(paginationData) {
         this.$refs.pendingListTablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onBlackListTableChangePage(page) {
         this.$refs.pendingListTable.changePage(page);
+        this.changeCheckAllStatus();
       },
 
       showModal(action, data) {

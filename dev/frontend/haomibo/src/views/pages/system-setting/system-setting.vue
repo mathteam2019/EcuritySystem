@@ -67,7 +67,7 @@
                 </b-row>
                 <b-row>
                   <b-col cols="2" offset="1">
-                    <b-form-group :label="$t('system-setting.parameter-setting.work-timeout-reminder')">
+                    <b-form-group :label="$t('system-setting.parameter-setting.judge-timeout-reminder')">
                       <b-form-input type="number" v-model="platFormData.judgeScanOvertime"
                                     :state="!$v.platFormData.judgeScanOvertime.$dirty ? null : !$v.platFormData.judgeScanOvertime.$invalid"/>
                     </b-form-group>
@@ -78,6 +78,12 @@
                                    v-model="platFormData.judgeRecogniseColour"
                                    :state="!$v.platFormData.judgeRecogniseColour.$dirty ? null : !$v.platFormData.judgeRecogniseColour.$invalid"
                                    style="margin-bottom: 0rem !important;"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.hand-timeout-reminder')">
+                      <b-form-input type="number" v-model="platFormData.handOverTime"
+                                    :state="!$v.platFormData.handOverTime.$dirty ? null : !$v.platFormData.handOverTime.$invalid"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -126,6 +132,7 @@
                                   :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
                       <colorpicker :searchable="false" :color="platFormData.displayDeleteSuspicionColour"
                                    v-model="platFormData.displayDeleteSuspicionColour"
+                                   :disablePicker="platFormData.displayDeleteSuspicion==='1000000602'"
                                    :state="!$v.platFormData.displayDeleteSuspicionColour.$dirty ? null : !$v.platFormData.displayDeleteSuspicionColour.$invalid"/>
                     </b-form-group>
                   </b-col>
@@ -328,6 +335,8 @@
                       <b-form-select v-model="filter.status" :options="stateOptions" plain/>
                     </b-form-group>
                   </b-col>
+                  <b-col>
+                  </b-col>
 
                 </b-row>
               </b-col>
@@ -371,25 +380,17 @@
                         <b-button
                           v-if="props.rowData.status==='1000000702'"
                           size="sm" @click="onAction('activate',props.rowData)"
-                          variant="success default btn-square" :disabled="checkPermItem('scan_param_update_status')"
+                          variant="warning default btn-square" :disabled="checkPermItem('scan_param_update_status')"
                         >
-                          <i class="icofont-check-circled"/>
+                          <i class="icofont-ban"/>
                         </b-button>
                         <b-button @click="onAction('inactivate',props.rowData)"
                                   v-if="props.rowData.status==='1000000701'"
                                   size="sm"
-                                  variant="warning default btn-square" :disabled="checkPermItem('scan_param_update_status')"
+                                  variant="success default btn-square" :disabled="checkPermItem('scan_param_update_status')"
                         >
-                          <i class="icofont-ban"/>
+                          <i class="icofont-check-circled"/>
                         </b-button>
-
-                        <!-- <b-button
-                           size="sm"
-                           variant="success default btn-square"
-                           @click="onRefreshItem('restart', props.rowData)">
-                           <i class="icofont-refresh"></i>
-                         </b-button>-->
-
                       </div>
                     </template>
 
@@ -410,6 +411,32 @@
         <b-row v-if="pageStatus !== 'table'" class="h-100 form-section">
           <b-col cols="10">
             <b-row>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.position')}}
+                  </template>
+                  <label>{{scanForm.fieldDesignation}}</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.device-classification')}}
+                  </template>
+                  <label>安检仪</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.device')}}
+                  </template>
+                  <label>{{scanForm.deviceName}}</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
               <b-col cols="6">
                 <b-form-group class="mw-100">
                   <template slot="label">
@@ -428,7 +455,7 @@
                     {{$t('system-setting.parameter-setting.cover-correction-time')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="scanForm.airCaliWarnTime"/>
+                  <b-form-input v-model="scanForm.airCaliWarnTime" :state="!$v.scanForm.airCaliWarnTime.$dirty ? null : !$v.scanForm.airCaliWarnTime.$invalid"/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -437,7 +464,7 @@
                     {{$t('system-setting.standby-time')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="scanForm.standByTime"/>
+                  <b-form-input v-model="scanForm.standByTime" :state="!$v.scanForm.standByTime.$dirty ? null : !$v.scanForm.standByTime.$invalid"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -577,13 +604,13 @@
             </b-row>
             <b-row class="mb-2">
               <b-col cols="3">
-                <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
-                  <b-form-input type="number" v-model="scanForm.storageAlarm"/>
+                <b-form-group :label="$t('system-setting.parameter-setting.storage-alarm')">
+                  <b-form-input type="number" v-model="scanForm.storageAlarm" :state="!$v.scanForm.storageAlarm.$dirty ? null : !$v.scanForm.storageAlarm.$invalid"/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
                 <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
-                  <b-form-input type="number" v-model="scanForm.storageAlarmPercent"/>
+                  <b-form-input type="number" v-model="scanForm.storageAlarmPercent" :state="!$v.scanForm.storageAlarmPercent.$dirty ? null : !$v.scanForm.storageAlarmPercent.$invalid"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -614,9 +641,13 @@
               </b-button>
             </div>
           </b-col>
-          <div class="position-absolute" style="left: 8%;bottom: 3%">
+          <div v-if="getLocale()==='zh'" class="position-absolute" style="left: 8%;bottom: 3%">
             <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
             <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+          </div>
+          <div v-if="getLocale()==='en'" class="position-absolute" style="left: 8%;bottom: 3%">
+            <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+            <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
           </div>
 
         </b-row>
@@ -630,6 +661,16 @@
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
+    <b-modal centered id="modal-active" ref="modal-active" :title="$t('system-setting.prompt')">
+      {{$t('device-management.device-list.make-active-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="updateItemStatus('1000000701')" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-active')">{{$t('system-setting.cancel')}}
         </b-button>
       </template>
     </b-modal>
@@ -651,6 +692,11 @@
     background-color: #000;
     cursor: pointer;
   }
+  .img-rotate{
+    -ms-transform: rotate(-15deg); /* IE 9 */
+    -webkit-transform: rotate(-15deg); /* Safari 3-8 */
+    transform: rotate(-15deg);
+  }
 
 </style>
 
@@ -663,7 +709,7 @@
   import {apiBaseUrl, apiParamUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
   import {validationMixin} from 'vuelidate';
-  import {checkPermissionItem, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
 
@@ -690,6 +736,23 @@
     },
     mixins: [validationMixin],
     validations: {
+      scanForm:{
+        airCaliWarnTime:{
+          required,
+          minValue: minValue(0), maxValue: maxValue(600)
+        },
+        standByTime:{
+          required,
+          minValue: minValue(0), maxValue: maxValue(60)
+        },
+        storageAlarm:{
+          required,
+          minValue: minValue(0), maxValue: maxValue(1000)
+        },
+        storageAlarmPercent:{
+          required,
+          minValue: minValue(0), maxValue: maxValue(100)        }
+      },
       platFormData: {
         scanRecogniseColour: {
           required,
@@ -701,13 +764,20 @@
           minValue: minValue(0), maxValue: maxValue(720)
         },
         judgeAssignTime: {
-          required
+          required,
+          minValue: minValue(0), maxValue: maxValue(60)
         },
         judgeProcessingTime: {
-          required
+          required,
+          minValue: minValue(0), maxValue: maxValue(300)
         },
         judgeScanOvertime: {
-          required
+          required,
+          minValue: minValue(0), maxValue: maxValue(720)
+        },
+        handOverTime: {
+          required,
+          minValue: minValue(0), maxValue: maxValue(720)
         },
         judgeRecogniseColour: {
           required,
@@ -773,6 +843,7 @@
       this.getPlatFormOtherData();
       this.getScanParamsData();
       this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
+
     },
     watch: {
       'vuetableItems.perPage': function (newVal) {
@@ -787,6 +858,24 @@
           });
         });
         this.deviceSelectOptions = selectOptions;
+      },
+      'platFormData.historyDataStorageSelect': function (newVal) {
+        let that = this;
+        setTimeout(function(){
+          that.disableSelect();
+        },100);
+      },
+      'scanForm.fromDeviceId': function (newVal) {
+        let that = this;
+        setTimeout(function(){
+          that.disableSelect();
+        },100);
+      },
+      'platFormData.historyDataExportSelect': function (newVal) {
+        let that = this;
+        setTimeout(function(){
+          that.disableSelect();
+        },100);
       },
     },
     data() {
@@ -861,8 +950,9 @@
           {value: '1000000602', text: this.$t('system-setting.parameter-setting.no')},
         ],
         bitOptions: [
-          {value: 1, text: 1},
-          {value: 0, text: 0},
+          {value: -1, text: this.$t('system-setting.level-low')},
+          {value: 0, text: this.$t('system-setting.level-middle')},
+          {value: 1, text: this.$t('system-setting.level-high')},
         ],
         //platForm setting
         platFormData: {
@@ -892,8 +982,8 @@
           storageDetectionCycle: null,
           storageAlarm: 400,
           historyDataCycle: null,
-          deviceTrafficHigh: null,
-          deviceTrafficMiddle: null,
+          deviceTrafficHigh: 0,
+          deviceTrafficMiddle: 0,
         },
         dataStorageOptions: [
           {value: '1000002201', label: this.$t('system-setting.storage-business')},
@@ -906,7 +996,11 @@
           {value: 30, text: '30'},
           {value: 60, text: '60'}
         ],
+        selectedDeviceName:'',
         scanForm: {
+          fieldDesignation:null,
+          category:null,
+          deviceName:null,
           scanParamsId: 0,
           status:null,
           airCaliWarnTime: null,
@@ -934,6 +1028,36 @@
       }
     },
     methods: {
+      getLocale() {
+        return getLocale();
+      },
+      disableFromDeviceIdSelect(){
+
+        let context = document.getElementsByClassName("vs__selected");
+
+        for(let i=0;i<context.length;i++){
+          let span_text = context[i].textContent.trim();
+          let btn = context[i].getElementsByTagName("button")[0];
+          btn.removeAttribute("hidden");
+          if(span_text===this.selectedDeviceName){
+            btn.setAttribute("hidden", true);
+            break;
+          }
+        }
+      },
+      disableSelect(){
+        let context = document.getElementsByClassName("vs__selected");
+
+        for(let i=0; i<context.length; i++){
+
+          let span_text = context[i].textContent.trim();
+          let btn = context[i].getElementsByTagName("button")[0];
+          btn.removeAttribute("hidden");
+          if(span_text===this.dataStorageOptions[0].label || span_text===this.selectedDeviceName){
+            btn.setAttribute("hidden", true);
+          }
+        }
+      },
       changeCursor(){
         document.getElementsByClassName("colorpicker-chrome").style.cursor = "pointer";
       },
@@ -956,6 +1080,7 @@
         this.$refs.vuetable.reload();
       },
       onAction(action, data) {
+
         switch (action) {
           case 'modify':
             this.pageStatus = 'modify';
@@ -969,7 +1094,8 @@
             break;
           case 'activate':
             this.selectedDeviceId = data.scanParamsId;
-            this.updateItemStatus('1000000701');
+            this.$refs['modal-active'].show();
+            //this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
             this.selectedDeviceId = data.scanParamsId;
@@ -1001,6 +1127,7 @@
           temp = data.data[i];
           temp.deviceNumber = temp.device ? temp.device.deviceSerial : '';
           temp.deviceName = temp.device ? temp.device.deviceName : '';
+          temp.fieldDesignation = temp.device.field ? temp.device.field.fieldDesignation : '';
           temp.siteName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
           transformed.data.push(temp);
         }
@@ -1021,6 +1148,7 @@
         this.$refs.vuetable.changePage(page)
       },
       initializeSpanFormData(result) {
+
         this.submitted = false;
         for (let key in this.scanForm) {
           if (Object.keys(result).includes(key)) {
@@ -1029,18 +1157,25 @@
           // else if (key === 'status') {
           //   this.scanForm.status = result.device ? result.device.status : null;
           // }
-          /*else if (key === 'fromDeviceId') {
-            this.scanForm.fromDeviceId = result.fromParamsList.length > 0 ? result.fromParamsList[0].fromDeviceId : null;
-          }*/
+          // if (key === 'fromDeviceId') {
+          //   this.scanForm.fromDeviceId = result.fromParamsList.length > 0 ? result.fromParamsList[0].fromDeviceId : null;
+          // }
         }
         this.scanForm.fromDeviceId = [];
-        if (result != null) {
+        this.scanForm.fromDeviceId.push({
+          value: result.deviceId,
+          label: result.device.deviceName
+        });
+        this.selectedDeviceName = result.device.deviceName;
+        if (result !== null) {
           result.fromParamsList.forEach(item => {
-            this.scanForm.fromDeviceId.push({
-              value: item.device.deviceId,
-              label: item.device.deviceName
+            if(item.device.deviceId!==result.deviceId) {
+              this.scanForm.fromDeviceId.push({
+                value: item.device.deviceId,
+                label: item.device.deviceName
 
-            })
+              })
+            }
           })
         }
 
@@ -1072,9 +1207,14 @@
           .catch((error) => {
           });
         this.$refs['modal-inactive'].hide();
+        this.$refs['modal-active'].hide();
       },
       //save scanform
       onSaveScanFormData() {
+        this.$v.scanForm.$touch();
+        if (this.$v.scanForm.$invalid) {
+          return;
+        }
         if (this.scanForm.fromDeviceId.length === 0) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-from-device-list`), {
             duration: 3000,
@@ -1084,7 +1224,9 @@
         }
         this.scanForm.fromDeviceIdList = [];
         this.scanForm.fromDeviceId.forEach(item => {
-          this.scanForm.fromDeviceIdList.push(item.value);
+          if(item.label!==this.selectedDeviceName) {
+            this.scanForm.fromDeviceIdList.push(item.value);
+          }
         });
         this.isLoading = true;
         getApiManager().post(`${apiBaseUrl}/system-setting/scan-param/modify`, this.scanForm).then((response) => {
@@ -1102,9 +1244,10 @@
           }
           this.isLoading = false;
         });
+        this.$v.scanForm.$reset();
       },
       getScanParamsData() {
-        getApiManager().post(`${apiBaseUrl}/system-setting/scan-param/get-all`).then((response) => {
+        getApiManagerError().post(`${apiBaseUrl}/system-setting/scan-param/get-all`).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
           switch (message) {
@@ -1114,7 +1257,7 @@
         });
       },
       getPlatFormData() {
-        getApiManager().post(`${apiBaseUrl}/system-setting/platform-check/get`).then((response) => {
+        getApiManagerError().post(`${apiBaseUrl}/system-setting/platform-check/get`).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
           switch (message) {
@@ -1128,15 +1271,19 @@
                 }
                 this.platFormData.historyDataStorageSelect = [];
                 this.platFormData.historyDataExportSelect = [];
-                if (result.historyDataStorageList.length > 0) {
+                if (result.historyDataStorageList!==null && result.historyDataStorageList.length > 0) {
                   result.historyDataStorageList.forEach(item => {
                     this.platFormData.historyDataStorageSelect.push(findDicTextData(this.dataStorageOptions, item, false))
                   });
+                }else {
+                  this.platFormData.historyDataStorageSelect.push(this.dataStorageOptions[0]);
                 }
-                if (result.historyDataExportList.length > 0) {
+                if (result.historyDataExportList!==null && result.historyDataExportList.length > 0) {
                   result.historyDataExportList.forEach(item => {
                     this.platFormData.historyDataExportSelect.push(findDicTextData(this.dataStorageOptions, item, false))
                   });
+                }else {
+                  this.platFormData.historyDataExportSelect.push(this.dataStorageOptions[0]);
                 }
               }
 
@@ -1144,7 +1291,7 @@
         });
       },
       getPlatFormOtherData() {
-        getApiManager().post(`${apiBaseUrl}/system-setting/platform-other/get`).then((response) => {
+        getApiManagerError().post(`${apiBaseUrl}/system-setting/platform-other/get`).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
           switch (message) {
@@ -1164,19 +1311,125 @@
       savePlatFormData() {
         //save platform main data
         if (this.tabIndex === 0) {
+          console.log(this.platFormData);
 
           this.$v.platFormData.$touch();
           if (this.$v.platFormData.$invalid) {
-            if (this.platFormData.historyDataStorageSelect.length === 0)
+            if(this.$v.platFormData.scanRecogniseColour.$invalid){
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.atr-suspect-box-color-format`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+            }
+            if (this.$v.platFormData.scanOverTime.$invalid) {
+              if(this.platFormData.scanOverTime==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.work-timeout-reminder-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.work-timeout-reminder-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormData.judgeAssignTime.$invalid) {
+              if(this.platFormData.judgeAssignTime==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.dispatch-timeout-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.dispatch-timeout-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormData.judgeProcessingTime.$invalid) {
+              if(this.platFormData.judgeProcessingTime==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.processing-timeout-period-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.processing-timeout-period-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormData.judgeScanOvertime.$invalid) {
+              if(this.platFormData.judgeScanOvertime==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.judge-timeout-reminder-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.judge-timeout-reminder-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormData.handOverTime.$invalid) {
+              if(this.platFormData.handOverTime==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.hand-timeout-reminder-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.hand-timeout-reminder-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormData.judgeRecogniseColour.$invalid) {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.judgement-frame-color-format`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            if (this.$v.platFormData.displayDeleteSuspicionColour.$invalid) {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.deleted-suspected-box-color-input`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            if (this.platFormData.historyDataStorageSelect.length === 0) {
               this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-history-data-storage`), {
                 duration: 3000,
                 permanent: false
               });
-            else if (this.platFormData.historyDataExportSelect.length === 0)
+              return;
+            }
+            if (this.platFormData.historyDataExportSelect.length === 0) {
               this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-history-data-export`), {
                 duration: 3000,
                 permanent: false
               });
+              return;
+            }
             return;
           }
           this.platFormData.historyDataStorageList = [];
@@ -1206,7 +1459,159 @@
         else { //save platform other data
           this.submitted = true;
           this.$v.platFormOtherData.$touch();
+          if(this.platFormOtherData.deviceTrafficHigh<this.platFormOtherData.deviceTrafficMiddle){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.security-instrument-flow-high-middle`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           if (this.$v.platFormOtherData.$invalid) {
+            if (this.$v.platFormOtherData.initialPassword.$invalid) {
+              if(this.platFormOtherData.initialPassword==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-password`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.password-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormOtherData.loginNumber.$invalid) {
+              if(this.platFormOtherData.loginNumber==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.login-fail-count-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.login-fail-count-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormOtherData.operatingTimeLimit.$invalid) {
+              if(this.platFormOtherData.operatingTimeLimit==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.operating-time-limit-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.operating-time-limit-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormOtherData.logMaxNumber.$invalid) {
+              if(this.platFormOtherData.logMaxNumber==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.dispatch-timeout-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.dispatch-timeout-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormOtherData.historyDataCycle.$invalid) {
+              if(this.platFormOtherData.historyDataCycle==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.history-save-period-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.history-save-period-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormOtherData.storageAlarm.$invalid) {
+              if(this.platFormOtherData.storageAlarm==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.storage-warning-size-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.storage-warning-size-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormOtherData.storageDetectionCycle.$invalid) {
+              if(this.platFormOtherData.storageDetectionCycle==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.storage-check-period-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.storage-check-period-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+
+            if (this.$v.platFormOtherData.deviceTrafficHigh.$invalid) {
+              if(this.platFormOtherData.deviceTrafficHigh==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.security-instrument-flow-high-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.security-instrument-flow-high-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
+            if (this.$v.platFormOtherData.deviceTrafficMiddle.$invalid) {s
+              if(this.platFormOtherData.deviceTrafficMiddle==='') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.security-instrument-flow-middle-input`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.security-instrument-flow-middle-valid`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+            }
             return;
           }
           getApiManager().post(`${apiBaseUrl}/system-setting/platform-other/modify`, this.platFormOtherData

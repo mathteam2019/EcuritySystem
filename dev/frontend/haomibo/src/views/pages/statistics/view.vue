@@ -413,9 +413,9 @@
                       track-by="time"
                       pagination-path="pagination"
                       class="table-hover"
+                      @vuetable:checkbox-toggled="onCheckStatusChange"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
                     >
-
                     </vuetable>
                   </div>
                   <div class="pagination-wrapper">
@@ -515,7 +515,6 @@
       },
     },
     mounted() {
-
       this.getSiteOption();
       this.getManualDeviceData();
       this.getPreviewData();
@@ -679,6 +678,7 @@
         name: '',
 
         fileSelection: [],
+        renderedCheckList:[],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -710,7 +710,7 @@
         xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         xWeek: ['1', '2', '3', '4', '5'],
         xDay: [],
-        xHour: ['0-1', '1-2', '2-3', '1', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12', '0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+        xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
         onSiteOptions: [
           {value: null, text: "全部"},
@@ -760,7 +760,7 @@
             },
             {
               name: 'time',
-              title: '时间段',
+              title: '期间',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -791,7 +791,7 @@
               dataClass: 'text-center',
               callback: (scanStatistics) => {
                 if (scanStatistics == null) return '';
-                return scanStatistics.invalidScanRate;
+                return scanStatistics.invalidScanRate.toFixed(1);
               }
             },
             {
@@ -831,7 +831,7 @@
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
                 if (judgeStatistics == null) return '';
-                return judgeStatistics.noSuspictionJudgeRate;
+                return judgeStatistics.noSuspictionJudgeRate.toFixed(1);
               }
             },
             {
@@ -851,7 +851,7 @@
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.noSeizureHandExaminationRate;
+                return handExaminationStatistics.noSeizureHandExaminationRate.toFixed(1);
               }
             },
             {
@@ -871,7 +871,7 @@
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.seizureHandExaminationRate;
+                return handExaminationStatistics.seizureHandExaminationRate.toFixed(1);
               }
             },
           ],
@@ -882,9 +882,7 @@
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
-      },
-      'operatingLogTableItems.perPage': function (newVal) {
-        this.$refs.operatingLogTable.refresh();
+        this.changeCheckAllStatus();
       },
 
       siteData: function (newVal, oldVal) {
@@ -906,18 +904,50 @@
       }
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      selectAll(value){
+        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.taskVuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.taskVuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       getSiteLabel(value) {
         if (value === null || this.onSiteOption === null) return "";
         else {
@@ -1062,7 +1092,6 @@
         }
       },
 
-
       getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
@@ -1090,19 +1119,7 @@
 
       },
 
-
       getPreviewData() {
-
-        // if(this.filter.startTime!==null){
-        //     console.log("d");
-        //     let time = this.filter.startTime;
-        //     console.log(time);
-        //       let array=time.split(".");
-        //   time = array[0];
-        //   this.filter.startTime = time + "." + "000+1400";
-        //
-        // }
-        // console.log(this.filter);
 
         getApiManager().post(`${apiBaseUrl}/task/statistics/preview`, {
           filter: this.filter
@@ -1162,17 +1179,15 @@
           endTime: null,
           statWidth: 'hour',
         };
-
-        //this.getPreviewData();
-        //this.$refs.taskVuetable.refresh();
-
       },
 
       onTaskVuetablePaginationData(paginationData) {
-        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onTaskVuetableChangePage(page) {
-        this.$refs.taskVuetable.changePage(page)
+        this.$refs.taskVuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
       onDisplaceButton() {
         if (this.pageStatus === 'charts') {
@@ -1198,13 +1213,14 @@
         for (let i = 0; i < Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i];
           temp = data.detailedStatistics[j];
+          this.renderedCheckList.push(data.detailedStatistics[j].time);
           transformed.data.push(temp);
         }
         return transformed
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
+        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.taskVuetableItems.perPage,

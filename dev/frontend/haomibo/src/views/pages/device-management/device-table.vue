@@ -20,6 +20,11 @@
       }
     }
   }
+  .img-rotate{
+    -ms-transform: rotate(-15deg); /* IE 9 */
+    -webkit-transform: rotate(-15deg); /* Safari 3-8 */
+    transform: rotate(-15deg);
+  }
 
 </style>
 <template>
@@ -91,6 +96,7 @@
                 :per-page="vuetableItems.perPage"
                 pagination-path="pagination"
                 track-by="deviceId"
+                @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onPaginationData"
                 class="table-striped"
               >
@@ -108,16 +114,16 @@
                   <b-button
                     v-if="props.rowData.status==='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)"
-                    variant="success default btn-square" :disabled="checkPermItem('device_update_status')"
+                    variant="warning default btn-square" :disabled="checkPermItem('device_update_status')"
                   >
-                    <i class="icofont-check-circled"/>
+                    <i class="icofont-ban"/>
                   </b-button>
                   <b-button @click="onAction('inactivate',props.rowData)"
                             v-if="props.rowData.status==='1000000701'"
                             size="sm"
-                            variant="warning default btn-square" :disabled="checkPermItem('device_update_status')"
+                            variant="success default btn-square" :disabled="checkPermItem('device_update_status')"
                   >
-                    <i class="icofont-ban"/>
+                    <i class="icofont-check-circled"/>
                   </b-button>
                   <b-button @click="onAction('delete',props.rowData)"
                             size="sm"
@@ -264,9 +270,13 @@
               <img v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
               <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
                    src="../../../assets/img/device.png">
-              <div class="position-absolute" style="bottom: -18%;left: -41%">
+              <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
                 <img v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
                 <img v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+              </div>
+              <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
+                <img v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
               </div>
             </div>
             <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
@@ -288,11 +298,11 @@
         </b-row>
       </div>
 
-      <div v-if="pageStatus==='show' || pageStatus === 'edit'" class="h-100 d-flex flex-grow-1 flex-column pb-3">
-        <b-tabs nav-class="ml-2" :no-fade="true">
+      <div v-if="pageStatus==='show' || pageStatus === 'edit'" class="h-100 d-flex flex-grow-1 flex-column pb-3" style="height: 100% !important;">
+        <b-tabs nav-class="ml-2" :no-fade="true" style="height: 100% !important;">
           <!--          <b-tabs class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"-->
           <!--                  :no-fade="true">-->
-          <b-tab :title="$t('device-management.device-table.device-info')">
+          <b-tab :title="$t('device-management.device-table.device-info')" style="height: 100% !important;">
             <b-row class="h-100 form-section">
               <b-col cols="8">
                 <b-row>
@@ -401,19 +411,54 @@
                   <img v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
                   <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
                        src="../../../assets/img/device.png">
-                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                  <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
                     <img v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
                     <img v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+                  </div>
+                  <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                    <img v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
                   </div>
                 </div>
                 <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
                 <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{
                   $t('permission-management.upload-image')}}
                 </b-button>
+
+              </b-col>
+              <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
+                <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute"
+                     style="right: 30px;bottom: 30px;">
+                  <div>
+                    <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
+                      class="icofont-save"/>
+                      {{$t('device-management.save')}}
+                    </b-button>
+                    <b-button size="sm" v-if="mainForm.status === '1000000702'"
+                              :disabled="checkPermItem('device_update_status')"
+                              @click="onAction('activate',mainForm)" variant="success default"><i
+                      class="icofont-check-circled"/>
+                      {{$t('device-management.active')}}
+                    </b-button>
+                    <b-button size="sm" v-if="mainForm.status === '1000000701'"
+                              :disabled="checkPermItem('device_update_status')"
+                              @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"/>
+                      {{$t('permission-management.action-make-inactive')}}
+                    </b-button>
+                    <b-button size="sm" v-if="pageStatus!=='show' && mainForm.status === '1000000702'"
+                              :disabled="checkPermItem('device_delete')"
+                              @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"/>
+                      {{$t('device-management.delete')}}
+                    </b-button>
+                    <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+                      class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
+                    </b-button>
+                  </div>
+                </div>
               </b-col>
             </b-row>
           </b-tab>
-          <b-tab :title="$t('device-management.device-table.archive-info')">
+          <b-tab :title="$t('device-management.device-table.archive-info')" style="height: 100% !important;">
             <b-row class="h-100 form-section">
               <b-col cols="8">
                 <b-row>
@@ -478,47 +523,82 @@
                   <img v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
                   <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
                        src="../../../assets/img/device.png">
-                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                  <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
                     <img v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
                     <img v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+                  </div>
+                  <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                    <img v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
                   </div>
                 </div>
                 <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
                 <b-button class="mt-3" variant="info skyblue default" size="sm">{{
                   $t('permission-management.upload-image')}}
                 </b-button>
+
+              </b-col>
+              <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
+                <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute"
+                     style="right: 30px;bottom: 30px;">
+                  <div>
+                    <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
+                      class="icofont-save"/>
+                      {{$t('device-management.save')}}
+                    </b-button>
+                    <b-button size="sm" v-if="mainForm.status === '1000000702'"
+                              :disabled="checkPermItem('device_update_status')"
+                              @click="onAction('activate',mainForm)" variant="success default"><i
+                      class="icofont-check-circled"/>
+                      {{$t('device-management.active')}}
+                    </b-button>
+                    <b-button size="sm" v-if="mainForm.status === '1000000701'"
+                              :disabled="checkPermItem('device_update_status')"
+                              @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"/>
+                      {{$t('permission-management.action-make-inactive')}}
+                    </b-button>
+                    <b-button size="sm" v-if="pageStatus!=='show' && mainForm.status === '1000000702'"
+                              :disabled="checkPermItem('device_delete')"
+                              @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"/>
+                      {{$t('device-management.delete')}}
+                    </b-button>
+                    <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+                      class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
+                    </b-button>
+                  </div>
+                </div>
               </b-col>
             </b-row>
           </b-tab>
         </b-tabs>
-        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute"
-             style="right: 30px;bottom: 30px;">
-          <div>
-            <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
-              class="icofont-save"/>
-              {{$t('device-management.save')}}
-            </b-button>
-            <b-button size="sm" v-if="mainForm.status === '1000000702'"
-                      :disabled="checkPermItem('device_update_status')"
-                      @click="onAction('activate',mainForm)" variant="success default"><i
-              class="icofont-check-circled"/>
-              {{$t('device-management.active')}}
-            </b-button>
-            <b-button size="sm" v-if="mainForm.status === '1000000701'"
-                      :disabled="checkPermItem('device_update_status')"
-                      @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"/>
-              {{$t('permission-management.action-make-inactive')}}
-            </b-button>
-            <b-button size="sm" v-if="pageStatus!=='show' && mainForm.status === '1000000702'"
-                      :disabled="checkPermItem('device_delete')"
-                      @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"/>
-              {{$t('device-management.delete')}}
-            </b-button>
-            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
-              class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
-            </b-button>
-          </div>
-        </div>
+<!--        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute"-->
+<!--             style="right: 30px;bottom: 30px;">-->
+<!--          <div>-->
+<!--            <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i-->
+<!--              class="icofont-save"/>-->
+<!--              {{$t('device-management.save')}}-->
+<!--            </b-button>-->
+<!--            <b-button size="sm" v-if="mainForm.status === '1000000702'"-->
+<!--                      :disabled="checkPermItem('device_update_status')"-->
+<!--                      @click="onAction('activate',mainForm)" variant="success default"><i-->
+<!--              class="icofont-check-circled"/>-->
+<!--              {{$t('device-management.active')}}-->
+<!--            </b-button>-->
+<!--            <b-button size="sm" v-if="mainForm.status === '1000000701'"-->
+<!--                      :disabled="checkPermItem('device_update_status')"-->
+<!--                      @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"/>-->
+<!--              {{$t('permission-management.action-make-inactive')}}-->
+<!--            </b-button>-->
+<!--            <b-button size="sm" v-if="pageStatus!=='show' && mainForm.status === '1000000702'"-->
+<!--                      :disabled="checkPermItem('device_delete')"-->
+<!--                      @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"/>-->
+<!--              {{$t('device-management.delete')}}-->
+<!--            </b-button>-->
+<!--            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i-->
+<!--              class="icofont-long-arrow-left"/> {{$t('device-management.return')}}-->
+<!--            </b-button>-->
+<!--          </div>-->
+<!--        </div>-->
       </div>
 
     </b-card>
@@ -533,6 +613,17 @@
         </b-button>
       </template>
     </b-modal>
+    <b-modal centered id="modal-active" ref="modal-active" :title="$t('system-setting.prompt')">
+    {{$t('device-management.device-table.make-active-prompt')}}
+    <template slot="modal-footer">
+      <b-button variant="primary" @click="updateItemStatus('1000000701')" class="mr-1">
+        {{$t('system-setting.ok')}}
+      </b-button>
+      <b-button variant="danger" @click="hideModal('modal-active')">{{$t('system-setting.cancel')}}
+      </b-button>
+    </template>
+    </b-modal>
+
 
     <b-modal centered id="modal-delete" ref="modal-delete" :title="$t('system-setting.prompt')">
       {{$t('device-management.device-table.delete-prompt')}}
@@ -590,10 +681,10 @@
     getApiManager,
     getDateTimeWithFormat,
     isPhoneValid, isGuidValid,
-    printFileFromServer
+    printFileFromServer, getApiManagerError
   } from '../../../api';
   import {validationMixin} from 'vuelidate';
-  import {checkPermissionItem, getDicDataByDicIdForOptions, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDicDataByDicIdForOptions, getDirection, getLocale} from "../../../utils";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
@@ -656,6 +747,7 @@
         params: {},
         name: '',
         fileSelection: [],
+        renderedCheckList:[],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -706,8 +798,8 @@
               dataClass: 'text-center'
             },
             {
-              name: 'archiveName',
-              title: this.$t('device-management.device-list.template'),
+              name: 'deviceName',
+              title: this.$t('device-management.device'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -725,6 +817,12 @@
                 return dictionary[value];
               }
 
+            },
+            {
+              name: 'archiveName',
+              title: this.$t('device-management.device-list.archive'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
             {
               name: 'categoryName',
@@ -797,18 +895,53 @@
       ///////////////////////////////////////////
       ////////   loading      Options ///////////
       ///////////////////////////////////////////
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      getLocale() {
+        return getLocale();
+      },
+      selectAll(value){
+        this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.vuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.vuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       createGuid(){
         let randGuid = '';
         for(let i=0; i<36; i++){
@@ -875,7 +1008,7 @@
         this.$refs[modal].hide();
       },
       getArchivesData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/document-management/archive/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/document-management/archive/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -889,7 +1022,7 @@
       },
       //get device category data
       getCategoryData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -966,7 +1099,7 @@
                   else
                     this.mainForm[key] = data[key];
                 } else if (key === 'imageUrl')
-                  this.mainForm.image = data['imageUrl'] ? apiBaseUrl + data['imageUrl'] : null;
+                  this.mainForm.image = data['imageUrl'] ? data['imageUrl'] : null;
               }
             }
           } else
@@ -1001,7 +1134,8 @@
             this.pageStatus = 'list';
             break;
           case 'activate':
-            this.updateItemStatus('1000000701');
+            //this.updateItemStatus('1000000701');
+            this.$refs['modal-active'].show();
             break;
           case 'inactivate':
             //this.updateItemStatus('1000000702');
@@ -1043,8 +1177,9 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+	  this.renderedCheckList.push(data.data[i].deviceId);
           temp.archiveName = temp.archive.archivesName;
-          temp.categoryName = temp.archive.archiveTemplate.deviceCategory.categoryName;
+          temp.categoryName = temp.category.categoryName;
           temp.manufacturerName = temp.archive.archiveTemplate.manufacturer;
           temp.originalModelName = temp.archive.archiveTemplate.originalModel;
           transformed.data.push(temp);
@@ -1052,6 +1187,7 @@
         return transformed
       },
       vuetableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
@@ -1061,9 +1197,11 @@
       },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData);
+	this.changeCheckAllStatus();
       },
       onChangePage(page) {
         this.$refs.vuetable.changePage(page);
+	this.changeCheckAllStatus();
       },
 
       //update status
@@ -1108,6 +1246,7 @@
           .catch((error) => {
           });
         this.$refs['modal-inactive'].hide();
+        this.$refs['modal-active'].hide();
       },
       //remove archives
       removeItem() {
@@ -1155,6 +1294,49 @@
         this.submitted = true;
         this.$v.mainForm.$touch();
         if (this.$v.mainForm.$invalid) {
+          if(this.$v.mainForm.deviceSerial.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-number-input`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.mainForm.deviceName.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-input`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.mainForm.archiveId.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.archive-input`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.mainForm.guid.$invalid){
+            if(this.mainForm.guid==='') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.guid-input`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.guid-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+          }
+          if(this.$v.mainForm.mobile.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-mobile`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           return;
         }
         const formData = new FormData();
@@ -1213,6 +1395,7 @@
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+	this.changeCheckAllStatus();
       },
       'mainForm.guid': function (newVal) {
         this.invalidGuid=true;

@@ -17,6 +17,11 @@
       }
     }
   }
+  .img-rotate{
+    -ms-transform: rotate(-15deg); /* IE 9 */
+    -webkit-transform: rotate(-15deg); /* Safari 3-8 */
+    transform: rotate(-15deg);
+  }
 </style>
 <template>
   <div class="user-management">
@@ -93,6 +98,7 @@
                     track-by="userId"
                     pagination-path="pagination"
                     class="table-striped"
+                    @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onUserTablePaginationData"
                   >
                     <template slot="userNumber" slot-scope="props">
@@ -120,19 +126,19 @@
                         <b-button
                           v-if="props.rowData.status==='1000000302'"
                           size="sm"
-                          variant="success default btn-square"
+                          variant="warning default btn-square"
                           @click="onAction('activate', props.rowData, props.rowIndex)"
                           :disabled="checkPermItem('user_update_status')">
-                          <i class="icofont-check-circled"/>
+                          <i class="icofont-ban"/>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status==='1000000301'"
                           size="sm"
                           :disabled="checkPermItem('user_update_status')"
-                          variant="warning default btn-square"
+                          variant="success default btn-square"
                           @click="onAction('inactivate', props.rowData, props.rowIndex)">
-                          <i class="icofont-ban"/>
+                          <i class="icofont-check-circled"/>
                         </b-button>
 
                         <b-button
@@ -146,19 +152,19 @@
                         <b-button
                           v-if="props.rowData.status==='1000000302'"
                           size="sm"
-                          variant="danger default btn-square"
+                          variant="success default btn-square"
                           :disabled="checkPermItem('user_update_status')"
                           @click="onAction('blocked', props.rowData, props.rowIndex)">
-                          <i class="icofont-minus-circle"/>
+                          <i class="icofont-power"/>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status==='1000000303'"
                           size="sm"
-                          variant="success default btn-square"
+                          variant="danger default btn-square"
                           :disabled="checkPermItem('user_update_status')"
                           @click="onAction('unblock', props.rowData, props.rowIndex)">
-                          <i class="icofont-power"/>
+                          <i class="icofont-minus-circle"/>
                         </b-button>
 
                         <b-button
@@ -198,7 +204,6 @@
                     :initial-per-page="vuetableItems.perPage"
                     @onUpdatePerPage="vuetableItems.perPage = Number($event)"
                   />
-
                 </div>
               </b-col>
             </b-row>
@@ -372,7 +377,7 @@
             <b-row>
               <b-col cols="6">
                 <b-form-group :label="$t('permission-management.note')">
-                  <b-form-textarea type="text" v-model="profileForm.note"
+                  <b-form-textarea type="text" v-model="profileForm.note" style="height: 50px; !important"
                                    :placeholder="$t('permission-management.please-enter-note')"/>
                 </b-form-group>
               </b-col>
@@ -384,9 +389,17 @@
               <div class=" p-1">
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
               </div>
-              <div class="position-absolute" style="bottom: -18%;left: -50%">
+              <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -50%">
                 <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp.png">
                 <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp.png">
+                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png" class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png" class="img-rotate">
+              </div>
+              <div v-if="getLocale()==='en'"  class="position-absolute" style="bottom: -18%;left: -50%">
+                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block_en.png" class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending_en.png" class="img-rotate">
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
             </div>
@@ -553,7 +566,7 @@
             <b-row>
               <b-col cols="6">
                 <b-form-group :label="$t('permission-management.note')">
-                  <b-form-textarea type="text" v-model="profileForm.note"
+                  <b-form-textarea type="text" v-model="profileForm.note" style="height: 50px; !important"
                                    :placeholder="$t('permission-management.please-enter-note')"/>
                 </b-form-group>
               </b-col>
@@ -565,9 +578,17 @@
               <div class=" p-1">
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
               </div>
-              <div class="position-absolute" style="bottom: -18%;left: -50%">
+              <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -50%">
                 <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp.png">
                 <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp.png">
+                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png" class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png" class="img-rotate">
+              </div>
+              <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -50%">
+                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block_en.png" class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending_en.png" class="img-rotate">
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
             </div>
@@ -636,6 +657,7 @@
                       pagination-path="userGroupPagination"
                       track-by="userGroupId"
                       class="table-hover"
+                      @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                       @vuetable:pagination-data="onUserGroupTablePaginationData"
                     >
                       <template slot="userGroupNumber" slot-scope="props">
@@ -771,6 +793,17 @@
         </b-button>
       </template>
     </b-modal>
+    <b-modal centered ref="modal-active" :title="$t('permission-management.prompt')">
+      {{promptTemp.action==='unblock'?$t('permission-management.user.unblock-prompt'):$t('permission-management.user.active-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="fnChangeItemStatus()" class="mr-1">
+          {{$t('permission-management.modal-ok')}}
+        </b-button>
+        <b-button variant="danger" @click="fnHideModal('modal-active')">
+          {{$t('permission-management.modal-cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
 
     <b-modal centered id="modal-reset" ref="modal-reset">
       <template slot="modal-header">
@@ -850,8 +883,15 @@
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {checkPermissionItem, getDirection} from "../../../utils";
-  import {downLoadFileFromServer, getApiManager, isPhoneValid, isAccountValid, printFileFromServer} from '../../../api';
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
+  import {
+    getApiManager,
+    isPhoneValid,
+    isAccountValid,
+    isGroupNumberValid,
+    printFileFromServer,
+    getApiManagerError
+  } from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
   import VTree from 'vue-tree-halower';
@@ -938,7 +978,8 @@
           required
         },
         groupNumber: {
-          required
+          required,
+          isGroupNumberValid
         }
       }
     },
@@ -946,7 +987,7 @@
 
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
       this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
         type: 'with_parent'
       }).then((response) => {
         let message = response.data.message;
@@ -957,7 +998,7 @@
             break;
         }
       });
-      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
         type: 'with_org_tree'
       }).then((response) => {
         let message = response.data.message;
@@ -984,6 +1025,8 @@
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
+        renderedCheckList:[],
+        renderedCheckListGroup:[],
         isModalVisible: false,
         tableData: [],
         pageStatus: 'table',
@@ -992,7 +1035,7 @@
         filter: {
           userName: '',
           status: null,
-          orgId: '',
+          orgId: null,
           gender: null
         },
 
@@ -1150,6 +1193,7 @@
         },
         //second tab content
         selectedUserGroupItem: null,
+        orgUserTreeDataTmp :[],
         groupForm: {
           groupName: '',
           groupNumber: '',
@@ -1203,9 +1247,11 @@
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+        this.changeCheckAllStatus();
       },
       'userGroupTableItems.perPage': function (newVal) {
         this.$refs.userGroupTable.refresh();
+        this.changeCheckAllStatusGroup();
       },
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
@@ -1261,7 +1307,7 @@
 
         this.orgNameSelectData = selectOptions;
 
-        this.filter.orgId = this.treeData.orgId;
+        this.filter.orgId = null;
         this.defaultOrgId = this.treeData.orgId;
         this.fnRefreshOrgUserTreeData();
       },
@@ -1291,18 +1337,97 @@
       }
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      getLocale() {
+        return getLocale();
+      },
+      selectAll(value){
+        this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.vuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.vuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      selectAllGroup(value){
+        this.$refs.userGroupTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.userGroupTable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.userGroupTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNoneGroup(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.userGroupTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatusGroup(){
+        let selectList = this.$refs.userGroupTable.selectedTo;
+        let renderedList = this.renderedCheckListGroup;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNoneGroup();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAllGroup(true);
+            }
+          }
+        }
+        else {
+          this.selectNoneGroup();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
+      onCheckStatusChangeGroup(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatusGroup();
+        }
+        else {
+          this.selectNoneGroup();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1338,10 +1463,6 @@
         };
         this.link = `permission-management/user-management/user`;
         this.name = 'User';
-        // if(this.fileSelection !== null) {
-        //   downLoadFileFromServer(link, params, 'user', this.fileSelection);
-        //   this.fnHideModal('model-export')
-        // }
       },
       onPrintUserButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
@@ -1424,13 +1545,78 @@
       },
       onSaveUserPage() {
         this.submitted = true;
-
-        this.$v.profileForm.$touch();
-        //console.log(this.$v.profileForm.userAccount.$invalid);
         if(this.profileForm.passwordType === "default"){
           this.profileForm.passwordValue = "s123456";
         }
+
+        this.$v.profileForm.$touch();
+
+
         if (this.$v.profileForm.$invalid) {
+          if(this.$v.profileForm.userName.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-user-name`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.profileForm.userNumber.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-user-id`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.profileForm.gender.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-gender`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.profileForm.identityCard.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-license-number`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.profileForm.orgId.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-org`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.profileForm.email.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-email`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.profileForm.mobile.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-mobile`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.profileForm.userAccount.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-user-account`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.profileForm.passwordValue.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-password`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+
           return;
         }
 
@@ -1490,9 +1676,11 @@
                 break;
             }
             this.isLoading = false;
+            this.$v.profileForm.$reset();
           })
           .catch((error) => {
             this.isLoading = false;
+            this.$v.profileForm.$reset();
           });
 
       },
@@ -1512,8 +1700,11 @@
             this.promptTemp.action = action;
             break;
           case 'activate':
+            this.promptTemp.userId = userId;
+            this.promptTemp.action = action;
           case 'unblock':
-            this.fnChangeItemStatus(userId, action);
+            this.showConfDiaglog(userId, action);
+            //this.fnChangeItemStatus(userId, action);
             break;
           case 'inactivate':
             this.promptTemp.userId = userId;
@@ -1532,7 +1723,7 @@
       resetPassword(data) {
         this.$v.passwordForm.$touch();
         if (this.$v.passwordForm.$invalid) {
-          console.log(this.passwordForm.password);
+
           if(this.passwordForm.password === null){
             this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.input-none`), {
               duration: 3000,
@@ -1597,19 +1788,32 @@
         this.promptTemp.action = action;
         this.$refs['modal-prompt'].show();
       },
+      showConfDiaglog(userId, action) {
+        this.promptTemp.userId = userId;
+        this.promptTemp.action = action;
+        this.$refs['modal-active'].show();
+      },
       fnModifyItem(data) {
+
         this.onInitialUserData();
         for (let key in this.profileForm) {
           if (Object.keys(data).includes(key)) {
             if (key !== 'portrait' && key !== 'avatar')
               this.profileForm[key] = data[key];
             else if (key === 'portrait')
-              this.profileForm.avatar = apiBaseUrl + data['portrait'];
+              this.profileForm.avatar = data['portrait'];
           }
         }
-        this.profileForm.portrait = null;
-        this.profileForm.passwordType = 'default';
+        this.profileForm.portrait = data['portrait'];
+        console.log(this.profileForm.avatar);
+        if(data.password === 'default') {
+          this.profileForm.passwordType = 'default';
+        }else{
+          this.profileForm.passwordType = 'other';
+          this.profileForm.passwordValue = data.password;
+        }
         this.pageStatus = 'create';
+        this.$v.profileForm.$reset();
       },
       fnShowItem(data) {
         this.onInitialUserData();
@@ -1618,11 +1822,18 @@
             if (key !== 'portrait' && key !== 'avatar')
               this.profileForm[key] = data[key];
             else if (key === 'portrait')
-              this.profileForm.avatar = apiBaseUrl + data['portrait'];
+              this.profileForm.avatar = data['portrait'];
         }
-        this.profileForm.portrait = null;
-        this.profileForm.passwordType = 'default';
+        this.profileForm.portrait = data['portrait'];
+        console.log(this.profileForm.avatar);
+        if(data.password === 'default') {
+          this.profileForm.passwordType = 'default';
+        }else{
+          this.profileForm.passwordType = 'other';
+          this.profileForm.passwordValue = data.password;
+        }
         this.pageStatus = 'show';
+        this.$v.profileForm.$reset();
       },
       fnChangeItemStatus(userId = 0, action = '') {
         if (userId === 0)
@@ -1678,6 +1889,7 @@
           })
           .finally(() => {
             this.$refs['modal-prompt'].hide();
+            this.$refs['modal-active'].hide();
           });
 
       },
@@ -1703,11 +1915,11 @@
         this.filter = {
           userName: '',
           status: null,
-          orgId: '',
-          category: null
+          orgId: null,
+          gender: null
         };
-        if (this.defaultOrgId !== '')
-          this.filter.orgId = this.defaultOrgId;
+        // if (this.defaultOrgId !== '')
+        //   this.filter.orgId = this.defaultOrgId;
       },
       onInitialUserData() {
         this.profileForm = {
@@ -1753,6 +1965,7 @@
           temp = data.data[i];
           temp.orgName = temp.org.orgName;
           transformed.data.push(temp);
+          this.renderedCheckList.push(data.data[i].userId);
         }
 
         return transformed
@@ -1824,13 +2037,15 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          transformed.data.push(temp)
+          transformed.data.push(temp);
+          this.renderedCheckListGroup.push(data.data[i].userGroupId);
         }
 
         return transformed
 
       },
       userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+        this.renderedCheckList =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
@@ -1844,12 +2059,15 @@
         });
       },
       onUserTablePaginationData(paginationData) {
-        this.$refs.pagination.setPaginationData(paginationData)
+        this.$refs.pagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onUserTableChangePage(page) {
-        this.$refs.vuetable.changePage(page)
+        this.$refs.vuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
       userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+        this.renderedCheckListGroup =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.userGroupTableItems.perPage,
@@ -1860,10 +2078,12 @@
         });
       },
       onUserGroupTablePaginationData(paginationData) {
-        this.$refs.userGroupPagination.setPaginationData(paginationData)
+        this.$refs.userGroupPagination.setPaginationData(paginationData);
+        this.changeCheckAllStatusGroup();
       },
       onUserGroupTableChangePage(page) {
-        this.$refs.userGroupTable.changePage(page)
+        this.$refs.userGroupTable.changePage(page);
+        this.changeCheckAllStatusGroup();
       },
       onDataGroupRowClass(dataItem, index) {
         let selectedItem = this.selectedUserGroupItem;
@@ -1901,8 +2121,52 @@
             }));
           return [...childrenOrgList, ...childrenUserList];
         };
+
         this.orgUserTreeData = nest(this.orgData, this.userData, pseudoRootId);
+        //log(this.orgUserTreeData);
+        this.getTreeData(this.orgUserTreeData, 0);
+
+        // console.log(this.orgUserTreeData);
+      //
       },
+      getTreeData(treeData, index) {
+        // var str = "";
+        // for(var i = 0; i < index * 2; i ++) str = str + "-";
+        // console.log(str);
+        // console.log("start value");
+        // console.log(treeData);
+        if(!treeData || treeData.length===0){
+          return ;
+        }
+        let tmp = treeData;
+        var answer = [];
+        for(let i=tmp.length - 1; i >= 0; i--){
+          //console.log(tmp[i]);
+          //console.log(tmp[i].userId);
+          if(tmp[i].userId != null && tmp[i].userId != undefined) {
+            continue;
+          }
+          this.getTreeData(tmp[i].children, index + 1);
+          if(!tmp[i].children || tmp[i].children.length == 0) {
+            tmp.splice(i, 1);
+          }
+        }
+        // console.log(str);
+        //console.log("Chnage value");
+        // console.log(treeData);
+        return;
+
+
+        //
+        // let array = [];
+        // for (let b in a.children) {
+        //   if(this.isInvalid(b)) array.push(b)
+        // }
+        // a.children = array;
+        // //array.size = 0
+        // return a;
+      },
+
       onUserGroupSearchButton() {
         this.$refs.userGroupTable.refresh();
       },
@@ -1915,8 +2179,13 @@
         this.selectedUserGroupItem = {
           users: []
         };
+        let groupNumberStr = "PG";
+        for(let i=0; i<8; i++){
+          let index = Math.floor(Math.random() * 10);
+          groupNumberStr= groupNumberStr + index.toString();
+        }
         this.groupForm = {
-          groupNumber: null,
+          groupNumber: groupNumberStr,
           groupName: null,
           status: 'create'
         }
@@ -1931,7 +2200,28 @@
           checkedNodes.forEach((node) => {
             if (node.isUser) userGroupUserIds.push(node.userId);
           });
-          if (userGroupUserIds.length == 0) {
+          if(this.$v.groupForm.$invalid){
+            if(this.$v.groupForm.groupNumber.$invalid){
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.user-groupId-field-is-mandatory`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            if(this.$v.groupForm.groupName.$invalid){
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.user-group-name-field-is-mandatory`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            return;
+          }
+          if (userGroupUserIds.length === 0) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.required-user`), {
+              duration: 3000,
+              permanent: false
+            });
             return;
           }
           getApiManager()
@@ -1945,7 +2235,7 @@
               let data = response.data.data;
               switch (message) {
                 case responseMessages['ok']:
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-created-successfully`), {
                     duration: 3000,
                     permanent: false
                   });

@@ -208,7 +208,7 @@
               </b-row>
               <b-row class="mx-4">
                 <b-col cols="12" class="d-flex justify-content-end align-self-end">
-                  <b-button :disabled="selectedFieldId === 0|| checkPermItem('device_field_modify')" size="sm"
+                  <b-button :disabled="selectedFieldId === 0 || checkPermItem('device_field_modify')" size="sm"
                             variant="info default mr-1"
                             @click="onSaveDeviceToField()">
                     <i class="icofont-save"/>
@@ -272,6 +272,7 @@
                     :per-page="configListTableItems.perPage"
                     pagination-path="pagination"
                     track-by="deviceId"
+                    @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onConfigTablePaginationData"
                     class="table-striped"
                   >
@@ -326,15 +327,14 @@
                       <b-form-input v-model="pendingFilter.deviceName"/>
                     </b-form-group>
                   </b-col>
-<!--                  <b-col cols="3">-->
-<!--                    <b-form-group :label="$t('maintenance-management.maintenance-task.device-classification')">-->
-<!--                      <b-form-select v-model="pendingFilter.categoryId" :options="deviceCategoryOptions"-->
-<!--                                     plain/>-->
-<!--                    </b-form-group>-->
-<!--                  </b-col>-->
                   <b-col cols="3">
                     <b-form-group :label="$t('maintenance-management.maintenance-task.position')">
                       <b-form-select v-model="pendingFilter.fieldId" :options="siteSelectOptions" plain/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="3">
+                    <b-form-group :label="$t('personal-inspection.operation-mode')">
+                      <b-form-select v-model="pendingFilter.mode" :options="operationModeOptions" plain/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -358,12 +358,13 @@
                     :http-fetch="pendingListTableHttpFetch"
                     :per-page="pendingListTableItems.perPage"
                     pagination-path="pagination"
+                    @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                     @vuetable:pagination-data="onPendingListTablePaginationData"
                     class="table table-striped"
                   >
                     <div slot="number" slot-scope="props">
                       <span class="cursor-p text-primary"
-                            @click="onAction('show',props.rowData)">{{ props.rowData.deviceSerialNumber}}</span>
+                            @click="onAction('show', props.rowData)">{{ props.rowData.deviceSerialNumber}}</span>
                     </div>
                     <div slot="operating" slot-scope="props">
                       <b-button size="sm" variant="info default btn-square"
@@ -374,16 +375,16 @@
                       <b-button
                         v-if="props.rowData.status==='1000000702'"
                         size="sm" @click="onAction('activate',props.rowData)"
-                        variant="success default btn-square" :disabled="checkPermItem('device_config_update_status')"
+                        variant="warning default btn-square" :disabled="checkPermItem('device_config_update_status')"
                       >
-                        <i class="icofont-check-circled"/>
+                        <i class="icofont-ban"/>
                       </b-button>
                       <b-button @click="onAction('inactivate',props.rowData)"
                                 v-if="props.rowData.status==='1000000701'"
                                 size="sm"
-                                variant="warning default btn-square" :disabled="checkPermItem('device_config_update_status')"
+                                variant="success default btn-square" :disabled="checkPermItem('device_config_update_status')"
                       >
-                        <i class="icofont-ban"/>
+                        <i class="icofont-check-circled"/>
                       </b-button>
                     </div>
                   </vuetable>
@@ -402,7 +403,6 @@
         </b-row>
         <b-row v-show="pageStatus !== 'list'" class="h-100 form-section">
           <b-col cols="10">
-
             <b-row>
               <b-col cols="3">
                 <b-form-group>
@@ -446,7 +446,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.operate-mode')}}
                   </template>
-                  <b-form-select v-model="configForm.modeId" :options="modeSelectData" plain/>
+                  <b-form-select v-model="configForm.modeId" :options="modeSelectData" @change="changeDefault" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -454,7 +454,8 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.atr-insuspicion-process')}}
                   </template>
-                  <b-form-select v-model="configForm.atrSwitch" :options="atrOptions" plain/>
+                  <b-form-select v-model="configForm.atrSwitch" :options="atrOptions"
+                                 :disabled="getModeValueFromId(configForm.modeId) !== '1000001302'" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -502,7 +503,7 @@
                     {{$t('device-config.maintenance-config.male-scan-object')}}
                   </template>
                   <b-form-select
-                    :disabled="(configForm.judgeDeviceId.length === 0)||(getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.manRemoteGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -512,7 +513,7 @@
                     {{$t('device-config.maintenance-config.female-scan-object')}}
                   </template>
                   <b-form-select
-                    :disabled="(configForm.judgeDeviceId.length === 0)||(getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.womanRemoteGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -535,7 +536,7 @@
                     {{$t('device-config.maintenance-config.male-inspection-object')}}
                   </template>
                   <b-form-select
-                    :disabled="(configForm.manualDeviceId.length === 0) || (getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.manManualGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -545,13 +546,11 @@
                     {{$t('device-config.maintenance-config.female-inspection-object')}}&nbsp;
                   </template>
                   <b-form-select
-                    :disabled="(configForm.manualDeviceId.length === 0) || (getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.womanManualGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
-
-
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
@@ -559,10 +558,6 @@
                         v-if="!checkPermItem('device_config_modify') && this.pageStatus==='edit'">
                 <i class="icofont-save"/> {{$t('permission-management.permission-control.save')}}
               </b-button>
-<!--              <b-button variant="danger default" size="sm" @click="onDeleteDeviceConfig()"-->
-<!--                        v-if="!checkPermItem('device_config_modify')">-->
-<!--                <i class="icofont-bin"/> {{$t('permission-management.delete')}}-->
-<!--              </b-button>-->
               <b-button v-if="configForm.status === '1000000701'"
                         @click="onAction('inactivate',configForm)" size="sm"
                         variant="warning default" :disabled="checkPermItem('device_config_update_status')">
@@ -594,6 +589,16 @@
         </b-button>
       </template>
     </b-modal>
+    <b-modal centered id="modal-active" ref="modal-active" :title="$t('system-setting.prompt')">
+      {{$t('device-management.document-template.make-active-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="updateItemStatus('1000000701')" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-active')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
     <Modal
       ref="exportModal"
       v-if="isModalVisible"
@@ -605,7 +610,7 @@
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
-  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, getApiManagerError, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
@@ -679,10 +684,19 @@
         siteData: [],
         categoryData: [],
         siteTreeData: [],
+        renderedCheckList: [],
+        renderedCheckListGroup: [],
         pageStatus: 'list',
         switchStatus: 'config', // config / list
         deviceCategoryOptions: [],
         siteSelectOptions: [],
+        operationModeOptions: [
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: '1', text: '安检仪+(本地手检)'},
+          {value: '2', text: '安检仪+手检端'},
+          {value: '3', text: '安检仪+审图端'},
+          {value: '4', text: '安检仪+审图端+手检端'},
+        ],
         modeData: [],
         modeSelectData: [],
         fromConfigDeviceData: [],
@@ -693,7 +707,8 @@
         pendingFilter: {
           deviceName: null,
           categoryId: null,
-          fieldId: null
+          fieldId: null,
+          mode:null
         },
         configFilter: {
           deviceName: null,
@@ -849,22 +864,129 @@
       ///////////////////////////////////////////
       ////////   loading      Options ///////////
       ///////////////////////////////////////////
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      changeDefault(value){
+        console.log(value);
+        if(value===1){
+          this.configForm.manRemoteGender = null;
+          this.configForm.womanRemoteGender = null;
+          this.configForm.manManualGender = null;
+          this.configForm.womanManualGender = null;
+          this.configForm.atrSwitch = null;
+        }
+        if(value===3){
+          this.configForm.manRemoteGender = this.genderFilterOptions[1].value;
+          this.configForm.womanRemoteGender = this.genderFilterOptions[2].value;
+          this.configForm.manManualGender = null;
+          this.configForm.womanManualGender = null;
+          this.configForm.atrSwitch = null;
+        }
+        if(value===2){
+          this.configForm.manManualGender = this.genderFilterOptions[1].value;
+          this.configForm.womanManualGender = this.genderFilterOptions[2].value;
+          this.configForm.manRemoteGender = null;
+          this.configForm.womanRemoteGender = null;
+          this.configForm.atrSwitch = this.atrOptions[0].value;
+        }
+        if(value===4){
+          this.configForm.manRemoteGender = this.genderFilterOptions[1].value;
+          this.configForm.womanRemoteGender = this.genderFilterOptions[2].value;
+          this.configForm.manManualGender = this.genderFilterOptions[1].value;
+          this.configForm.womanManualGender = this.genderFilterOptions[2].value;
+          this.configForm.atrSwitch = null;
+        }
+      },
+      selectAll(value){
+        this.$refs.configListTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.configListTable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.configListTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.configListTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.configListTable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      selectAllGroup(value){
+        this.$refs.pendingListTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.pendingListTable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.pendingListTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNoneGroup(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.pendingListTable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatusGroup(){
+        let selectList = this.$refs.pendingListTable.selectedTo;
+        let renderedList = this.renderedCheckListGroup;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNoneGroup();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAllGroup(true);
+            }
+          }
+        }
+        else {
+          this.selectNoneGroup();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
+      onCheckStatusChangeGroup(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatusGroup();
+        }
+        else {
+          this.selectNoneGroup();
+        }
+      },
       disableSelect(){
 
         let context = document.getElementsByClassName("vs__selected");
-        console.log(context.length);
+
         for(let i=0;i<context.length;i++){
           let span_text = context[i].textContent.trim();
           let btn = context[i].getElementsByTagName("button")[0];
@@ -893,7 +1015,7 @@
       },
       //getting all device category options
       getCategoryData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -907,7 +1029,7 @@
       },
       //getting all site options
       getSiteData() {
-        getApiManager().post(`${apiBaseUrl}/site-management/field/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/site-management/field/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -920,7 +1042,7 @@
         });
       },
       getModeData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-config/work-mode/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-config/work-mode/get-all`, {
           type: 'with_parent'
         }).then((response) => {
           let message = response.data.message;
@@ -933,7 +1055,7 @@
         });
       },
       getConfigDeviceData(deviceId = 0) {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-config/config/get-all`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-config/config/get-all`, {
           deviceId: deviceId
         }).then((response) => {
           let message = response.data.message;
@@ -946,7 +1068,7 @@
         });
       },
       getManualDeviceData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-config/manual-device/get-all`).then((response) => {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-config/manual-device/get-all`).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
           switch (message) {
@@ -962,7 +1084,7 @@
         });
       },
       getJudgeDeviceData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-config/judge-device/get-all`).then((response) => {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-config/judge-device/get-all`).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
           switch (message) {
@@ -1052,7 +1174,7 @@
         this.getDeviceByField(node.data.fieldId);
       },
       getDeviceByField(fieldId) {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-table/device/get-by-field`, {
+        getApiManagerError().post(`${apiBaseUrl}/device-management/device-table/device/get-by-field`, {
           fieldId: fieldId, categoryId: null
         }).then((response) => {
           let message = response.data.message;
@@ -1125,6 +1247,7 @@
           .catch((error) => {
           });
         this.$refs['modal-inactive'].hide();
+        this.$refs['modal-active'].hide();
       },
 
       onSaveDeviceToField() {
@@ -1179,13 +1302,15 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.deviceCategoryName = temp.archive ? temp.archive.archiveTemplate.deviceCategory.categoryName : '';
+          this.renderedCheckList.push(data.data[i].deviceId);
+          temp.deviceCategoryName = temp.archive ? temp.category.categoryName : '';
           temp.siteNameWithParent = getSiteFullName(temp.field);
           transformed.data.push(temp);
         }
         return transformed
       },
       configListTableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckList =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.configListTableItems.perPage,
@@ -1195,9 +1320,11 @@
       },
       onConfigTablePaginationData(paginationData) {
         this.$refs.configListTablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onConfigTableChangePage(page) {
         this.$refs.configListTable.changePage(page);
+        this.changeCheckAllStatus();
       },
 
       ///////////////////////////////////////////
@@ -1214,7 +1341,8 @@
         this.pendingFilter = {
           deviceName: '',
           categoryId: null,
-          fieldId: null
+          fieldId: null,
+          mode:null,
         };
       },
       onAction(value, data = null) {
@@ -1237,7 +1365,8 @@
             else{
               this.initializeConfigData(data, false);
             }
-            this.updateItemStatus('1000000701');
+            //this.updateItemStatus('1000000701');
+            this.$refs['modal-active'].show();
             break;
           case 'inactivate':
             if(this.pageStatus==='list') {
@@ -1259,7 +1388,7 @@
           this.selectedDeviceData = {
             fieldName: data.device.field ? data.device.field.fieldDesignation : '',
             deviceName: data.device.deviceName,
-            category: data.device.archive.archiveTemplate.deviceCategory.categoryName
+            category: data.device.category.categoryName
           };
           this.getConfigDeviceData(data.deviceId);
           this.configForm = {
@@ -1282,6 +1411,7 @@
             manualDeviceId: [],
             fromDeviceId: []
           };
+          //console.log(data);
           data.fromConfigIdList.forEach(item => {
             if (item.device != null) {
               if (item.device.deviceId === data.deviceId) {
@@ -1366,7 +1496,14 @@
                 duration: 3000,
                 permanent: false
               });
-              this.$refs.pendingListTable.reload();
+              this.$refs.pendingListTable.refresh();
+              let that = this;
+              this.isLoading = false;
+              //this.$refs.pendingListTable.props.rowData = this.configForm;
+              // setTimeout(function(){
+              //   console.log("time");
+              //   this.isLoading = false;
+              // },4000);
               this.pageStatus = 'list';
 
               break;
@@ -1416,7 +1553,7 @@
         return transformed
       },
       pendingListTableHttpFetch(apiUrl, httpOptions) {
-        return getApiManager().post(apiUrl, {
+        return getApiManagerError().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.pendingListTableItems.perPage,
           sort: httpOptions.params.sort,
@@ -1445,6 +1582,9 @@
         },100);
       },
 
+      // 'configForm.modeId': function (newVal) {
+      //
+      // },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         let options = [];
@@ -1529,7 +1669,7 @@
         options = newVal.map(opt => ({
           id: opt.deviceId,
           name: opt.deviceName,
-          category: opt.archive.archiveTemplate.deviceCategory.categoryId
+          category: opt.category.categoryId
         }));
         this.$refs.fieldSelectList.setAvailableItem(options);
       },
@@ -1538,7 +1678,7 @@
         options = newVal.map(opt => ({
           id: opt.deviceId,
           name: opt.deviceName,
-          category: opt.archive.archiveTemplate.deviceCategory.categoryId
+          category: opt.category.categoryId
         }));
         this.appliedItems = JSON.parse(JSON.stringify(options));
         this.$refs.fieldSelectList.setAppliedItem(options);

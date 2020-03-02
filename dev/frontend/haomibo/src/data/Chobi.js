@@ -13,10 +13,11 @@ var Chobi = function(elem, isToggled, left){
 			}
 			else if(typeof(elem)=='string'){
 				var context = this;
+        console.log("d");
 				this.debugger('Not instanceof(Image). Trying as URL');
 				var img = new Image();
 				img.crossOrigin = "Anonymous";
-				console.log(elem);
+
 				if(elem===''){
           if(isToggled === true) {
             if(left === true) {
@@ -33,22 +34,24 @@ var Chobi = function(elem, isToggled, left){
           }
         }
 				img.src = elem;
+
         img.onerror = function (evt){
 
             if(isToggled === true) {
               if(left === true) {
-                elem = '/assets/img/scan-lr.gif';
+                img.src = '/assets/img/scan-lr.gif';
               }else {
-                elem = '/assets/img/scan-rl.gif';
+                img.src = '/assets/img/scan-rl.gif';
               }
             }else {
               if(left) {
-                elem = '/assets/img/u245.jpg';
+                img.src = '/assets/img/u245.jpg';
               } else {
-                elem = '/assets/img/u244.jpg';
+                img.src = '/assets/img/u244.jpg';
               }
             }
-        }
+        };
+
 				img.onload = function(){
 					context.image = img;
 					context.imageData = context.extractImageData();
@@ -143,6 +146,7 @@ var Chobi = function(elem, isToggled, left){
 			drawArea.width = img.width;
 			drawArea.height = img.height;
 			ctx.drawImage(img,0,0,img.width,img.height);
+			console.log(img.width, img.height);
 
 			this.imageData = ctx.getImageData(0,0,img.width,img.height);
 			return this.imageData;
@@ -434,7 +438,7 @@ var Chobi = function(elem, isToggled, left){
 
         }
 
-				for(var i=0; i<infoLength; i++) {
+				for(let i=0; i<infoLength; i++) {
           ctx.beginPath();
           ctx.lineWidth = "2";
 

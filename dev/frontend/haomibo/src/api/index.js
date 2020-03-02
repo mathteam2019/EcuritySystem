@@ -1,9 +1,9 @@
 import axios from 'axios';
-import {getAuthTokenInfo, removeLoginInfo} from "../utils";
+import {getAuthTokenInfo, removeLoginInfo, saveLanguageInfo} from "../utils";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
 import moment from '../../node_modules/moment';
-import {apiBaseUrl} from '../constants/config';
+import {apiBaseUrl, apiImageUrl} from '../constants/config';
 
 const getApiManager = function () {
 
@@ -20,6 +20,7 @@ const getApiManager = function () {
     switch (message) {
 
       case responseMessages['invalid-token']:
+        saveLanguageInfo();
         removeLoginInfo();
 
         app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`auth-token-messages.invalid-token`), {
@@ -31,6 +32,7 @@ const getApiManager = function () {
         });
         break;
       case responseMessages['token-expired']:
+        saveLanguageInfo();
         removeLoginInfo();
 
         app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`auth-token-messages.token-expired`), {
@@ -91,12 +93,14 @@ const getApiManagerError = function () {
     switch (message) {
 
       case responseMessages['invalid-token']:
+        saveLanguageInfo();
         removeLoginInfo();
 
         app.$router.push('/auth/login').catch(error => {
         });
         break;
       case responseMessages['token-expired']:
+        saveLanguageInfo();
         removeLoginInfo();
 
         app.$router.push('/auth/login').catch(error => {
@@ -128,10 +132,10 @@ const getApiManagerError = function () {
 const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
   if (datetime === "" || datetime == null)
     return "";
-  let array;
-  array=datetime.split(".");
-  datetime = array[0];
-  datetime = datetime + "." + "000+1400";
+  // let array;
+  // array=datetime.split(".");
+  // datetime = array[0];
+  // datetime = datetime + "." + "000+1400";
 
 
   //todo need to format datetime with its language value
@@ -149,9 +153,14 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
       break;
     case 'monitor-diff':
       let type = '天';
-      if(lang !== 'zh')
+      let monthType = '月';
+      if(lang !== 'zh') {
         type = 'D';
-      return moment.utc(moment().diff(moment(String(datetime)))).format(`D[${type}] HH:mm:ss`);
+        monthType = 'M';
+      }
+      //D[${type}]
+      console.log((moment.utc(moment().diff(moment(String(datetime))))/(360000*24)));
+      return moment.utc(moment().diff(moment(String(datetime)))).format(`MM/DD/YYYY HH:mm:ss`);
   }
  // datetime = '2019-12-31T18:10:49.000+0000';
   return moment(String(datetime)).format(format)
@@ -171,7 +180,6 @@ const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
     ext1=ext2;
   }
 
-  console.log(ext1);
   for(let i=0; i<ext1.length; i++) {
   getApiManager()
       .post(`${apiBaseUrl}/` + link + '/' + ext1[i], params, {
@@ -242,8 +250,40 @@ const printFileFromServer = (link,params) => {
   }
 };
 
+const downLoadImageFromUrl = (url) => {
+  let urlSplit = url.toString().split("/");
+  let splitLength = urlSplit.length;
+  let img = urlSplit[splitLength-1];
+  //url = apiImageUrl + url;
+
+  //let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+  let fileLink = document.createElement('a');
+  fileLink.href = url;
+  //fileLink.download=img;
+  fileLink.setAttribute('download',  img);
+  document.body.appendChild(fileLink);
+  fileLink.click();
+  //document.body.removeChild(fileLink);
+  fileLink.parentNode.removeChild(fileLink);
+
+  // var a = $("<a>")
+  //   .attr("href", url)
+  //   .attr("download", img)
+  //   .appendTo("body");
+  //
+  // a[0].click();
+  //
+  // a.remove();
+
+  // var x=new XMLHttpRequest();
+  // x.open( "GET", "/diff6.png" , true);
+  // x.responseType="blob";
+  // x.onload= function(e){download(e.target.response, "awesomesauce.png", "image/png");};
+  // x.send();
+};
+
 function isPhoneValid(value) {
-  if(value === "")
+  if(value === "" || value ===null)
     return true;
   let phoneNumber = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
   return !!value.match(phoneNumber);
@@ -254,6 +294,45 @@ function isGuidValid(value) {
     return false;
   let regGuid = /^(\{{0,1}([0-9A-Z]){8}-([0-9A-Z]){4}-([0-9A-Z]){4}-([0-9A-Z]){4}-([0-9A-Z]){12}\}{0,1})$/;
   return regGuid.test(value);
+}
+
+function isGroupNumberValid(value) {
+  if(value === "")
+    return false;
+  value = value.toString();
+  let pg = value.substr(0, 2); // Gets the first part
+  if(pg!=="PG") return false;
+  let number = value.substr(2);  // Gets the text part
+  let Reg = /^([0-9A-Z]){8}$/;
+  return Reg.test(number);
+}
+
+function isRoleNumberValid(value) {
+  if(value === "")
+    return false;
+  value = value.toString();
+  let r = value.substr(0, 1); // Gets the first part
+  if(r!=="R") return false;
+  let number = value.substr(1);  // Gets the text part
+  let Reg = /^([0-9A-Z]){8}$/;
+  return Reg.test(number);
+}
+
+function isDataGroupNumberValid(value) {
+  if(value === "")
+    return false;
+  value = value.toString();
+  let r = value.substr(0, 2); // Gets the first part
+  if(r!=="DG") return false;
+  let number = value.substr(2);  // Gets the text part
+  let Reg = /^([0-9A-Z]){8}$/;
+  return Reg.test(number);
+}
+
+function isSpaceContain(value) {
+  if(value === "")
+    return true;
+  return value.indexOf(' ') < 0;
 }
 
 function isDataCodeValid(value) {
@@ -304,4 +383,4 @@ function isAccountValid(value) {
 // }
 
 
-export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid, isAccountValid, isDataCodeValid, isGuidValid, isColorValid};
+export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isDataCodeValid, isGuidValid, isColorValid};

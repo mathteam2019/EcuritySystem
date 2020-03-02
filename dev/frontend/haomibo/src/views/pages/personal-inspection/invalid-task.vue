@@ -71,12 +71,35 @@
                 :per-page="taskVuetableItems.perPage"
                 pagination-path="pagination"
                 class="table-hover"
+                @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
               >
                 <template slot="taskNumber" slot-scope="props">
                     <span class="cursor-p text-primary" @click="onRowClicked(props.rowData.taskId)">
                       {{props.rowData.taskNumber}}
                     </span>
+                </template>
+                <template slot="mode" slot-scope="props">
+                  <div v-if="props.rowData.workFlow==null"></div>
+                  <div v-else-if="props.rowData.workFlow.workMode==null"></div>
+                  <div v-else>
+                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('all')">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan')">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan+judge')">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan+hand')">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                    </div>
+                  </div>
                 </template>
               </vuetable>
             </div>
@@ -132,8 +155,12 @@
                   class="icofont-star"/></span>
                 <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
+                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='FALSE'">
+                  <b-img src="/assets/img/system_scan.svg" style="width: 20px; height: 22px;"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
+                <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000001'"><i
+                  class="icofont-male" style="color: darkblue;"/></span>
               </b-col>
             </b-row>
             <b-row style="margin-bottom: 0.5rem;">
@@ -611,7 +638,7 @@
     <Modal
       ref="exportModal"
       v-if="isModalVisible"
-      :link="link" :params="params" :name="name"
+      :link="link" :params="params" :name="name" :imgLink="imgUrl"
       @close="closeModal"
     />
   </div>
@@ -816,7 +843,13 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
-  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
+  import {
+    getApiManager,
+    getDateTimeWithFormat,
+    downLoadFileFromServer,
+    printFileFromServer,
+    getApiManagerError
+  } from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css'
   import Switches from 'vue-switches';
@@ -869,6 +902,7 @@
         link: '',
         params: {},
         name: '',
+        imgUrl: [],
         isExpanded: false,
         pageStatus: 'table',
         filter: {
@@ -880,6 +914,7 @@
         power: true,
         siteData: [],
         showPage: [],
+        renderedCheckList:[],
 
         fileSelection: [],
         direction: getDirection().direction,
@@ -981,12 +1016,13 @@
         httpOption:null,
         apiUrl:null,
 
+
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: '4', text: '安检仪+审图端+手检端'},
           {value: '1', text: '安检仪+(本地手检)'},
           {value: '2', text: '安检仪+手检端'},
           {value: '3', text: '安检仪+审图端'},
+          {value: '4', text: '安检仪+审图端+手检端'},
         ],
 
         statusOptions: [
@@ -1015,6 +1051,12 @@
               name: '__slot:taskNumber',
               sortField: 'taskNumber',
               title: this.$t('personal-inspection.task-number'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: '__slot:mode',
+              title: this.$t('personal-inspection.operation-mode'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -1093,6 +1135,7 @@
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
+        this.changeCheckAllStatus();
       },
 
       pageStatus(newval){
@@ -1142,7 +1185,6 @@
 
       slidebar2value(newsValue, oldValue) {
 
-        console.log(oldValue[1]);
         if(oldValue[1]<newsValue[1]) {
           for(let i=oldValue[1]; i<newsValue[1]; i++) {
             this.filterId(7);
@@ -1156,19 +1198,53 @@
       },
     },
     methods: {
-      cancelAutoUpdate () { clearInterval(this.timer) },
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      cancelAutoUpdate() {
+        clearInterval(this.timer)
+      },
+      selectAll(value){
+        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.taskVuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.taskVuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1243,62 +1319,72 @@
 
           if (this.cartoonsInfo[k] !== undefined) {
             url1 = this.cartoonsInfo[k].imageUrl;
-            for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
-              this.cartoonRectL.push({
-                x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
-                y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
-                width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
-                height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
-                colour: this.cartoonsInfo[k].colorRect,
-              });
+            if(this.cartoonsInfo[k].imageRect!=null) {
+              for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
+                this.cartoonRectL.push({
+                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
+                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
+                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
+                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
+                  colour: this.cartoonsInfo[k].colorRect,
+                });
+              }
             }
-
+            if (this.cartoonsInfo[k].rectsAdd != null) {
             for (let i = 0; i < this.cartoonsInfo[k].rectsAdd.length; i++) {
-              this.cartoonRectL.push({
-                x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
-                y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].y,
-                width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].width,
-                height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].height,
-                colour: this.cartoonsInfo[k].colorAdd,
-              });
+
+                this.cartoonRectL.push({
+                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
+                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].y,
+                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].width,
+                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].height,
+                  colour: this.cartoonsInfo[k].colorAdd,
+                });
+              }
             }
 
             if (this.cartoonsInfo[k].displayDel === '1000000601') {
-              for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
-                this.cartoonRectL.push({
-                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].x,
-                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].y,
-                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].width,
-                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].height,
-                  colour: this.cartoonsInfo[k].colorDel,
-                });
+              if (this.cartoonsInfo[k].rectsDel != null) {
+                for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
+                  this.cartoonRectL.push({
+                    x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].x,
+                    y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].y,
+                    width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].width,
+                    height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].height,
+                    colour: this.cartoonsInfo[k].colorDel,
+                  });
+                }
               }
             }
           }
 
           if (this.cartoonsInfo[k + 1] !== undefined) {
             url2 = this.cartoonsInfo[k + 1].imageUrl;
-            for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
-              this.cartoonRectR.push({
-                x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
-                y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
-                width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
-                height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
-                colour: this.cartoonsInfo[k + 1].colorRect,
-              });
+            if (this.cartoonsInfo[k + 1].imageRect != null) {
+              for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
+                this.cartoonRectR.push({
+                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
+                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
+                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
+                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
+                  colour: this.cartoonsInfo[k + 1].colorRect,
+                });
+              }
             }
 
-            for (let i = 0; i < this.cartoonsInfo[k + 1].rectsAdd.length; i++) {
-              this.cartoonRectR.push({
-                x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].x,
-                y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].y,
-                width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].width,
-                height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].height,
-                colour: this.cartoonsInfo[k + 1].colorAdd,
-              });
+            if (this.cartoonsInfo[k + 1].rectsAdd != null) {
+              for (let i = 0; i < this.cartoonsInfo[k + 1].rectsAdd.length; i++) {
+                this.cartoonRectR.push({
+                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].x,
+                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].y,
+                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].width,
+                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].height,
+                  colour: this.cartoonsInfo[k + 1].colorAdd,
+                });
+              }
             }
 
-            if (this.cartoonsInfo[k + 1].displayDel === '1000000601') {
+            if (this.cartoonsInfo[k + 1].displayDel === '1000000601' && this.cartoonsInfo[k + 1].rectsDel != null) {
               for (let i = 0; i < this.cartoonsInfo[k + 1].rectsDel.length; i++) {
                 this.cartoonRectR.push({
                   x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsDel[i].x,
@@ -1396,7 +1482,32 @@
           'idList': checkedIds.join()
         };
         this.link = `task/invalid-task/generate`;
+        this.imgUrl = `task/invalid-task/generate/image`;
         this.name = 'Invalid-Task';
+        // if(this.params.isAll===false||this.params.idList!=="") {
+        // getApiManagerError()
+        //   .post(`${apiBaseUrl}/task/invalid-task/generate/image`, this.params).then((response) => {
+        //   let message = response.data.message;
+        //   let data = response.data.data;
+        //   switch (message) {
+        //     case responseMessages['ok']:
+        //       if (data.enabledCartoon) {
+        //         data.cartoonImageList.forEach(item => {
+        //           this.imgUrl.push(item);
+        //         });
+        //       }
+        //       if (data.enabledOriginal) {
+        //         //this.imgUrl = data.originalImageList;
+        //         data.originalImageList.forEach(item => {
+        //           this.imgUrl.push(item);
+        //         });
+        //       }
+        //       break;
+        //   }
+        // })
+        //   .catch((error) => {
+        //   });
+        // }
         this.isModalVisible = true;
       },
 
@@ -1428,9 +1539,9 @@
           'idList': checkedIds.join()
         };
         let link = `task/invalid-task/generate`;
-        if (checkedIds.length > 0) {
+
           printFileFromServer(link, params);
-        }
+
       },
 
       getSiteOption() {
@@ -1520,7 +1631,6 @@
                 if (this.showPage.serCheckResultList.length !== 0) {
                   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
                 }
-                console.log(this.conclusionType);
 
                 deviceImage = [];
                 submitRects = [];
@@ -1542,57 +1652,61 @@
 
                 this.cntCartoon = Math.floor(deviceImage.length / 2);
 
-                if (deviceImage !== null && submitRects !== null) {
+                if (deviceImage !== null) {
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: 168 / deviceImage[i].width,
-                        rateHeight: 300 / deviceImage[i].height,
+                        rateWidth: 248 / deviceImage[i].width,
+                        rateHeight: 521 / deviceImage[i].height,
                         imageUrl: deviceImage[i].image,
                         imageRect: deviceImage[i].imageRects,
                         colorRect: colourInfo.scanRecogniseColour
                       });
                     }
 
-                    if (submitRects[i] !== undefined && submitRects[i] !== null) {
+
                       this.cartoonsInfo.push({
-                        rateWidth: 168 / deviceImage[i].width,
-                        rateHeight: 300 / deviceImage[i].height,
+                        rateWidth: 205 / deviceImage[i].width,
+                        rateHeight: 426 / deviceImage[i].height,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour,
                         colorAdd: colourInfo.judgeRecogniseColour,
                         colorDel: colourInfo.displayDeleteSuspicionColour,
                         displayDel: colourInfo.displayDeleteSuspicion,
-                        rectsAdd: submitRects[i].rectsAdded,
-                        rectsDel: submitRects[i].rectsDeleted
+                        rectsAdd: submitRects !=null && submitRects[i] != undefined? submitRects[i].rectsAdded : null,
+                        rectsDel: submitRects !=null && submitRects[i] != undefined?  submitRects[i].rectsDeleted : null
                       });
-                    }
+
                   }
                 }
 
                 if (this.imagesInfo[0] !== undefined) {
-                  for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
-                    this.imageRectL.push({
-                      x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
-                      y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
-                      width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
-                      height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
-                      colour: this.imagesInfo[0].colorRect,
-                    });
+                  if (this.imagesInfo[0].imageRect != null) {
+                    for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
+                      this.imageRectL.push({
+                        x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
+                        y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
+                        width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
+                        height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
+                        colour: this.imagesInfo[0].colorRect,
+                      });
+                    }
                   }
                   url1 = this.imagesInfo[0].imageUrl;
                 }
 
                 if (this.imagesInfo[1] !== undefined) {
-                  for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
-                    this.imageRectR.push({
-                      x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
-                      y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
-                      width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
-                      height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
-                      colour: this.imagesInfo[1].colorRect,
-                    });
+                  if (this.imagesInfo[1].imageRect != null) {
+                    for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
+                      this.imageRectR.push({
+                        x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
+                        y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
+                        width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
+                        height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
+                        colour: this.imagesInfo[1].colorRect,
+                      });
+                    }
                   }
                   url2 = this.imagesInfo[1].imageUrl;
                 }
@@ -1601,8 +1715,11 @@
 
                 let handGoodsStr = this.showPage.serCheckResult.handGoods;
                 let handAttactedStr = this.showPage.serCheckResult.handAttached;
-                if (handGoodsStr !== null && handAttactedStr !== null) {
+                if (handGoodsStr !== null) {
                   handGood = handGoodsStr.split(",");
+                }
+
+                if (handAttactedStr !== null) {
                   handAttached = handAttactedStr.split(",");
                 }
                 let k = 0;
@@ -1702,6 +1819,7 @@
 
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          this.renderedCheckList.push(data.data[i].taskId);
           transformed.data.push(temp);
         }
 
@@ -1713,6 +1831,7 @@
 
         this.apiUrl = apiUrl;
         this.httpOption = httpOptions;
+        this.renderedCheckList = [];
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
@@ -1723,11 +1842,13 @@
       },
 
       onTaskVuetablePaginationData(paginationData) {
-        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
 
       onTaskVuetableChangePage(page) {
-        this.$refs.taskVuetable.changePage(page)
+        this.$refs.taskVuetable.changePage(page);
+        this.changeCheckAllStatus();
       }
     }
   }

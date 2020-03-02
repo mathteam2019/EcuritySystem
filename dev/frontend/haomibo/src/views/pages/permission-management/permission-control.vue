@@ -29,13 +29,16 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="resetRoleSearchForm()">
                       <i class="icofont-ui-reply"/>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('role_export')" @click="onExportButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default"
+                              :disabled="checkPermItem('role_export')" @click="onExportButton()">
                       <i class="icofont-share-alt"/>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('role_print')" @click="onPrintRoleButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default"
+                              :disabled="checkPermItem('role_print')" @click="onPrintRoleButton()">
                       <i class="icofont-printer"/>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onClickCreateRole()" :disabled="checkPermItem('role_create')" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onClickCreateRole()"
+                              :disabled="checkPermItem('role_create')" variant="success default">
                       <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -52,9 +55,9 @@
                       :http-fetch="roleVuetableHttpFetch"
                       :per-page="roleVuetableItems.perPage"
                       track-by="roleId"
-                      pagination-path="data"
-                      data-path="data.data"
+                      pagination-path="rolePagination"
                       class="table-hover"
+                      @vuetable:checkbox-toggled="onCheckStatusChange"
                       @vuetable:pagination-data="onRolePaginationData"
                     >
                       <template slot="roleNumber" slot-scope="props">
@@ -63,7 +66,8 @@
                       </span>
                       </template>
                       <template slot="operating" slot-scope="props">
-                        <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('role_delete')"
+                        <b-button size="sm" variant="danger default btn-square" class="m-0"
+                                  :disabled="checkPermItem('role_delete')"
                                   @click="onClickDeleteRole(props.rowData)">
                           <i class="icofont-bin"/>
                         </b-button>
@@ -197,7 +201,8 @@
                       <i class="icofont-save"/>
                       {{$t('permission-management.permission-control.save')}}
                     </b-button>
-                    <b-button @click="onClickDeleteRole(selectedRole)" size="sm" variant="danger default" :disabled="checkPermItem('role_delete')">
+                    <b-button @click="onClickDeleteRole(selectedRole)" size="sm" variant="danger default"
+                              :disabled="checkPermItem('role_delete')">
                       <i class="icofont-bin"/>
                       {{$t('permission-management.permission-control.delete')}}
                     </b-button>
@@ -221,14 +226,7 @@
                   </b-form-group>
                 </b-col>
 
-                <b-col cols="2">
-                  <b-form-group>
-                    <template slot="label">{{$t('permission-management.permission-control.data-range')}}</template>
-                    <b-form-input v-model="dataRangeKeyword"/>
-                  </b-form-group>
-                </b-col>
-
-                <b-col cols="8" class="d-flex justify-content-end align-items-center">
+                <b-col cols="10" class="d-flex justify-content-end align-items-center">
                   <div>
                     <b-button size="sm" class="ml-2" variant="info default" @click="searchDataGroup()">
                       <i class="icofont-search-1"/>&nbsp;{{ $t('permission-management.search') }}
@@ -236,13 +234,16 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="resetDataGroupSearchForm()">
                       <i class="icofont-ui-reply"/>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('data_group_export')" @click="onExportButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default"
+                              :disabled="checkPermItem('data_group_export')" @click="onExportButton()">
                       <i class="icofont-share-alt"/>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('data_group_print')" @click="onPrintGroupButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default"
+                              :disabled="checkPermItem('data_group_print')" @click="onPrintGroupButton()">
                       <i class="icofont-printer"/>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onClickCreateDataGroup()" :disabled="checkPermItem('data_group_create')" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onClickCreateDataGroup()"
+                              :disabled="checkPermItem('data_group_create')" variant="success default">
                       <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -259,10 +260,10 @@
                       :http-fetch="dataGroupVuetableHttpFetch"
                       :fields="dataGroupVuetableItems.fields"
                       :per-page="dataGroupVuetableItems.perPage"
-                      pagination-path="data"
-                      data-path="data.data"
+                      pagination-path="dataGroupPagination"
                       track-by="dataGroupId"
                       class="table-hover"
+                      @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                       @vuetable:pagination-data="onDataGroupPaginationData"
                     >
 
@@ -273,7 +274,8 @@
                       </template>
 
                       <template slot="operating" slot-scope="props">
-                        <b-button size="sm" variant="danger default btn-square" class="m-0"  :disabled="checkPermItem('data_group_delete')"
+                        <b-button size="sm" variant="danger default btn-square" class="m-0"
+                                  :disabled="checkPermItem('data_group_delete')"
                                   @click="onClickDeleteDataGroup(props.rowData)">
                           <i class="icofont-bin"/>
                         </b-button>
@@ -368,10 +370,12 @@
 
               <div class="text-right pt-3" v-if="dataGroupDetailStatus!=='create'">
                 <div>
-                  <b-button @click="onClickSaveDataGroup()" size="sm" variant="info default" :disabled="checkPermItem('data_group_modify')"><i
+                  <b-button @click="onClickSaveDataGroup()" size="sm" variant="info default"
+                            :disabled="checkPermItem('data_group_modify')"><i
                     class="icofont-save"/> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="onClickDeleteDataGroup" size="sm" variant="danger default" :disabled="checkPermItem('data_group_delete')"><i
+                  <b-button @click="onClickDeleteDataGroup(selectedDataGroup)" size="sm" variant="danger default"
+                            :disabled="checkPermItem('data_group_delete')"><i
                     class="icofont-bin"/> {{$t('permission-management.permission-control.delete')}}
                   </b-button>
                 </div>
@@ -407,10 +411,11 @@
       </template>
     </b-modal>
 
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -511,7 +516,14 @@
   import {responseMessages} from '../../../constants/response-messages';
 
   import staticUserTableData from '../../../data/user'
-  import {downLoadFileFromServer, getApiManager, printFileFromServer} from "../../../api";
+  import {
+    getApiManager,
+    getApiManagerError,
+    printFileFromServer,
+    isRoleNumberValid,
+    isSpaceContain,
+    isDataGroupNumberValid
+  } from "../../../api";
 
   export default {
     components: {
@@ -522,9 +534,11 @@
       Modal
     },
     mounted() {
+      this.$refs.roleVuetable.$parent.transform = this.transform.bind(this);
+      this.$refs.dataGroupVuetable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
       this.tableData = staticUserTableData;
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/permission-control/resource/get-all`, {}).then((response) => {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/permission-control/resource/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -537,7 +551,7 @@
         }
       });
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {}).then((response) => {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -549,7 +563,7 @@
         }
       });
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {}).then((response) => {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -571,22 +585,24 @@
           roleNumber: '',
           roleName: '',
         },
-        tabStatus : 'role',
-	link: '',
+        tabStatus: 'role',
+        link: '',
         params: {},
         name: '',
-        fileSelection : [],
+        fileSelection: [],
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-		isModalVisible: false,
+        isModalVisible: false,
         isSelectedAllResourcesForRoleForm: false,
         currentResourceTreeDataForRoleForm: [],
         roleKeyword: '',
         resourceList: [],
         resourceTreeData: [],
+        renderedCheckList: [],
+        renderedCheckListGroup: [],
         selectedRole: null,
         deletingRole: null,
         isSelectedAllResourcesForRole: false,
@@ -650,10 +666,10 @@
           perPage: 10,
           fields: [
             {
-                name: '__checkbox',
-                titleClass: 'text-center',
-                dataClass: 'text-center',
-                width: '60px'
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              width: '60px'
             },
             {
               name: 'dataGroupId',
@@ -675,14 +691,7 @@
               title: this.$t('permission-management.permission-control.data-group'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '21%'
-            },
-            {
-              name: '__slot:dataGroupRange',
-              title: this.$t('permission-management.permission-control.data-group-range'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              width: '18%'
+              width: '31%'
             },
             {
               name: '__slot:operating',
@@ -695,20 +704,23 @@
       }
     },
     validations: {
-      fileSelection : {
+      fileSelection: {
         required
       },
       roleForm: {
         roleNumber: {
-          required
+          required,
+          isRoleNumberValid
         },
         roleName: {
-          required
+          required,
+          isSpaceContain
         }
       },
       dataGroupForm: {
         dataGroupNumber: {
-          required
+          required,
+          isDataGroupNumberValid
         },
         dataGroupName: {
           required
@@ -718,9 +730,11 @@
     watch: {
       'roleVuetableItems.perPage': function (newVal) {
         this.$refs.roleVuetable.refresh();
+        this.changeCheckAllStatus();
       },
       'dataGroupVuetableItems.perPage': function (newVal) {
         this.$refs.dataGroupVuetable.refresh();
+        this.changeCheckAllStatusGroup();
       },
       resourceList(newVal, oldVal) {
         this.refreshResourceTreeData();
@@ -781,18 +795,94 @@
       }
     },
     methods: {
-      // showModal() {
-      //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-      //   let checkedIds = this.$refs.taskVuetable.selectedTo;
-      //   this.params = {
-      //     'isAll': checkedIds.length > 0 ? checkedAll : true,
-      //     'filter': this.filter,
-      //     'idList': checkedIds.join()
-      //   };
-      //   this.link = `task/invalid-task/generate`;
-      //   this.name = 'Invalid-Task';
-      //   this.isModalVisible = true;
-      // },
+      selectAll(value){
+        this.$refs.roleVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.roleVuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.roleVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNone(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.roleVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatus(){
+        let selectList = this.$refs.roleVuetable.selectedTo;
+        let renderedList = this.renderedCheckList;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNone();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAll(true);
+            }
+          }
+        }
+        else {
+          this.selectNone();
+        }
+
+      },
+      selectAllGroup(value){
+        this.$refs.dataGroupVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
+        this.$refs.dataGroupVuetable.isCheckAllStatus=value;
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.dataGroupVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = value;
+      },
+      selectNoneGroup(){
+        let checkBoxId = "vuetable-check-header-2-" + this.$refs.dataGroupVuetable.uuid;
+        let checkAllButton =  document.getElementById(checkBoxId);
+        checkAllButton.checked = false;
+      },
+      changeCheckAllStatusGroup(){
+        let selectList = this.$refs.dataGroupVuetable.selectedTo;
+        let renderedList = this.renderedCheckListGroup;
+        if(selectList.length>=renderedList.length){
+          let isEqual = false;
+          for(let i=0; i<renderedList.length; i++){
+            isEqual = false;
+            for(let j=0; j<selectList.length; j++){
+              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            }
+            if(isEqual===false){
+              this.selectNoneGroup();
+              break;
+            }
+            if(i===renderedList.length-1){
+              this.selectAllGroup(true);
+            }
+          }
+        }
+        else {
+          this.selectNoneGroup();
+        }
+
+      },
+      onCheckStatusChange(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatus();
+        }
+        else {
+          this.selectNone();
+        }
+      },
+      onCheckStatusChangeGroup(isChecked){
+        if(isChecked){
+          this.changeCheckAllStatusGroup();
+        }
+        else {
+          this.selectNoneGroup();
+        }
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -802,19 +892,19 @@
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
-        if(this.tabStatus==='role'){
+        if (this.tabStatus === 'role') {
           this.onExportRole();
         }
-        if(this.tabStatus==='group'){
+        if (this.tabStatus === 'group') {
           this.onExportGroup();
         }
         this.isModalVisible = true;
       },
       onExportButtonModel() {
-        if(this.tabStatus==='role'){
+        if (this.tabStatus === 'role') {
           this.onExportRole();
         }
-        if(this.tabStatus==='group'){
+        if (this.tabStatus === 'group') {
           this.onExportGroup();
         }
       },
@@ -823,7 +913,7 @@
         let checkedIds = this.$refs.roleVuetable.selectedTo;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'filter': {roleName : this.roleKeyword},
+          'filter': {roleName: this.roleKeyword},
           'idList': checkedIds.join()
         };
         this.link = `permission-management/permission-control/role`;
@@ -838,7 +928,7 @@
         let checkedIds = this.$refs.roleVuetable.selectedTo;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'filter': {roleName : this.roleKeyword},
+          'filter': {roleName: this.roleKeyword},
           'idList': checkedIds.join()
         };
         let link = `permission-management/permission-control/role`;
@@ -849,7 +939,7 @@
         let checkedIds = this.$refs.dataGroupVuetable.selectedTo;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'filter': {dataGroupName : this.dataRangeKeyword},
+          'filter': {dataGroupName: this.groupKeyword},
           'idList': checkedIds.join()
         };
         this.link = `permission-management/permission-control/data-group`;
@@ -864,7 +954,7 @@
         let checkedIds = this.$refs.dataGroupVuetable.selectedTo;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'filter': {dataGroupName : this.dataRangeKeyword},
+          'filter': {dataGroupName: this.groupKeyword},
           'idList': checkedIds.join()
         };
         let link = `permission-management/permission-control/data-group`;
@@ -877,17 +967,38 @@
 
       onRoleFormSubmit() {
         if (this.$v.roleForm.$invalid) {
+          if (this.$v.roleForm.roleNumber.$invalid) {
+            if(this.roleForm.roleNumber==='') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.enter-role-number`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.enter-role-number-invalid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            return;
+          }
+          if (this.$v.roleForm.roleName.$invalid) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.enter-role-name`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           return;
         }
 
         let resourceIdList = this.$refs.resourceTreeRoleForm ? this.$refs.resourceTreeRoleForm.getCheckedNodes().map(node => node.resourceId) : [];
-        if(resourceIdList.length===0){
+        if (resourceIdList.length === 0) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.required-role`), {
             duration: 3000,
             permanent: false
           });
-        }
-        else {
+        } else {
           this.isLoading = true;
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/permission-control/role/create`, {
@@ -905,9 +1016,10 @@
                     duration: 3000,
                     permanent: false
                   });
-                  this.$refs.roleVuetable.reload();
+                  this.$refs.roleVuetable.refresh();
                   this.roleForm.roleNumber = '';
                   this.roleForm.roleName = '';
+                  this.roleForm.visible = false;
                   break;
                 case responseMessages['used-role-name']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-name`), {
@@ -939,7 +1051,13 @@
       },
       onClickCreateRole() {
         this.selectedRole = null;
+        let roleNumberStr = "R";
+        for (let i = 0; i < 8; i++) {
+          let index = Math.floor(Math.random() * 10);
+          roleNumberStr = roleNumberStr + index.toString();
+        }
         this.roleForm.visible = true;
+        this.roleForm.roleNumber = roleNumberStr;
         this.currentResourceTreeDataForRoleForm = [];
         this.resourceList.forEach((resource) => {
           resource.selected = false;
@@ -947,9 +1065,17 @@
       },
       onClickSaveRole() {
         if (this.selectedRole) {
-          this.isLoading = true;
+
           let checkedNodes = this.$refs.resourceTree.getCheckedNodes();
           let roleResourceIds = checkedNodes.map(node => node.resourceId);
+          if (roleResourceIds.length === 0) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.required-role`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          this.isLoading = true;
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/permission-control/role/modify`, {
               'roleId': this.selectedRole.roleId,
@@ -966,7 +1092,10 @@
                     permanent: false
                   });
                   this.$refs.roleVuetable.reload();
+
+                  this.selectedRole = null;
                   savePermissionInfo(response.data.data.permission);
+                  //this.roleForm.visible = false;
                   break;
                 case responseMessages['used-role-name']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-name`), {
@@ -1012,17 +1141,25 @@
                   });
                   this.deletingRole = null;
                   this.$refs.roleVuetable.refresh();
+
+                  this.selectedRole = null;
                   savePermissionInfo(response.data.data.permission);
+                  //this.roleForm.visible = false;
                   break;
                 case responseMessages['has-resources']:
-                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
                     duration: 3000,
                     permanent: false
                   });
                   break;
                 case responseMessages['has-users']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.role-already-used`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
                 case responseMessages['has-user-groups']:
-                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`response-error-message.role-already-used`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.role-already-used`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -1052,6 +1189,7 @@
 
       },
       roleVuetableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckList =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.roleVuetableItems.perPage,
@@ -1061,8 +1199,35 @@
           }
         });
       },
+      transform(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.rolePagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          transformed.data.push(temp);
+          this.renderedCheckList.push(data.data[i].roleId);
+        }
+
+        return transformed
+
+      },
       onRolePaginationData(paginationData) {
-        this.$refs.rolePagination.setPaginationData(paginationData)
+        this.$refs.rolePagination.setPaginationData(paginationData);
+        this.changeCheckAllStatus();
       },
       onRoleNumberClicked(dataItem) {
         this.roleForm.visible = false;
@@ -1070,32 +1235,60 @@
       },
       onRoleChangePage(page) {
         this.$refs.roleVuetable.changePage(page);
+        this.changeCheckAllStatus();
       },
 
       onClickCreateDataGroup() {
         this.selectedDataGroup = {
           users: []
         };
+        let dataGroupNumberStr = "DG";
+        for (let i = 0; i < 8; i++) {
+          let index = Math.floor(Math.random() * 10);
+          dataGroupNumberStr = dataGroupNumberStr + index.toString();
+        }
         this.dataGroupForm.dataGroupName = '';
-        this.dataGroupForm.dataGroupNumber = '';
+        this.dataGroupForm.dataGroupNumber = dataGroupNumberStr;
         this.dataGroupDetailStatus = 'create';
       },
 
       createDataGroup() {
 
         if (this.$v.dataGroupForm.$invalid) {
+          if (this.$v.dataGroupForm.dataGroupNumber.$invalid) {
+            if(this.dataGroupForm.dataGroupNumber==='') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.enter-data-group-number`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.enter-data-group-number-invalid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            return;
+          }
+          if (this.$v.dataGroupForm.dataGroupName.$invalid) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.enter-data-group-name`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           return;
         }
 
         if (this.selectedDataGroup) {
           let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
           let userIdList = checkedNodes.filter(node => node.isUser).map(node => node.userId);
-          if(userIdList.length===0){
+          if (userIdList.length === 0) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.required-data-group`), {
               duration: 3000,
               permanent: false
             });
-          }else {
+          } else {
             this.isLoading = true;
             getApiManager()
               .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
@@ -1116,6 +1309,7 @@
                     this.dataGroupForm.dataGroupName = '';
                     this.dataGroupForm.dataGroupNumber = '';
                     this.$refs.dataGroupVuetable.refresh();
+                    this.selectedDataGroup = false;
                     break;
                   case responseMessages['used-data-group-name']:
                     this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-name`), {
@@ -1148,55 +1342,70 @@
           checkedNodes.forEach((node) => {
             if (node.isUser) dataGroupUserIds.push(node.userId);
           });
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/permission-control/data-group/modify`, {
-              'dataGroupId': this.selectedDataGroup.dataGroupId,
-              'userIdList': dataGroupUserIds
-            })
-            .then((response) => {
-              this.isLoading = false;
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']:
-                  this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-modified`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  this.$refs.dataGroupVuetable.reload();
-                  break;
-                case responseMessages['used-data-group-name']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-name`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-                case responseMessages['used-data-group-number']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-number`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-                case responseMessages['has-children']:
-                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-                case responseMessages['has-users']:
-                case responseMessages['has-user-groups']:
-                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`response-error-message.data-group-already-used`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-                default:
-
-              }
-            })
-            .catch((error) => {
-              this.isLoading = false;
+          console.log(dataGroupUserIds.length);
+          if(dataGroupUserIds.length === 0) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.required-data-group`), {
+              duration: 3000,
+              permanent: false
             });
+          }
+          if(dataGroupUserIds.length !== 0) {
+            getApiManager()
+              .post(`${apiBaseUrl}/permission-management/permission-control/data-group/modify`, {
+                'dataGroupId': this.selectedDataGroup.dataGroupId,
+                'userIdList': dataGroupUserIds
+              })
+              .then((response) => {
+                this.isLoading = false;
+                let message = response.data.message;
+                let data = response.data.data;
+                switch (message) {
+                  case responseMessages['ok']:
+                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-modified`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    this.$refs.dataGroupVuetable.reload();
+                    this.selectedDataGroup = false;
+                    break;
+                  case responseMessages['used-data-group-name']:
+                    this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-name`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+                  case responseMessages['used-data-group-number']:
+                    this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-number`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+                  case responseMessages['has-children']:
+                    this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+                  case responseMessages['has-users']:
+                    this.$notify('error', this.$t('permission-management.warning'), this.$t(`response-error-message.user-group-has-user`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+                  case responseMessages['has-user-groups']:
+                    this.$notify('error', this.$t('permission-management.warning'), this.$t(`response-error-message.data-group-already-used`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+                  default:
+
+                }
+              })
+              .catch((error) => {
+                this.isLoading = false;
+              });
+          }
         }
       },
       onClickDeleteDataGroup(dataGroup) {
@@ -1222,16 +1431,22 @@
                     permanent: false
                   });
                   this.$refs.dataGroupVuetable.refresh();
+                  this.selectedDataGroup = false;
                   break;
                 case responseMessages['has-children']:
-                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.data-group-has-child`), {
                     duration: 3000,
                     permanent: false
                   });
                   break;
                 case responseMessages['has-users']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.data-group-has-users`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
                 case responseMessages['has-user-groups']:
-                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`response-error-message.data-group-already-used`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.data-group-already-used`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -1269,15 +1484,55 @@
           return [...childrenOrgList, ...childrenUserList];
         };
         this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
+        console.log(this.orgUserTreeData);
+        this.getTreeData(this.orgUserTreeData, 0);
+      },
+      getTreeData(treeData, index) {
+        var str = "";
+        for(var i = 0; i < index * 2; i ++) str = str + "-";
+        // console.log(str);
+        // console.log("start value");
+        // console.log(treeData);
+        if(!treeData || treeData.length===0){
+          return ;
+        }
+        let tmp = treeData;
+        var answer = [];
+        for(let i=tmp.length - 1; i >= 0; i--){
+          //console.log(tmp[i]);
+          //console.log(tmp[i].userId);
+          if(tmp[i].userId != null && tmp[i].userId != undefined) {
+            continue;
+          }
+          this.getTreeData(tmp[i].children, index + 1);
+          if(!tmp[i].children || tmp[i].children.length == 0) {
+            tmp.splice(i, 1);
+            console.log(tmp);
+          }
+        }
+        // console.log(str);
+        console.log("Chnage value");
+        // console.log(treeData);
+        return;
+
+
+        //
+        // let array = [];
+        // for (let b in a.children) {
+        //   if(this.isInvalid(b)) array.push(b)
+        // }
+        // a.children = array;
+        // //array.size = 0
+        // return a;
       },
       searchDataGroup() {
         this.$refs.dataGroupVuetable.refresh();
       },
       resetDataGroupSearchForm() {
         this.groupKeyword = '';
-        this.dataRangeKeyword = '';
       },
       dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
+        this.renderedCheckListGroup =[];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.dataGroupVuetableItems.perPage,
@@ -1287,8 +1542,34 @@
           }
         });
       },
+      fnTransformUserGroupTable(response) {
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.dataGroupPagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          transformed.data.push(temp);
+          this.renderedCheckListGroup.push(data.data[i].dataGroupId);
+        }
+
+        return transformed
+
+      },
       onDataGroupPaginationData(paginationData) {
-        this.$refs.dataGroupPagination.setPaginationData(paginationData)
+        this.$refs.dataGroupPagination.setPaginationData(paginationData);
+        this.changeCheckAllStatusGroup();
       },
       onDataGroupRowClass(dataItem, index) {
         let selectedItem = this.selectedDataGroup;
@@ -1304,6 +1585,7 @@
       },
       onDataGroupChangePage(page) {
         this.$refs.dataGroupVuetable.changePage(page)
+        this.changeCheckAllStatusGroup();
       },
     }
   }

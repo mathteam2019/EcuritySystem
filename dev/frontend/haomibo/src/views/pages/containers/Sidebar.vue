@@ -223,10 +223,10 @@ export default {
                     if (p.nodeName !== 'svg' && p.nodeName !== 'rect' && p.className !== undefined && p.className.indexOf('menu-button') > -1) {
                         cont = false
                     }
-                })
+                });
 
                 this.viewingParentMenu = '';
-                this.selectMenu()
+                this.selectMenu();
                 if (cont || !this.selectedMenuHasSubItems) {
                     this.toggle()
                 }
@@ -256,7 +256,7 @@ export default {
             if (event && !event.isTrusted) {
                 return
             }
-            let nextClasses = this.getMenuClassesForResize(this.menuType)
+            let nextClasses = this.getMenuClassesForResize(this.menuType);
             this.changeSideMenuStatus({
                 step: 0,
                 classNames: nextClasses.join(' '),
@@ -265,13 +265,13 @@ export default {
         },
         getMenuClassesForResize(classes) {
 
-            let nextClasses = classes.split(' ').filter(x => x !== '')
-            const windowWidth = window.innerWidth
+            let nextClasses = classes.split(' ').filter(x => x !== '');
+            const windowWidth = window.innerWidth;
 
             if (windowWidth < menuHiddenBreakpoint) {
                 nextClasses.push('menu-mobile')
             } else if (windowWidth < subHiddenBreakpoint) {
-                nextClasses = nextClasses.filter(x => x !== 'menu-mobile')
+                nextClasses = nextClasses.filter(x => x !== 'menu-mobile');
                 if (
                     nextClasses.includes('menu-default') &&
                     !nextClasses.includes('menu-sub-hidden')
@@ -279,7 +279,7 @@ export default {
                     nextClasses.push('menu-sub-hidden')
                 }
             } else {
-                nextClasses = nextClasses.filter(x => x !== 'menu-mobile')
+                nextClasses = nextClasses.filter(x => x !== 'menu-mobile');
                 if (
                     nextClasses.includes('menu-default') &&
                     nextClasses.includes('menu-sub-hidden')
@@ -308,13 +308,13 @@ export default {
                     this.selectedParentMenu = 'dashboard'
                 }
                 // this.isCurrentMenuHasSubItem();
-                this.selectMenu()
+                this.selectMenu();
                 this.toggle();
                 this.changeSideMenuStatus({
                     step: 0,
                     classNames: this.menuType,
                     selectedMenuHasSubItems: this.selectedMenuHasSubItems
-                })
+                });
 
                 window.scrollTo(0, top)
             }

@@ -13,7 +13,7 @@
                 :class="['vuetable-th-checkbox-'+trackBy, field.titleClass]"
               >
                 <input type="checkbox" v-model="checkedAllStatus" :id="`vuetable-check-header-1-${uuid}`" @change="toggleAllCheckboxes(field.name, $event)"
-                  :checked="checkCheckboxesState(field.name)">
+                  :checked="isCheckAllStatus">
                 <label :for="`vuetable-check-header-1-${uuid}`"></label>
               </th>
               <th v-if="extractName(field.name) == '__component'"
@@ -173,8 +173,8 @@
               :style="{width: field.width}"
               :class="['vuetable-th-checkbox-'+trackBy, field.titleClass]"
             >
-              <input :id="`vuetable-check-header-2-${uuid}`" type="checkbox" @change="toggleAllCheckboxes(field.name, $event)"
-                :checked="checkCheckboxesState(field.name)">
+              <input :id="`vuetable-check-header-2-${uuid}`" ref="checkAll" type="checkbox" @change="toggleAllCheckboxes(field.name, $event)"
+                :checked="isCheckAllStatus">
               <label :for="`vuetable-check-header-2-${uuid}`"></label>
             </th>
             <th v-if="extractName(field.name) == '__component'"
@@ -492,6 +492,7 @@ export default {
       tablePagination: null,
       currentPage: this.initialPage,
       selectedTo: [],
+      isCheckAllStatus:false,
       visibleDetailRows: [],
       lastScrollPosition: 0,
       scrollBarWidth: '17px', //chrome default
@@ -1133,6 +1134,7 @@ export default {
         })
       }
       this.$emit('vuetable:checkbox-toggled-all', isChecked)
+      this.isCheckAllStatus = this.checkCheckboxesState(fieldName);
     },
     gotoPreviousPage () {
       if (this.currentPage > 1) {

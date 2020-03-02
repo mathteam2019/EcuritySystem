@@ -1,4 +1,5 @@
 <style lang="scss">
+  @import '../../assets/css/font-awesome.css';
   $text-color: #d4d5da;
   .auth-login-page {
 
@@ -22,6 +23,24 @@
       bottom: 10%;
       left: 15%;
       color: #fffefe;
+    }
+
+    input[type=text] {
+      padding: 12px 20px;
+      width: 100%;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    canvas{
+      /*prevent interaction with the canvas*/
+      pointer-events:none;
+      background-color: white;
+      border: 2px solid white;
+      border-radius: 4px;
+      height: 100%;
     }
 
     .line-form {
@@ -183,6 +202,16 @@
     }
   }
 
+  .refresh-icon {
+    border: 1px solid;
+    border-radius: 5px;
+    margin-left: -0.7rem;
+    padding-left: 0.32rem;
+    margin-top: 1.2rem;
+    width: 36px;
+    background-color: white;
+    height: 25px;
+  }
 
 </style>
 
@@ -222,6 +251,18 @@
                   {{l.name}}
                 </b-dropdown-item>
               </b-dropdown>
+              <b-row style="padding-left: 1.5rem; padding-right: 5px;">
+                <b-col cols="4">
+                  <div id="captcha">
+                  </div>
+                </b-col>
+                <b-col cols="6" style="padding-left: 0.5rem; padding-right: 1rem;">
+                  <input type="text" placeholder="Captcha Code" id="cpatchaTextBox" v-model="captchaCode" />
+                </b-col>
+                <b-col cols="1" class="refresh-icon">
+                  <img src="../../assets/img/ic_refresh.png" style="width: 18px;" @click="createCaptcha"/>
+                </b-col>
+              </b-row>
               <div class=" mt-4">
                 <b-button type="submit" variant="primary default" class="btn-block text-center" size="lg"
                           :disabled="processing">{{
@@ -242,7 +283,7 @@
   import {apiBaseUrl, localeOptions} from '../../constants/config'
   import {
     getDirection,
-    saveLoginInfo,
+    saveLoginInfo, saveLanguageInfo, getLanguageInfo,
     scheduleRefreshToken,
     setDirection,
     setInvalidCount, getInvalidCount, removeCount,
@@ -260,12 +301,19 @@
         account: '',
         password: '',
         count: null,
+        currentLanguage: null,
         localeOptions,
-        processing: false
+        processing: false,
+        code:'',
+        captchaCode:'',
       }
     },
     computed: {
       ...mapGetters(['currentUser'])
+    },
+    mounted() {
+      this.createCaptcha();
+      //this.getLocaleInfo();
     },
     methods: {
       ...mapActions(['setCurrentUser', 'setLang']),
@@ -276,7 +324,6 @@
         if (direction !== currentDirection) {
           setDirection(direction)
         }
-
         this.setLang(locale)
       },
       fnGetLangName(value) {
@@ -289,6 +336,97 @@
         });
         return langName;
       },
+      createCaptcha() {
+        this.captchaCode = '';
+
+        //clear the contents of captcha div first
+        document.getElementById('captcha').innerHTML = "";
+        let charsArray =
+          "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let fontArray =[
+          "Comic Sans MS",
+          // "Courier New",
+          // "Monaco",
+          // "Aguafina Script",
+          // "Alfa Slab One",
+          // "Waiting for the Sunrise",
+          // "Smokum",
+          // "Impact",
+          // "Ribeye",
+          // "Miltonian",
+        ];
+        let fontStyleArray=[
+          "normal",
+          "italic",
+          "oblique"
+        ];
+        let fontVariantArray=[
+          "normal",
+          "small-caps",
+        ];
+
+        let fontColorArray =[
+          "blue",
+          "red",
+          "green",
+          "grey",
+          "orange",
+          "lemon",
+          "brown",
+          "black",
+          "grape",
+          "pink",
+          "tomato",
+          "skyblue",
+          "olive",
+          "navy",
+          "cyan",
+          "coral",
+          "gold"
+        ];
+
+        let lengthOtp = 4;
+        let captcha = [];
+        let canv = document.createElement("canvas");
+        canv.id = "captcha";
+        canv.width = 95;
+        canv.height = 40;
+        let ctx = canv.getContext("2d");
+
+        for (let i=0; i < lengthOtp; i++) {
+          //below code will not allow Repetition of Characters
+          let index = Math.floor(Math.random() * charsArray.length); //get the next character from the array
+          let idFont = Math.floor(Math.random() * fontArray.length);
+          //let idFontWeight = Math.floor(Math.random() * fontWeightArray.length + 1);
+          let idFontStyle = Math.floor(Math.random() * fontStyleArray.length);
+          let idFontVariant = Math.floor(Math.random() * fontVariantArray.length);
+          let idFontColor = Math.floor(Math.random() * fontColorArray.length);
+
+          if (captcha.indexOf(charsArray[index]) === -1) {
+            captcha.push(charsArray[index]);
+            ctx.font = fontStyleArray[idFontStyle] + ' ' + fontVariantArray[idFontVariant] + ' ' + '25px' + ' ' + fontArray[idFont];
+            ctx.fillText(charsArray[index], 7+20 * i, 30);
+            // console.log(charsArray[index]);
+            ctx.fillStyle=fontColorArray[idFontColor];
+          }
+          else i--;
+        }
+
+
+        //storing captcha so that can validate you can save it somewhere else according to your specific requirements
+        this.code = captcha.join("");
+        document.getElementById("captcha").appendChild(canv); // adds the canvas to the body element
+      },
+
+      getLocaleInfo() {
+        let currentLanguageInfo = getLanguageInfo(this.account);
+        if (currentLanguageInfo !== null) {
+          for (let l of localeOptions) {
+            if (l.id === currentLanguageInfo) this.currentLanguage = l;
+          }
+          this.changeLocale(this.currentLanguage);
+        }
+      },
       getLocaleIcon() {
         const locale = this.$i18n.locale;
         for (let l of localeOptions) {
@@ -298,7 +436,6 @@
       },
       formSubmit() {
         this.count = getInvalidCount(this.account);
-        console.log(this.count);
 
         if (this.account.length === 0) {
           this.$notify('warning', this.$t('user.warning'), this.$t(`user.enter-valid-account`), {
@@ -312,6 +449,16 @@
             duration: 3000,
             permanent: false
           });
+          return;
+        }
+
+        if (this.captchaCode !== this.code) {
+          //alert("Invalid Captcha. try Again");
+          this.$notify('warning', this.$t('user.warning'), this.$t(`user.enter-correct-code`), {
+            duration: 3000,
+            permanent: false
+          });
+          this.createCaptcha();
           return;
         }
 
@@ -335,7 +482,8 @@
                   });
                   return;
                 }
-                saveLoginInfo(data);
+
+                saveLoginInfo(data, this.account);
                 savePermissionInfo(data.permission);
                 savePermissionInfoId(data.permission);
                 scheduleRefreshToken();
@@ -354,11 +502,13 @@
 
                 if (data.user.category === 'normal') {
                   this.$router.push('/pages/dashboard');
+                  //saveLanguageInfo();
                   break;
                 }
 
                 if (data.user.category === 'admin') {
                   this.$router.push('/pages/dashboard');
+                  //saveLanguageInfo();
                   break;
                 }
 
@@ -385,10 +535,10 @@
 
               case responseMessages['pre-user-pending-status']:
                 setInvalidCount(this.account);
-                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.forbidden-warning`), {
-                  duration: 3000,
-                  permanent: false
-                });
+                // this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.forbidden-warning`), {
+                //   duration: 3000,
+                //   permanent: false
+                // });
                 break;
 
               case responseMessages['user-pending-status']:
@@ -418,6 +568,13 @@
       '$i18n.locale'(to, from) {
         if (from !== to) {
           this.$router.go(this.$route.path)
+        }
+      },
+      'account'(to, from) {
+        if (from !== null && from !== "") {
+          if (from !== to) {
+            this.getLocaleInfo();
+          }
         }
       },
     }

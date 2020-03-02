@@ -1251,7 +1251,6 @@
         };
         this.link = `task/history-task/generate`;
         this.name = 'History-Task';
-        console.log("s");
         this.isModalVisible = true;
       },
       closeModal() {

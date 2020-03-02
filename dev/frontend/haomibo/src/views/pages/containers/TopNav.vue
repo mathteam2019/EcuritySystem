@@ -43,11 +43,11 @@
 
     </div>
 
-    <router-link class="navbar-logo" tag="a" to="/app">
+    <router-link class="navbar-logo" tag="a" to="/">
       <span class="logo d-none d-xs-block"/>
       <span class="logo-mobile d-block d-xs-none"/>
     </router-link>
-    <router-link class="navbar-title" tag="a" to="/app">
+    <router-link class="navbar-title" tag="a" to="/">
       <span class="logo d-none d-xs-block"/>
       <span class="logo-mobile d-block d-xs-none"/>
     </router-link>
@@ -71,7 +71,7 @@
                     menu-class="mt-3" no-caret>
           <template slot="button-content" v-if="currentUser">
             <span @click="showPasswordResetView()">
-                <img :alt="currentUser.title" :src="portrait" @error="portraitOnError"/>
+                <img :alt="currentUser.title" :src="this.portrait" @error="portraitOnError"/>
             </span>
             <span @click="showPasswordResetView()" class="name ml-1 mr-2">{{currentUser.name}}</span>
           </template>
@@ -160,7 +160,7 @@
   import {mapActions, mapGetters, mapMutations} from 'vuex'
   import {MenuIcon, MobileMenuIcon} from '../../../components/Svg'
   import {apiBaseUrl, defaultColor, localeOptions, menuHiddenBreakpoint} from '../../../constants/config'
-  import {getDirection, removeLoginInfo, setLocale, setDirection} from '../../../utils'
+  import {getDirection, removeLoginInfo, saveLanguageInfo, setLocale, setDirection} from '../../../utils'
   import {getApiManager, isAccountValid} from "../../../api";
   import {responseMessages} from "../../../constants/response-messages";
   import {validationMixin} from 'vuelidate';
@@ -204,7 +204,9 @@
       }
     },
     mounted() {
-      this.portrait = `${apiBaseUrl}${this.currentUser.portrait}`;
+      this.portrait = `${this.currentUser.portrait}`;
+      console.log(this.portrait);
+      this.setLanguageInfo();
       //this.passwordForm.userAccount = `${this.currentUser.name}`;
     },
     methods: {
@@ -225,7 +227,7 @@
       savePassword() {
         this.$v.passwordForm.$touch();
         if (this.$v.passwordForm.$invalid) {
-          console.log(this.passwordForm.password);
+
           if(this.passwordForm.password === null||this.passwordForm.password===''){
             this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.input-none`), {
               duration: 3000,
@@ -267,6 +269,7 @@
                 this.passwordForm.password = null;
                 this.passwordForm.confirmPassword = null;
                 this.invalidPassword=true;
+                this.logout();
                 break;
               case responseMessages['invalid-password']:
                 this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.invalid-password`), {
@@ -286,6 +289,11 @@
       portraitOnError(e) {
         this.portrait = '/assets/img/user_placeholder.png';
       },
+      setLanguageInfo(){
+        console.log(this.$i18n.locale);
+        setLocale(this.$i18n.locale);
+
+      },
       changeLocale(l) {
         let locale = l.id;
         let direction = l.direction;
@@ -293,6 +301,7 @@
         if (direction !== currentDirection) {
           setDirection(direction)
         }
+        //saveLanguageInfo();
 
         this.setLang(locale)
 
@@ -317,6 +326,7 @@
             let data = response.data.data;
             switch (message) {
               case responseMessages['ok']:
+                saveLanguageInfo();
 
                 removeLoginInfo();
 
