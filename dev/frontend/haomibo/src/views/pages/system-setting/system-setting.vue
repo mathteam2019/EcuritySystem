@@ -616,6 +616,16 @@
             </b-row>
 
           </b-col>
+          <b-col>
+            <div v-if="getLocale()==='zh'" class="position-absolute" style="right: 8%;bottom: 7%">
+              <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+              <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+            </div>
+            <div v-if="getLocale()==='en'" class="position-absolute" style="right: 8%;bottom: 7%">
+              <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+              <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+            </div>
+          </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
               <b-button @click="onSaveScanFormData()" variant="success default"
@@ -641,14 +651,7 @@
               </b-button>
             </div>
           </b-col>
-          <div v-if="getLocale()==='zh'" class="position-absolute" style="left: 8%;bottom: 3%">
-            <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
-          </div>
-          <div v-if="getLocale()==='en'" class="position-absolute" style="left: 8%;bottom: 3%">
-            <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-            <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
-          </div>
+
 
         </b-row>
       </b-tab>
@@ -704,7 +707,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
-  import {getApiManager, isColorValid, getApiManagerError, getDateTimeWithFormat} from '../../../api';
+  import {getApiManager, isColorValid, getApiManagerError, isAccountValid, isSpaceContain, isDataCodeValid, getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {apiBaseUrl, apiParamUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
@@ -799,6 +802,7 @@
       platFormOtherData: {
         initialPassword: {
           required,
+          isAccountValid,isSpaceContain,
           minLength: minLength(6), maxLength: maxLength(50)
         },
         loginNumber: {
@@ -829,11 +833,11 @@
           required
         },
         deviceTrafficHigh: {
-          required,
+          required, isDataCodeValid,
           minValue: minValue(0), maxValue: maxValue(400)
         },
         deviceTrafficMiddle: {
-          required,
+          required, isDataCodeValid,
           minValue: minValue(0), maxValue: maxValue(400)
         }
       }
@@ -1311,7 +1315,6 @@
       savePlatFormData() {
         //save platform main data
         if (this.tabIndex === 0) {
-          console.log(this.platFormData);
 
           this.$v.platFormData.$touch();
           if (this.$v.platFormData.$invalid) {
@@ -1459,7 +1462,8 @@
         else { //save platform other data
           this.submitted = true;
           this.$v.platFormOtherData.$touch();
-          if(this.platFormOtherData.deviceTrafficHigh<this.platFormOtherData.deviceTrafficMiddle){
+
+          if(parseInt(this.platFormOtherData.deviceTrafficHigh) < parseInt(this.platFormOtherData.deviceTrafficMiddle)){
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.security-instrument-flow-high-middle`), {
               duration: 3000,
               permanent: false
@@ -1596,7 +1600,7 @@
                 return;
               }
             }
-            if (this.$v.platFormOtherData.deviceTrafficMiddle.$invalid) {s
+            if (this.$v.platFormOtherData.deviceTrafficMiddle.$invalid) {
               if(this.platFormOtherData.deviceTrafficMiddle==='') {
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.security-instrument-flow-middle-input`), {
                   duration: 3000,

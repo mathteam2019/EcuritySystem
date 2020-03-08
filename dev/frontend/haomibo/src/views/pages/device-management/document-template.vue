@@ -157,8 +157,17 @@
               </b-form-group>
               <b-form-group :label="$t('device-management.device-model')">
                 <b-form-input type="text" v-model="basicForm.originalModel"
+                              :state="!$v.basicForm.originalModel.$dirty ? null : !$v.basicForm.originalModel.$invalid"
                               :placeholder="$t('device-management.origin-model-placeholder')"/>
               </b-form-group>
+              <div v-if="getLocale()==='zh'" style="left: 3%;top: 10px">
+                <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+                <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+              </div>
+              <div v-if="getLocale()==='en'" style="left: 3%;top: 10px">
+                <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+              </div>
             </b-col>
             <b-col xxs="12" md="8" lg="9">
               <b-row class="h-100">
@@ -193,43 +202,45 @@
                   </b-row>
                 </b-col>
                 <b-col v-if="pageStatus!=='show'" cols="12" class="table-responsive text-center" style="height: 75%">
+                  <div class="table-wrapper table-responsive">
+                    <vuetable
+                      ref="indicatorTable"
+                      :api-mode="false"
+                      :fields="indicatorTableItems.fields"
+                      :data-manager="indicatorTableDataManager"
+                      :per-page="indicatorTableItems.perPage"
+                      pagination-path="pagination"
+                      @vuetable:pagination-data="onIndicatorTablePaginationData"
+                      class="table-striped text-center"
+                    >
+                      <div slot="number" slot-scope="props">
+                        <span class="cursor-p text-primary">{{ props.rowData.indicatorsName }}</span>
+                      </div>
+                      <div slot="required" slot-scope="props">
+                        <b-button v-if="props.rowData.isNull === '1000000601'"
+                                  :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
+                                  size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
+                                  variant="success default">
+                          <i class="icofont-check-alt"/>&nbsp;{{$t('device-management.document-template.yes')}}
+                        </b-button>
+                        <b-button v-if="props.rowData.isNull === '1000000602'"
+                                  :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
+                                  size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
+                                  variant="light default">
+                          <i class="icofont-close-line"/>&nbsp;{{$t('device-management.document-template.no')}}
+                        </b-button>
+                      </div>
+                      <div slot="action" slot-scope="props">
+                        <b-button
+                          size="sm" @click="onDeleteIcon(props.rowData,props.rowIndex)"
+                          :disabled="checkPermItem('device_indicator_delete') || pageStatus==='show'"
+                          variant="danger default btn-square">
+                          <i class="icofont-bin"/>
+                        </b-button>
+                      </div>
+                    </vuetable>
+                  </div>
 
-                  <vuetable
-                    ref="indicatorTable"
-                    :api-mode="false"
-                    :fields="indicatorTableItems.fields"
-                    :data-manager="indicatorTableDataManager"
-                    :per-page="indicatorTableItems.perPage"
-                    pagination-path="pagination"
-                    @vuetable:pagination-data="onIndicatorTablePaginationData"
-                    class="table-striped text-center"
-                  >
-                    <div slot="number" slot-scope="props">
-                      <span class="cursor-p text-primary">{{ props.rowData.indicatorsName }}</span>
-                    </div>
-                    <div slot="required" slot-scope="props">
-                      <b-button v-if="props.rowData.isNull === '1000000601'"
-                                :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
-                                size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
-                                variant="success default">
-                        <i class="icofont-check-alt"/>&nbsp;{{$t('device-management.document-template.yes')}}
-                      </b-button>
-                      <b-button v-if="props.rowData.isNull === '1000000602'"
-                                :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
-                                size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
-                                variant="light default">
-                        <i class="icofont-close-line"/>&nbsp;{{$t('device-management.document-template.no')}}
-                      </b-button>
-                    </div>
-                    <div slot="action" slot-scope="props">
-                      <b-button
-                        size="sm" @click="onDeleteIcon(props.rowData,props.rowIndex)"
-                        :disabled="checkPermItem('device_indicator_delete') || pageStatus==='show'"
-                        variant="danger default btn-square">
-                        <i class="icofont-bin"/>
-                      </b-button>
-                    </div>
-                  </vuetable>
                   <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
                     ref="indicatorTablePagination"
@@ -238,7 +249,7 @@
                   </div>
                 </b-col>
                 <b-col v-else cols="12" class="table-responsive text-center" style="height: 100%">
-
+                  <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="indicatorTable"
                     :api-mode="false"
@@ -275,6 +286,7 @@
                       </b-button>
                     </div>
                   </vuetable>
+                  </div>
                   <div class="pagination-wrapper">
                     <vuetable-pagination-bootstrap
                       ref="indicatorTablePagination"
@@ -313,14 +325,7 @@
               </b-button>
             </b-col>
           </b-row>
-          <div v-if="getLocale()==='zh'" class="position-absolute" style="left: 3%;bottom: 10%">
-            <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
-          </div>
-          <div v-if="getLocale()==='en'" class="position-absolute" style="left: 3%;bottom: 10%">
-            <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-            <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
-          </div>
+
         </div>
       </div>
 
@@ -416,7 +421,7 @@
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
 
-  const {required} = require('vuelidate/lib/validators');
+  const {required, maxLength} = require('vuelidate/lib/validators');
 
   let getManufacturerName = (options, value) => {
     let name = null;
@@ -450,6 +455,9 @@
         },
         categoryId: {
           required
+        },
+        originalModel:{
+          maxLength: maxLength(20),
         }
       }
     },
@@ -928,10 +936,17 @@
             let message = response.data.message;
             switch (message) {
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-template.added-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
+                if(finalLink === 'create') {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-template.added-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                }else{
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-template.updated-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                }
                 this.pageStatus = 'list';
                 this.$refs.vuetable.reload();
                 this.isLoading = false;

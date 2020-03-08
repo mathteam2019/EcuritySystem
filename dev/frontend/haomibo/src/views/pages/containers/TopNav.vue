@@ -205,7 +205,6 @@
     },
     mounted() {
       this.portrait = `${this.currentUser.portrait}`;
-      console.log(this.portrait);
       this.setLanguageInfo();
       //this.passwordForm.userAccount = `${this.currentUser.name}`;
     },
@@ -290,7 +289,6 @@
         this.portrait = '/assets/img/user_placeholder.png';
       },
       setLanguageInfo(){
-        console.log(this.$i18n.locale);
         setLocale(this.$i18n.locale);
 
       },

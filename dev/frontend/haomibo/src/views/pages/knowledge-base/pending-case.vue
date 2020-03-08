@@ -10,7 +10,7 @@
     <b-card class="main-without-tab" v-show="pageStatus === 'table'" style="margin-top: 20px;">
       <div class="h-100 d-flex flex-column">
         <b-row class="pt-2">
-          <b-col cols="8">
+          <b-col cols="9">
             <b-row>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.task-number')">
@@ -41,7 +41,7 @@
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="4" class="d-flex justify-content-end align-items-center">
+          <b-col cols="3" class="d-flex justify-content-end align-items-center">
             <div>
               <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
                 <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
@@ -1678,20 +1678,20 @@
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: 248 / deviceImage[i].width,
-                        rateHeight: 521 / deviceImage[i].height,
-                        imageUrl: deviceImage[i].image,
-                        imageRect: deviceImage[i].imageRects,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 248 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 521 / deviceImage[i].height :0,
+                        imageUrl: deviceImage[i].cartoon,
+                        imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour
                       });
                     }
 
 
                       this.cartoonsInfo.push({
-                        rateWidth: 205 / deviceImage[i].width,
-                        rateHeight: 426 / deviceImage[i].height,
-                        imageUrl: deviceImage[i].cartoon,
-                        imageRect: deviceImage[i].cartoonRects,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 205 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ?  426 / deviceImage[i].height :0,
+                        imageUrl: deviceImage[i].image,
+                        imageRect: deviceImage[i].imageRects,
                         colorRect: colourInfo.scanRecogniseColour,
                         colorAdd: colourInfo.judgeRecogniseColour,
                         colorDel: colourInfo.displayDeleteSuspicionColour,

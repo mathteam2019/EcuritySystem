@@ -10,7 +10,7 @@
     <b-card class="main-without-tab" v-show="pageStatus === 'table'" style="margin-top: 20px;">
       <div class="h-100 d-flex flex-column">
         <b-row class="pt-2">
-          <b-col cols="8">
+          <b-col cols="9">
             <b-row>
               <b-col>
                 <b-form-group :label="$t('personal-inspection.task-number')">
@@ -25,8 +25,8 @@
               </b-col>
 
               <b-col>
-                <b-form-group :label="$t('personal-inspection.status')">
-                  <b-form-select v-model="filter.status" :options="statusOptions" plain/>
+                <b-form-group :label="$t('personal-inspection.user')">
+                  <b-form-input v-model="filter.userName"/>
                 </b-form-group>
               </b-col>
 
@@ -43,14 +43,8 @@
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="8" v-if="isExpanded">
+          <b-col cols="9" v-if="isExpanded">
             <b-row>
-
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.user')">
-                  <b-form-input v-model="filter.userName"/>
-                </b-form-group>
-              </b-col>
 
               <b-col>
                 <b-form-group :label="$t('log-management.operating-log.start-time')">
@@ -67,9 +61,11 @@
               </b-col>
               <b-col/>
               <b-col/>
+              <b-col/>
+              <b-col/>
             </b-row>
           </b-col>
-          <b-col cols="4" class="d-flex justify-content-end align-items-center">
+          <b-col cols="3" class="d-flex justify-content-end align-items-center">
             <div>
               <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
                 <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
@@ -1158,7 +1154,6 @@
         filter: {
           taskNumber: null,
           mode: null,
-          status: null,
           fieldId: null,
           userName: null,
           startTime: null,
@@ -1849,20 +1844,20 @@
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: 248 / deviceImage[i].width,
-                        rateHeight: 521 / deviceImage[i].height,
-                        imageUrl: deviceImage[i].image,
-                        imageRect: deviceImage[i].imageRects,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 248 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 521 / deviceImage[i].height :0,
+                        imageUrl: deviceImage[i].cartoon,
+                        imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour
                       });
                     }
 
 
                       this.cartoonsInfo.push({
-                        rateWidth: 205 / deviceImage[i].width,
-                        rateHeight: 426 / deviceImage[i].height,
-                        imageUrl: deviceImage[i].cartoon,
-                        imageRect: deviceImage[i].cartoonRects,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 205 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ?  426 / deviceImage[i].height :0,
+                        imageUrl: deviceImage[i].image,
+                        imageRect: deviceImage[i].imageRects,
                         colorRect: colourInfo.scanRecogniseColour,
                         colorAdd: colourInfo.judgeRecogniseColour,
                         colorDel: colourInfo.displayDeleteSuspicionColour,
@@ -1908,7 +1903,6 @@
 
                 let handGoodsStr = this.showPage.task.serCheckResult.handGoods;
                 let handAttactedStr = this.showPage.task.serCheckResult.handAttached;
-                console.log(handAttactedStr);
 
                 if (handGoodsStr !== null) {
                   handGood = handGoodsStr.split(",");
@@ -2039,7 +2033,6 @@
         this.filter = {
           taskNumber: null,
           mode: null,
-          status: null,
           fieldId: null,
           userName: null,
           startTime: null,

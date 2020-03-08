@@ -151,7 +151,7 @@
                     {{ $t('personal-inspection.return') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" @click="onClickCreateDicData()"
-                            :disabled="checkPermItem('dictionary_data_create')" variant="success default">
+                            :disabled="checkPermItem('dictionary_data_create') || dicIdType === 1" variant="success default">
                     <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>

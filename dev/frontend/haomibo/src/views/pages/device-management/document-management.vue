@@ -53,7 +53,7 @@
           <b-col cols="6">
             <b-row>
               <b-col cols="4">
-                <b-form-group :label="$t('device-management.template')">
+                <b-form-group :label="$t('device-management.device-list.archive')">
                   <b-form-input v-model="filterOption.archivesName"/>
                 </b-form-group>
               </b-col>
@@ -716,7 +716,7 @@
                 if (key !== 'imageUrl' && key !== 'image')
                   this.archivesForm[key] = data[key];
                 else if (key === 'imageUrl')
-                  this.archivesForm.image = data['imageUrl'] ? apiBaseUrl + data['imageUrl'] : null;
+                  this.archivesForm.image = data['imageUrl'] ? data['imageUrl'] : null;
               }
             }
           }
@@ -843,10 +843,18 @@
             let message = response.data.message;
             switch (message) {
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-management.added-successfully`), {
-                  duration: 10000,
-                  permanent: false
-                });
+                if(finalLink === 'create') {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-management.added-successfully`), {
+                    duration: 10000,
+                    permanent: false
+                  });
+                }
+                else{
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-management.updated-successfully`), {
+                    duration: 10000,
+                    permanent: false
+                  });
+                }
                 this.pageStatus = 'list';
                 this.$refs.vuetable.reload();
                 this.isLoading = false;

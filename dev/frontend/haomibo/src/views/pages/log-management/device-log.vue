@@ -816,8 +816,10 @@
         let filter = page === 'device' ? this.deviceFilter : page === 'judge' ? this.judgeFilter : this.manualFilter;
         let checkedAll = this.$refs[vueField].checkedAllStatus;
         let checkedIds = this.$refs[vueField].selectedTo;
+        let httpOption = this.$refs[vueField].httpOptions;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': filter,
           'idList': checkedIds.join()
         };
@@ -831,8 +833,11 @@
         let filter = page === 'device' ? this.deviceFilter : page === 'judge' ? this.judgeFilter : this.manualFilter;
         let checkedAll = this.$refs[vueField].checkedAllStatus;
         let checkedIds = this.$refs[vueField].selectedTo;
+        let httpOption = this.$refs[vueField].httpOptions;
+        console.log(httpOption);
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': filter,
           'idList': checkedIds.join()
         };

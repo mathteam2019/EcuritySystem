@@ -13,7 +13,7 @@ var Chobi = function(elem, isToggled, left){
 			}
 			else if(typeof(elem)=='string'){
 				var context = this;
-        console.log("d");
+
 				this.debugger('Not instanceof(Image). Trying as URL');
 				var img = new Image();
 				img.crossOrigin = "Anonymous";
@@ -146,7 +146,7 @@ var Chobi = function(elem, isToggled, left){
 			drawArea.width = img.width;
 			drawArea.height = img.height;
 			ctx.drawImage(img,0,0,img.width,img.height);
-			console.log(img.width, img.height);
+			//console.log(img.width, img.height);
 
 			this.imageData = ctx.getImageData(0,0,img.width,img.height);
 			return this.imageData;

@@ -183,7 +183,7 @@ export const getLocale = () => {
 export const setLocale = localValue => {
 
   localStorage.setItem('currentLanguage', localValue);
-  console.log(localStorage);
+
 };
 
 
@@ -469,13 +469,12 @@ export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => 
   if(url2==null){
     url2 = '';
   }
-  console.log(url1);
 
   url1 = apiBaseUrl + url1;
   url2 = apiBaseUrl + url2;
 
   toDataUrl(url1, function (url) {
-    console.log(url);
+
     if(url != null){
       let urlspl = url.split(':');
       url1 = 'data:image/png' + urlspl[1];
@@ -488,7 +487,7 @@ export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => 
   });
 
   toDataUrl(url2, function (url) {
-    console.log(url);
+
     if(url != null){
       let urlspl = url.split(':');
       url2 = 'data:image/png' + urlspl[1];

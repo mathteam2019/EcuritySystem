@@ -865,7 +865,7 @@
       ////////   loading      Options ///////////
       ///////////////////////////////////////////
       changeDefault(value){
-        console.log(value);
+
         if(value===1){
           this.configForm.manRemoteGender = null;
           this.configForm.womanRemoteGender = null;
@@ -1001,11 +1001,6 @@
       closeModal() {
         this.isModalVisible = false;
       },
-      // unSelectDevice(a){
-      //   return false;
-      //   console.log(a)
-      //   //console.log(" Teste toggleUnSelectLojas value : ", value);
-      // },
 
       checkPermItem(value) {
         return checkPermissionItem(value);
@@ -1380,75 +1375,95 @@
             break;
         }
       },
-      initializeConfigData(data,  isUpdated = true) {
-        if(isUpdated===true) {
-          this.selectedDeviceName = null;
-          this.selectedDeviceName = data.deviceName;
-          let isDeviceId = false;
-          this.selectedDeviceData = {
-            fieldName: data.device.field ? data.device.field.fieldDesignation : '',
-            deviceName: data.device.deviceName,
-            category: data.device.category.categoryName
-          };
-          this.getConfigDeviceData(data.deviceId);
-          this.configForm = {
-            configId: data.configId,
-            modeId: data.modeId,
-            atrSwitch: data.atrSwitch,
-            manualSwitch: data.manualSwitch,
-            manRemoteGender: data.manRemoteGender,
-            womanRemoteGender: data.womanRemoteGender,
-            manManualGender: data.manManualGender,
-            womanManualGender: data.womanManualGender,
-            manDeviceGender: data.manDeviceGender,
-            womanDeviceGender: data.womanDeviceGender,
-            status: data.status,
-            deviceId: data.deviceId,
-            judgeDeviceIdList: [],
-            manualDeviceIdList: [],
-            fromDeviceIdList: [],
-            judgeDeviceId: [],
-            manualDeviceId: [],
-            fromDeviceId: []
-          };
-          //console.log(data);
-          data.fromConfigIdList.forEach(item => {
-            if (item.device != null) {
-              if (item.device.deviceId === data.deviceId) {
-                this.configForm.fromDeviceId.push({
-                  value: item.device.deviceId,
-                  label: item.device.deviceName,
-                })
-                isDeviceId = true;
-              } else {
-                this.configForm.fromDeviceId.push({
-                  value: item.device.deviceId,
-                  label: item.device.deviceName
-                })
-              }
+      initializeConfigData(rowData,  isUpdated = true) {
+        getApiManagerError()
+          .post(`${apiBaseUrl}/device-management/device-config/config/get-by-id`, {
+            'configId': rowData.configId
+          })
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']:
+                this.configForm = {
+                  configId: data.configId,
+                  modeId: data.modeId,
+                  atrSwitch: data.atrSwitch,
+                  manualSwitch: data.manualSwitch,
+                  manRemoteGender: data.manRemoteGender,
+                  womanRemoteGender: data.womanRemoteGender,
+                  manManualGender: data.manManualGender,
+                  womanManualGender: data.womanManualGender,
+                  manDeviceGender: data.manDeviceGender,
+                  womanDeviceGender: data.womanDeviceGender,
+                  status: data.status,
+                  deviceId: data.deviceId,
+                  judgeDeviceIdList: [],
+                  manualDeviceIdList: [],
+                  fromDeviceIdList: [],
+                  judgeDeviceId: [],
+                  manualDeviceId: [],
+                  fromDeviceId: []
+                };
+                if(isUpdated===true) {
+                  this.selectedDeviceName = null;
+                  this.selectedDeviceName = rowData.deviceName;
+                  let isDeviceId = false;
+                  this.selectedDeviceData = {
+                    fieldName: data.device.field ? data.device.field.fieldDesignation : '',
+                    deviceName: data.device.deviceName,
+                    category: data.device.category.categoryName
+                  };
+                  this.getConfigDeviceData(data.deviceId);
+
+
+                  rowData.fromConfigIdList.forEach(item => {
+                    if (item.device != null) {
+                      if (item.device.deviceId === rowData.deviceId) {
+                        this.configForm.fromDeviceId.push({
+                          value: item.device.deviceId,
+                          label: item.device.deviceName,
+                        })
+                        isDeviceId = true;
+                      } else {
+                        this.configForm.fromDeviceId.push({
+                          value: item.device.deviceId,
+                          label: item.device.deviceName
+                        })
+                      }
+                    }
+                  });
+                  if (!isDeviceId) {
+                    this.configForm.fromDeviceId.push({
+                      value: rowData.deviceId,
+                      label: rowData.deviceName
+                    })
+                  }
+                  data.judgeGroupList.forEach(item => {
+                    if (item.judgeDevice != null)
+                      this.configForm.judgeDeviceId.push({
+                        value: item.judgeDevice.deviceId,
+                        label: item.judgeDevice.deviceName
+                      })
+                  });
+                  data.manualGroupList.forEach(item => {
+                    if (item.manualDevice != null)
+                      this.configForm.manualDeviceId.push({
+                        value: item.manualDevice.deviceId,
+                        label: item.manualDevice.deviceName
+                      })
+                  });
+                }
+                break;
+
             }
+          })
+          .catch((error) => {
           });
-          if (!isDeviceId) {
-            this.configForm.fromDeviceId.push({
-              value: data.deviceId,
-              label: data.deviceName
-            })
-          }
-          data.judgeGroupList.forEach(item => {
-            if (item.judgeDevice != null)
-              this.configForm.judgeDeviceId.push({
-                value: item.judgeDevice.deviceId,
-                label: item.judgeDevice.deviceName
-              })
-          });
-          data.manualGroupList.forEach(item => {
-            if (item.manualDevice != null)
-              this.configForm.manualDeviceId.push({
-                value: item.manualDevice.deviceId,
-                label: item.manualDevice.deviceName
-              })
-          });
-        }
+
+
+
+
       },
       onSaveDeviceConfig() {
           if (this.configForm.manualDeviceId.length === 0) {
@@ -1501,7 +1516,6 @@
               this.isLoading = false;
               //this.$refs.pendingListTable.props.rowData = this.configForm;
               // setTimeout(function(){
-              //   console.log("time");
               //   this.isLoading = false;
               // },4000);
               this.pageStatus = 'list';
@@ -1576,10 +1590,11 @@
       },
 
       'configForm.fromDeviceId': function (newVal) {
+        console.log(newVal);
         let that = this;
         setTimeout(function(){
           that.disableSelect();
-        },100);
+        },300);
       },
 
       // 'configForm.modeId': function (newVal) {

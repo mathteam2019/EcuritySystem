@@ -207,10 +207,10 @@
     border-radius: 5px;
     margin-left: -0.7rem;
     padding-left: 0.32rem;
-    margin-top: 1.2rem;
+    margin-top: 1.25rem;
     width: 36px;
     background-color: white;
-    height: 25px;
+    height: 24px;
   }
 
 </style>
@@ -251,16 +251,16 @@
                   {{l.name}}
                 </b-dropdown-item>
               </b-dropdown>
-              <b-row style="padding-left: 1.5rem; padding-right: 5px;">
-                <b-col cols="4">
-                  <div id="captcha">
+              <b-row style="margin-left: 0.5rem;">
+                <b-col cols="5">
+                  <div id="captcha" style="float: right">
                   </div>
                 </b-col>
-                <b-col cols="6" style="padding-left: 0.5rem; padding-right: 1rem;">
-                  <input type="text" placeholder="Captcha Code" id="cpatchaTextBox" v-model="captchaCode" />
+                <b-col cols="5" style="float: left;">
+                  <input type="text" :placeholder="$t('user.captcha-code')" id="cpatchaTextBox" v-model="captchaCode" />
                 </b-col>
-                <b-col cols="1" class="refresh-icon">
-                  <img src="../../assets/img/ic_refresh.png" style="width: 18px;" @click="createCaptcha"/>
+                <b-col cols="1" class="refresh-icon" style="margin-left: 0rem">
+                  <img src="../../assets/img/ic_refresh.png" style="width: 15px;" @click="createCaptcha"/>
                 </b-col>
               </b-row>
               <div class=" mt-4">
@@ -268,14 +268,13 @@
                           :disabled="processing">{{
                   $t('user.login-button')}}
                 </b-button>
-
               </div>
             </b-form>
           </div>
         </b-col>
       </b-row>
     </b-col>
-    <footer class="auth-login">Copyright by JINUNG Company limited 2019.All right Reserved</footer>
+    <footer class="auth-login">Copyright by JINUNG Company limited 2020.All right Reserved</footer>
   </b-row>
 </template>
 <script>
@@ -406,7 +405,7 @@
             captcha.push(charsArray[index]);
             ctx.font = fontStyleArray[idFontStyle] + ' ' + fontVariantArray[idFontVariant] + ' ' + '25px' + ' ' + fontArray[idFont];
             ctx.fillText(charsArray[index], 7+20 * i, 30);
-            // console.log(charsArray[index]);
+
             ctx.fillStyle=fontColorArray[idFontColor];
           }
           else i--;

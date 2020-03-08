@@ -796,7 +796,7 @@
             },
             {
               name: 'judgeStatistics',
-              title: '判图量',
+              title: '判图总量',
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
@@ -982,25 +982,27 @@
         return checkPermissionItem(value);
       },
       getManualDeviceData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-config/manual-device/get-all`).then((response) => {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-table/device/get-by-field`,{
+          fieldId: null, categoryId: 3
+        }).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
           switch (message) {
             case responseMessages['ok']:
               let options = [];
               options = data.map(opt => ({
-                text: opt.device ? opt.device.deviceName : "Unknown",
-                value: opt.manualDeviceId
+                text: opt.deviceName ? opt.deviceName : "Unknown",
+                value: opt.deviceId
               }));
 
               let allFieldStr = "";
               let cnt = data.length;
 
-              allFieldStr = allFieldStr + data[0].device.deviceName;
+              allFieldStr = allFieldStr + data[0].deviceName;
               //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
               for (let i = 1; i < cnt; i++) {
 
-                allFieldStr = allFieldStr + ", " + data[i].device.deviceName;
+                allFieldStr = allFieldStr + ", " + data[i].deviceName;
 
               }
               this.allDevice = allFieldStr;

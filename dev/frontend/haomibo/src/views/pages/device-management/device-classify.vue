@@ -459,7 +459,8 @@
               name: 'note',
               title: this.$t('system-setting.remarks'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '10%'
             },
             {
               name: '__slot:operating',

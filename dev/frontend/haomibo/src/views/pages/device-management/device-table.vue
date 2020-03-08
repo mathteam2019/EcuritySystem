@@ -425,37 +425,37 @@
                   $t('permission-management.upload-image')}}
                 </b-button>
 
-              </b-col>
-              <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
-                <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute"
-                     style="right: 30px;bottom: 30px;">
-                  <div>
-                    <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
-                      class="icofont-save"/>
-                      {{$t('device-management.save')}}
-                    </b-button>
-                    <b-button size="sm" v-if="mainForm.status === '1000000702'"
-                              :disabled="checkPermItem('device_update_status')"
-                              @click="onAction('activate',mainForm)" variant="success default"><i
-                      class="icofont-check-circled"/>
-                      {{$t('device-management.active')}}
-                    </b-button>
-                    <b-button size="sm" v-if="mainForm.status === '1000000701'"
-                              :disabled="checkPermItem('device_update_status')"
-                              @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"/>
-                      {{$t('permission-management.action-make-inactive')}}
-                    </b-button>
-                    <b-button size="sm" v-if="pageStatus!=='show' && mainForm.status === '1000000702'"
-                              :disabled="checkPermItem('device_delete')"
-                              @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"/>
-                      {{$t('device-management.delete')}}
-                    </b-button>
-                    <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
-                      class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
-                    </b-button>
+                  <div class=""
+                       style="">
+                    <div>
+                      <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
+                        class="icofont-save"/>
+                        {{$t('device-management.save')}}
+                      </b-button>
+                      <b-button size="sm" v-if="mainForm.status === '1000000702'"
+                                :disabled="checkPermItem('device_update_status')"
+                                @click="onAction('activate',mainForm)" variant="success default"><i
+                        class="icofont-check-circled"/>
+                        {{$t('device-management.active')}}
+                      </b-button>
+                      <b-button size="sm" v-if="mainForm.status === '1000000701'"
+                                :disabled="checkPermItem('device_update_status')"
+                                @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"/>
+                        {{$t('permission-management.action-make-inactive')}}
+                      </b-button>
+                      <b-button size="sm" v-if="pageStatus!=='show' && mainForm.status === '1000000702'"
+                                :disabled="checkPermItem('device_delete')"
+                                @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"/>
+                        {{$t('device-management.delete')}}
+                      </b-button>
+                      <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+                        class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
+                      </b-button>
+                    </div>
                   </div>
-                </div>
+
               </b-col>
+
             </b-row>
           </b-tab>
           <b-tab :title="$t('device-management.device-table.archive-info')" style="height: 100% !important;">
@@ -537,37 +537,37 @@
                   $t('permission-management.upload-image')}}
                 </b-button>
 
-              </b-col>
-              <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
-                <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute"
-                     style="right: 30px;bottom: 30px;">
-                  <div>
-                    <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
-                      class="icofont-save"/>
-                      {{$t('device-management.save')}}
-                    </b-button>
-                    <b-button size="sm" v-if="mainForm.status === '1000000702'"
-                              :disabled="checkPermItem('device_update_status')"
-                              @click="onAction('activate',mainForm)" variant="success default"><i
-                      class="icofont-check-circled"/>
-                      {{$t('device-management.active')}}
-                    </b-button>
-                    <b-button size="sm" v-if="mainForm.status === '1000000701'"
-                              :disabled="checkPermItem('device_update_status')"
-                              @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"/>
-                      {{$t('permission-management.action-make-inactive')}}
-                    </b-button>
-                    <b-button size="sm" v-if="pageStatus!=='show' && mainForm.status === '1000000702'"
-                              :disabled="checkPermItem('device_delete')"
-                              @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"/>
-                      {{$t('device-management.delete')}}
-                    </b-button>
-                    <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
-                      class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
-                    </b-button>
+                  <div class=""
+                       style="">
+                    <div>
+                      <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
+                        class="icofont-save"/>
+                        {{$t('device-management.save')}}
+                      </b-button>
+                      <b-button size="sm" v-if="mainForm.status === '1000000702'"
+                                :disabled="checkPermItem('device_update_status')"
+                                @click="onAction('activate',mainForm)" variant="success default"><i
+                        class="icofont-check-circled"/>
+                        {{$t('device-management.active')}}
+                      </b-button>
+                      <b-button size="sm" v-if="mainForm.status === '1000000701'"
+                                :disabled="checkPermItem('device_update_status')"
+                                @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"/>
+                        {{$t('permission-management.action-make-inactive')}}
+                      </b-button>
+                      <b-button size="sm" v-if="pageStatus!=='show' && mainForm.status === '1000000702'"
+                                :disabled="checkPermItem('device_delete')"
+                                @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"/>
+                        {{$t('device-management.delete')}}
+                      </b-button>
+                      <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+                        class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
+                      </b-button>
+                    </div>
                   </div>
-                </div>
+
               </b-col>
+
             </b-row>
           </b-tab>
         </b-tabs>

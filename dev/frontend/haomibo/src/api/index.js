@@ -3,7 +3,7 @@ import {getAuthTokenInfo, removeLoginInfo, saveLanguageInfo} from "../utils";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
 import moment from '../../node_modules/moment';
-import {apiBaseUrl, apiImageUrl} from '../constants/config';
+import {apiBaseUrl} from '../constants/config';
 
 const getApiManager = function () {
 
@@ -143,7 +143,7 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
   switch (formatType) {
     case 'zh':
     case 'en':
-      format = 'MM/DD/YYYY HH:mm';
+      format = 'MM/DD/YYYY HH:mm:ss';
       break;
     case 'default': //to set value on client side
       format = 'YYYY-MM-DD';
@@ -158,9 +158,26 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
         type = 'D';
         monthType = 'M';
       }
+      let today = new Date();
+      let diff = today - moment(datetime);
+      let msec = diff;
+      let hh = Math.floor(msec / 1000 / 60 / 60);
+      let dd = Math.floor(hh / 24);
+      let h = hh%24;
+      msec -= hh * 1000 * 60 * 60;
+      let mm = Math.floor(msec / 1000 / 60);
+      msec -= mm * 1000 * 60;
+      let ss = Math.floor(msec / 1000);
+      msec -= ss * 1000;
+      let diffString = dd + type + h + ':' + mm + ':' + ss;
+
+
       //D[${type}]
-      console.log((moment.utc(moment().diff(moment(String(datetime))))/(360000*24)));
-      return moment.utc(moment().diff(moment(String(datetime)))).format(`MM/DD/YYYY HH:mm:ss`);
+      //console.log((moment.utc(moment().diff(moment(String(datetime))))/(360000*24)));
+      console.log(diffString);
+      //console.log(moment.utc(moment().diff(moment(String(datetime)))));
+      // return moment.utc(moment().diff(moment(String(datetime)))).format(`MM/DD/YYYY HH:mm:ss`);
+      return diffString;
   }
  // datetime = '2019-12-31T18:10:49.000+0000';
   return moment(String(datetime)).format(format)
@@ -383,4 +400,4 @@ function isAccountValid(value) {
 // }
 
 
-export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isDataCodeValid, isGuidValid, isColorValid};
+export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isDataCodeValid, isGuidValid, isColorValid, isGroupNumberValid, isRoleNumberValid, isSpaceContain, isDataGroupNumberValid};

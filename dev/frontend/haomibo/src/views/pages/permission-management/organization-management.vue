@@ -847,7 +847,7 @@
           text: this.treeData.orgName,
           value: this.treeData.orgId
         });
-        console.log(this.treeData);
+
 
 
         let getLevel = (org) => {
@@ -1009,10 +1009,10 @@
         }
 
         let tmp = treeData;
-        console.log(tmp.length);
+
         for (let i = 0; i < tmp.length; i++) {
           this.changeOrgTree(tmp[i].children, index + 1);
-          console.log(tmp[i].orgId);
+
           this.parentOrganizationNameSelectOptions.unshift({
             value: tmp[i].orgId,
             html: `${this.generatSpace(index)}${tmp[i].orgName}`
@@ -1047,8 +1047,16 @@
         transformed.data = [];
 
         for (let i = 0; i < data.data.length; i++) {
+          if(data.data[i].note) {
+            let note = data.data[i].note.toString();
+
+            if (note.length > 20) {
+              data.data[i].note = note.substr(0, 20) + "···"; // Gets the first part
+            }
+          }
           transformed.data.push(data.data[i]);
           this.renderedOrgIdList.push(data.data[i].orgId);
+
         }
 
         return transformed

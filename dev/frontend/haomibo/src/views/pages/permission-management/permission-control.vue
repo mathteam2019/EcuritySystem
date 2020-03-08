@@ -741,6 +741,13 @@
       },
       selectedRole(newVal, oldVal) {
         if (newVal) {
+          if(newVal.resources.length === this.resourceList.length) {
+            this.isSelectedAllResourcesForRole = true;
+          }
+          else {
+            this.isSelectedAllResourcesForRole = false;
+          }
+          console.log(newVal.resources.length === this.resourceList.length);
           let roleResourceIds = [];
           newVal.resources.forEach((resource) => {
             roleResourceIds.push(resource.resourceId);
@@ -775,6 +782,12 @@
       },
       selectedDataGroup(newVal, oldVal) {
         if (newVal) {
+          if(newVal.users.length === this.userList.length) {
+            this.isSelectedAllResourcesForRoleForm = true;
+          }
+          else {
+            this.isSelectedAllResourcesForRoleForm = false;
+          }
           let dataGroupUserIds = [];
           newVal.users.forEach((user) => {
             dataGroupUserIds.push(user.userId);
@@ -791,6 +804,7 @@
           tempSelectedDataGroup.users = newVal ? this.userList : [];
           this.selectedDataGroup = null;
           this.selectedDataGroup = tempSelectedDataGroup;
+          this.refreshOrgUserTreeData();
         }
       }
     },
@@ -801,11 +815,13 @@
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.roleVuetable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = value;
+
       },
       selectNone(){
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.roleVuetable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = false;
+
       },
       changeCheckAllStatus(){
         let selectList = this.$refs.roleVuetable.selectedTo;
@@ -1020,6 +1036,7 @@
                   this.roleForm.roleNumber = '';
                   this.roleForm.roleName = '';
                   this.roleForm.visible = false;
+
                   break;
                 case responseMessages['used-role-name']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-name`), {
@@ -1051,6 +1068,7 @@
       },
       onClickCreateRole() {
         this.selectedRole = null;
+        this.isSelectedAllResourcesForRoleForm = false;
         let roleNumberStr = "R";
         for (let i = 0; i < 8; i++) {
           let index = Math.floor(Math.random() * 10);
@@ -1239,6 +1257,7 @@
       },
 
       onClickCreateDataGroup() {
+        this.isSelectedAllUsersForDataGroup =false;
         this.selectedDataGroup = {
           users: []
         };
@@ -1342,7 +1361,7 @@
           checkedNodes.forEach((node) => {
             if (node.isUser) dataGroupUserIds.push(node.userId);
           });
-          console.log(dataGroupUserIds.length);
+
           if(dataGroupUserIds.length === 0) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.required-data-group`), {
               duration: 3000,
@@ -1387,7 +1406,7 @@
                     });
                     break;
                   case responseMessages['has-users']:
-                    this.$notify('error', this.$t('permission-management.warning'), this.$t(`response-error-message.user-group-has-user`), {
+                    this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.data-group-has-users`), {
                       duration: 3000,
                       permanent: false
                     });
@@ -1440,7 +1459,7 @@
                   });
                   break;
                 case responseMessages['has-users']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.data-group-has-users`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.data-group-has-users`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -1484,35 +1503,29 @@
           return [...childrenOrgList, ...childrenUserList];
         };
         this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
-        console.log(this.orgUserTreeData);
+
         this.getTreeData(this.orgUserTreeData, 0);
       },
       getTreeData(treeData, index) {
         var str = "";
         for(var i = 0; i < index * 2; i ++) str = str + "-";
-        // console.log(str);
-        // console.log("start value");
-        // console.log(treeData);
+
         if(!treeData || treeData.length===0){
           return ;
         }
         let tmp = treeData;
         var answer = [];
         for(let i=tmp.length - 1; i >= 0; i--){
-          //console.log(tmp[i]);
-          //console.log(tmp[i].userId);
+
           if(tmp[i].userId != null && tmp[i].userId != undefined) {
             continue;
           }
           this.getTreeData(tmp[i].children, index + 1);
           if(!tmp[i].children || tmp[i].children.length == 0) {
             tmp.splice(i, 1);
-            console.log(tmp);
+
           }
         }
-        // console.log(str);
-        console.log("Chnage value");
-        // console.log(treeData);
         return;
 
 
@@ -1584,7 +1597,7 @@
         this.selectedDataGroup = JSON.parse(JSON.stringify(dataItem));
       },
       onDataGroupChangePage(page) {
-        this.$refs.dataGroupVuetable.changePage(page)
+        this.$refs.dataGroupVuetable.changePage(page);
         this.changeCheckAllStatusGroup();
       },
     }

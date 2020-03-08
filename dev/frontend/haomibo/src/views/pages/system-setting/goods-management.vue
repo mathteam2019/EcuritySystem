@@ -129,7 +129,7 @@
 
                   <div class="d-flex align-items-end justify-content-end pt-3">
                     <div>
-                      <b-button :disabled="selectedGoods" @click="onClickSaveGoods" size="sm" variant="info default" class="mr-3">
+                      <b-button :disabled="showable" @click="onClickSaveGoods" size="sm" variant="info default" class="mr-3">
                         <i class="icofont-save"/>
                         {{$t('permission-management.permission-control.save')}}
                       </b-button>
@@ -325,7 +325,7 @@
               width: '19%',
               callback: (seizedGoodType) => {
                 if (seizedGoodType == null) return '';
-                return this.getDataCodeValue(seizedGoodType);
+                return this.getGoodsCategory(seizedGoodType);
               }
             },
             {
@@ -336,7 +336,7 @@
               width: '20%',
               callback: (seizedGoodsLevel) => {
                 if (seizedGoodsLevel == null) return '';
-                return this.getDataCodeValue(seizedGoodsLevel);
+                return this.getGoodsGrade(seizedGoodsLevel);
               }
             },
             {
@@ -448,6 +448,23 @@
       },
       checkPermItem(value) {
         return checkPermissionItem(value);
+      },
+
+      getGoodsCategory(value){
+        if(value==null)
+          return null;
+        for(let i=0; i<this.onCategoryOptions.length; i++){
+          if(this.onCategoryOptions[i].value===value)
+            return this.onCategoryOptions[i].text;
+        }
+      },
+      getGoodsGrade(value){
+        if(value==null)
+          return null;
+        for(let i=0; i<this.onGradeOptions.length; i++){
+          if(this.onGradeOptions[i].value===value)
+            return this.onGradeOptions[i].text;
+        }
       },
 
       getDataCodeValue(value){

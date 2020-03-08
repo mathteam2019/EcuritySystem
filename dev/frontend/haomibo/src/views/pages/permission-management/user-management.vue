@@ -1067,7 +1067,7 @@
           {value: '1000000304', text: this.$t('permission-management.pending')},
           {value: '1000000303', text: this.$t('permission-management.blocked')},
         ],
-        orgNameSelectData: {},
+        orgNameSelectData: [],
         educationOptions: [
           {value: '1000000101', text: this.$t('permission-management.belowcollege')},
           {value: '1000000102', text: this.$t('permission-management.student')},
@@ -1266,6 +1266,12 @@
             }));
 
         this.treeData = nest(newVal)[0];
+
+        this.changeOrgTree(this.treeData.children, 1);
+        this.orgNameSelectData.unshift({
+          text: this.treeData.orgName,
+          value: this.treeData.orgId
+        });
         let getLevel = (org) => {
 
           let getParent = (org) => {
@@ -1305,7 +1311,7 @@
           });
         });
 
-        this.orgNameSelectData = selectOptions;
+        //this.orgNameSelectData = selectOptions;
 
         this.filter.orgId = null;
         this.defaultOrgId = this.treeData.orgId;
@@ -1316,6 +1322,12 @@
       },
       selectedUserGroupItem(newVal) {
         if (newVal) {
+          if(newVal.users.length === this.userData.length) {
+            this.isSelectedAllUsersForDataGroup = true;
+          }
+          else {
+            this.isSelectedAllUsersForDataGroup = false;
+          }
           let userGroupList = [];
           newVal.users.forEach((user) => {
             userGroupList.push(user.userId);
@@ -1333,10 +1345,36 @@
           tempSelectedUserGroup.users = newVal ? this.userData : [];
           this.selectedUserGroupItem = null;
           this.selectedUserGroupItem = tempSelectedUserGroup;
+          this.fnRefreshOrgUserTreeData();
         }
       }
     },
     methods: {
+      changeOrgTree(treeData, index) {
+
+
+        if (!treeData || treeData.length === 0) {
+          return;
+        }
+
+        let tmp = treeData;
+
+        for (let i = 0; i < tmp.length; i++) {
+          this.changeOrgTree(tmp[i].children, index + 1);
+
+          this.orgNameSelectData.unshift({
+            value: tmp[i].orgId,
+            html: `${this.generatSpace(index)}${tmp[i].orgName}`
+          });
+        }
+      },
+      generatSpace(count) {
+        let string = '';
+        while (count--) {
+          string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+        }
+        return string;
+      },
       getLocale() {
         return getLocale();
       },
@@ -1622,10 +1660,14 @@
 
         const formData = new FormData();
         for (let key in this.profileForm) {
-          if (key !== 'portrait')
+
+          console.log(this.profileForm['portrait']);
+          if (key !== 'portrait' && key !== 'avatar')
             formData.append(key, this.profileForm[key]);
-          else if (this.profileForm['portrait'] !== null)
+          else if (key === 'portrait' && this.profileForm['portrait'] !== null) {
+            console.log(this.profileForm[key], this.profileForm[key].name);
             formData.append(key, this.profileForm[key], this.profileForm[key].name);
+          }
         }
         this.isLoading = true;
 
@@ -1804,8 +1846,8 @@
               this.profileForm.avatar = data['portrait'];
           }
         }
-        this.profileForm.portrait = data['portrait'];
-        console.log(this.profileForm.avatar);
+        this.profileForm.portrait = null;
+
         if(data.password === 'default') {
           this.profileForm.passwordType = 'default';
         }else{
@@ -1824,8 +1866,9 @@
             else if (key === 'portrait')
               this.profileForm.avatar = data['portrait'];
         }
-        this.profileForm.portrait = data['portrait'];
-        console.log(this.profileForm.avatar);
+        console.log(data['portrait']);
+        this.profileForm.portrait = null;
+
         if(data.password === 'default') {
           this.profileForm.passwordType = 'default';
         }else{
@@ -2126,23 +2169,18 @@
         //log(this.orgUserTreeData);
         this.getTreeData(this.orgUserTreeData, 0);
 
-        // console.log(this.orgUserTreeData);
-      //
       },
       getTreeData(treeData, index) {
         // var str = "";
         // for(var i = 0; i < index * 2; i ++) str = str + "-";
-        // console.log(str);
-        // console.log("start value");
-        // console.log(treeData);
+
         if(!treeData || treeData.length===0){
           return ;
         }
         let tmp = treeData;
         var answer = [];
         for(let i=tmp.length - 1; i >= 0; i--){
-          //console.log(tmp[i]);
-          //console.log(tmp[i].userId);
+
           if(tmp[i].userId != null && tmp[i].userId != undefined) {
             continue;
           }
@@ -2151,9 +2189,6 @@
             tmp.splice(i, 1);
           }
         }
-        // console.log(str);
-        //console.log("Chnage value");
-        // console.log(treeData);
         return;
 
 
@@ -2176,6 +2211,7 @@
         };
       },
       onUserGroupCreateButton() {
+        this.isSelectedAllUsersForDataGroup = false;
         this.selectedUserGroupItem = {
           users: []
         };
@@ -2194,6 +2230,7 @@
         this.fnShowUserGroupConfDiaglog(this.selectedUserGroupItem);
       },
       onClickCreateUserGroup() {
+
         if (this.selectedUserGroupItem) {
           let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
           let userGroupUserIds = [];
