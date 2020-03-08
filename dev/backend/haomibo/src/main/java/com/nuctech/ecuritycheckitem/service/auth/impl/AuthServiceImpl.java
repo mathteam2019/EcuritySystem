@@ -153,7 +153,8 @@ public class AuthServiceImpl implements AuthService {
                 passwordLimit = loginNumber.intValue();
             }
         }
-        if(count != null) {
+
+        if(count != null && passwordLimit > 0) {
             if(count == passwordLimit - 1) {
                 return 1;
             } else if(count >= passwordLimit) {

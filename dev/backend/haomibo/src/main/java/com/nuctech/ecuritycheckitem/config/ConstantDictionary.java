@@ -58,6 +58,8 @@ public class ConstantDictionary {
             new Dictionary("while_review", "审图中"),
             new Dictionary("pending_inspection", "待查验"),
             new Dictionary("while_inspection", "查验中"),
+            new Dictionary("0", "失败"),
+            new Dictionary("1", "成功"),
     };
 
     public static void setDictionaryList(Dictionary[] newDictionaryList) {

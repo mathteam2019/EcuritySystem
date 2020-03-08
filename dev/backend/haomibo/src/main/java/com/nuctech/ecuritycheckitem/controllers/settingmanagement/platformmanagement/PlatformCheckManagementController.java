@@ -147,8 +147,6 @@ public class PlatformCheckManagementController extends BaseController {
         }
         platformCheckService.modifyPlatform(serPlatformCheckParams, isCreate);
 
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", "",null);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {

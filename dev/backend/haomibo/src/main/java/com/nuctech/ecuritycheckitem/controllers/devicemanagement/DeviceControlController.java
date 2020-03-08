@@ -948,8 +948,6 @@ public class DeviceControlController extends BaseController {
 
         List<SysDevice> deviceList = requestBody.getDeviceList();
         deviceService.modifyDeviceField(deviceList);
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", "",null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

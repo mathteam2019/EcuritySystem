@@ -183,6 +183,11 @@ public class AuditLogServiceImpl implements AuditLogService {
                                     Date operateEndTime, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(clientIp, operateResult, operateObject, operateStartTime, operateEndTime);
         String[] splits = idList.split(",");
+        Long max_size = 5000L;
+        try {
+            SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
+            max_size = serPlatformOtherParams.getLogMaxNumber();
+        } catch(Exception ex) {}
         List<Long> logIdList = new ArrayList<>();
         for(String idStr: splits) {
             logIdList.add(Long.valueOf(idStr));
@@ -205,8 +210,12 @@ public class AuditLogServiceImpl implements AuditLogService {
                     .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
+        List<SysAuditLog> answerList = new ArrayList<>();
+        for(int i = 0; i < logList.size() && i < max_size; i ++) {
+            answerList.add(logList.get(i));
+        }
 
-        return logList;//getExportList(logList, isAll, idList);
+        return answerList;//getExportList(logList, isAll, idList);
     }
 
 
@@ -297,7 +306,7 @@ public class AuditLogServiceImpl implements AuditLogService {
      * @param onlineTime: 在线时长(秒)
      * @return
      */
-    @Override
+    //@Override
     public boolean saveAudioLog(String action, String result, String content, String reason, String object, Long onlineTime) {
         SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
         SysAuditLog auditLog = SysAuditLog.builder()

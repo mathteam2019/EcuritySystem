@@ -47,8 +47,6 @@ public class DataGroupExcelView extends BaseExcelView {
         Cell headerCellName = header.createCell(2);
         headerCellName.setCellValue(messageSource.getMessage("DataGroup.Name",null, currentLocale));
 
-        Cell headerCellRange = header.createCell(3);
-        headerCellRange.setCellValue(messageSource.getMessage("DataGroup.Range",null, currentLocale));
     }
 
     /**
@@ -83,12 +81,6 @@ public class DataGroupExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(dataGroup.getDataGroupId().toString());
                 row.createCell(1).setCellValue(dataGroup.getDataGroupNumber());
                 row.createCell(2).setCellValue(dataGroup.getDataGroupName());
-                /**
-                 * Todo
-                 * data group range value
-                 *
-                */
-                row.createCell(3).setCellValue("无");
             }
 
             workbook.write(out);

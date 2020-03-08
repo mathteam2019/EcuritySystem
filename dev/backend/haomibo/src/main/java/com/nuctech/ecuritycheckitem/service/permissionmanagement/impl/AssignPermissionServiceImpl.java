@@ -355,7 +355,6 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
         List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
 
         return new PageResult<SysUserGroup>(total, data);
-
     }
 
     /**

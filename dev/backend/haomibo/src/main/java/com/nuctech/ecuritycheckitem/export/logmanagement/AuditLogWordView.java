@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.export.logmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
@@ -104,7 +105,7 @@ public class AuditLogWordView extends BaseWordView {
                 tableRow.getCell(3).setText(log.getOperateObject());
                 tableRow.getCell(4).setText(log.getAction());
                 tableRow.getCell(5).setText(log.getOperateContent());
-                tableRow.getCell(6).setText(log.getOperateContent());
+                tableRow.getCell(6).setText(ConstantDictionary.getDataValue(log.getOperateResult()));
                 tableRow.getCell(7).setText(log.getReasonCode());
                 tableRow.getCell(8).setText(formatDate(log.getOperateTime()));
 

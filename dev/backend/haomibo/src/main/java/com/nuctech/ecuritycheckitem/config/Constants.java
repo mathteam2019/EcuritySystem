@@ -36,7 +36,7 @@ public class Constants {
     public static final long DEFAULT_AIR_CALIWARN_TIME = 120L;
     public static final long DEFAULT_STANDBY_TIME = 0L;
     public static final long DEFAULT_RECOGNIZE_RATE = 0L;
-    public static final int DEFAULT_STORAGE_ALARM = 400;
+    public static final int DEFAULT_STORAGE_ALARM = 5;
     public static final int DEFAULT_STORAGE_PERCENT = 80;
 
     public static final String[] EXCLUDE_URL_PATTERNS = {

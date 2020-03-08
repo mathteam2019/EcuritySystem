@@ -478,8 +478,6 @@ public class DictionaryManagementController extends BaseController {
         }
 
         dictionaryService.removeDictionaryData(requestBody.getDataId());
-        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDataId().toString(),null);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }

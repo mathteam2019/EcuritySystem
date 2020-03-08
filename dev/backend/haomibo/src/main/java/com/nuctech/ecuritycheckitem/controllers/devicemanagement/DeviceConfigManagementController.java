@@ -154,7 +154,6 @@ public class DeviceConfigManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class DeviceConfigGetByIdRequestBody {
-
         @NotNull
         Long configId; //config id
     }

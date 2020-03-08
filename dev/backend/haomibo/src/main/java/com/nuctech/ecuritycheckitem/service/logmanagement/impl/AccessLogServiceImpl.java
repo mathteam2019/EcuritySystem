@@ -77,18 +77,115 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @param operateEndTime
      * @return
      */
+    private BooleanBuilder getPredicatePre(String clientIp, String operateAccount, Date operateStartTime, Date operateEndTime) {
+        QSysAccessLog builder = QSysAccessLog.sysAccessLog;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (!StringUtils.isEmpty(clientIp)) {
+            predicate.and(builder.clientIp.contains(clientIp));
+        }
+
+        if (!StringUtils.isEmpty(operateAccount)) {
+            predicate.and(builder.operateAccount.eq(operateAccount));
+        }
+
+        if(operateStartTime != null) {
+            predicate.and(builder.operateTime.after(operateStartTime));
+        }
+        if(operateEndTime != null){
+            predicate.and(builder.operateTime.before(operateEndTime));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+        }
+        return predicate;
+    }
+
+
+
+    public PageResult<SysAccessLog> getAccessLogListByFilterPre(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+                                                             Date operateEndTime, int currentPage, int perPage) {
+        BooleanBuilder predicate = getPredicatePre(clientIp, operateAccount, operateStartTime, operateEndTime);
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
+        long total = originalSysAccessLogRepository.count(predicate);
+        List<SysAccessLog> data = originalSysAccessLogRepository.findAll(predicate, pageRequest).getContent();
+        return new PageResult<>(total, data);
+    }
+
+
+    /**
+     *
+     * @param sortBy
+     * @param order
+     * @param clientIp
+     * @param operateAccount
+     * @param operateStartTime
+     * @param operateEndTime
+     * @param isAll
+     * @param idList
+     * @return
+     */
+    private List<SysAccessLog> getExportListPre(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+                                       Date operateEndTime, boolean isAll, String idList) {
+        BooleanBuilder predicate = getPredicatePre(clientIp, operateAccount, operateStartTime, operateEndTime);
+        String[] splits = idList.split(",");
+        Long max_size = 5000L;
+        try {
+            SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
+            max_size = serPlatformOtherParams.getLogMaxNumber();
+        } catch(Exception ex) {}
+        List<Long> logIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            logIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSysAccessLog.sysAccessLog.id.in(logIdList));
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            if (order.equals(Constants.SortOrder.DESC)) {
+                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+            }
+        }
+        List<SysAccessLog> logList;
+        if(sort != null) {
+            logList = StreamSupport
+                    .stream(originalSysAccessLogRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            logList = StreamSupport
+                    .stream(originalSysAccessLogRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+        List<SysAccessLog> answerList = new ArrayList<>();
+        for(int i = 0; i < logList.size() && i < max_size; i ++) {
+            answerList.add(logList.get(i));
+        }
+
+        return answerList;//getExportList(logList, isAll, idList);
+    }
+
+    /**
+     * get predicate from filter parameters
+     * @param clientIp
+     * @param operateAccount
+     * @param operateStartTime
+     * @param operateEndTime
+     * @return
+     */
     private BoolQueryBuilder getPredicate(String clientIp, String operateAccount, Date operateStartTime, Date operateEndTime) {
 
         BoolQueryBuilder builder = QueryBuilders.boolQuery();
-//                .should(
-//                        QueryBuilders.queryStringQuery(text)
-//                                .lenient(true)
-//                                .field("name")
-//                                .field("teamName")
-//                ).should(QueryBuilders.queryStringQuery("*" + text + "*")
-//                        .lenient(true)
-//                        .field("name")
-//                        .field("teamName"));
 
         if (!StringUtils.isEmpty(clientIp)) {
             builder.must(QueryBuilders.matchQuery("client_ip", clientIp));
@@ -162,6 +259,22 @@ public class AccessLogServiceImpl implements AccessLogService {
         return exportList;
     }
 
+    private EsSysAccessLog convertAccessLog(SysAccessLog accessLog) {
+        return EsSysAccessLog.builder()
+                .id(accessLog.getId())
+                .operateId(accessLog.getOperateId())
+                .operateAccount(accessLog.getOperateAccount())
+                .operateResult(accessLog.getOperateResult())
+                .clientIp(accessLog.getClientIp())
+                .onlineTime(accessLog.getOnlineTime())
+                .action(accessLog.getAction())
+                .reasonCode(accessLog.getReasonCode())
+                .operateTime(accessLog.getOperateTime())
+                .createdBy(accessLog.getCreatedBy())
+                .editBy(accessLog.getEditedBy())
+                .build();
+    }
+
     /**
      * get paginated and filtered access log list
      * @param clientIp
@@ -176,21 +289,28 @@ public class AccessLogServiceImpl implements AccessLogService {
     public PageResult<EsSysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
                                                           Date operateEndTime, int currentPage, int perPage) {
 
-        BoolQueryBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            if (order.equals(Constants.SortOrder.ASC)) {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
-            }
-            else {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
-            }
-        } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("id").ascending());
+//        BoolQueryBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
+//        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+//        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+//            if (order.equals(Constants.SortOrder.ASC)) {
+//                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+//            }
+//            else {
+//                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+//            }
+//        } else {
+//            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("id").ascending());
+//        }
+//        //Page<EsSysAccessLog> pageResult = sysAccessLogRepository.search(predicate, pageRequest);
+//        long total = 0;//pageResult.getTotalElements();
+//        List<EsSysAccessLog> data = new ArrayList<>();//pageResult.getContent();
+        PageResult<SysAccessLog> preResult = getAccessLogListByFilterPre(sortBy, order, clientIp, operateAccount, operateStartTime, operateEndTime, currentPage, perPage);
+        long total = preResult.getTotal();
+        List<SysAccessLog> logResult = preResult.getDataList();
+        List<EsSysAccessLog> data = new ArrayList<>();
+        for(int i = 0; i < logResult.size(); i ++) {
+            data.add(convertAccessLog(logResult.get(i)));
         }
-        //Page<EsSysAccessLog> pageResult = sysAccessLogRepository.search(predicate, pageRequest);
-        long total = 0;//pageResult.getTotalElements();
-        List<EsSysAccessLog> data = new ArrayList<>();//pageResult.getContent();
         return new PageResult<>(total, data);
     }
 
@@ -207,30 +327,45 @@ public class AccessLogServiceImpl implements AccessLogService {
     @Override
     public List<EsSysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
                                          Date operateEndTime, boolean isAll, String idList) {
-        BoolQueryBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
-
-        String[] splits = idList.split(",");
-        List<Long> logIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            logIdList.add(Long.valueOf(idStr));
+//        BoolQueryBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
+//        Long max_size = 5000L;
+//        try {
+//            SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
+//            max_size = serPlatformOtherParams.getLogMaxNumber();
+//        } catch(Exception ex) {}
+//        String[] splits = idList.split(",");
+//        List<Long> logIdList = new ArrayList<>();
+//        for(String idStr: splits) {
+//            logIdList.add(Long.valueOf(idStr));
+//        }
+//        predicate.must( QueryBuilders.termsQuery("id", logIdList));
+//        Sort sort = null;
+//        PageRequest pageRequest = PageRequest.of(0, Integer.MAX_VALUE);
+//        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+//            if (order.equals(Constants.SortOrder.ASC)) {
+//                pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(sortBy).ascending());
+//            }
+//            else {
+//                pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(sortBy).descending());
+//            }
+//        } else {
+//            pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id").ascending());
+//        }
+//        List<EsSysAccessLog> logList = new ArrayList<>();//StreamSupport
+////                .stream(sysAccessLogRepository.search(predicate, pageRequest).spliterator(), false)
+////                .collect(Collectors.toList());
+//
+//        List<EsSysAccessLog> answerList = new ArrayList<>();
+//        for(int i = 0; i < logList.size() && i < max_size; i ++) {
+//            answerList.add(logList.get(i));
+//        }
+//        return answerList;
+        List<SysAccessLog> preResult = getExportListPre(sortBy, order, clientIp, operateAccount, operateStartTime, operateEndTime, isAll, idList);
+        List<EsSysAccessLog> data = new ArrayList<>();
+        for(int i = 0; i < preResult.size(); i ++) {
+            data.add(convertAccessLog(preResult.get(i)));
         }
-        predicate.must( QueryBuilders.termsQuery("id", logIdList));
-        Sort sort = null;
-        PageRequest pageRequest = PageRequest.of(0, Integer.MAX_VALUE);
-        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            if (order.equals(Constants.SortOrder.ASC)) {
-                pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(sortBy).ascending());
-            }
-            else {
-                pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(sortBy).descending());
-            }
-        } else {
-            pageRequest = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id").ascending());
-        }
-        List<EsSysAccessLog> logList = new ArrayList<>();//StreamSupport
-//                .stream(sysAccessLogRepository.search(predicate, pageRequest).spliterator(), false)
-//                .collect(Collectors.toList());
-        return logList;//getExportList(logList, isAll, idList);
+        return data;
 
     }
 

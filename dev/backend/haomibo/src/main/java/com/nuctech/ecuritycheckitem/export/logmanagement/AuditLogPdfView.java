@@ -19,6 +19,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
@@ -66,7 +67,7 @@ public class AuditLogPdfView extends BasePdfView {
                 addTableCell(table, log.getOperateObject());
                 addTableCell(table, log.getAction());
                 addTableCell(table, log.getOperateContent());
-                addTableCell(table, log.getOperateResult());
+                addTableCell(table, ConstantDictionary.getDataValue(log.getOperateResult()));
                 addTableCell(table, log.getReasonCode());
                 addTableCell(table, formatDate(log.getOperateTime()));
             }

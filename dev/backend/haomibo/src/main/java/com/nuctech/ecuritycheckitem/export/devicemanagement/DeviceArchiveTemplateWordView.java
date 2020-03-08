@@ -104,7 +104,7 @@ public class DeviceArchiveTemplateWordView extends BaseWordView {
                     tableRow.getCell(4).setText("无");
 
                 }
-                tableRow.getCell(5).setText(template.getManufacturer());
+                tableRow.getCell(5).setText(ConstantDictionary.getDataValue(template.getManufacturer()));
                 tableRow.getCell(6).setText(template.getOriginalModel());
             }
 

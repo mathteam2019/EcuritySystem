@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.export.logmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
 import org.apache.poi.ss.usermodel.Cell;
@@ -38,7 +39,7 @@ public class AuditLogExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue(messageSource.getMessage("AuditLog.Title", null, currentLocale));
+        headerCellNo.setCellValue(messageSource.getMessage("AuditLog.No", null, currentLocale));
 
         Cell headerCellOperatorId = header.createCell(1);
         headerCellOperatorId.setCellValue(messageSource.getMessage("AuditLog.OperatorId", null, currentLocale));
@@ -100,7 +101,7 @@ public class AuditLogExcelView extends BaseExcelView {
                 row.createCell(3).setCellValue(log.getOperateObject());
                 row.createCell(4).setCellValue(log.getAction());
                 row.createCell(5).setCellValue(log.getOperateContent());
-                row.createCell(6).setCellValue(log.getOperateContent());
+                row.createCell(6).setCellValue(ConstantDictionary.getDataValue(log.getOperateResult()));
                 row.createCell(7).setCellValue(log.getReasonCode());
                 row.createCell(8).setCellValue(formatDate(log.getOperateTime()));
             }

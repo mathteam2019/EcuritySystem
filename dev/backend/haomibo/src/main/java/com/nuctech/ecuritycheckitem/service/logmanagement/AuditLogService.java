@@ -72,5 +72,5 @@ public interface AuditLogService {
      * @param onlineTime: 在线时长(秒)
      * @return
      */
-    boolean saveAudioLog(String action, String result, String content, String reason, String object, Long onlineTime);
+    //boolean saveAudioLog(String action, String result, String content, String reason, String object, Long onlineTime);
 }

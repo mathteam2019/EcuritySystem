@@ -67,8 +67,6 @@ public class DataGroupWordView extends BaseWordView {
         tableRowHeader.getCell(0).setText(messageSource.getMessage("DataGroup.No", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DataGroup.Number", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DataGroup.Name", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DataGroup.Range", null, currentLocale));
-
     }
 
     /**
@@ -99,7 +97,6 @@ public class DataGroupWordView extends BaseWordView {
                 tableRow.getCell(0).setText(dataGroup.getDataGroupId().toString());
                 tableRow.getCell(1).setText(dataGroup.getDataGroupNumber());
                 tableRow.getCell(2).setText(dataGroup.getDataGroupName());
-                tableRow.getCell(3).setText("无");
 
             }
 

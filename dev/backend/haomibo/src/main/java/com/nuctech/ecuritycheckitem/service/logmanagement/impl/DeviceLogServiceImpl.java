@@ -197,6 +197,11 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         for(String idStr: splits) {
             logIdList.add(Long.valueOf(idStr));
         }
+        Long max_size = 5000L;
+        try {
+            SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
+            max_size = serPlatformOtherParams.getLogMaxNumber();
+        } catch(Exception ex) {}
         predicate.and(QSerDevLog.serDevLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -218,8 +223,12 @@ public class DeviceLogServiceImpl implements DeviceLogService {
                     .stream(serDevLogRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
+        List<SerDevLog> answerList = new ArrayList<>();
+        for(int i = 0; i < logList.size() && i < max_size; i ++) {
+            answerList.add(logList.get(i));
+        }
 
-        return logList;//getExportList(logList, isAll, idList);
+        return answerList;
 
     }
 }

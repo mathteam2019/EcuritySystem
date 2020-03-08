@@ -46,9 +46,9 @@ public class DataGroupPdfView extends BasePdfView {
             document.add(getTitle(messageSource.getMessage("DataGroup.Title",null, currentLocale)));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(4);
+            PdfPTable table = new PdfPTable(3);
             table.setWidthPercentage(99);
-            Stream.of("DataGroup.No", "DataGroup.Number", "DataGroup.Name", "DataGroup.Range")
+            Stream.of("DataGroup.No", "DataGroup.Number", "DataGroup.Name")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -61,7 +61,6 @@ public class DataGroupPdfView extends BasePdfView {
                 addTableCell(table, dataGroup.getDataGroupId().toString());
                 addTableCell(table, dataGroup.getDataGroupNumber());
                 addTableCell(table, dataGroup.getDataGroupName());
-                addTableCell(table, "无");
             }
 
             document.add(table);

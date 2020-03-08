@@ -25,6 +25,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTP;
 import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.net.ftp.FTPSClient;
@@ -48,28 +49,32 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 @Component
+@Slf4j
 public class Utils {
 
 
     @Value("${jwt.secret}")
     public String jwtSecret; // This is loaded from application.properties file.
 
-    @Value("${ftp.server.host}")
+    //@Value("${ftp.server.host}")
     private String host;
 
-    @Value("${ftp.server.user}")
+    //@Value("${ftp.server.user}")
     private String user;
 
-    @Value("${ftp.server.password}")
+    //@Value("${ftp.server.password}")
     private String password;
 
-    @Value("${ftp.server.port}")
+    //@Value("${ftp.server.port}")
     private int port;
 
     public String ipAddress;
 
     @Value("${server.port}")
     String serverPort;
+
+    @Value("${server.ipaddress}")
+    String serverIpAddress;
 
 
     /**
@@ -107,6 +112,7 @@ public class Utils {
         if (!directory.exists()) { // Check if directory exists.
             boolean isCreated = directory.mkdirs(); // File class has mkdir() and mkdirs() methods.
             if (!isCreated) {
+                log.error("Failed to create file directory");
                 // This is when the directory creation is failed.
                 return false;
             }
@@ -119,6 +125,7 @@ public class Utils {
             // Write file.
             Files.write(path, bytes);
         } catch (IOException e) {
+            log.error("Failed to upload file");
             e.printStackTrace();
 
             return false;
@@ -209,7 +216,7 @@ public class Utils {
                 String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
 
                 boolean isSucceeded = saveFile(directoryPath, fileName, bytes);
-                String ip = "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + serverPort;
+                String ip = "http://" + serverIpAddress + ":" + serverPort;
                 if (isSucceeded) {
                     // Save file name.
                     //return ip + Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName;

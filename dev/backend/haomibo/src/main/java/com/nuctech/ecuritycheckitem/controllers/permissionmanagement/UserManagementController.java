@@ -764,37 +764,42 @@ public class UserManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!userService.checkUserExist(requestBody.getUserId())) { // Check if org is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if(requestBody.getStatus().equals(SysUser.Status.INACTIVE)) {
+
             if (userService.checkParentUserGroupExist(requestBody.getUserId())) { // Check if org is existing.
-                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("HaveUserGroup", null, currentLocale), requestBody.getUserId().toString(),null);
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("User", null, currentLocale),
+                        messageSource.getMessage("HaveUserGroup", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
             }
             if (userService.checkParentDataGroupExist(requestBody.getUserId())) { // Check if org is existing.
-                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("HaveDataGroup", null, currentLocale), requestBody.getUserId().toString(),null);
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("User", null, currentLocale),
+                        messageSource.getMessage("HaveDataGroup", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.HAS_DATA_GROUPS);
             }
             if (userService.checkRoleExist(requestBody.getUserId())) { // Check if org is existing.
-                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("HaveRole", null, currentLocale), requestBody.getUserId().toString(),null);
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("User", null, currentLocale),
+                        messageSource.getMessage("HaveRole", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.HAS_ROLES);
             }
         }
         userService.updateStatus(requestBody.getUserId(), requestBody.getStatus());
-        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getUserId().toString(),null);
-
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -812,24 +817,25 @@ public class UserManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!userService.checkUserExist(requestBody.getUserId())) { // Check if org is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(!userService.modifyPassword(requestBody.getUserId(), requestBody.getPassword())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("User.Error.NoLocking", null, currentLocale), requestBody.getUserId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale),
+                    messageSource.getMessage("User.Error.NoLocking", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USER_NOT_LOCK);
         }
-        auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getUserId().toString(),null);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }

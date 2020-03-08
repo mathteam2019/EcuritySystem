@@ -220,7 +220,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         String valueBefore = getJsonFromDictionary(sysDictionary);
         sysDictionaryRepository.delete(SysDictionary.builder().dictionaryId(dictionaryId).build());
         auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
-                "", messageSource.getMessage("Dictionary", null, currentLocale), "", sysDictionary.getDictionaryId().toString(), null, true, valueBefore, "");
+                "", messageSource.getMessage("Dictionary", null, currentLocale), "", dictionaryId.toString(), null, true, valueBefore, "");
 
     }
 
@@ -234,7 +234,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         String valueBefore = getJsonFromDictionaryData(sysDictionaryData);
         sysDictionaryDataRepository.delete(SysDictionaryData.builder().dataId(dataId).build());
         auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
-                "", messageSource.getMessage("DictionaryData", null, currentLocale), "", sysDictionaryData.getDictionaryId().toString(), null, true, valueBefore, "");
+                "", messageSource.getMessage("DictionaryData", null, currentLocale), "", dataId.toString(), null, true, valueBefore, "");
     }
 
     /**

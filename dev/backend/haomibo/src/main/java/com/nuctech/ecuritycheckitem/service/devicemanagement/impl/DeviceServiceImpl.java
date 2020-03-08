@@ -714,7 +714,7 @@ public class DeviceServiceImpl implements DeviceService {
             SysDevice sysDevice = preSysDeviceList.get(i);
             if(sysDevice.getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
                 for(int j = 0; j < deviceConfigList.size(); j ++) {
-                    if(deviceConfigList.get(j).getStatus().equals(SysDeviceConfig.Status.ACTIVE)) {
+                    if(SysDeviceConfig.Status.ACTIVE.equals(deviceConfigList.get(j).getStatus())) {
                         continue;
                     }
                     Long configDeviceId = deviceConfigList.get(j).getDeviceId();

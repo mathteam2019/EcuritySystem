@@ -318,6 +318,7 @@ public class AuditLogController extends BaseController {
         }
         List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         AuditLogPdfView.setResource(getFontResource()); // set font resource
+        //AuditLogPdfView.setResourceFile(resourceFile); // set font resource
         setDictionary(); //set dictionary data
         AuditLogPdfView.setMessageSource(messageSource);
         InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
