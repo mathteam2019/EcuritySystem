@@ -99,14 +99,18 @@ public class KnowledgeDealPendingPdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
                 String goods = deal.getHandGoods();
-                String[] split = goods.split(",");
                 String convertGoods = "";
-                for(int i = 0; i < split.length; i ++) {
-                    if(i > 0) {
-                        convertGoods += ",";
+                if(goods != null) {
+                    String[] split = goods.split(",");
+
+                    for(int i = 0; i < split.length; i ++) {
+                        if(i > 0) {
+                            convertGoods += ",";
+                        }
+                        convertGoods += ConstantDictionary.getDataValue(split[i]);
                     }
-                    convertGoods += ConstantDictionary.getDataValue(split[i]);
                 }
+
                 addTableCell(table, convertGoods);
             }
 

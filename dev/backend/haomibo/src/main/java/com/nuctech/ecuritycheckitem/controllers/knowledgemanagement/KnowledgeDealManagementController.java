@@ -374,7 +374,7 @@ public class KnowledgeDealManagementController extends BaseController {
                 .addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE, SimpleBeanPropertyFilter.filterOutAllExcept("caseStatus"))  //return all fields except caseStatus from SerKnowLedgeCase model
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")) //return all fields except modeName from  SysWorkMode model
                 .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl")) //return all fields except imageUrl from  SerImage model
-                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber")) //return all fields except taskNumber from  SerTask model
+                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "field")) //return all fields except taskNumber from  SerTask model
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("field", "devicePassageWay", "deviceName")) //return all fields except specified fieldds from SysDevice model
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")); //return all fields except " from  SysField model
         value.setFilters(filters);

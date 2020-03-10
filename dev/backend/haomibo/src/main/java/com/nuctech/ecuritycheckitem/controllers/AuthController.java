@@ -174,6 +174,12 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USER_PENDING_STATUS);
         }
 
+        if((sysUser.getStatus().equals(SysUser.Status.BLOCKED))) {
+            accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , messageSource.getMessage("Block", null, currentLocale), null);
+            return new CommonResponseBody(ResponseMessage.USER_BLOCK_STATUS);
+        }
+
         if(!(sysUser.getStatus().equals(SysUser.Status.ACTIVE))) {
             accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                     , messageSource.getMessage("NonActive", null, currentLocale), null);

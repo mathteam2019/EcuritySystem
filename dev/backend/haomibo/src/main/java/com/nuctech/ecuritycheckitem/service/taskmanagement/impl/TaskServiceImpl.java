@@ -88,10 +88,10 @@ public class TaskServiceImpl implements TaskService {
             predicate.and(scanUserName);
         }
         if (startTime != null) {
-            predicate.and(builder.createdTime.after(startTime));
+            predicate.and(builder.serScan.scanStartTime.after(startTime));
         }
         if (endTime != null) {
-            predicate.and(builder.createdTime.before(endTime));
+            predicate.and(builder.serScan.scanStartTime.before(endTime));
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {
@@ -173,9 +173,9 @@ public class TaskServiceImpl implements TaskService {
             } else if(sortBy.equals("scanEndTime")) {
                 sortBy = "serScan.scanEndTime";
             }
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
         }
 
@@ -227,10 +227,12 @@ public class TaskServiceImpl implements TaskService {
             } else if(sortBy.equals("scanEndTime")) {
                 sortBy = "serScan.scanEndTime";
             }
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("taskId").descending();
         }
 
         List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();
@@ -313,6 +315,8 @@ public class TaskServiceImpl implements TaskService {
             } else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("taskId").descending());
         }
 
         long total = serTaskRepository.count(predicate);
@@ -349,10 +353,12 @@ public class TaskServiceImpl implements TaskService {
             } else if(sortBy.equals("scanEndTime")) {
                 sortBy = "serScan.scanEndTime";
             }
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("taskId").descending();
         }
 
         List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();
@@ -403,10 +409,12 @@ public class TaskServiceImpl implements TaskService {
             } else if(sortBy.equals("scanEndTime")) {
                 sortBy = "serScan.scanEndTime";
             }
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("taskId").descending();
         }
 
         List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();

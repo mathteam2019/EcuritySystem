@@ -137,6 +137,8 @@ public class ArchiveServiceImpl implements ArchiveService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("archiveId").ascending());
         }
 
         long total = serArchiveRepository.count(predicate);
@@ -446,10 +448,12 @@ public class ArchiveServiceImpl implements ArchiveService {
         //get all archive list
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("archiveId").ascending();
         }
         String[] splits = idList.split(",");
         List<Long> archiveIdList = new ArrayList<>();
@@ -458,15 +462,9 @@ public class ArchiveServiceImpl implements ArchiveService {
         }
         predicate.and(QSerArchive.serArchive.archiveId.in(archiveIdList));
         List<SerArchive> archiveList;
-        if(sort != null) {
-            archiveList = StreamSupport
-                    .stream(serArchiveRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        } else {
-            archiveList = StreamSupport
-                    .stream(serArchiveRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+        archiveList = StreamSupport
+                .stream(serArchiveRepository.findAll(predicate, sort).spliterator(), false)
+                .collect(Collectors.toList());
 
         //List<SerArchive> exportList = getExportList(archiveList, isAll, idList);
         return archiveList;

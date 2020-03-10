@@ -307,6 +307,8 @@ public class DictionaryServiceImpl implements DictionaryService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("dictionaryId").ascending());
         }
 
         long total = sysDictionaryRepository.count(predicate);
@@ -352,6 +354,8 @@ public class DictionaryServiceImpl implements DictionaryService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("dataId").ascending());
         }
         long total = sysDictionaryDataRepository.count(predicate);
         List<SysDictionaryData> data = sysDictionaryDataRepository.findAll(predicate, pageRequest).getContent();

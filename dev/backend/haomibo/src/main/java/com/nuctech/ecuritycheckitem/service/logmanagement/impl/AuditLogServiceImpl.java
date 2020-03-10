@@ -195,10 +195,12 @@ public class AuditLogServiceImpl implements AuditLogService {
         predicate.and(QSysAuditLog.sysAuditLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("id").ascending();
         }
         List<SysAuditLog> logList;
         if(sort != null) {

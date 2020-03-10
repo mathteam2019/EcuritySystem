@@ -337,6 +337,8 @@ public class OrganizationServiceImpl implements OrganizationService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("orgId").ascending());
         }
 
         long total = sysOrgRepository.count(predicate);
@@ -358,10 +360,12 @@ public class OrganizationServiceImpl implements OrganizationService {
         BooleanBuilder predicate = getPredicate(orgName, status, parentOrgName);
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("orgId").ascending();
         }
         if(sort != null) {
             return StreamSupport

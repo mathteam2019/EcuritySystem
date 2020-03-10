@@ -77,17 +77,17 @@ public class HistoryServiceImpl implements HistoryService {
             predicate.and(builder.task.taskStatus.eq(taskStatus));
         }
         if (fieldId != null) { //if field id is input
-            predicate.and(builder.task.workflowId.eq(fieldId));
+            predicate.and(builder.task.fieldId.eq(fieldId));
         }
         if (userName != null && !userName.isEmpty()) { //if username is input
             Predicate scanUserName = builder.scanPointsman.userName.contains(userName);
             predicate.and(scanUserName);
         }
         if (startTime != null) { //if start time is input
-            predicate.and(builder.createdTime.after(startTime));
+            predicate.and(builder.scanStartTime.after(startTime));
         }
         if (endTime != null) { //if end time is input
-            predicate.and(builder.createdTime.before(endTime));
+            predicate.and(builder.scanStartTime.before(endTime));
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {
@@ -161,9 +161,9 @@ public class HistoryServiceImpl implements HistoryService {
                 sortBy = "task.taskNumber";
             }
 
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
         }
 
@@ -198,10 +198,12 @@ public class HistoryServiceImpl implements HistoryService {
                 sortBy = "task.taskNumber";
             }
 
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("historyId").descending();
         }
 
         List<HistorySimplifiedForHistoryTableManagement> data = new ArrayList<>();

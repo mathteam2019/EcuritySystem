@@ -313,6 +313,8 @@ public class FieldServiceImpl implements FieldService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("fieldId").ascending());
         }
 
         long total = sysFieldRepository.count(predicate);
@@ -384,10 +386,12 @@ public class FieldServiceImpl implements FieldService {
         predicate.and(QSysField.sysField.fieldId.in(fieldIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("fieldId").ascending();
         }
         //get all field list
         List<SysField> fieldList;

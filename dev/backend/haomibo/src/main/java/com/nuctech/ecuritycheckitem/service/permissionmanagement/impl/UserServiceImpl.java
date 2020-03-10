@@ -406,6 +406,8 @@ public class UserServiceImpl implements UserService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("userId").ascending());
         }
 
         long total = sysUserRepository.count(predicate);
@@ -469,10 +471,12 @@ public class UserServiceImpl implements UserService {
         predicate.and(QSysUser.sysUser.userId.in(userIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("userId").ascending();
         }
         //get all user list
         List<SysUser> userList;
@@ -636,6 +640,8 @@ public class UserServiceImpl implements UserService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("userGroupId").ascending());
         }
         long total = sysUserGroupRepository.count(predicate);
         List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
@@ -695,10 +701,12 @@ public class UserServiceImpl implements UserService {
         predicate.and(QSysUserGroup.sysUserGroup.userGroupId.in(userGroupIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("userGroupId").ascending();
         }
         //get all user group list;
         List<SysUserGroup> userGroupList;

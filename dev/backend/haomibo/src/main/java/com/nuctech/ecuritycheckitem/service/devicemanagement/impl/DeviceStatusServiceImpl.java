@@ -131,7 +131,8 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             predicate.and(builder.device.createdBy.in(categoryUser.getUserIdList()).or(builder.device.editedBy.in(categoryUser.getUserIdList())));
         }
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage, Sort.by("statusId").ascending());
         long total = serDeviceStatusRepository.count(predicate);
         List<SerDeviceStatus> data = serDeviceStatusRepository.findAll(predicate, pageRequest).getContent();
 

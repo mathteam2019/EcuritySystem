@@ -189,6 +189,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("caseDealId").descending());
         }
         long total = serKnowledgeCaseDealRepository.count(predicate);
         List<SerKnowledgeCaseDeal> data = serKnowledgeCaseDealRepository.findAll(predicate, pageRequest).getContent();
@@ -220,10 +222,12 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sortBy = "task.taskNumber";
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("caseDealId").descending();
         }
         List<SerKnowledgeCaseDeal> dealList;
         if(sort != null) {

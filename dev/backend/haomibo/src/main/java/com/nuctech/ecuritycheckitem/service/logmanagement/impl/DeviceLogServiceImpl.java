@@ -168,6 +168,8 @@ public class DeviceLogServiceImpl implements DeviceLogService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("id").ascending());
         }
 
         long total = serDevLogRepository.count(predicate);
@@ -208,10 +210,12 @@ public class DeviceLogServiceImpl implements DeviceLogService {
             if(!sortBy.equals("time")) {
                 sortBy = "device.deviceSerial";
             }
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("id").ascending();
         }
         List<SerDevLog> logList;
         if(sort != null) {

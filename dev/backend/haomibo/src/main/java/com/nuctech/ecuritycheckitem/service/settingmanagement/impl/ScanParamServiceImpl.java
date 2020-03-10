@@ -185,6 +185,8 @@ public class ScanParamServiceImpl implements ScanParamService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanParamsId").ascending());
         }
         long total = serScanParamRepository.count(predicate);
         List<SerScanParam> data = serScanParamRepository.findAll(predicate, pageRequest).getContent();

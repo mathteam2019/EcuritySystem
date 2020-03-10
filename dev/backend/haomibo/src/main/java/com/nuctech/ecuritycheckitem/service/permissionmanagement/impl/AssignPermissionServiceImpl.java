@@ -300,6 +300,8 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("userId").ascending());
         }
         long total = sysUserRepository.count(predicate);
         List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
@@ -320,10 +322,12 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
         BooleanBuilder predicate = getPredicate(userName, orgId, roleName, dataRangeCategory);
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("userId").ascending();
         }
         if(sort != null) {
             return StreamSupport
@@ -350,7 +354,16 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
         BooleanBuilder predicate = getUserGroupPredicate(groupName, userName, roleName, dataRangeCategory);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("userGroupId").ascending());
+        }
         long total = sysUserGroupRepository.count(predicate);
         List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
 
@@ -367,9 +380,17 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      */
     public List<SysUserGroup> userGroupGetByFilter(String sortBy, String order, String groupName, String userName, String roleName, String dataRangeCategory) {
         BooleanBuilder predicate = getUserGroupPredicate(groupName, userName, roleName, dataRangeCategory);
-
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = Sort.by(sortBy).ascending();
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = Sort.by(sortBy).descending();
+            }
+        } else {
+            sort = Sort.by("userGroupId").ascending();
+        }
         return StreamSupport
-                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
+                .stream(sysUserGroupRepository.findAll(predicate, sort).spliterator(), false)
                 .collect(Collectors.toList());
     }
 

@@ -168,6 +168,8 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("archivesTemplateId").ascending());
         }
 
         long total = serArchiveTemplateRepository.count(predicate);
@@ -513,10 +515,12 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         BooleanBuilder predicate = getPredicate(templateName, status, categoryId);
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("archivesTemplateId").ascending();
         }
         String[] splits = idList.split(",");
         List<Long> templateIdList = new ArrayList<>();
@@ -526,15 +530,9 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         predicate.and(QSerArchiveTemplate.serArchiveTemplate.archivesTemplateId.in(templateIdList));
         //get all archive list
         List<SerArchiveTemplate> archiveTemplateList;
-        if(sort != null) {
-            archiveTemplateList = StreamSupport
-                    .stream(serArchiveTemplateRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        } else {
-            archiveTemplateList = StreamSupport
-                    .stream(serArchiveTemplateRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+        archiveTemplateList = StreamSupport
+                .stream(serArchiveTemplateRepository.findAll(predicate, sort).spliterator(), false)
+                .collect(Collectors.toList());
 
 
         //List<SerArchiveTemplate> exportList = getExportList(archiveTemplateList, isAll, idList);

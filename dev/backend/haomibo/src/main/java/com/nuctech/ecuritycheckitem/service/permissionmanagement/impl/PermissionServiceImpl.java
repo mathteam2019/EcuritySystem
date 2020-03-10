@@ -245,6 +245,8 @@ public class PermissionServiceImpl implements PermissionService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("roleId").ascending());
         }
         long total = sysRoleRepository.count(predicate);
         List<SysRole> data = sysRoleRepository.findAll(predicate, pageRequest).getContent();
@@ -304,10 +306,12 @@ public class PermissionServiceImpl implements PermissionService {
         predicate.and(QSysRole.sysRole.roleId.in(roleIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("roleId").ascending();
         }
 
         //get all role list
@@ -587,6 +591,8 @@ public class PermissionServiceImpl implements PermissionService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("dataGroupId").ascending());
         }
 
         long total = sysDataGroupRepository.count(predicate);
@@ -647,10 +653,12 @@ public class PermissionServiceImpl implements PermissionService {
         predicate.and(QSysDataGroup.sysDataGroup.dataGroupId.in(dataGroupIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("dataGroupId").ascending();
         }
         //get all data group list
         List<SysDataGroup> dataGroupList;

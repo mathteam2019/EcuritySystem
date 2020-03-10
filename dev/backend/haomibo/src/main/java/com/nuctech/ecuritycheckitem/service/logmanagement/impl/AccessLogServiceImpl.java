@@ -117,6 +117,8 @@ public class AccessLogServiceImpl implements AccessLogService {
             else {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("id").ascending());
         }
         long total = originalSysAccessLogRepository.count(predicate);
         List<SysAccessLog> data = originalSysAccessLogRepository.findAll(predicate, pageRequest).getContent();
@@ -152,10 +154,12 @@ public class AccessLogServiceImpl implements AccessLogService {
         predicate.and(QSysAccessLog.sysAccessLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            //sort = new Sort(Sort.Direction.ASC, new ArrayList<>(Arrays.asList(sortBy)));
+            sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
-                //sort = new Sort(Sort.Direction.DESC, new ArrayList<>(Arrays.asList(sortBy)));
+                sort = Sort.by(sortBy).descending();
             }
+        } else {
+            sort = Sort.by("id").ascending();
         }
         List<SysAccessLog> logList;
         if(sort != null) {

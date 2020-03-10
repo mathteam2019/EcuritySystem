@@ -27,6 +27,7 @@ public enum ResponseMessage {
     INVALID_SCANID("invalid_serscan_id"),  //response message in case of invalid serscan id detected
     USER_NOT_FOUND("user_not_found"),  //response message in case of user not found
     USER_PENDING_STATUS("user_pending_status"),  //response message in case of user pending statue
+    USER_BLOCK_STATUS("user_block_status"),  //response message in case of user pending statue
     USER_NON_ACTIVE_STATUS("user_non_active_status"),  //response message in case of user non active statue
     PRE_USER_PENDING_STATUS("pre_user_pending_status"),  //response message in case of one time before of user pending statue
     INVALID_PASSWORD("invalid_password"),  //response message in case of invalid password

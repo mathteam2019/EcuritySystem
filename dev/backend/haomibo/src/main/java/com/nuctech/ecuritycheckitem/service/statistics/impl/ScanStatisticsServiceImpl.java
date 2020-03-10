@@ -221,8 +221,8 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
                 "\tcount( s.SCAN_ID ) AS total,\n" +
                 "\tsum( IF ( s.scan_invalid LIKE '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS valid,\n" +
                 "\tsum( IF ( s.scan_invalid LIKE '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalid,\n" +
-                "\tsum( IF ( s.scan_atr_result LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passed,\n" +
-                "\tsum( IF ( s.scan_atr_result LIKE '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarm\n";
+                "\tsum( IF ( s.scan_invalid LIKE '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passed,\n" +
+                "\tsum( IF ( s.scan_invalid LIKE '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result LIKE '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarm\n";
 
     }
 
