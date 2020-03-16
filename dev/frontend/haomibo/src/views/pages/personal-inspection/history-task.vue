@@ -10,7 +10,7 @@
     <b-card class="main-without-tab" v-show="pageStatus === 'table'" style="margin-top: 20px;">
       <div class="h-100 d-flex flex-column">
         <b-row class="pt-2">
-          <b-col cols="9">
+          <b-col cols="8">
             <b-row>
               <b-col>
                 <b-form-group :label="$t('personal-inspection.task-number')">
@@ -36,14 +36,14 @@
                 </b-form-group>
               </b-col>
 
-              <b-col class="d-flex align-items-center" style="padding-top: 10px;">
+              <div class="d-flex align-items-center" style="padding-top: 10px;">
                       <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"/>
                       </span>
-              </b-col>
+              </div>
             </b-row>
           </b-col>
-          <b-col cols="9" v-if="isExpanded">
+          <b-col cols="8" v-if="isExpanded">
             <b-row>
 
               <b-col>
@@ -62,10 +62,9 @@
               <b-col/>
               <b-col/>
               <b-col/>
-              <b-col/>
             </b-row>
           </b-col>
-          <b-col cols="3" class="d-flex justify-content-end align-items-center">
+          <b-col cols="4" class="d-flex justify-content-end align-items-center">
             <div>
               <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
                 <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
@@ -178,7 +177,7 @@
                 </div>
               </b-col>
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
-                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
+                <span v-if="showPage.serKnowledgeCase==null || showPage.serKnowledgeCase.caseId==null"><i
                   class="icofont-star"/></span>
                 <span v-if="showPage.judgeResult!=null && showPage.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
@@ -197,8 +196,8 @@
               <b-col style="padding-right: 1rem; padding-left: 0.5rem;">
                 <canvas id="secondcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
-                  <div v-if="power===false">
-                    <b-img :disabled="power===false" src="/assets/img/previous_cartoon.png" class="operation-icon"
+                  <div v-if="power===true">
+                    <b-img :disabled="power===true" src="/assets/img/previous_cartoon.png" class="operation-icon"
                            @click="previousImage()"/>
                     <b-img src="/assets/img/next_cartoon.png" class="operation-icon" @click="nextImage()"/>
                   </div>
@@ -244,7 +243,7 @@
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(0)"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(10)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
                   </div>
 
@@ -254,7 +253,7 @@
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(10)"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(11)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
                   </div>
 
@@ -311,9 +310,7 @@
                   <div class="left">
                     <div>{{$t('menu.start')}}</div>
                   </div>
-                  <!--                  <div class="right">-->
-                  <!--                    <div>Start</div>-->
-                  <!--                  </div>-->
+
                 </div>
 
                 <div class="part">
@@ -323,9 +320,7 @@
                       <div v-if="showPage.scanPointsmanName != null">{{showPage.scanPointsmanName}}</div>
                     </div>
                   </div>
-                  <!--                  <div class="right">-->
-                  <!--                    <div>Scanning</div>-->
-                  <!--                  </div>-->
+
                   <div class="top-date">
                     <label
                       v-if="showPage.scanStartTime != null">{{this.getDateTimeFormat2(showPage.scanStartTime)}}</label>
@@ -345,10 +340,7 @@
                       <div v-else>{{$t('maintenance-management.process-task.default-user')}}</div>
                     </div>
                   </div>
-                  <!--                  <div class="right">-->
-                  <!--                    <div>Decision</div>-->
-                  <!--                    <div>diagram</div>-->
-                  <!--                  </div>-->
+
                   <div class="top-date">
                     <label v-if="showPage.judgeStartTime==null"/>
                     <label
@@ -369,9 +361,7 @@
                       <div v-else>{{showPage.handUser.userName}}</div>
                     </div>
                   </div>
-                  <!--                  <div class="right">-->
-                  <!--                    <div>Inspection</div>-->
-                  <!--                  </div>-->
+
                   <div class="top-date">
                     <label v-if="showPage.handUserId === null || showPage.handStartTime ===null"/>
                     <label
@@ -388,9 +378,7 @@
                   <div class="left">
                     <div>{{$t('menu.end')}}</div>
                   </div>
-                  <!--                  <div class="right">-->
-                  <!--                    <div>End</div>-->
-                  <!--                  </div>-->
+
                 </div>
 
               </div>
@@ -530,7 +518,7 @@
               <b-col>
                 <b-form-group class="form-group-margin">
                   <template slot="label">
-                    备注
+                     {{$t('permission-management.note')}}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border" style="max-width: 100%;"
@@ -1071,7 +1059,7 @@
         isExport:false,
         isExpanded: false,
         pageStatus: 'table',
-        power: true,
+        power: false,
         siteData: [],
         showPage: [],
         renderedCheckList:[],
@@ -1204,10 +1192,10 @@
 
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: '1', text: '安检仪+(本地手检)'},
-          {value: '2', text: '安检仪+手检端'},
-          {value: '3', text: '安检仪+审图端'},
-          {value: '4', text: '安检仪+审图端+手检端'},
+          {value: '1', text: this.$t('personal-inspection.security-instrument')},
+          {value: '2', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
+          {value: '3', text: this.$t('personal-inspection.security-instrument-and-manual-test')},
+          {value: '4', text: this.$t('personal-inspection.security-instrument-and-hand-test-and-device')},
         ],
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -1226,7 +1214,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'historyId',
+              name: '__sequence',
               title: this.$t('personal-inspection.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -1475,7 +1463,7 @@
       },
 
       onlyOneSlide(value) {
-        if (this.power === false) {
+        if (this.power === true) {
           if (value === 1) {
             this.isSlidebar1Expended = !this.isSlidebar1Expended;
             this.isSlidebar2Expended = !this.isSlidebar1Expended;
@@ -1492,7 +1480,7 @@
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
         }
-        if (this.power === false) {
+        if (this.power === true) {
           imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
         }
       },
@@ -1502,7 +1490,7 @@
         let url2 = '';
         this.slidebar1value = [0, 0];
         this.slidebar2value = [0, 0];
-        if (this.power === true) {
+        if (this.power === false) {
 
           if (this.imagesInfo[0] !== undefined) {
             url1 = this.imagesInfo[0].imageUrl;
@@ -1665,10 +1653,10 @@
       getModeName(value) {
         const dictionary = {
 
-          "1000001301": `安检仪+(本地手检)`,
-          "1000001302": `安检仪+手检端`,
-          "1000001303": `安检仪+审图端`,
-          "1000001304": `安检仪+审图端+手检端`,
+          "1000001301": this.$t('personal-inspection.security-instrument'),
+          "1000001302": this.$t('personal-inspection.security-instrument-and-hand-test'),
+          "1000001303": this.$t('personal-inspection.security-instrument-and-manual-test'),
+          "1000001304": this.$t('personal-inspection.security-instrument-and-hand-test-and-device')
 
         };
         if (!dictionary.hasOwnProperty(value)) return '';
@@ -1764,7 +1752,7 @@
 
       onRowClicked(taskNumber) {
         this.pageStatus = 'show';
-        this.power = true;
+        this.power = false;
         this.isSlidebar1Expended = false;
         this.isSlidebar2Expended = false;
         this.cntCartoon = 0;
@@ -1972,9 +1960,18 @@
       onCollectionClicked(history_id) {
 
         let tagList = [];
+
+        if(this.collectionLabel.length === 0){
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`personal-inspection.select-tag`), {
+            duration: 3000,
+            permanent: false
+          });
+          return;
+        }
         for (let i = 0; i < this.collectionLabel.length; i++) {
           tagList[i] = this.collectionLabel[i].value;
         }
+
         let loginfo = getLoginInfo();
         let userId = loginfo.user.id;
         getApiManager()
@@ -1996,7 +1993,7 @@
                 this.onRowClicked(history_id);
                 break;
               case responseMessages['exist-knowledge']:
-                this.$notify('warning', this.$t('permission-management.success'), this.$t(`personal-inspection.exist-knowledge`), {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`personal-inspection.exist-knowledge`), {
                   duration: 3000,
                   permanent: false
                 });
@@ -2073,6 +2070,8 @@
         this.apiUrl = apiUrl;
         this.httpOption = httpOptions;
         this.renderedCheckList = [];
+        this.changeCheckAllStatus();
+        this.changeCheckAllStatus();
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
@@ -2088,7 +2087,7 @@
       },
 
       onTaskVuetableChangePage(page) {
-        this.$refs.taskVuetable.changePage(page)
+        this.$refs.taskVuetable.changePage(page);
         this.changeCheckAllStatus();
       }
     }

@@ -476,7 +476,7 @@ export default {
     noDataTemplate: {
       type: String,
       default() {
-        return 'No Data Available'
+        return this.$t('vuetable.no-data');
       }
     },
     showSortIcons: {
@@ -1069,6 +1069,7 @@ export default {
       return this.isSelectedRow(key)
     },
     checkCheckboxesState (fieldName) {
+
       if (! this.tableData) return
       let self = this
       let idColumn = this.trackBy

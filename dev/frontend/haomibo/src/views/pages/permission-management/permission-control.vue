@@ -141,6 +141,10 @@
                         <i class="icofont-save"/>
                         {{ $t('permission-management.permission-control.save') }}
                       </b-button>
+                      <b-button @click="roleForm.visible = false"
+                                variant="danger default" size="sm"><i
+                        class="icofont-long-arrow-left"/> {{$t('system-setting.cancel')}}
+                      </b-button>
                     </div>
                   </div>
 
@@ -201,6 +205,7 @@
                       <i class="icofont-save"/>
                       {{$t('permission-management.permission-control.save')}}
                     </b-button>
+
                     <b-button @click="onClickDeleteRole(selectedRole)" size="sm" variant="danger default"
                               :disabled="checkPermItem('role_delete')">
                       <i class="icofont-bin"/>
@@ -226,7 +231,14 @@
                   </b-form-group>
                 </b-col>
 
-                <b-col cols="10" class="d-flex justify-content-end align-items-center">
+                <b-col cols="2">
+                  <b-form-group>
+                    <template slot="label">{{$t('permission-management.permission-control.data-range')}}</template>
+                    <b-form-input v-model="userName"/>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="8" class="d-flex justify-content-end align-items-center">
                   <div>
                     <b-button size="sm" class="ml-2" variant="info default" @click="searchDataGroup()">
                       <i class="icofont-search-1"/>&nbsp;{{ $t('permission-management.search') }}
@@ -364,6 +376,10 @@
                 <div>
                   <b-button @click="createDataGroup()" size="sm" variant="info default"><i class="icofont-save"/>
                     {{$t('permission-management.permission-control.save')}}
+                  </b-button>
+                  <b-button @click="selectedDataGroup = false"
+                            variant="danger default" size="sm"><i
+                    class="icofont-long-arrow-left"/> {{$t('system-setting.cancel')}}
                   </b-button>
                 </div>
               </div>
@@ -617,7 +633,7 @@
               width: '60px'
             },
             {
-              name: 'roleId',
+              name: '__sequence',
               title: this.$t('permission-management.permission-control.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -652,6 +668,7 @@
           note: '',
         },
         groupKeyword: '',
+        userName :'',
         dataRangeKeyword: '',
         groupFlag: null,
         orgList: [],
@@ -672,7 +689,7 @@
               width: '60px'
             },
             {
-              name: 'dataGroupId',
+              name: '__sequence',
               title: this.$t('permission-management.permission-control.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -691,7 +708,14 @@
               title: this.$t('permission-management.permission-control.data-group'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '31%'
+              width: '21%'
+            },
+            {
+              name: 'groupMember',
+              title: this.$t('permission-management.permission-control.data-group-range'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              width: '18%'
             },
             {
               name: '__slot:operating',
@@ -955,7 +979,8 @@
         let checkedIds = this.$refs.dataGroupVuetable.selectedTo;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'filter': {dataGroupName: this.groupKeyword},
+          'filter': {dataGroupName: this.groupKeyword,
+                      userName: this.userName},
           'idList': checkedIds.join()
         };
         this.link = `permission-management/permission-control/data-group`;
@@ -970,7 +995,8 @@
         let checkedIds = this.$refs.dataGroupVuetable.selectedTo;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'filter': {dataGroupName: this.groupKeyword},
+          'filter': {dataGroupName: this.groupKeyword,
+                      userName:this.userName},
           'idList': checkedIds.join()
         };
         let link = `permission-management/permission-control/data-group`;
@@ -1543,6 +1569,7 @@
       },
       resetDataGroupSearchForm() {
         this.groupKeyword = '';
+        this.userName= '';
       },
       dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
         this.renderedCheckListGroup =[];
@@ -1552,6 +1579,7 @@
           sort: httpOptions.params.sort,
           filter: {
             dataGroupName: this.groupKeyword,
+            userName:this.userName
           }
         });
       },
@@ -1574,6 +1602,15 @@
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
           transformed.data.push(temp);
+          let usersName =[];
+          temp.users.forEach(users => {
+            usersName.push(users.userName);
+          });
+          let groupMember = usersName.join(',');
+          if(groupMember.length>30){
+            groupMember = groupMember.substr(0, 30) + "···"; // Gets the first part
+          }
+          temp.groupMember = groupMember;
           this.renderedCheckListGroup.push(data.data[i].dataGroupId);
         }
 

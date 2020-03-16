@@ -97,7 +97,7 @@
                   v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.totalScan}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>扫描</span></div>
+              <div><span>{{$t('maintenance-management.process-task.scan')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -114,7 +114,7 @@
                   v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.validScan}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>有效扫描</span></div>
+              <div><span>{{$t('statistics.view.valid-scan')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -131,7 +131,7 @@
                   v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.passedScan}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>通过</span></div>
+              <div><span>{{$t('permission-management.permission-control.pending-success')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -148,7 +148,7 @@
                   v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>报警</span></div>
+              <div><span>{{$t('statistics.view.alarm-scan')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -164,7 +164,7 @@
                 <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.invalidScan}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>无效扫描</span></div>
+              <div><span>{{$t('statistics.view.invalid-scan')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -183,7 +183,7 @@
                 <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.totalJudge}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>判图</span></div>
+              <div><span>{{$t('maintenance-management.process-task.judge')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -199,7 +199,7 @@
                 <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.noSuspictionJudge}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>无嫌疑</span></div>
+              <div><span>{{$t('knowledge-base.no-suspect')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -215,7 +215,7 @@
                 <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.totalHandExamination}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>手检</span></div>
+              <div><span>{{$t('maintenance-management.process-task.hand')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -231,7 +231,7 @@
                 <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.noSeizureHandExamination}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>无查获</span></div>
+              <div><span>{{$t('knowledge-base.no-seized')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -247,7 +247,7 @@
                 <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.seizureHandExamination}}</span>
                 <span v-else>0</span>
               </div>
-              <div><span>查获</span></div>
+              <div><span>{{$t('knowledge-base.seized')}}</span></div>
             </div>
           </div>
         </b-card>
@@ -279,7 +279,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>扫描</h5>
+                <h5>{{$t('maintenance-management.process-task.scan')}}</h5>
               </b-card-header>
               <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
 
@@ -292,21 +292,21 @@
                   <div class="legend-group">
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">无效扫描</div>
+                      <div class="legend-name">{{$t('statistics.view.invalid-scan')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">
                         {{preViewData.totalStatistics.scanStatistics.invalidScan}}
                       </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">有效扫描</div>
+                      <div class="legend-name">{{$t('statistics.view.valid-scan')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">
                         {{preViewData.totalStatistics.scanStatistics.validScan}}
                       </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">报警</div>
+                      <div class="legend-name">{{$t('statistics.view.alarm-scan')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">
                         {{preViewData.totalStatistics.scanStatistics.alarmScan}}
                       </div>
@@ -314,7 +314,7 @@
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">通过</div>
+                      <div class="legend-name">{{$t('permission-management.permission-control.pending-success')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">
                         {{preViewData.totalStatistics.scanStatistics.passedScan}}
                       </div>
@@ -329,7 +329,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>扫描历史</h5>
+                <h5>{{$t('statistics.view.scan-history')}}</h5>
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
@@ -348,55 +348,55 @@
         <b-card class="flex-grow-1 ">
           <b-card-header>
 
-            <h5 class="text-center my-4">人体查验综合统计</h5>
+            <h5 class="text-center my-4">{{$t('statistics.view.table-title')}}</h5>
 
           </b-card-header>
 
           <div class="flex-grow-1 ">
             <div class="container-fluid">
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>现场:</b></b-col>
+                <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
                 <b-col cols="11">
                   <span v-if="filter.fieldId === null">{{allField}}</span>
                   <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>安检仪:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
                 <b-col cols="11">
                   <span v-if="filter.deviceId === null">{{allDevice}}</span>
                   <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>操作员类型:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
                 <b-col cols="11">
                   <span v-if="filter.userCategory === null">扫描, 判图, 手检</span>
                   <span v-else>{{getCategoryLabel(filter.userCategory)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>操作员:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.userName===null">全部</span>
+                  <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
                   <span v-else>{{filter.userName}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>时间:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
                 <b-col cols="11">
                   <span>{{getDateTimeFormat(filter.startTime)}}-{{getDateTimeFormat(filter.endTime)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>统计步长:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.statWidth==='hour'">时</span>
-                  <span v-else-if="filter.statWidth==='day'">天</span>
-                  <span v-else-if="filter.statWidth==='week'">周</span>
-                  <span v-else-if="filter.statWidth==='month'">月</span>
-                  <span v-else-if="filter.statWidth==='quarter'">季度</span>
-                  <span v-else>年</span>
+                  <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
+                  <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
+                  <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
+                  <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
+                  <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
+                  <span v-else>{{$t('statistics.year')}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters">
@@ -472,7 +472,6 @@
   </div>
 </template>
 
-
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
@@ -492,7 +491,7 @@
   import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
-  import {checkPermissionItem, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import {validationMixin} from "vuelidate";
   import Modal from '../../../components/Modal/modal'
 
@@ -518,6 +517,7 @@
       this.getSiteOption();
       this.getManualDeviceData();
       this.getPreviewData();
+      this.setPeriodLabel('hour');
     },
     data() {
       return {
@@ -569,11 +569,11 @@
               data: [
                 {
                   value: 0,
-                  name: '无效扫描'
+                  name: this.$t('statistics.view.invalid-scan')
                 },
                 {
                   value: 0,
-                  name: '有效扫描'
+                  name: this.$t('statistics.view.valid-scan')
                 },
               ]
             },
@@ -595,8 +595,8 @@
                 length2: -15
               },
               data: [
-                {value: 0, name: '报警'},
-                {value: 0, name: '通过'},
+                {value: 0, name: this.$t('statistics.view.alarm-scan')},
+                {value: 0, name: this.$t('permission-management.permission-control.pending-success')},
               ]
             }
           ]
@@ -609,7 +609,7 @@
             }
           },
           legend: {
-            data: ['通过', '报警', '无效扫描'],
+            data: [this.$t('permission-management.permission-control.pending-success'), this.$t('statistics.view.alarm-scan'), this.$t('statistics.view.invalid-scan')],
             icon: 'rect',
             right: 25
           },
@@ -649,22 +649,22 @@
           color: ['#ff6600', '#009900', '#cccccc'],
           series: [
             {
-              name: '报警',
+              name: this.$t('permission-management.permission-control.pending-success'),
               type: 'bar',
-              stack: '总量',
+              stack: this.$t('statistics.view.total'),
               data: [0]
             },
             {
-              name: '通过',
+              name: this.$t('statistics.view.alarm-scan'),
               type: 'bar',
-              stack: '总量',
+              stack: this.$t('statistics.view.total'),
 
               data: [0]
             },
             {
-              name: '无效扫描',
+              name: this.$t('statistics.view.invalid-scan'),
               type: 'bar',
-              stack: '总量',
+              stack: this.$t('statistics.view.total'),
               data: []
             }
           ]
@@ -713,32 +713,34 @@
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
         onSiteOptions: [
-          {value: null, text: "全部"},
+          {value: null, text: this.$t('personal-inspection.all')},
           {value: 'way_1', text: "通道1"},
           {value: 'way_2', text: "通道2"},
           {value: 'way_3', text: "通道3"},
         ],
         onSiteOption: [],
         securityDeviceOptions: [
-          {value: null, text: "全部"},
+          {value: null, text: this.$t('personal-inspection.all')},
           {value: 'security_device_1', text: "安检仪001"},
           {value: 'security_device_2', text: "安检仪002"},
           {value: 'security_device_3', text: "安检仪003"},
         ],
         operatorTypeOptions: [
-          {value: null, text: "全部"},
-          {value: '1000002404', text: "扫描"},
-          {value: '1000002403', text: "判图"},
-          {value: '1000002402', text: "手检"},
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: '1000002404', text: this.$t('maintenance-management.process-task.scan')},
+          {value: '1000002403', text: this.$t('maintenance-management.process-task.judge')},
+          {value: '1000002402', text: this.$t('maintenance-management.process-task.hand')},
         ],
         statisticalStepSizeOptions: [
-          {value: 'hour', text: "时"},
-          {value: 'day', text: "天"},
-          {value: 'week', text: "周"},
-          {value: 'month', text: "月"},
-          {value: 'quarter', text: "季度"},
-          {value: 'year', text: "年"},
+          {value: 'hour', text: this.$t('statistics.hour')},
+          {value: 'day', text: this.$t('statistics.day')},
+          {value: 'week', text: this.$t('statistics.week')},
+          {value: 'month', text: this.$t('statistics.month')},
+          {value: 'quarter', text: this.$t('statistics.quarter')},
+          {value: 'year', text: this.$t('statistics.year')},
         ],
+
+        periodLabel : '期间(時)',
 
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/statistics/preview`,
@@ -749,24 +751,21 @@
               dataClass: 'text-center'
             },
             {
-              name: 'time',
-              title: '序号',
+              name: '__sequence',
+              title: this.$t('knowledge-base.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (time) => {
-                if (this.filter.statWidth === 'hour') return time + 1;
-                else return time;
-              }
+
             },
             {
               name: 'time',
-              title: '期间',
+              title : this.setPeriodLabel,
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
               name: 'scanStatistics',
-              title: '扫描总量',
+              title: this.$t('statistics.view.scan-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
@@ -776,7 +775,7 @@
             },
             {
               name: 'scanStatistics',
-              title: '无效扫描量',
+              title: this.$t('statistics.view.invalid-scan-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
@@ -786,7 +785,7 @@
             },
             {
               name: 'scanStatistics',
-              title: '无效率',
+              title: this.$t('statistics.view.invalid-scan-rate-table'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
@@ -796,7 +795,7 @@
             },
             {
               name: 'judgeStatistics',
-              title: '判图总量',
+              title: this.$t('statistics.view.judge-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
@@ -806,7 +805,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '手检量',
+              title: this.$t('statistics.view.hand-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -816,7 +815,7 @@
             },
             {
               name: 'judgeStatistics',
-              title: '无嫌疑量',
+              title: this.$t('statistics.view.no-suspiction-judge'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
@@ -826,7 +825,7 @@
             },
             {
               name: 'judgeStatistics',
-              title: '无嫌疑率',
+              title: this.$t('statistics.view.no-suspiction-judge-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
@@ -836,7 +835,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '无查获量',
+              title: this.$t('statistics.view.no-seizure'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -846,7 +845,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '无查获率',
+              title: this.$t('statistics.view.no-seizure-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -856,7 +855,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '查获量',
+              title: this.$t('statistics.view.seizure'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -866,7 +865,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '查获率',
+              title: this.$t('statistics.view.seizure-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -901,9 +900,60 @@
             text: this.$t('system-setting.none'),
             value: 0
           });
-      }
+      },
+
     },
     methods: {
+      setPeriodLabel (newVal) {
+        if(getLocale() === 'zh') {
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = '期间(時)';
+              break;
+            case 'day':
+              this.periodLabel = '期间(天)';
+              break;
+            case 'week':
+              this.periodLabel = '期间(周)';
+              break;
+            case 'month':
+              this.periodLabel = '期间(月)';
+              break;
+            case 'quarter':
+              this.periodLabel = '期间(季度)';
+              break;
+            case 'year':
+              this.periodLabel = '期间(年)';
+              break;
+          }
+        }else{
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = 'periods(hour)';
+              break;
+            case 'day':
+              this.periodLabel = 'periods(day)';
+              break;
+            case 'week':
+              this.periodLabel = 'periods(week)';
+              break;
+            case 'month':
+              this.periodLabel = 'periods(month)';
+              break;
+            case 'quarter':
+              this.periodLabel = 'periods(quarter)';
+              break;
+            case 'year':
+              this.periodLabel = 'periods(year)';
+              break;
+          }
+        }
+        return this.periodLabel;
+
+      },
+      // getPeriodLabel () {
+      //   return this.periodLabel;
+      // },
       selectAll(value){
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
         this.$refs.taskVuetable.isCheckAllStatus=value;
@@ -1035,7 +1085,7 @@
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -1054,7 +1104,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -1082,7 +1132,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -1152,8 +1202,8 @@
             let key = this.xDay[i];
 
             if (this.preViewData.detailedStatistics[key] != null && this.preViewData.detailedStatistics[key].scanStatistics != null) {
-              this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.passedScan;
-              this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.alarmScan;
+              this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.alarmScan;
+              this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.passedScan;
               this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.invalidScan;
             } else {
               this.bar3ChartOptions.series[0].data[i] = 0;
@@ -1169,6 +1219,7 @@
 
       onSearchButton() {
         this.getPreviewData();
+        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
@@ -1222,6 +1273,7 @@
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
         this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,

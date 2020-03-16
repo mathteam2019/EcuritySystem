@@ -708,7 +708,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'scanParamsId',
+              name: '__sequence',
               title: this.$t('permission-management.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center'

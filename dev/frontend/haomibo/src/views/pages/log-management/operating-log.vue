@@ -28,11 +28,21 @@
         <b-row v-if="pageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
-              <b-col cols="8">
+              <b-col cols="9">
                 <b-row>
                   <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.access-ip')">
-                      <b-form-input v-model="accessFilter.clientIp"/>
+                    <b-form-group :label="$t('log-management.operating-log.access-user')">
+                      <b-form-input v-model="accessFilter.operateAccount"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.operating')">
+                      <b-form-input v-model="accessFilter.action"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.operating-result')">
+                      <b-form-select v-model="accessFilter.operateResult" :options="statusSelectData" plain/>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -44,18 +54,13 @@
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
                       <date-picker v-model="accessFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm"
-                                   valueType="YYYY-MM-DD HH:mm:ss" placeholder=""/>
+                                   placeholder=""/>
                     </b-form-group>
                   </b-col>
-                  <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.access-user')">
-                      <b-form-input v-model="accessFilter.operateAccount"/>
-                    </b-form-group>
-                  </b-col>
-                  <b-col></b-col>
+
                 </b-row>
               </b-col>
-              <b-col cols="4" class="d-flex justify-content-end align-items-center">
+              <b-col cols="3" class="d-flex justify-content-end align-items-center">
                 <div>
                   <b-button size="sm" class="ml-2" variant="info default" @click="onAccessSearchButton()">
                     <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
@@ -111,20 +116,18 @@
               <b-col cols="8">
                 <b-row>
                   <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="operatingFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm"
-                                   placeholder=""/>
+                    <b-form-group :label="$t('log-management.operating-log.access-user')">
+                      <b-form-input v-model="operatingFilter.operateAccount"/>
                     </b-form-group>
                   </b-col>
                   <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="operatingFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm"
-                                   placeholder=""/>
+                    <b-form-group :label="$t('log-management.operating-log.operating')">
+                      <b-form-input v-model="operatingFilter.action"/>
                     </b-form-group>
                   </b-col>
                   <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.client-ip')">
-                      <b-form-input v-model="operatingFilter.clientIp"/>
+                    <b-form-group :label="$t('log-management.operating-log.object')">
+                      <b-form-input v-model="operatingFilter.operateObject"/>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -132,6 +135,13 @@
                       <b-form-select v-model="operatingFilter.operateResult" :options="statusSelectData" plain/>
                     </b-form-group>
                   </b-col>
+
+<!--                  <b-col>-->
+<!--                    <b-form-group :label="$t('log-management.operating-log.client-ip')">-->
+<!--                      <b-form-input v-model="operatingFilter.clientIp"/>-->
+<!--                    </b-form-group>-->
+<!--                  </b-col>-->
+
                   <b-col class="d-flex align-items-center" style="padding-top: 10px;">
                       <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"/>
@@ -142,8 +152,15 @@
               <b-col cols="8" v-if="isExpanded">
                 <b-row>
                   <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.object')">
-                      <b-form-input v-model="operatingFilter.operateObject"/>
+                    <b-form-group :label="$t('log-management.operating-log.start-time')">
+                      <date-picker v-model="operatingFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   placeholder=""/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.end-time')">
+                      <date-picker v-model="operatingFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   placeholder=""/>
                     </b-form-group>
                   </b-col>
                   <b-col/>
@@ -294,12 +311,15 @@
         isModalVisible: false,
         accessFilter: {
           clientIp: null,
+          action :null,
+          operateResult :null,
           operateAccount: null,
           operateStartTime: null,
           operateEndTime: null
         },
         operatingFilter: {
-          clientIp: "",
+          operateAccount: null,
+          action: null,
           operateResult: null,
           operateObject: "",
           operateStartTime: null,
@@ -320,21 +340,20 @@
               dataClass: 'text-center'
             },
             {
-              name: 'id',
+              name: '__sequence',
               title: this.$t('log-management.operating-log.number'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'operateTimeFormat',
-              title: this.$t('log-management.operating-log.access-time'),
-              sortField: 'operateTime',
+              name: 'operateAccount',
+              title: this.$t('permission-management.user-account'),
               titleClass: 'text-center',
-              dataClass: 'text-center',
+              dataClass: 'text-center'
             },
             {
-              name: 'action',
-              title: this.$t('log-management.operating-log.action'),
+              name: 'operateAccount',
+              title: this.$t('log-management.operating-log.access-user'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -345,11 +364,33 @@
               dataClass: 'text-center'
             },
             {
-              name: 'operateAccount',
-              title: this.$t('log-management.operating-log.access-user'),
+              name: 'action',
+              title: this.$t('log-management.operating-log.action'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
+            {
+              name: 'operateResult',
+              title: this.$t('log-management.operating-log.operating-result'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'reasonCode',
+              title: this.$t('log-management.operating-log.reason-code'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operateTimeFormat',
+              title: this.$t('log-management.operating-log.access-time'),
+              sortField: 'operateTime',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+
+
+
           ],
           perPage: 10,
         },
@@ -364,15 +405,14 @@
               dataClass: 'text-center'
             },
             {
-              name: 'id',
+              name: '__sequence',
               title: this.$t('log-management.operating-log.number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'operatorId',
-              title: this.$t('log-management.operating-log.user-id'),
-              sortField: 'operatorId',
+              name: 'operateAccount',
+              title: this.$t('log-management.operating-log.access-user'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -383,20 +423,14 @@
               dataClass: 'text-center',
             },
             {
-              name: 'operateObject',
-              title: this.$t('log-management.operating-log.object'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            },
-            {
               name: 'action',
               title: this.$t('log-management.operating-log.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'operateContent',
-              title: this.$t('log-management.operating-log.operating-content'),
+              name: 'operateObject',
+              title: this.$t('log-management.operating-log.object'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -416,7 +450,7 @@
             },
             {
               name: 'reasonCode',
-              title: this.$t('log-management.operating-log.operating-failure-code'),
+              title: this.$t('log-management.operating-log.reason-code'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -551,8 +585,10 @@
       onExportAccess() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.accessFilter,
           'idList': checkedIds.join()
         };
@@ -566,8 +602,10 @@
       onPrintAccessButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.accessFilter,
           'idList': checkedIds.join()
         };
@@ -577,8 +615,10 @@
       onExportOperating() {
         let checkedAll = this.$refs.operatingLogTable.checkedAllStatus;
         let checkedIds = this.$refs.operatingLogTable.selectedTo;
+        let httpOption = this.$refs.operatingLogTable.httpOptions;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.operatingFilter,
           'idList': checkedIds.join()
         };
@@ -592,8 +632,10 @@
       onPrintOperatingButton() {
         let checkedAll = this.$refs.operatingLogTable.checkedAllStatus;
         let checkedIds = this.$refs.operatingLogTable.selectedTo;
+        let httpOption = this.$refs.operatingLogTable.httpOptions;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.operatingFilter,
           'idList': checkedIds.join()
         };
@@ -610,6 +652,8 @@
       onAccessResetButton() {
         this.accessFilter = {
           clientIp: null,
+          action :null,
+          operateResult :null,
           operateAccount: null,
           operateStartTime: null,
           operateEndTime: null
@@ -689,7 +733,8 @@
       },
       onOperatingResetButton() {
         this.operatingFilter = {
-          clientIp: "",
+          operateAccount:null,
+          action:null,
           operateResult: null,
           operateObject: "",
           operateStartTime: null,

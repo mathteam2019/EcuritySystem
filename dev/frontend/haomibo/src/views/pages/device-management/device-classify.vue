@@ -396,7 +396,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'categoryId',
+              name: '__sequence',
               title: this.$t('system-setting.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -635,10 +635,12 @@
             let message = response.data.message;
             switch (message) {
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.category-added-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
+                if(finalLink === 'create') {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.category-added-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                }
                 this.pageStatus = 'list';
                 this.getCategoryData();
                 this.$refs.deviceClassifyTable.reload();

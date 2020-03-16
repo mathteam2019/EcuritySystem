@@ -24,6 +24,7 @@
 
     .item-wrapper {
       position: relative;
+      height: fit-content !important;
       padding-bottom: $item-padding;
       padding-left: $item-padding;
       display: inline-block;
@@ -363,6 +364,7 @@
     width: 25%;
   }
 </style>
+
 <template>
   <div class="device-monitoring">
     <div class="breadcrumb-container">
@@ -442,8 +444,9 @@
                     </div>
                   </b-col>
                   <b-col cols="8" class="right-side d-flex flex-column">
-                    <label v-if="item.device.currentStatus==='1000002003' ||item.device.currentStatus==='1000002005'" class="text-top">{{$t('device-management.device-monitoring.running-time')}}
+                    <label v-if="(item.device.currentStatus==='1000002003' || item.device.currentStatus==='1000002005') && (item.deviceOnline === 1 && item.device.status === '1000000701')" class="text-top">{{$t('device-management.device-monitoring.running-time')}}
                       {{item.runningTimeValue}}</label>
+                    <label v-else class="text-top">{{$t('device-management.device-monitoring.running-time')}}</label>
                     <div class="flex-grow-1 d-flex content flex-column justify-content-end">
                       <div class="w-100">
                         <label>{{$t('device-management.site')}}:</label>
@@ -451,15 +454,15 @@
                       </div>
                       <div class="w-100">
                         <label>IP:</label>
-                        <label>{{item.ipAddress}}</label>
+                        <label v-if="item.deviceOnline === 1 && item.device.status === '1000000701'">{{item.ipAddress}}</label>
                       </div>
                       <div class="w-100">
-                        <label >{{$t('device-management.number')}}:</label>
-                        <label >{{item.account}}</label>
+                        <label>{{$t('device-management.number')}}:</label>
+                        <label v-if="item.deviceOnline === 1 && item.device.status === '1000000701'">{{item.account}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.device-monitoring.landing-time')}}:</label>
-                        <label>{{item.landTime}}</label>
+                        <label v-if="item.deviceOnline === 1 && item.device.status === '1000000701'">{{item.landTime}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.classify')}}:</label>
@@ -474,7 +477,7 @@
                         <label>{{item.device.archive.archiveTemplate.originalModel}}</label></div>
                       <div class="w-100" :style="{opacity:item.device.deviceType === '1000001901'?1:0}">
                         <label>{{$t('device-management.device-monitoring.disk-space')}}:</label>
-                        <label>{{item.diskSpace}}(GB)</label>
+                        <label v-if="item.deviceOnline === 1 && item.device.status === '1000000701'">{{item.diskSpace}}(GB)</label>
                       </div>
                     </div>
                   </b-col>
@@ -556,7 +559,7 @@
 
         </div>
         <div class="flex-grow-1 m-0 no-item" v-if="!isExist">
-          <div class="text-center no-item-data">No Data Available</div>
+          <div class="text-center no-item-data">{{$t('vuetable.no-data')}}</div>
         </div>
         <div class="d-flex align-items-center justify-content-between footer-pager">
           <label>{{$t('vuetable.total')}} {{pagination.total}} {{$t('vuetable.record')}}</label>
@@ -769,7 +772,7 @@
               this.items[index].manufacturerName = findDicTextData(this.manufacturerDicData, data.device.archive.archiveTemplate.manufacturer);
               this.items[index].currentWorkFlowName = findDicTextData(this.currentFlowDicData, data.currentWorkFlow);
               this.items[index].currentStatusName = findDicTextData(this.currentStatusDicData, data.currentStatus);
-              this.items[index].imageUrl = data.device && data.device.imageUrl ? apiBaseUrl + data.device.imageUrl : null;
+              this.items[index].imageUrl = data.device && data.device.imageUrl ? data.device.imageUrl : null;
               this.items[index].plcStatusName = findDicTextData(this.deviceStatusDicData, data.plcStatus);
               this.items[index].masterCardStatusName = findDicTextData(this.deviceStatusDicData, data.masterCardStatus);
               this.items[index].slaveCardStatusName = findDicTextData(this.deviceStatusDicData, data.slaveCardStatus);
@@ -878,7 +881,7 @@
             temp.manufacturerName = findDicTextData(this.manufacturerDicData, temp.device.archive.archiveTemplate.manufacturer);
             temp.currentWorkFlowName = findDicTextData(this.currentFlowDicData, temp.currentWorkFlow);
             temp.currentStatusName = findDicTextData(this.currentStatusDicData, temp.currentStatus);
-            temp.imageUrl = temp.device && temp.device.imageUrl ? apiBaseUrl + temp.device.imageUrl : null;
+            temp.imageUrl = temp.device && temp.device.imageUrl ? temp.device.imageUrl : null;
             temp.plcStatusName = findDicTextData(this.deviceStatusDicData, temp.plcStatus);
             temp.masterCardStatusName = findDicTextData(this.deviceStatusDicData, temp.masterCardStatus);
             temp.slaveCardStatusName = findDicTextData(this.deviceStatusDicData, temp.slaveCardStatus);
@@ -988,7 +991,7 @@
           }));
         }
         this.deviceCategoryOptions = JSON.parse(JSON.stringify(options));
-        this.deviceCategoryOptions.push({value: null, text: `${this.$t('permission-management.all')}`});
+        this.deviceCategoryOptions.push({value: null, text: `全部`});
       },
       siteData(newVal, oldVal) { // maybe called when the org data is loaded from server
         let getLevel = (org) => {

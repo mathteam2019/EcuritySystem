@@ -25,13 +25,13 @@
           </b-col>
 
           <b-col>
-            <b-form-group :label="'判图员'">
+            <b-form-group :label="$t('statistics.view.operator')">
               <b-form-input v-model="filter.userName"/>
             </b-form-group>
           </b-col>
 
           <b-col>
-            <b-form-group :label="'统计步长'">
+            <b-form-group :label="$t('statistics.view.step-size')">
               <b-form-select v-model="filter.statWidth" :options="statisticalStepSizeOptions" plain/>
             </b-form-group>
           </b-col>
@@ -93,7 +93,7 @@
               <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.total}}</span>
               <span v-else>0</span>
             </div>
-            <div><span>判图</span></div>
+            <div><span>{{$t('maintenance-management.process-task.judge')}}</span></div>
           </div>
         </b-card>
       </b-col>
@@ -107,10 +107,11 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</span>
+                    <span
+                      v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>人工结论</span></div>
+                  <div><span>{{$t('statistics.monitors.artificial-result')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -126,7 +127,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.assignTimeout}}</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>分派超时结论</span></div>
+                  <div><span>{{$t('statistics.monitors.assign-timeout')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -142,7 +143,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeTimeout}}</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>判图超时结论</span></div>
+                  <div><span>{{$t('statistics.monitors.assign-timeout')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -156,9 +157,9 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.atrResult}}</span>
-                <span v-else>0</span>
+                    <span v-else>0</span>
                   </div>
-                  <div><span>ATR结论</span></div>
+                  <div><span>{{$t('statistics.monitors.atr-result')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -176,7 +177,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.noSuspiction}}</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>无嫌疑</span></div>
+                  <div><span>{{$t('knowledge-base.no-suspect')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -193,7 +194,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.noSuspictionRate)}}%</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>无嫌疑率</span></div>
+                  <div><span>{{$t('statistics.view.no-suspiction-judge-rate')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -210,7 +211,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.suspiction}}</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>嫌疑</span></div>
+                  <div><span>{{$t('statistics.monitors.suspiction-judge')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -227,7 +228,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.suspictionRate)}}%</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>嫌疑率</span></div>
+                  <div><span>{{$t('statistics.monitors.suspiction-judge-rate')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -245,7 +246,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.limitedArtificialDuration}}s</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>人工判图时长阈值</span></div>
+                  <div><span>{{$t('statistics.monitors.limited-artificial-time')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -258,10 +259,10 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.avgArtificialJudgeDuration}}s</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.avgArtificialJudgeDuration)}}s</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>人工判图平均时长</span></div>
+                  <div><span>{{$t('statistics.monitors.avg-artificial-time')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -274,10 +275,10 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.maxArtificialJudgeDuration}}s</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.maxArtificialJudgeDuration)}}s</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>人工判图最高时长</span></div>
+                  <div><span>{{$t('statistics.monitors.max-artificial-time')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -290,10 +291,10 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.minArtificialJudgeDuration}}s</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.minArtificialJudgeDuration)}}s</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>人工判图最低时长</span></div>
+                  <div><span>{{$t('statistics.monitors.min-artificial-time')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -310,10 +311,12 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('judge_statistics_export')" @click="onExportButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('judge_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('judge_statistics_print')" @click="onPrintButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('judge_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -339,24 +342,32 @@
                   <div class="legend-group part-1">
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">人工判图</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</div>
+                      <div class="legend-name">{{$t('statistics.monitors.artificial-judge')}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.artificialJudge}}
+                      </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">分派超时</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.assignTimeout}}</div>
+                      <div class="legend-name">{{$t('statistics.monitors.assign')}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.assignTimeout}}
+                      </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">判图超时</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeTimeout}}</div>
+                      <div class="legend-name">{{$t('statistics.monitors.judge')}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.judgeTimeout}}
+                      </div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">ATR</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.atrResult}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.atrResult}}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -367,7 +378,7 @@
           <b-col cols="8">
             <b-card>
               <b-card-header>
-                <h5>判图</h5>
+                <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
               </b-card-header>
               <div class="w-100 flex-grow-1 d-flex flex-column ">
                 <div>
@@ -396,13 +407,17 @@
                   <div class="legend-group part-2">
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">嫌疑</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.suspiction}}</div>
+                      <div class="legend-name">{{$t('statistics.monitors.suspiction-judge')}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.suspiction}}
+                      </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">无嫌疑</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.noSuspiction}}</div>
+                      <div class="legend-name">{{$t('knowledge-base.no-suspect')}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">
+                        {{preViewData.totalStatistics.noSuspiction}}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -414,7 +429,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>判图</h5>
+                <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
@@ -433,7 +448,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>判图</h5>
+                <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
@@ -452,52 +467,52 @@
         <b-card class="flex-grow-1 ">
           <b-card-header>
 
-            <h5 class="text-center my-4">人体查验综合统计</h5>
+            <h5 class="text-center my-4">{{$t('statistics.view.table-title')}}</h5>
 
           </b-card-header>
 
           <div class="flex-grow-1 ">
             <div class="container-fluid">
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>现场:</b></b-col>
+                <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
                 <b-col cols="11">
                   <span v-if="filter.fieldId === null">{{allField}}</span>
                   <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>安检仪:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
                 <b-col cols="11">
                   <span v-if="filter.deviceId === null">{{allDevice}}</span>
                   <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>操作员类型:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
                 <b-col cols="11"><span>判图员</span></b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>操作员:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.userName===null">全部</span>
+                  <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
                   <span v-else>{{filter.userName}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>时间:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
                 <b-col cols="11">
                   <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>统计步长:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.statWidth==='hour'">时</span>
-                  <span v-else-if="filter.statWidth==='day'">天</span>
-                  <span v-else-if="filter.statWidth==='week'">周</span>
-                  <span v-else-if="filter.statWidth==='month'">月</span>
-                  <span v-else-if="filter.statWidth==='quarter'">季度</span>
-                  <span v-else>年</span>
+                  <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
+                  <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
+                  <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
+                  <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
+                  <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
+                  <span v-else>{{$t('statistics.year')}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters">
@@ -538,10 +553,11 @@
 
       </b-col>
     </b-row>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -594,7 +610,7 @@
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
 
-  import {checkPermissionItem, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import {validationMixin} from "vuelidate";
   import Modal from '../../../components/Modal/modal'
 
@@ -620,6 +636,7 @@
       this.getSiteOption();
       this.getManualDeviceData();
       this.getPreviewData();
+      this.setPeriodLabel('hour');
     },
     data() {
       return {
@@ -669,9 +686,9 @@
                 length2: -30
               },
               data: [
-                {value: 0, name: '人工判图'},
-                {value: 0, name: '分派超时'},
-                {value: 0, name: '判图超时'},
+                {value: 0, name: this.$t('statistics.monitors.artificial-judge')},
+                {value: 0, name: this.$t('statistics.monitors.assign')},
+                {value: 0, name: this.$t('statistics.monitors.judge')},
                 {value: 0, name: 'ATR'},
               ]
             },
@@ -722,8 +739,8 @@
                 length2: -30
               },
               data: [
-                {value: 0, name: '嫌疑'},
-                {value: 0, name: '无嫌疑'}
+                {value: 0, name: this.$t('statistics.monitors.suspiction-judge')},
+                {value: 0, name:  this.$t('knowledge-base.no-suspect')}
               ]
             },
 
@@ -737,7 +754,7 @@
             }
           },
           legend: {
-            data: ['人工', '分派超时', '判图超时', 'ATR'],
+            data: [this.$t('maintenance-management.process-task.artificial'), this.$t('statistics.monitors.assign'),  this.$t('statistics.monitors.judge'), 'ATR'],
             icon: 'rect',
             right: 25
           },
@@ -777,27 +794,27 @@
           color: ['#ff6600', '#1989fa', '#9900ff', '#009900'],
           series: [
             {
-              name: '人工',
+              name: this.$t('maintenance-management.process-task.artificial'),
               type: 'bar',
-              barGap:'0%',
+              barGap: '0%',
               data: [0]
             },
             {
-              name: '分派超时',
+              name: this.$t('statistics.monitors.assign'),
               type: 'bar',
-              barGap:'0%',
+              barGap: '0%',
               data: [0]
             },
             {
-              name: '判图超时',
+              name: this.$t('statistics.monitors.judge'),
               type: 'bar',
-              barGap:'0%',
+              barGap: '0%',
               data: [0]
             },
             {
               name: 'ATR',
               type: 'bar',
-              barGap:'0%',
+              barGap: '0%',
               data: [0]
             }
           ]
@@ -811,7 +828,7 @@
             }
           },
           legend: {
-            data: ['嫌疑', '无嫌疑'],
+            data: [this.$t('statistics.monitors.suspiction-judge'), this.$t('knowledge-base.no-suspect')],
             icon: 'rect',
             right: 25
           },
@@ -851,15 +868,15 @@
           color: ['#1989fa', '#ff6600'],
           series: [
             {
-              name: '嫌疑',
+              name: this.$t('statistics.monitors.suspiction-judge'),
               type: 'bar',
-              barGap:'0%',
+              barGap: '0%',
               data: [0]
             },
             {
-              name: '无嫌疑',
+              name: this.$t('knowledge-base.no-suspect'),
               type: 'bar',
-              barGap:'0%',
+              barGap: '0%',
               data: [0]
             },
           ]
@@ -873,7 +890,7 @@
             }
           },
           legend: {
-            data: ['平均时长', '最高时长', '最低时长'],
+            data: [this.$t('statistics.monitors.avg-time'), this.$t('statistics.monitors.max-time'), this.$t('statistics.monitors.min-time')],
             icon: 'rect',
             right: 25
           },
@@ -913,21 +930,21 @@
           color: ['#009900', '#ff6600', '#1989fa'],
           series: [
             {
-              name: '平均时长',
+              name: this.$t('statistics.monitors.avg-time'),
               type: 'bar',
-              barGap:'0%',
+              barGap: '0%',
               data: [0]
             },
             {
-              name: '最高时长',
+              name: this.$t('statistics.monitors.max-time'),
               type: 'bar',
-              barGap:'0%',
+              barGap: '0%',
               data: [0]
             },
             {
-              name: '最低时长',
+              name: this.$t('statistics.monitors.min-time'),
               type: 'bar',
-              barGap:'0%',
+              barGap: '0%',
               data: [0]
             }
           ]
@@ -937,19 +954,19 @@
         isCheckAll: false,
 
         pageStatus: 'charts',
-	link: '',
+        link: '',
         params: {},
         name: '',
 
         fileSelection: [],
-        renderedCheckList:[],
+        renderedCheckList: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-	isModalVisible: false,
+        isModalVisible: false,
 
         filter: {
           fieldId: null,
@@ -963,7 +980,7 @@
 
         siteData: [],
         allField: '',
-        allDevice:'',
+        allDevice: '',
         preViewData: [],
         manualDeviceOptions: [],
 
@@ -975,32 +992,34 @@
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
         onSiteOptions: [
-          {value: null, text: "全部"},
+          {value: null, text: this.$t('personal-inspection.all')},
           {value: 'way_1', text: "通道1"},
           {value: 'way_2', text: "通道2"},
           {value: 'way_3', text: "通道3"},
         ],
         onSiteOption: [],
         securityDeviceOptions: [
-          {value: null, text: "全部"},
+          {value: null, text: this.$t('personal-inspection.all')},
           {value: 'security_device_1', text: "安检仪001"},
           {value: 'security_device_2', text: "安检仪002"},
           {value: 'security_device_3', text: "安检仪003"},
         ],
         operatorTypeOptions: [
-          {value: null, text: "全部"},
-          {value: '1000002404', text: "扫描"},
-          {value: '1000002403', text: "判图"},
-          {value: '1000002402', text: "手检"},
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: '1000002404', text: this.$t('maintenance-management.process-task.scan')},
+          {value: '1000002403', text: this.$t('maintenance-management.process-task.judge')},
+          {value: '1000002402', text: this.$t('maintenance-management.process-task.hand')},
         ],
         statisticalStepSizeOptions: [
-          {value: 'hour', text: "时"},
-          {value: 'day', text: "天"},
-          {value: 'week', text: "周"},
-          {value: 'month', text: "月"},
-          {value: 'quarter', text: "季度"},
-          {value: 'year', text: "年"},
+          {value: 'hour', text: this.$t('statistics.hour')},
+          {value: 'day', text: this.$t('statistics.day')},
+          {value: 'week', text: this.$t('statistics.week')},
+          {value: 'month', text: this.$t('statistics.month')},
+          {value: 'quarter', text: this.$t('statistics.quarter')},
+          {value: 'year', text: this.$t('statistics.year')},
         ],
+
+        periodLabel: '期间(時)',
 
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/statistics/get-judge-statistics`,
@@ -1011,36 +1030,33 @@
               dataClass: 'text-center'
             },
             {
-              name: 'time',
-              title: '序号',
+              name: '__sequence',
+              title: this.$t('knowledge-base.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (time) => {
-                if (this.filter.statWidth === 'hour') return time+1;
-                else return time;
-              }
+
             },
             {
               name: 'time',
-              title: '期间',
+              title: this.setPeriodLabel,
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
               name: 'total',
-              title: '判图总量',
+              title: this.$t('statistics.view.judge-total'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'artificialResult',
-              title: '人工结论量',
+              name: 'artificialJudge',
+              title: this.$t('statistics.monitors.artificial-result-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'artificialResultRate',
-              title: '人工结论率',
+              title:  this.$t('statistics.monitors.artificial-result-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (artificialResultRate) => {
@@ -1050,13 +1066,13 @@
             },
             {
               name: 'assignTimeout',
-              title: '分派超时结论量',
+              title: this.$t('statistics.monitors.assign-timeout-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'assignTimeoutResultRate',
-              title: '分派超时结论率',
+              title: this.$t('statistics.monitors.assign-timeout-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (assignTimeoutResultRate) => {
@@ -1066,13 +1082,13 @@
             },
             {
               name: 'judgeTimeout',
-              title: '判图超时结论量',
+              title:this.$t('statistics.monitors.judge-timeout-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'judgeTimeoutResultRate',
-              title: '判图超时结论率',
+              title: this.$t('statistics.monitors.judge-timeout-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeTimeoutResultRate) => {
@@ -1082,13 +1098,13 @@
             },
             {
               name: 'scanResult',
-              title: '扫描结论量',
+              title: this.$t('statistics.monitors.atr-result-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'scanResultRate',
-              title: '扫描结论率',
+              title: this.$t('statistics.monitors.atr-result-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanResultRate) => {
@@ -1098,13 +1114,13 @@
             },
             {
               name: 'noSuspiction',
-              title: '无嫌疑量',
+              title: this.$t('statistics.view.no-suspiction-judge'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'noSuspictionRate',
-              title: '无嫌疑率',
+              title: this.$t('statistics.view.no-suspiction-judge-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (noSuspictionRate) => {
@@ -1114,13 +1130,13 @@
             },
             {
               name: 'suspiction',
-              title: '嫌疑量',
+              title: this.$t('statistics.monitors.suspiction-judge-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'suspictionRate',
-              title: '嫌疑率',
+              title: this.$t('statistics.monitors.suspiction-judge-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (suspictionRate) => {
@@ -1130,25 +1146,25 @@
             },
             {
               name: 'limitedArtificialDuration',
-              title: '人工判图时长阈值',
+              title: this.$t('statistics.monitors.limited-artificial-time'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'avgArtificialJudgeDuration',
-              title: '人工判图平均时长',
+              title: this.$t('statistics.monitors.avg-artificial-time'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'maxArtificialJudgeDuration',
-              title: '人工判图最高时长',
+              title: this.$t('statistics.monitors.max-artificial-time'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'minArtificialJudgeDuration',
-              title: '人工判图最低时长',
+              title: this.$t('statistics.monitors.min-artificial-time'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -1184,47 +1200,95 @@
       }
     },
     methods: {
-      selectAll(value){
+      setPeriodLabel (newVal) {
+        if(getLocale() === 'zh') {
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = '期间(時)';
+              break;
+            case 'day':
+              this.periodLabel = '期间(天)';
+              break;
+            case 'week':
+              this.periodLabel = '期间(周)';
+              break;
+            case 'month':
+              this.periodLabel = '期间(月)';
+              break;
+            case 'quarter':
+              this.periodLabel = '期间(季度)';
+              break;
+            case 'year':
+              this.periodLabel = '期间(年)';
+              break;
+          }
+        }else{
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = 'periods(hour)';
+              break;
+            case 'day':
+              this.periodLabel = 'periods(day)';
+              break;
+            case 'week':
+              this.periodLabel = 'periods(week)';
+              break;
+            case 'month':
+              this.periodLabel = 'periods(month)';
+              break;
+            case 'quarter':
+              this.periodLabel = 'periods(quarter)';
+              break;
+            case 'year':
+              this.periodLabel = 'periods(year)';
+              break;
+          }
+        }
+        return this.periodLabel;
+
+      },
+      selectAll(value) {
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.taskVuetable.isCheckAllStatus=value;
+        this.$refs.taskVuetable.isCheckAllStatus = value;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = value;
       },
-      selectNone(){
+      selectNone() {
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = false;
       },
-      changeCheckAllStatus(){
+      changeCheckAllStatus() {
         let selectList = this.$refs.taskVuetable.selectedTo;
         let renderedList = this.renderedCheckList;
-        if(selectList.length>=renderedList.length){
+        if (selectList.length >= renderedList.length) {
           let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
+          for (let i = 0; i < renderedList.length; i++) {
             isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
             }
-            if(isEqual===false){
+            if (isEqual === false) {
               this.selectNone();
               break;
             }
-            if(i===renderedList.length-1){
+            if (i === renderedList.length - 1) {
               this.selectAll(true);
             }
           }
-        }
-        else {
+        } else {
           this.selectNone();
         }
 
       },
-      onCheckStatusChange(isChecked){
-        if(isChecked){
+      onCheckStatusChange(isChecked) {
+        if (isChecked) {
           this.changeCheckAllStatus();
-        }
-        else {
+        } else {
           this.selectNone();
         }
       },
@@ -1237,20 +1301,20 @@
           }
         }
       },
-      getDeviceLabel(value){
-        if(value===null||this.manualDeviceOptions===null) return "";
-        else{
-          for(let i=0; i<this.manualDeviceOptions.length; i++){
-            if(this.manualDeviceOptions[i].value===value)
+      getDeviceLabel(value) {
+        if (value === null || this.manualDeviceOptions === null) return "";
+        else {
+          for (let i = 0; i < this.manualDeviceOptions.length; i++) {
+            if (this.manualDeviceOptions[i].value === value)
               return this.manualDeviceOptions[i].text;
           }
         }
       },
-      getCategoryLabel(value){
-        if(value===null||this.operatorTypeOptions===null) return "";
-        else{
-          for(let i=0; i<this.operatorTypeOptions.length; i++){
-            if(this.operatorTypeOptions[i].value===value)
+      getCategoryLabel(value) {
+        if (value === null || this.operatorTypeOptions === null) return "";
+        else {
+          for (let i = 0; i < this.operatorTypeOptions.length; i++) {
+            if (this.operatorTypeOptions[i].value === value)
               return this.operatorTypeOptions[i].text;
           }
         }
@@ -1296,53 +1360,51 @@
       },
 
       getDateTimeFormat(dataTime) {
-        if(dataTime==null)return '';
+        if (dataTime == null) return '';
         return getDateTimeWithFormat(dataTime, 'monitor');
       },
 
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
-       let checkedAll, checkedIds;
+        let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0  || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/judge/generate`;
         this.name = 'Statistics-Judge';
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/judge/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        }else {
-        downLoadFileFromServer(link, params, 'Statistics-Judge', this.fileSelection);
+        } else {
+          downLoadFileFromServer(link, params, 'Statistics-Judge', this.fileSelection);
           this.hideModal('model-export')
         }
       },
@@ -1356,22 +1418,21 @@
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/judge/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        }else {
-        printFileFromServer(link, params);
+        } else {
+          printFileFromServer(link, params);
         }
       },
 
@@ -1408,7 +1469,7 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
-          if(this.preViewData.totalStatistics!=null) {
+          if (this.preViewData.totalStatistics != null) {
 
             this.pieChart1Options.series[0].data[0].value = this.preViewData.totalStatistics.artificialJudge;
             this.pieChart1Options.series[0].data[1].value = this.preViewData.totalStatistics.assignTimeout;
@@ -1420,26 +1481,26 @@
           // if (this.filter.statWidth === 'year') {
           //   this.bar3ChartOptions.xAxis.data = this.xHour;
           // } else {
-            this.xDay = Object.keys(this.preViewData.detailedStatistics);
+          this.xDay = Object.keys(this.preViewData.detailedStatistics);
 
-            this.barChart1Options.xAxis.data = this.xDay;
-            this.barChart2Options.xAxis.data = this.xDay;
-            this.barChart3Options.xAxis.data = this.xDay;
-            for (let i = 0; i < this.xDay.length; i++) {
-              let key = this.xDay[i];
+          this.barChart1Options.xAxis.data = this.xDay;
+          this.barChart2Options.xAxis.data = this.xDay;
+          this.barChart3Options.xAxis.data = this.xDay;
+          for (let i = 0; i < this.xDay.length; i++) {
+            let key = this.xDay[i];
 
-              if (this.preViewData.detailedStatistics[key] != null) {
-                this.barChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[key].artificialJudge;
-                this.barChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[key].assignTimeout;
-                this.barChart1Options.series[2].data[i] = this.preViewData.detailedStatistics[key].judgeTimeout;
-                this.barChart1Options.series[3].data[i] = this.preViewData.detailedStatistics[key].atrResult;
-                this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].suspiction;
-                this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].noSuspiction;
-                this.barChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[key].avgArtificialJudgeDuration;
-                this.barChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[key].maxArtificialJudgeDuration;
-                this.barChart3Options.series[2].data[i] = this.preViewData.detailedStatistics[key].minArtificialJudgeDuration;
-              }
+            if (this.preViewData.detailedStatistics[key] != null) {
+              this.barChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[key].artificialJudge;
+              this.barChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[key].assignTimeout;
+              this.barChart1Options.series[2].data[i] = this.preViewData.detailedStatistics[key].judgeTimeout;
+              this.barChart1Options.series[3].data[i] = this.preViewData.detailedStatistics[key].atrResult;
+              this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].suspiction;
+              this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].noSuspiction;
+              this.barChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[key].avgArtificialJudgeDuration;
+              this.barChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[key].maxArtificialJudgeDuration;
+              this.barChart3Options.series[2].data[i] = this.preViewData.detailedStatistics[key].minArtificialJudgeDuration;
             }
+          }
           //}
         });
       },
@@ -1447,6 +1508,7 @@
       onSearchButton() {
 
         this.getPreviewData();
+        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
       onResetButton() {

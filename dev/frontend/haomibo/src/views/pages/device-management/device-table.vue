@@ -104,7 +104,7 @@
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.deviceSerial }}</span>
                 </div>
                 <div slot="operating" slot-scope="props">
-                  <b-button :disabled="checkPermItem('device_modify')"
+                  <b-button :disabled="checkPermItem('device_modify')  || props.rowData.deviceId === 7749"
                             @click="onAction('edit',props.rowData)"
                             size="sm"
                             variant="primary default btn-square"
@@ -114,16 +114,16 @@
                   <b-button
                     v-if="props.rowData.status==='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)"
-                    variant="warning default btn-square" :disabled="checkPermItem('device_update_status')"
+                    variant="success default btn-square" :disabled="checkPermItem('device_update_status')"
                   >
-                    <i class="icofont-ban"/>
+                    <i class="icofont-check-circled"/>
                   </b-button>
                   <b-button @click="onAction('inactivate',props.rowData)"
                             v-if="props.rowData.status==='1000000701'"
                             size="sm"
-                            variant="success default btn-square" :disabled="checkPermItem('device_update_status')"
+                            variant="warning default btn-square" :disabled="checkPermItem('device_update_status')"
                   >
-                    <i class="icofont-check-circled"/>
+                    <i class="icofont-ban"/>
                   </b-button>
                   <b-button @click="onAction('delete',props.rowData)"
                             size="sm"
@@ -425,8 +425,7 @@
                   $t('permission-management.upload-image')}}
                 </b-button>
 
-                  <div class=""
-                       style="">
+                  <div style="margin-top: 50px; margin-left: 60px;">
                     <div>
                       <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
                         class="icofont-save"/>
@@ -537,8 +536,7 @@
                   $t('permission-management.upload-image')}}
                 </b-button>
 
-                  <div class=""
-                       style="">
+                  <div style="margin-top: 50px; margin-left: 60px;">
                     <div>
                       <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
                         class="icofont-save"/>
@@ -785,7 +783,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'deviceId',
+              name: '__sequence',
               title: this.$t('device-management.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -1354,10 +1352,18 @@
             let message = response.data.message;
             switch (message) {
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.device-table.added-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
+                if(finalLink === 'create') {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.device-table.added-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                }
+                else {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.device-table.updated-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                }
                 this.invalidGuid=true;
                 this.pageStatus = 'list';
                 this.$refs.vuetable.reload();

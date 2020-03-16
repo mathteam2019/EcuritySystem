@@ -29,7 +29,7 @@
         <b-row v-show="pageStatus==='table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
-              <b-col cols="6">
+              <b-col cols="7">
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.user')">
@@ -39,7 +39,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.affiliated-org')">
-                      <b-form-select :options="orgNameSelectData" v-model="userFilter.orgId" plain/>
+                      <b-form-select :options="orgNameSelectData" v-model="userFilter.orgId" @change="removeSpace" plain/>
                     </b-form-group>
                   </b-col>
 
@@ -57,7 +57,7 @@
                 </b-row>
               </b-col>
 
-              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+              <b-col cols="5" class="d-flex justify-content-end align-items-center">
                 <div>
                   <b-button size="sm" class="ml-2" variant="info default" @click="onClickUserSearchButton()">
                     <i class="icofont-search-1"/>&nbsp;{{ $t('permission-management.search') }}
@@ -238,22 +238,22 @@
                             </b-form-radio>
                           </b-form-radio-group>
                         </div>
-                        <div class="align-self-end flex-grow-1 pl-2" style="margin-left: -50px">
-                          <b-form-group style="margin-bottom: -19px;">
+                        <div class="align-self-end flex-grow-1 pl-5" style="">
+
                             <b-form-select class="mw-100"
                                            v-model="userForm.selectedDataGroupId"
                                            :options="dataGroupSelectData" plain
                                            :state="userForm.dataRangeCategory !== '1000000505' ? null : (!$v.userForm.selectedDataGroupId.$dirty ? null : !$v.userForm.selectedDataGroupId.$invalid)"
                                            :disabled="userForm.dataRangeCategory !== '1000000505'"
                             />
-                            <div
-                              v-if="userForm.dataRangeCategory !== '1000000505' || !$v.userForm.selectedDataGroupId.$invalid">
-                              &nbsp;
-                            </div>
+<!--                            <div-->
+<!--                              v-if="userForm.dataRangeCategory !== '1000000505' || !$v.userForm.selectedDataGroupId.$invalid">-->
+<!--                              &nbsp;-->
+<!--                            </div>-->
                             <b-form-invalid-feedback>
                               {{ $t('permission-management.user.orgId-field-is-mandatory') }}
                             </b-form-invalid-feedback>
-                          </b-form-group>
+
                         </div>
                       </div>
                     </b-form-group>
@@ -460,7 +460,7 @@
                           </b-form-radio-group>
                         </div>
                         <div class="align-self-end flex-grow-1 pl-5">
-                          <b-form-select class="mw-100" :disabled="groupForm.dataRange!='1000000505'"
+                          <b-form-select class="mw-100" :disabled="groupForm.dataRange!=='1000000505'"
                                          v-model="groupForm.filterGroup"
                                          :options="dataGroupSelectData" plain/>
                         </div>
@@ -773,7 +773,7 @@
               width: '60px'
             },
             {
-              name: 'userId',
+              name: '__sequence',
               title: this.$t('permission-management.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -957,7 +957,7 @@
               width: '60px'
             },
             {
-              name: 'userGroupId',
+              name: '__sequence',
               title: this.$t('permission-management.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -1078,6 +1078,9 @@
       }
     },
     methods: {
+      removeSpace(e){
+        //console.log(e.target);
+      },
       selectAll(value){
         this.$refs.userVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
         this.$refs.userVuetable.isCheckAllStatus=value;

@@ -15,7 +15,7 @@
             <b-row class="m-0">
               <b-col cols="2" class="pr-3">
                 <b-form-group>
-                  <template slot="label">字典名称</template>
+                  <template slot="label">{{$t('system-setting.dictionary-name') }}</template>
                   <b-form-input v-model="dicName"/>
                 </b-form-group>
               </b-col>
@@ -89,18 +89,18 @@
               <b-form class="h-100 d-flex flex-column">
                 <b-form-group>
                   <template slot="label">
-                    字典名称
+                    {{$t('system-setting.dictionary-name') }}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input
                     v-model="dicForm.dicName"
                     :state="!$v.dicForm.dicName.$invalid"
-                    placeholder="请输入字典名称"/>
+                    />
                 </b-form-group>
 
                 <b-form-group>
                   <template slot="label">
-                    备注
+                    {{$t('permission-management.th-org-note') }}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-textarea
@@ -128,13 +128,13 @@
             <b-row class="m-0">
               <b-col cols="2" class="pr-3">
                 <b-form-group>
-                  <template slot="label">字典编号</template>
+                  <template slot="label"> {{$t('system-setting.dictionary-number') }}</template>
                   <b-form-input v-model="dicDataCode"/>
                 </b-form-group>
               </b-col>
               <b-col cols="2" class="pr-3">
                 <b-form-group>
-                  <template slot="label">字典值</template>
+                  <template slot="label"> {{$t('system-setting.dictionary-value') }}</template>
                   <b-form-input v-model="dicDataValue"/>
                 </b-form-group>
               </b-col>
@@ -215,7 +215,7 @@
               <b-form class="h-100 d-flex flex-column">
                 <b-form-group>
                   <template slot="label">
-                    字典编号
+                    {{$t('system-setting.dictionary-number') }}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input
@@ -226,7 +226,7 @@
 
                 <b-form-group>
                   <template slot="label">
-                    字典值
+                    {{$t('system-setting.dictionary-value') }}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input
@@ -237,7 +237,7 @@
 
                 <b-form-group>
                   <template slot="label">
-                    备注
+                    {{$t('permission-management.th-org-note') }}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-textarea
@@ -262,8 +262,8 @@
     </b-card>
     <div v-if="isLoading" class="loading"></div>
     <b-modal centered id="modal-delete-dic" ref="modal-delete-dic"
-             title="删除字典">
-      您确定要删除字典吗？
+             :title="$t('system-setting.prompt')">
+      {{$t('device-management.document-template.delete-prompt')}}
       <template slot="modal-footer">
         <b-button size="sm" variant="primary" class="mr-1" @click="deleteDic">{{$t('system-setting.ok')}}</b-button>
         <b-button size="sm" variant="danger" @click="hideModal('modal-delete-dic')">{{$t('system-setting.cancel')}}
@@ -271,8 +271,8 @@
       </template>
     </b-modal>
     <b-modal centered id="modal-delete-dicData" ref="modal-delete-dicData"
-             title="删除字典">
-      您确定要删除字典吗？
+             :title="$t('system-setting.prompt')">
+      {{$t('device-management.document-template.delete-prompt')}}
       <template slot="modal-footer">
         <b-button size="sm" variant="primary" class="mr-1" @click="deleteDicData">{{$t('system-setting.ok')}}</b-button>
         <b-button size="sm" variant="danger" @click="hideModal('modal-delete-dicData')">{{$t('system-setting.cancel')}}
@@ -419,7 +419,7 @@
               width: '60px'
             },
             {
-              name: 'dictionaryId',
+              name: '__sequence',
               title: this.$t('permission-management.permission-control.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -427,7 +427,7 @@
             },
             {
               name: '__slot:dictionaryName',
-              title: '字典名称',
+              title: this.$t('system-setting.dictionary-name'),
               sortField: 'dictionaryName',
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -435,14 +435,14 @@
             },
             {
               name: 'note',
-              title: '备注',
+              title: this.$t('permission-management.th-org-note'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '19%',
             },
             {
               name: 'createdTime',
-              title: '时间',
+              title: this.$t('system-setting.time'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '20%',
@@ -470,7 +470,7 @@
               width: '60px'
             },
             {
-              name: 'dataId',
+              name: '__sequence',
               title: this.$t('permission-management.permission-control.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -478,7 +478,7 @@
             },
             {
               name: '__slot:dataCode',
-              title: '字典编号',
+              title: this.$t('system-setting.dictionary-number'),
               sortField: 'dataCode',
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -486,21 +486,21 @@
             },
             {
               name: 'dataValue',
-              title: '字典值',
+              title: this.$t('system-setting.dictionary-value'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '15%'
             },
             {
               name: 'note',
-              title: '备注',
+              title: this.$t('permission-management.th-org-note'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '20%'
             },
             {
               name: 'createdTime',
-              title: '时间',
+              title: this.$t('system-setting.time'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '20%',

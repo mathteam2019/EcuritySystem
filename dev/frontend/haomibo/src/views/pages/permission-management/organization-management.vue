@@ -122,18 +122,18 @@
                         <b-button
                           size="sm"
                           v-if="props.rowData.status==='1000000702'"
-                          variant="warning default btn-square"
+                          variant="success default btn-square"
                           :disabled="checkPermItem('org_update_status')"
                           @click="onAction('activate', props.rowData, props.rowIndex)">
-                          <i class="icofont-ban"/>
+                          <i class="icofont-check-circled"/>
                         </b-button>
                         <b-button
                           size="sm"
                           v-if="props.rowData.status==='1000000701'"
-                          variant="success default btn-square"
+                          variant="warning default btn-square"
                           :disabled="checkPermItem('org_update_status')"
                           @click="onAction('deactivate', props.rowData, props.rowIndex)">
-                          <i class="icofont-check-circled"/>
+                          <i class="icofont-ban"/>
                         </b-button>
                         <b-button
                           size="sm"
@@ -223,9 +223,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
-                                v-model="createPage.mobile"
-                                :state="!$v.createPage.mobile.$dirty ? null : !$v.createPage.mobile.$invalid"
-                                :placeholder="'000-0000-0000'"/>
+                                v-model="createPage.mobile"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -253,8 +251,11 @@
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
-          <div class="position-absolute" style="left: 32%;bottom: 8%">
+          <div v-if="getLocale()==='zh'" class="position-absolute" style="left: 32%;bottom: 8%">
             <img src="../../../assets/img/no_active_stamp.png">
+          </div>
+          <div v-if="getLocale()==='en'" class="position-absolute" style="left: 32%;bottom: 8%">
+            <img src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
           </div>
 
         </b-row>
@@ -581,7 +582,8 @@
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
 
-  const {required} = require('vuelidate/lib/validators');
+
+  const {required, maxLength} = require('vuelidate/lib/validators');
 
   let getOrgById = (orgData, orgId) => {
     for (let i = 0; i < orgData.length; i++) {
@@ -627,7 +629,7 @@
           required
         },
         mobile: {
-          isPhoneValid
+          maxLength: maxLength(25),
         }
       },
       modifyPage: { // modify page
@@ -641,7 +643,7 @@
           required
         },
         mobile: {
-          isPhoneValid
+          maxLength: maxLength(25),
         }
       }
     },
@@ -705,7 +707,7 @@
               width: '60px'
             },
             {
-              name: 'orgId',
+              name: '__sequence',
               title: this.$t('permission-management.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -1250,7 +1252,7 @@
             return;
           }
           if (this.$v.createPage.mobile.$invalid) {
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-mobile`), {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.invalid-length-organization-mobile`), {
               duration: 3000,
               permanent: false
             });
@@ -1343,7 +1345,7 @@
             return;
           }
           if (this.$v.modifyPage.mobile.$invalid) {
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-mobile`), {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.invalid-length-organization-mobile`), {
               duration: 3000,
               permanent: false
             });

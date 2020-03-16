@@ -303,7 +303,7 @@
               width: '60px'
             },
             {
-              name: 'goodsId',
+              name: '__sequence',
               title: this.$t('permission-management.permission-control.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',

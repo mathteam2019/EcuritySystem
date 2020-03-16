@@ -90,17 +90,17 @@
                         :disabled="checkPermItem('field_update_status')"
                         v-if="props.rowData.status === '1000000702'"
                         size="sm" @click="onAction('activate',props.rowData)"
-                        variant="warning default btn-square">
-                        <i class="icofont-ban"/>
+                        variant="success default btn-square">
+                        <i class="icofont-check-circled"/>
                       </b-button>
 
                       <b-button
                         v-if="props.rowData.status === '1000000701'"
                         size="sm" @click="onAction('inactivate',props.rowData)"
-                        variant="success default btn-square"
+                        variant="warning default btn-square"
                         :disabled="props.rowData.parentFieldId === 0 || checkPermItem('field_update_status')"
                       >
-                        <i class="icofont-check-circled"/>
+                        <i class="icofont-ban"/>
                       </b-button>
 
                       <b-button
@@ -605,7 +605,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'fieldId',
+              name: '__sequence',
               title: this.$t('system-setting.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'

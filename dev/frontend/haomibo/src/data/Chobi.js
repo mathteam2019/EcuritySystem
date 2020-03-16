@@ -19,7 +19,7 @@ var Chobi = function(elem, isToggled, left){
 				img.crossOrigin = "Anonymous";
 
 				if(elem===''){
-          if(isToggled === true) {
+          if(isToggled === false) {
             if(left === true) {
               elem = '/assets/img/scan-lr.gif';
             }else {
@@ -37,7 +37,7 @@ var Chobi = function(elem, isToggled, left){
 
         img.onerror = function (evt){
 
-            if(isToggled === true) {
+            if(isToggled === false) {
               if(left === true) {
                 img.src = '/assets/img/scan-lr.gif';
               }else {
@@ -198,7 +198,7 @@ var Chobi = function(elem, isToggled, left){
 					var red=imageData.data[index];
          			var green=imageData.data[index+1];
         	 		var blue=imageData.data[index+2];
-        	 		var avg = ((red*0.3)+(green*0.59)+(blue*0.11));
+        	 		var avg = ((red*0.5)+(green*0.79)+(blue*0.11));
         	 		imageData.data[index] = avg;
         	 		imageData.data[index+1] = avg;
         	 		imageData.data[index+2] = avg;
@@ -424,7 +424,7 @@ var Chobi = function(elem, isToggled, left){
 				drawArea.height = imageData.height;
 				ctx.putImageData(imageData,0,0);
 				var infoLength = rectInfo.length;
-        if(isToggled === true) {
+        if(isToggled === false) {
           ctx.fillStyle = "white";
           ctx.textAlign = "center";
           ctx.font = "18px Arial";

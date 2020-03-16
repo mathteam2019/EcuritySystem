@@ -17,7 +17,8 @@
       }
     }
   }
-  .img-rotate{
+
+  .img-rotate {
     -ms-transform: rotate(-15deg); /* IE 9 */
     -webkit-transform: rotate(-15deg); /* Safari 3-8 */
     transform: rotate(-15deg);
@@ -115,30 +116,30 @@
                           <i class="icofont-edit"/>
                         </b-button>
 
-<!--                        <b-button-->
-<!--                          v-if="props.rowData.status!=='1000000302'"-->
-<!--                          size="sm"-->
-<!--                          variant="primary default btn-square"-->
-<!--                          disabled>-->
-<!--                          <i class="icofont-edit"/>-->
-<!--                        </b-button>-->
+                        <!--                        <b-button-->
+                        <!--                          v-if="props.rowData.status!=='1000000302'"-->
+                        <!--                          size="sm"-->
+                        <!--                          variant="primary default btn-square"-->
+                        <!--                          disabled>-->
+                        <!--                          <i class="icofont-edit"/>-->
+                        <!--                        </b-button>-->
 
                         <b-button
                           v-if="props.rowData.status==='1000000302'"
                           size="sm"
-                          variant="warning default btn-square"
+                          variant="success default btn-square"
                           @click="onAction('activate', props.rowData, props.rowIndex)"
                           :disabled="checkPermItem('user_update_status')">
-                          <i class="icofont-ban"/>
+                          <i class="icofont-check-circled"/>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status==='1000000301'"
                           size="sm"
                           :disabled="checkPermItem('user_update_status')"
-                          variant="success default btn-square"
+                          variant="warning default btn-square"
                           @click="onAction('inactivate', props.rowData, props.rowIndex)">
-                          <i class="icofont-check-circled"/>
+                          <i class="icofont-ban"/>
                         </b-button>
 
                         <b-button
@@ -146,25 +147,25 @@
                           size="sm"
                           variant="success default btn-square"
                           disabled>
-                          <i class="icofont-ban"/>
+                          <i class="icofont-check-circled"/>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status==='1000000302'"
                           size="sm"
-                          variant="success default btn-square"
+                          variant="danger default btn-square"
                           :disabled="checkPermItem('user_update_status')"
                           @click="onAction('blocked', props.rowData, props.rowIndex)">
-                          <i class="icofont-power"/>
+                          <i class="icofont-minus-circle"/>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status==='1000000303'"
                           size="sm"
-                          variant="danger default btn-square"
+                          variant="success default btn-square"
                           :disabled="checkPermItem('user_update_status')"
                           @click="onAction('unblock', props.rowData, props.rowIndex)">
-                          <i class="icofont-minus-circle"/>
+                          <i class="icofont-power"/>
                         </b-button>
 
                         <b-button
@@ -248,7 +249,8 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select :disabled="profileForm.status==='1000000301'" v-model="profileForm.gender" :options="genderOptions" plain
+                  <b-form-select :disabled="profileForm.status==='1000000301'" v-model="profileForm.gender"
+                                 :options="genderOptions" plain
                                  :state="!$v.profileForm.gender.$dirty ? null : !$v.profileForm.gender.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.gender.required) ?
@@ -258,15 +260,9 @@
               </b-col>
               <b-col cols="3">
                 <b-form-group>
-                  <template slot="label">{{$t('permission-management.license-number')}}&nbsp;<span
-                    class="text-danger">*</span></template>
+                  <template slot="label">{{$t('permission-management.license-number')}}</template>
                   <b-form-input type="text" v-model="profileForm.identityCard"
-                                :state="!$v.profileForm.identityCard.$dirty ? null : !$v.profileForm.identityCard.$invalid"
                                 :placeholder="$t('permission-management.please-enter-license-number')"/>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted && !$v.profileForm.identityCard.required) ?
-                    $t('permission-management.user.license-number-field-is-mandatory') : "&nbsp;" }}
-                  </div>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -275,7 +271,8 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.affiliated-institution')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select :disabled="profileForm.status==='1000000301'" v-model="profileForm.orgId" :options="orgNameSelectData" plain
+                  <b-form-select :disabled="profileForm.status==='1000000301'" v-model="profileForm.orgId"
+                                 :options="orgNameSelectData" plain
                                  :state="!$v.profileForm.orgId.$dirty ? null : !$v.profileForm.orgId.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.orgId.required) ?
@@ -387,19 +384,14 @@
           <b-col cols="2" class="d-flex align-items-center flex-column">
             <div class="mb-4 img-wrapper position-relative">
               <div class=" p-1">
-                <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
+                <img :src="profileForm.avatar" onerror="src=''" class="card-img-top"/>
               </div>
               <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -50%">
-                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp.png">
-                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp.png">
-                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png" class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png" class="img-rotate">
+                <img src="../../../assets/img/no_active_stamp.png">
               </div>
-              <div v-if="getLocale()==='en'"  class="position-absolute" style="bottom: -18%;left: -50%">
-                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block_en.png" class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending_en.png" class="img-rotate">
+              <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -50%">
+                <img src="../../../assets/img/no_active_stamp_en.png"
+                     class="img-rotate">
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
             </div>
@@ -413,23 +405,33 @@
                 class="icofont-save"/> {{
                 $t('permission-management.save') }}
               </b-button>
-              <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000301' && modifyPage===true" class="mr-1" @click="onAction('inactivate', profileForm)"
+              <b-button :disabled="checkPermItem('user_update_status')"
+                        v-if="profileForm.status==='1000000301' && modifyPage===true" class="mr-1"
+                        @click="onAction('inactivate', profileForm)"
                         variant="warning default" size="sm"><i class="icofont-ban"/> {{
                 $t('permission-management.action-make-inactive') }}
               </b-button>
-              <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000302' && modifyPage===true" class="mr-1" @click="onAction('activate', profileForm)"
+              <b-button :disabled="checkPermItem('user_update_status')"
+                        v-if="profileForm.status==='1000000302' && modifyPage===true" class="mr-1"
+                        @click="onAction('activate', profileForm)"
                         variant="success default" size="sm"><i class="icofont-check-circled"/> {{
                 $t('permission-management.active') }}
               </b-button>
-              <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000302' && modifyPage===true" class="mr-1" @click="onAction('blocked', profileForm)"
+              <b-button :disabled="checkPermItem('user_update_status')"
+                        v-if="profileForm.status==='1000000302' && modifyPage===true" class="mr-1"
+                        @click="onAction('blocked', profileForm)"
                         variant="danger default" size="sm"><i class="icofont-minus-circle"/> {{
                 $t('permission-management.action-block') }}
               </b-button>
-              <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000303' && modifyPage===true" class="mr-1" @click="onAction('unblock', profileForm)"
+              <b-button :disabled="checkPermItem('user_update_status')"
+                        v-if="profileForm.status==='1000000303' && modifyPage===true" class="mr-1"
+                        @click="onAction('unblock', profileForm)"
                         variant="success default" size="sm"><i class="icofont-power"/> {{
                 $t('permission-management.action-unblock') }}
               </b-button>
-              <b-button :disabled="checkPermItem('user_modify')" v-if="profileForm.status==='1000000304' && modifyPage===true" class="mr-1" @click="onAction('reset-password', profileForm)"
+              <b-button :disabled="checkPermItem('user_modify')"
+                        v-if="profileForm.status==='1000000304' && modifyPage===true" class="mr-1"
+                        @click="onAction('reset-password', profileForm)"
                         variant="purple default" size="sm"><i class="icofont-ui-password"/> {{
                 $t('permission-management.pending') }}
               </b-button>
@@ -463,14 +465,14 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select :disabled="profileForm.status==='1000000301'" v-model="profileForm.gender" :options="genderOptions" plain
+                  <b-form-select :disabled="profileForm.status==='1000000301'" v-model="profileForm.gender"
+                                 :options="genderOptions" plain
                   />
                 </b-form-group>
               </b-col>
               <b-col cols="3">
                 <b-form-group>
-                  <template slot="label">{{$t('permission-management.license-number')}}&nbsp;<span
-                    class="text-danger">*</span></template>
+                  <template slot="label">{{$t('permission-management.license-number')}}</template>
                   <b-form-input type="text" v-model="profileForm.identityCard"
                                 :placeholder="$t('permission-management.please-enter-license-number')"/>
 
@@ -576,29 +578,37 @@
           <b-col cols="2" class="text-right">
             <div class="mb-4 img-wrapper position-relative">
               <div class=" p-1">
-                <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
+                <img :src="profileForm.avatar" onerror="src=''" class="card-img-top"/>
               </div>
               <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -50%">
                 <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp.png">
                 <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp.png">
-                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png" class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png" class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png"
+                     class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png"
+                     class="img-rotate">
               </div>
               <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -50%">
-                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block_en.png" class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending_en.png" class="img-rotate">
+                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp_en.png"
+                     class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp_en.png"
+                     class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block_en.png"
+                     class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending_en.png"
+                     class="img-rotate">
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000301'" class="mr-1" @click="onAction('inactivate', profileForm)"
+            <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000301'"
+                      class="mr-1" @click="onAction('inactivate', profileForm)"
                       variant="warning default" size="sm"><i class="icofont-ban"/> {{
               $t('permission-management.action-make-inactive') }}
             </b-button>
-            <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000302'" class="mr-1" @click="onAction('activate', profileForm)"
+            <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000302'"
+                      class="mr-1" @click="onAction('activate', profileForm)"
                       variant="success default" size="sm"><i class="icofont-check-circled"/> {{
               $t('permission-management.active') }}
             </b-button>
@@ -615,14 +625,23 @@
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
               <b-row class="m-0">
-                <b-col cols="3" class="pr-3">
-                  <b-form-group class="search-form-group">
-                    <template slot="label">{{$t('permission-management.user.user-group-name')}}</template>
-                    <b-form-input :placeholder="$t('permission-management.user.please-enter-group-name')"
-                                  v-model="groupFilter.name"/>
-                  </b-form-group>
+                <b-col cols="4" class="pr-3">
+                  <b-row>
+                    <b-col>
+                      <b-form-group class="search-form-group">
+                        <template slot="label">{{$t('permission-management.user.user-group-name')}}</template>
+                        <b-form-input v-model="groupFilter.groupName"/>
+                      </b-form-group>
+                    </b-col>
+                    <b-col>
+                      <b-form-group class="search-form-group">
+                        <template slot="label">{{$t('permission-management.user.user-group-member')}}</template>
+                        <b-form-input v-model="groupFilter.userName"/>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
                 </b-col>
-                <b-col cols="9" class="d-flex justify-content-end align-items-center">
+                <b-col cols="8" class="d-flex justify-content-end align-items-center">
                   <div>
                     <b-button size="sm" class="ml-2" variant="info default" @click="onUserGroupSearchButton()">
                       <i class="icofont-search-1"/>&nbsp;{{ $t('permission-management.search') }}
@@ -760,6 +779,10 @@
                 <div>
                   <b-button @click="onClickCreateUserGroup" variant="info default" size="sm"><i
                     class="icofont-save"/> {{$t('permission-management.permission-control.save')}}
+                  </b-button>
+                  <b-button @click="selectedUserGroupItem = false"
+                            variant="danger default" size="sm"><i
+                    class="icofont-long-arrow-left"/> {{$t('system-setting.cancel')}}
                   </b-button>
                 </div>
               </div>
@@ -935,39 +958,39 @@
       },
       passwordForm: {
         password: {
-          required, minLength: minLength(6),
+          required, minLength: minLength(6), maxLength: maxLength(16),
           isAccountValid
         },
         confirmPassword: {
-          required, sameAs: sameAs('password')
+          required, sameAs: sameAs('password'), maxLength: maxLength(16),
         },
       },
       profileForm: {
         userName: {
-          required, maxLength: maxLength(50)
+          required, maxLength: maxLength(20)
         },
         userNumber: {
-          required, alphaNum, maxLength: maxLength(50)
+          required, alphaNum, maxLength: maxLength(20)
         },
         gender: {
-          required,
+          required, maxLength: maxLength(20),
         },
         identityCard: {
-          required
+          maxLength: maxLength(20),
         },
         orgId: {
-          required
+          required, maxLength: maxLength(20),
         },
         email: {
-          email
+          email, maxLength: maxLength(20),
         },
         userAccount: {
           isAccountValid,
-          required, minLength: minLength(6), maxLength: maxLength(50),
+          required, minLength: minLength(6), maxLength: maxLength(16),
         },
         passwordValue: {
           isAccountValid,
-          required, minLength: minLength(6), maxLength: maxLength(50),
+          required, minLength: minLength(6), maxLength: maxLength(20),
         },
         mobile: {
           isPhoneValid,
@@ -975,10 +998,10 @@
       },
       groupForm: {
         groupName: {
-          required
+          required, maxLength: maxLength(20),
         },
         groupNumber: {
-          required,
+          required, maxLength: maxLength(20),
           isGroupNumberValid
         }
       }
@@ -1025,12 +1048,12 @@
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-        renderedCheckList:[],
-        renderedCheckListGroup:[],
+        renderedCheckList: [],
+        renderedCheckListGroup: [],
         isModalVisible: false,
         tableData: [],
         pageStatus: 'table',
-        modifyPage : false,
+        modifyPage: false,
         defaultOrgId: '',
         filter: {
           userName: '',
@@ -1039,7 +1062,7 @@
           gender: null
         },
 
-        passwordForm:{
+        passwordForm: {
           password: null,
           confirmPassword: null
         },
@@ -1114,7 +1137,7 @@
               width: '60px'
             },
             {
-              name: 'userId',
+              name: '__sequence',
               title: this.$t('permission-management.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -1193,14 +1216,15 @@
         },
         //second tab content
         selectedUserGroupItem: null,
-        orgUserTreeDataTmp :[],
+        orgUserTreeDataTmp: [],
         groupForm: {
           groupName: '',
           groupNumber: '',
           status: 'create'
         },
         groupFilter: {
-          name: ''
+          groupName: '',
+          userName:''
         },
         userGroupTableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
@@ -1213,7 +1237,7 @@
               width: '60px'
             },
             {
-              name: 'userGroupId',
+              name: '__sequence',
               title: this.$t('permission-management.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -1228,6 +1252,12 @@
             {
               name: 'groupName',
               title: this.$t('permission-management.user.user-group-name'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'groupMember',
+              title: this.$t('permission-management.user.user-group-member'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -1322,10 +1352,9 @@
       },
       selectedUserGroupItem(newVal) {
         if (newVal) {
-          if(newVal.users.length === this.userData.length) {
+          if (newVal.users.length === this.userData.length) {
             this.isSelectedAllUsersForDataGroup = true;
-          }
-          else {
+          } else {
             this.isSelectedAllUsersForDataGroup = false;
           }
           let userGroupList = [];
@@ -1378,91 +1407,93 @@
       getLocale() {
         return getLocale();
       },
-      selectAll(value){
+      selectAll(value) {
         this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.vuetable.isCheckAllStatus=value;
+        this.$refs.vuetable.isCheckAllStatus = value;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = value;
       },
-      selectNone(){
+      selectNone() {
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = false;
       },
-      changeCheckAllStatus(){
+      changeCheckAllStatus() {
         let selectList = this.$refs.vuetable.selectedTo;
         let renderedList = this.renderedCheckList;
-        if(selectList.length>=renderedList.length){
+        if (selectList.length >= renderedList.length) {
           let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
+          for (let i = 0; i < renderedList.length; i++) {
             isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
             }
-            if(isEqual===false){
+            if (isEqual === false) {
               this.selectNone();
               break;
             }
-            if(i===renderedList.length-1){
+            if (i === renderedList.length - 1) {
               this.selectAll(true);
             }
           }
-        }
-        else {
+        } else {
           this.selectNone();
         }
 
       },
-      selectAllGroup(value){
+      selectAllGroup(value) {
         this.$refs.userGroupTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.userGroupTable.isCheckAllStatus=value;
+        this.$refs.userGroupTable.isCheckAllStatus = value;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.userGroupTable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = value;
       },
-      selectNoneGroup(){
+      selectNoneGroup() {
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.userGroupTable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = false;
       },
-      changeCheckAllStatusGroup(){
+      changeCheckAllStatusGroup() {
         let selectList = this.$refs.userGroupTable.selectedTo;
         let renderedList = this.renderedCheckListGroup;
-        if(selectList.length>=renderedList.length){
+        if (selectList.length >= renderedList.length) {
           let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
+          for (let i = 0; i < renderedList.length; i++) {
             isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
             }
-            if(isEqual===false){
+            if (isEqual === false) {
               this.selectNoneGroup();
               break;
             }
-            if(i===renderedList.length-1){
+            if (i === renderedList.length - 1) {
               this.selectAllGroup(true);
             }
           }
-        }
-        else {
+        } else {
           this.selectNoneGroup();
         }
 
       },
-      onCheckStatusChange(isChecked){
-        if(isChecked){
+      onCheckStatusChange(isChecked) {
+        if (isChecked) {
           this.changeCheckAllStatus();
-        }
-        else {
+        } else {
           this.selectNone();
         }
       },
-      onCheckStatusChangeGroup(isChecked){
-        if(isChecked){
+      onCheckStatusChangeGroup(isChecked) {
+        if (isChecked) {
           this.changeCheckAllStatusGroup();
-        }
-        else {
+        } else {
           this.selectNoneGroup();
         }
       },
@@ -1558,7 +1589,7 @@
         // reset models
         this.onInitialUserData();
         this.submitted = false;
-        this.modifyPage=false;
+        this.modifyPage = false;
         // reset create form
         this.$v.profileForm.$reset();
         // change page to create
@@ -1583,7 +1614,7 @@
       },
       onSaveUserPage() {
         this.submitted = true;
-        if(this.profileForm.passwordType === "default"){
+        if (this.profileForm.passwordType === "default") {
           this.profileForm.passwordValue = "s123456";
         }
 
@@ -1591,67 +1622,91 @@
 
 
         if (this.$v.profileForm.$invalid) {
-          if(this.$v.profileForm.userName.$invalid){
+          if (this.$v.profileForm.userName.$invalid) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-user-name`), {
               duration: 3000,
               permanent: false
             });
             return;
           }
-          if(this.$v.profileForm.userNumber.$invalid){
+          if (this.$v.profileForm.userNumber.$invalid) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-user-id`), {
               duration: 3000,
               permanent: false
             });
             return;
           }
-          if(this.$v.profileForm.gender.$invalid){
+          if (this.$v.profileForm.gender.$invalid) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-gender`), {
               duration: 3000,
               permanent: false
             });
             return;
           }
-          if(this.$v.profileForm.identityCard.$invalid){
+          if (this.$v.profileForm.identityCard.$invalid) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-license-number`), {
               duration: 3000,
               permanent: false
             });
             return;
           }
-          if(this.$v.profileForm.orgId.$invalid){
+          if (this.$v.profileForm.orgId.$invalid) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-org`), {
               duration: 3000,
               permanent: false
             });
             return;
           }
-          if(this.$v.profileForm.email.$invalid){
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-email`), {
-              duration: 3000,
-              permanent: false
-            });
+          if (this.$v.profileForm.email.$invalid) {
+            if(this.profileForm.email === '') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-email`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.invalid-enter-email`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
             return;
           }
-          if(this.$v.profileForm.mobile.$invalid){
+          if (this.$v.profileForm.mobile.$invalid) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-mobile`), {
               duration: 3000,
               permanent: false
             });
             return;
           }
-          if(this.$v.profileForm.userAccount.$invalid){
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-user-account`), {
-              duration: 3000,
-              permanent: false
-            });
+          if (this.$v.profileForm.userAccount.$invalid) {
+            if(this.profileForm.userAccount === '') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-user-account`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.invalid-user-account`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
             return;
           }
-          if(this.$v.profileForm.passwordValue.$invalid){
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-password`), {
-              duration: 3000,
-              permanent: false
-            });
+          if (this.$v.profileForm.passwordValue.$invalid) {
+            if(this.profileForm.passwordValue === '') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-password`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.password-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
             return;
           }
 
@@ -1751,8 +1806,8 @@
           case 'inactivate':
             this.promptTemp.userId = userId;
             this.promptTemp.action = action;
-            // this.fnChangeItemStatus();
-            // break;
+          // this.fnChangeItemStatus();
+          // break;
           case 'blocked':
             this.fnShowConfDiaglog(userId, action);
             break;
@@ -1766,20 +1821,18 @@
         this.$v.passwordForm.$touch();
         if (this.$v.passwordForm.$invalid) {
 
-          if(this.passwordForm.password === null){
+          if (this.passwordForm.password === null) {
             this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.input-none`), {
               duration: 3000,
               permanent: false
             });
-          }
-          else {
-            if(!isAccountValid(this.passwordForm.password)){
+          } else {
+            if (!isAccountValid(this.passwordForm.password)) {
               this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.format-invalid`), {
                 duration: 3000,
                 permanent: false
               });
-            }
-            else if(this.$v.passwordForm.confirmPassword.$invalid){
+            } else if (this.$v.passwordForm.confirmPassword.$invalid) {
               this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.confirm-invalid`), {
                 duration: 3000,
                 permanent: false
@@ -1848,9 +1901,9 @@
         }
         this.profileForm.portrait = null;
 
-        if(data.password === 'default') {
+        if (data.password === 'default') {
           this.profileForm.passwordType = 'default';
-        }else{
+        } else {
           this.profileForm.passwordType = 'other';
           this.profileForm.passwordValue = data.password;
         }
@@ -1869,9 +1922,9 @@
         console.log(data['portrait']);
         this.profileForm.portrait = null;
 
-        if(data.password === 'default') {
+        if (data.password === 'default') {
           this.profileForm.passwordType = 'default';
-        }else{
+        } else {
           this.profileForm.passwordType = 'other';
           this.profileForm.passwordValue = data.password;
         }
@@ -2078,9 +2131,20 @@
 
         transformed.data = [];
         let temp;
+
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
           transformed.data.push(temp);
+          let usersName =[];
+          temp.users.forEach(users => {
+            usersName.push(users.userName);
+          });
+          let groupMember = usersName.join(',');
+          if(groupMember.length>30){
+            groupMember = groupMember.substr(0, 30) + "···"; // Gets the first part
+          }
+          temp.groupMember = groupMember;
+
           this.renderedCheckListGroup.push(data.data[i].userGroupId);
         }
 
@@ -2088,7 +2152,7 @@
 
       },
       userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        this.renderedCheckList =[];
+        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
@@ -2110,14 +2174,12 @@
         this.changeCheckAllStatus();
       },
       userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        this.renderedCheckListGroup =[];
+        this.renderedCheckListGroup = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.userGroupTableItems.perPage,
           sort: httpOptions.params.sort,
-          filter: {
-            groupName: this.groupFilter.name,
-          }
+          filter: this.groupFilter
         });
       },
       onUserGroupTablePaginationData(paginationData) {
@@ -2174,18 +2236,18 @@
         // var str = "";
         // for(var i = 0; i < index * 2; i ++) str = str + "-";
 
-        if(!treeData || treeData.length===0){
-          return ;
+        if (!treeData || treeData.length === 0) {
+          return;
         }
         let tmp = treeData;
         var answer = [];
-        for(let i=tmp.length - 1; i >= 0; i--){
+        for (let i = tmp.length - 1; i >= 0; i--) {
 
-          if(tmp[i].userId != null && tmp[i].userId != undefined) {
+          if (tmp[i].userId != null && tmp[i].userId != undefined) {
             continue;
           }
           this.getTreeData(tmp[i].children, index + 1);
-          if(!tmp[i].children || tmp[i].children.length == 0) {
+          if (!tmp[i].children || tmp[i].children.length == 0) {
             tmp.splice(i, 1);
           }
         }
@@ -2207,7 +2269,8 @@
       },
       onUserGroupResetButton() {
         this.groupFilter = {
-          name: null
+          groupName: null,
+          userName:null
         };
       },
       onUserGroupCreateButton() {
@@ -2216,9 +2279,9 @@
           users: []
         };
         let groupNumberStr = "PG";
-        for(let i=0; i<8; i++){
+        for (let i = 0; i < 8; i++) {
           let index = Math.floor(Math.random() * 10);
-          groupNumberStr= groupNumberStr + index.toString();
+          groupNumberStr = groupNumberStr + index.toString();
         }
         this.groupForm = {
           groupNumber: groupNumberStr,
@@ -2237,15 +2300,23 @@
           checkedNodes.forEach((node) => {
             if (node.isUser) userGroupUserIds.push(node.userId);
           });
-          if(this.$v.groupForm.$invalid){
-            if(this.$v.groupForm.groupNumber.$invalid){
-              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.user-groupId-field-is-mandatory`), {
-                duration: 3000,
-                permanent: false
-              });
-              return;
+          if (this.$v.groupForm.$invalid) {
+            if (this.$v.groupForm.groupNumber.$invalid) {
+              if (this.groupForm.groupNumber === '') {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.user-groupId-field-is-mandatory`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              } else {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.user-groupId-field-invalid-format`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
             }
-            if(this.$v.groupForm.groupName.$invalid){
+            if (this.$v.groupForm.groupName.$invalid) {
               this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.user-group-name-field-is-mandatory`), {
                 duration: 3000,
                 permanent: false
@@ -2314,13 +2385,12 @@
           checkedNodes.forEach((node) => {
             if (node.isUser) userGroupUserIds.push(node.userId);
           });
-          if(userGroupUserIds.length===0){
+          if (userGroupUserIds.length === 0) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.required-user`), {
               duration: 3000,
               permanent: false
             });
-          }
-          else {
+          } else {
             getApiManager()
               .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
                 'userGroupId': this.selectedUserGroupItem.userGroupId,

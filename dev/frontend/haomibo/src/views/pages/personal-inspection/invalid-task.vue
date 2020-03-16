@@ -10,7 +10,7 @@
     <b-card class="main-without-tab" v-show="pageStatus === 'table'" style="margin-top: 20px;">
       <div class="h-100 d-flex flex-column">
         <b-row class="pt-2">
-          <b-col cols="9">
+          <b-col cols="8">
             <b-row>
 
               <b-col>
@@ -37,9 +37,35 @@
                 </b-form-group>
               </b-col>
 
+              <div class="d-flex align-items-center" style="padding-top: 10px;">
+                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
+                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"/>
+                      </span>
+              </div>
             </b-row>
           </b-col>
-          <b-col cols="3" class="d-flex justify-content-end align-items-center">
+          <b-col cols="8" v-if="isExpanded">
+            <b-row>
+
+              <b-col>
+                <b-form-group :label="$t('log-management.operating-log.start-time')">
+                  <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
+                               valueType="YYYY-MM-DDTHH:mm:ss.000Z" placeholder=""/>
+                </b-form-group>
+              </b-col>
+
+              <b-col>
+                <b-form-group :label="$t('log-management.operating-log.end-time')">
+                  <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
+                               valueType="YYYY-MM-DDTHH:mm:ss.000Z" placeholder=""/>
+                </b-form-group>
+              </b-col>
+              <b-col/>
+              <b-col/>
+              <b-col/>
+            </b-row>
+          </b-col>
+          <b-col cols="4" class="d-flex justify-content-end align-items-center">
             <div>
               <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
                 <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
@@ -151,7 +177,7 @@
                 </div>
               </b-col>
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
-                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
+                <span v-if="showPage.serKnowledgeCase==null || showPage.serKnowledgeCase.caseId==null"><i
                   class="icofont-star"/></span>
                 <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
@@ -168,10 +194,10 @@
                 <canvas id="firstcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
               </b-col>
               <b-col style="padding-right: 1rem; padding-left: 0.5rem;">
-                <canvas id="secondcanvas"  style="height: 24vw;" class="img-fluid w-100 "/>
+                <canvas id="secondcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
-                  <div v-if="power===false">
-                    <b-img :disabled="power===false" src="/assets/img/previous_cartoon.png" class="operation-icon"
+                  <div v-if="power===true">
+                    <b-img :disabled="power===true" src="/assets/img/previous_cartoon.png" class="operation-icon"
                            @click="previousImage()"/>
                     <b-img src="/assets/img/next_cartoon.png" class="operation-icon" @click="nextImage()"/>
                   </div>
@@ -217,7 +243,7 @@
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(0)"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(10)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
                   </div>
 
@@ -227,7 +253,7 @@
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(10)"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(11)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
                   </div>
 
@@ -251,15 +277,6 @@
             </b-row>
             <b-row style="height: 15px !important;">
               <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
-<!--                <VueSlideBar-->
-<!--                  v-model="slidebar2value"-->
-<!--                  :min="-50"-->
-<!--                  :max="50"-->
-<!--                  :processStyle="slider.processStyle"-->
-<!--                  :lineHeight="slider.lineHeight"-->
-<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
-<!--                  class="slide-class">-->
-<!--                </VueSlideBar>-->
                 <vue-slider
                   v-model="slidebar2value"
                   :min="-50"
@@ -276,15 +293,6 @@
                   :dot-options="dotOptions"
                   :order="false"
                 />
-<!--                <VueSlideBar-->
-<!--                  v-model="slidebar1value"-->
-<!--                  :min="-50"-->
-<!--                  :max="50"-->
-<!--                  :processStyle="slider.processStyle"-->
-<!--                  :lineHeight="slider.lineHeight"-->
-<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
-<!--                  class="slide-class">-->
-<!--                </VueSlideBar>-->
               </b-col>
             </b-row>
           </b-card>
@@ -302,9 +310,7 @@
                   <div class="left">
                     <div>{{$t('menu.start')}}</div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Start</div>-->
-<!--                  </div>-->
+
                 </div>
 
                 <div class="part">
@@ -316,9 +322,7 @@
                       <div v-else>{{showPage.serScan.scanPointsman.userName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Scanning</div>-->
-<!--                  </div>-->
+
                   <div class="top-date">
                     <label
                       v-if="showPage.serScan != null">{{this.getDateTimeFormat2(showPage.serScan.scanStartTime)}}</label>
@@ -344,10 +348,7 @@
                       <div v-else>{{showPage.serJudgeGraph.judgeUser.userName}}</div>
                     </div>
                   </div>
-                  <!--                  <div class="right">-->
-                  <!--                    <div>Decision</div>-->
-                  <!--                    <div>diagram</div>-->
-                  <!--                  </div>-->
+
                   <div class="top-date">
                     <label v-if="showPage.serJudgeGraph==null"/>
                     <label
@@ -364,23 +365,21 @@
                   <div class="left">
                     <div>{{$t('device-config.maintenance-config.inspection')}}</div>
                     <div>
-<!--                      <div v-if="showPage.serHandExamination == null"></div>-->
-<!--                      <div v-else-if="showPage.serHandExamination.handUser == null"></div>-->
-<!--                      <div v-else>{{showPage.serHandExamination.handUser.userName}}</div>-->
+                      <!--                      <div v-if="showPage.serHandExamination == null"></div>-->
+                      <!--                      <div v-else-if="showPage.serHandExamination.handUser == null"></div>-->
+                      <!--                      <div v-else>{{showPage.serHandExamination.handUser.userName}}</div>-->
                     </div>
                   </div>
-                  <!--                  <div class="right">-->
-                  <!--                    <div>Inspection</div>-->
-                  <!--                  </div>-->
+
                   <div class="top-date">
-<!--                    <label v-if="handStartTime == null"/>-->
-<!--                    <label-->
-<!--                      v-else>{{this.getDateTimeFormat2(handStartTime)}}</label>-->
+                    <!--                    <label v-if="handStartTime == null"/>-->
+                    <!--                    <label-->
+                    <!--                      v-else>{{this.getDateTimeFormat2(handStartTime)}}</label>-->
                   </div>
                   <div class="bottom-date">
-<!--                    <label v-if="showPage.serHandExamination == null"></label>-->
-<!--                    <label-->
-<!--                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>-->
+                    <!--                    <label v-if="showPage.serHandExamination == null"></label>-->
+                    <!--                    <label-->
+                    <!--                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>-->
                   </div>
                 </div>
 
@@ -388,9 +387,7 @@
                   <div class="left">
                     <div>{{$t('menu.end')}}</div>
                   </div>
-                  <!--                  <div class="right">-->
-                  <!--                    <div>End</div>-->
-                  <!--                  </div>-->
+
                 </div>
 
               </div>
@@ -504,7 +501,7 @@
               <b-col>
                 <b-form-group class="form-group-margin">
                   <template slot="label">
-                    备注
+                    {{$t('permission-management.note')}}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border" style="max-width: 100%;"
@@ -644,25 +641,29 @@
   </div>
 </template>
 <style lang="scss">
-  .col-30{
+  .col-30 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 30%;
     flex: 0 0 30%;
     max-width: 30%;
   }
-  .col-70{
+
+  .col-70 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 70%;
     flex: 0 0 70%;
     max-width: 70%;
   }
-  .form-group-margin{
+
+  .form-group-margin {
     margin-bottom: 1.5rem;
   }
-  .form-input-border{
+
+  .form-input-border {
     background-color: white !important;
     border: 1px solid #ebebeb;
   }
+
   span.cursor-p {
     cursor: pointer !important;
   }
@@ -909,12 +910,14 @@
           taskNumber: null,
           mode: null,
           fieldId: null,
-          userName: null
+          userName: null,
+          startTime: null,
+          endTime: null
         },
-        power: true,
+        power: false,
         siteData: [],
         showPage: [],
-        renderedCheckList:[],
+        renderedCheckList: [],
 
         fileSelection: [],
         direction: getDirection().direction,
@@ -1013,16 +1016,16 @@
         handStartTime: null,
         handDeviceName: null,
         handUserName: null,
-        httpOption:null,
-        apiUrl:null,
+        httpOption: null,
+        apiUrl: null,
 
 
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: '1', text: '安检仪+(本地手检)'},
-          {value: '2', text: '安检仪+手检端'},
-          {value: '3', text: '安检仪+审图端'},
-          {value: '4', text: '安检仪+审图端+手检端'},
+          {value: '1', text: this.$t('personal-inspection.security-instrument')},
+          {value: '2', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
+          {value: '3', text: this.$t('personal-inspection.security-instrument-and-manual-test')},
+          {value: '4', text: this.$t('personal-inspection.security-instrument-and-hand-test-and-device')},
         ],
 
         statusOptions: [
@@ -1042,7 +1045,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'taskId',
+              name: '__sequence',
               title: this.$t('personal-inspection.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -1120,7 +1123,7 @@
       }
     },
 
-    created () {
+    created() {
       //this.onSearchButton();
       this.timer = setInterval(this.autoUpdate, 15000)
 
@@ -1128,7 +1131,7 @@
       //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
 
     },
-    beforeDestroy () {
+    beforeDestroy() {
       clearInterval(this.timer)
     },
 
@@ -1138,10 +1141,10 @@
         this.changeCheckAllStatus();
       },
 
-      pageStatus(newval){
-        if(newval==='show'){
+      pageStatus(newval) {
+        if (newval === 'show') {
           clearInterval(this.timer);
-        }else{
+        } else {
           this.timer = setInterval(() => this.autoUpdate(), 15000);
         }
       },
@@ -1171,13 +1174,12 @@
 
       slidebar1value(newsValue, oldValue) {
 
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
+        if (oldValue[1] < newsValue[1]) {
+          for (let i = oldValue[1]; i < newsValue[1]; i++) {
             this.filterId(5);
           }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
+        } else {
+          for (let i = newsValue[1]; i < oldValue[1]; i++) {
             this.filterId(6);
           }
         }
@@ -1185,13 +1187,12 @@
 
       slidebar2value(newsValue, oldValue) {
 
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
+        if (oldValue[1] < newsValue[1]) {
+          for (let i = oldValue[1]; i < newsValue[1]; i++) {
             this.filterId(7);
           }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
+        } else {
+          for (let i = newsValue[1]; i < oldValue[1]; i++) {
             this.filterId(8);
           }
         }
@@ -1201,47 +1202,48 @@
       cancelAutoUpdate() {
         clearInterval(this.timer)
       },
-      selectAll(value){
+      selectAll(value) {
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.taskVuetable.isCheckAllStatus=value;
+        this.$refs.taskVuetable.isCheckAllStatus = value;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = value;
       },
-      selectNone(){
+      selectNone() {
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = false;
       },
-      changeCheckAllStatus(){
+      changeCheckAllStatus() {
         let selectList = this.$refs.taskVuetable.selectedTo;
         let renderedList = this.renderedCheckList;
-        if(selectList.length>=renderedList.length){
+        if (selectList.length >= renderedList.length) {
           let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
+          for (let i = 0; i < renderedList.length; i++) {
             isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
             }
-            if(isEqual===false){
+            if (isEqual === false) {
               this.selectNone();
               break;
             }
-            if(i===renderedList.length-1){
+            if (i === renderedList.length - 1) {
               this.selectAll(true);
             }
           }
-        }
-        else {
+        } else {
           this.selectNone();
         }
 
       },
-      onCheckStatusChange(isChecked){
-        if(isChecked){
+      onCheckStatusChange(isChecked) {
+        if (isChecked) {
           this.changeCheckAllStatus();
-        }
-        else {
+        } else {
           this.selectNone();
         }
       },
@@ -1275,7 +1277,7 @@
       },
 
       onlyOneSlide(value) {
-        if (this.power === false) {
+        if (this.power === true) {
           if (value === 1) {
             this.isSlidebar1Expended = !this.isSlidebar1Expended;
             this.isSlidebar2Expended = !this.isSlidebar1Expended;
@@ -1292,7 +1294,7 @@
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
         }
-        if (this.power === false) {
+        if (this.power === true) {
           imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
         }
       },
@@ -1301,8 +1303,8 @@
         let url1 = '';
         let url2 = '';
         this.slidebar1value = [0, 0];
-        this.slidebar2value= [0, 0];
-        if (this.power === true) {
+        this.slidebar2value = [0, 0];
+        if (this.power === false) {
 
           if (this.imagesInfo[0] !== undefined) {
             url1 = this.imagesInfo[0].imageUrl;
@@ -1319,7 +1321,7 @@
 
           if (this.cartoonsInfo[k] !== undefined) {
             url1 = this.cartoonsInfo[k].imageUrl;
-            if(this.cartoonsInfo[k].imageRect!=null) {
+            if (this.cartoonsInfo[k].imageRect != null) {
               for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
                 this.cartoonRectL.push({
                   x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
@@ -1331,7 +1333,7 @@
               }
             }
             if (this.cartoonsInfo[k].rectsAdd != null) {
-            for (let i = 0; i < this.cartoonsInfo[k].rectsAdd.length; i++) {
+              for (let i = 0; i < this.cartoonsInfo[k].rectsAdd.length; i++) {
 
                 this.cartoonRectL.push({
                   x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
@@ -1461,10 +1463,10 @@
       getModeName(value) {
         const dictionary = {
 
-          "1000001301": `安检仪+(本地手检)`,
-          "1000001302": `安检仪+手检端`,
-          "1000001303": `安检仪+审图端`,
-          "1000001304": `安检仪+审图端+手检端`,
+          "1000001301": this.$t('personal-inspection.security-instrument'),
+          "1000001302": this.$t('personal-inspection.security-instrument-and-hand-test'),
+          "1000001303": this.$t('personal-inspection.security-instrument-and-manual-test'),
+          "1000001304": this.$t('personal-inspection.security-instrument-and-hand-test-and-device'),
 
         };
         if (!dictionary.hasOwnProperty(value)) return '';
@@ -1484,30 +1486,7 @@
         this.link = `task/invalid-task/generate`;
         this.imgUrl = `task/invalid-task/generate/image`;
         this.name = 'Invalid-Task';
-        // if(this.params.isAll===false||this.params.idList!=="") {
-        // getApiManagerError()
-        //   .post(`${apiBaseUrl}/task/invalid-task/generate/image`, this.params).then((response) => {
-        //   let message = response.data.message;
-        //   let data = response.data.data;
-        //   switch (message) {
-        //     case responseMessages['ok']:
-        //       if (data.enabledCartoon) {
-        //         data.cartoonImageList.forEach(item => {
-        //           this.imgUrl.push(item);
-        //         });
-        //       }
-        //       if (data.enabledOriginal) {
-        //         //this.imgUrl = data.originalImageList;
-        //         data.originalImageList.forEach(item => {
-        //           this.imgUrl.push(item);
-        //         });
-        //       }
-        //       break;
-        //   }
-        // })
-        //   .catch((error) => {
-        //   });
-        // }
+
         this.isModalVisible = true;
       },
 
@@ -1540,7 +1519,7 @@
         };
         let link = `task/invalid-task/generate`;
 
-          printFileFromServer(link, params);
+        printFileFromServer(link, params);
 
       },
 
@@ -1563,7 +1542,7 @@
       onRowClicked: function (taskNumber) {
 
         this.pageStatus = 'show';
-        this.power = true;
+        this.power = false;
         this.isSlidebar1Expended = false;
         this.isSlidebar2Expended = false;
         this.cntCartoon = 0;
@@ -1656,8 +1635,8 @@
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 248 / deviceImage[i].width :0,
-                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 521 / deviceImage[i].height :0,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width != null ? 248 / deviceImage[i].width : 0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 521 / deviceImage[i].height : 0,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour
@@ -1665,18 +1644,18 @@
                     }
 
 
-                      this.cartoonsInfo.push({
-                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 205 / deviceImage[i].width :0,
-                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ?  426 / deviceImage[i].height :0,
-                        imageUrl: deviceImage[i].image,
-                        imageRect: deviceImage[i].imageRects,
-                        colorRect: colourInfo.scanRecogniseColour,
-                        colorAdd: colourInfo.judgeRecogniseColour,
-                        colorDel: colourInfo.displayDeleteSuspicionColour,
-                        displayDel: colourInfo.displayDeleteSuspicion,
-                        rectsAdd: submitRects !=null && submitRects[i] != undefined? submitRects[i].rectsAdded : null,
-                        rectsDel: submitRects !=null && submitRects[i] != undefined?  submitRects[i].rectsDeleted : null
-                      });
+                    this.cartoonsInfo.push({
+                      rateWidth: deviceImage[i].width != 0 && deviceImage[i].width != null ? 205 / deviceImage[i].width : 0,
+                      rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 426 / deviceImage[i].height : 0,
+                      imageUrl: deviceImage[i].image,
+                      imageRect: deviceImage[i].imageRects,
+                      colorRect: colourInfo.scanRecogniseColour,
+                      colorAdd: colourInfo.judgeRecogniseColour,
+                      colorDel: colourInfo.displayDeleteSuspicionColour,
+                      displayDel: colourInfo.displayDeleteSuspicion,
+                      rectsAdd: submitRects != null && submitRects[i] != undefined ? submitRects[i].rectsAdded : null,
+                      rectsDel: submitRects != null && submitRects[i] != undefined ? submitRects[i].rectsDeleted : null
+                    });
 
                   }
                 }
@@ -1786,7 +1765,7 @@
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
-      autoUpdate(){
+      autoUpdate() {
         this.$refs.taskVuetable.reload();
       },
 
@@ -1795,7 +1774,9 @@
           taskNumber: null,
           mode: null,
           fieldId: null,
-          userName: null
+          userName: null,
+          startTime: null,
+          endTime: null
         };
       },
 

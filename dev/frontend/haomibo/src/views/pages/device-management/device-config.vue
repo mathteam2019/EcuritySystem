@@ -368,23 +368,23 @@
                     </div>
                     <div slot="operating" slot-scope="props">
                       <b-button size="sm" variant="info default btn-square"
-                                :disabled="checkPermItem('device_config_modify')"
+                                :disabled="checkPermItem('device_config_modify') || props.rowData.deviceId === 7749"
                                 @click="onAction('edit',props.rowData)">
                         <i class="icofont-edit"/>
                       </b-button>
                       <b-button
                         v-if="props.rowData.status==='1000000702'"
                         size="sm" @click="onAction('activate',props.rowData)"
-                        variant="warning default btn-square" :disabled="checkPermItem('device_config_update_status')"
+                        variant="success default btn-square" :disabled="checkPermItem('device_config_update_status')"
                       >
-                        <i class="icofont-ban"/>
+                        <i class="icofont-check-circled"/>
                       </b-button>
                       <b-button @click="onAction('inactivate',props.rowData)"
                                 v-if="props.rowData.status==='1000000701'"
                                 size="sm"
-                                variant="success default btn-square" :disabled="checkPermItem('device_config_update_status')"
+                                variant="warning default btn-square" :disabled="checkPermItem('device_config_update_status')"
                       >
-                        <i class="icofont-check-circled"/>
+                        <i class="icofont-ban"/>
                       </b-button>
                     </div>
                   </vuetable>
@@ -465,7 +465,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.safety-hand-check')}}
                   </template>
-                  <b-form-select v-model="configForm.manualSwitch" :options="yesNoOptions" plain/>
+                  <b-form-select v-model="configForm.manualSwitch" :options="yesNoOptions" :disabled="getModeValueFromId(configForm.modeId) === '1000001301'" @change="changeManualSwitch" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -473,7 +473,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.male-guide-object')}}
                   </template>
-                  <b-form-select v-model="configForm.manDeviceGender" :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.manDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301'" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -481,7 +481,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.female-guide-object')}}
                   </template>
-                  <b-form-select v-model="configForm.womanDeviceGender" :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.womanDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301'" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -552,6 +552,16 @@
               </b-col>
             </b-row>
           </b-col>
+          <b-col cols="2">
+            <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: 0;left: 0">
+              <img v-if="configForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+              <img v-else-if="configForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            </div>
+            <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: 0;left: 0">
+              <img v-if="configForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+              <img v-else-if="configForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+            </div>
+          </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
               <b-button variant="info default" size="sm" @click="onSaveDeviceConfig()"
@@ -561,7 +571,7 @@
               <b-button v-if="configForm.status === '1000000701'"
                         @click="onAction('inactivate',configForm)" size="sm"
                         variant="warning default" :disabled="checkPermItem('device_config_update_status')">
-                <i class="icofont-ban"/> {{$t('system-setting.status-inactive')}}
+                <i class="icofont-ban"/> {{$t('permission-management.action-make-inactive')}}
               </b-button>
               <b-button v-if="configForm.status === '1000000702'"
                         @click="onAction('activate',configForm)" size="sm"
@@ -615,7 +625,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {checkPermissionItem, getDicDataByDicIdForOptions, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDicDataByDicIdForOptions, getDirection, getLocale} from "../../../utils";
   import Vue from 'vue'
   import VueDualList from '../../../components/Duallist/VueDualList'
   import LiquorTree from 'liquor-tree'
@@ -676,10 +686,10 @@
         isLoading: false,
         isLoadCompleted: false,
         modeDictionaryData: {
-          '1000001301': "安检仪",
-          '1000001302': "安检仪+手验端",
-          '1000001303': "安检仪+审图端",
-          '1000001304': "安检仪+审图端+查验端"
+          '1000001301': this.$t('personal-inspection.security-instrument'),
+          '1000001302': this.$t('personal-inspection.security-instrument-and-hand-test'),
+          '1000001303': this.$t('personal-inspection.security-instrument-and-manual-test'),
+          '1000001304': this.$t('personal-inspection.security-instrument-and-hand-test-and-device')
         },
         siteData: [],
         categoryData: [],
@@ -692,10 +702,10 @@
         siteSelectOptions: [],
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: '1', text: '安检仪+(本地手检)'},
-          {value: '2', text: '安检仪+手检端'},
-          {value: '3', text: '安检仪+审图端'},
-          {value: '4', text: '安检仪+审图端+手检端'},
+          {value: '1', text: this.$t('personal-inspection.security-instrument')},
+          {value: '2', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
+          {value: '3', text: this.$t('personal-inspection.security-instrument-and-manual-test')},
+          {value: '4', text: this.$t('personal-inspection.security-instrument-and-hand-test-and-device')},
         ],
         modeData: [],
         modeSelectData: [],
@@ -775,7 +785,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'configId',
+              name: '__sequence',
               title: this.$t('maintenance-management.maintenance-task.no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -822,7 +832,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'deviceId',
+              name: '__sequence',
               title: this.$t('maintenance-management.maintenance-task.no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -864,6 +874,10 @@
       ///////////////////////////////////////////
       ////////   loading      Options ///////////
       ///////////////////////////////////////////
+      getLocale() {
+
+        return getLocale();
+      },
       changeDefault(value){
 
         if(value===1){
@@ -872,6 +886,9 @@
           this.configForm.manManualGender = null;
           this.configForm.womanManualGender = null;
           this.configForm.atrSwitch = null;
+          this.configForm.manualSwitch = null;
+          this.configForm.manDeviceGender = null;
+          this.configForm.womanDeviceGender = null;
         }
         if(value===3){
           this.configForm.manRemoteGender = this.genderFilterOptions[1].value;
@@ -893,6 +910,13 @@
           this.configForm.manManualGender = this.genderFilterOptions[1].value;
           this.configForm.womanManualGender = this.genderFilterOptions[2].value;
           this.configForm.atrSwitch = null;
+        }
+      },
+
+      changeManualSwitch(value){
+        if(value==='1000000602'){
+          this.configForm.manDeviceGender = null;
+          this.configForm.womanDeviceGender = null;
         }
       },
       selectAll(value){
@@ -1102,6 +1126,8 @@
         }
         return false;
       },
+
+
 
       onExportButton() {
         // this.fileSelection = [];
@@ -1405,6 +1431,7 @@
                   manualDeviceId: [],
                   fromDeviceId: []
                 };
+
                 if(isUpdated===true) {
                   this.selectedDeviceName = null;
                   this.selectedDeviceName = rowData.deviceName;
@@ -1415,6 +1442,7 @@
                     category: data.device.category.categoryName
                   };
                   this.getConfigDeviceData(data.deviceId);
+                  //console.log(this.configForm.modeId);
 
 
                   rowData.fromConfigIdList.forEach(item => {
@@ -1523,7 +1551,12 @@
               break;
           }
           this.isLoading = false;
-        });
+        })
+          .catch((error) => {
+            this.isLoading = false;
+          });
+        this.isLoading = false;
+
       },
       onDeleteDeviceConfig() {
         return;
@@ -1596,6 +1629,14 @@
           that.disableSelect();
         },300);
       },
+      'configForm.manualSwitch': function (newVal) {
+        console.log(newVal);
+       if(newVal === '1000000602'){
+         this.configForm.manDeviceGender = null;
+         this.configForm.womanDeviceGender = null;
+
+       }
+      },
 
       // 'configForm.modeId': function (newVal) {
       //
@@ -1616,7 +1657,7 @@
           }));
         }
         this.deviceCategoryOptions = JSON.parse(JSON.stringify(options));
-        this.deviceCategoryOptions.push({value: null, text: `${this.$t('permission-management.all')}`});
+        this.deviceCategoryOptions.push({value: null, text: `全部`});
         this.$refs.fieldSelectList.setFilterOptions(this.deviceCategoryOptions);
       },
       siteData(newVal, oldVal) { // maybe called when the org data is loaded from server

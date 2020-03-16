@@ -25,13 +25,13 @@
           </b-col>
 
           <b-col>
-            <b-form-group :label="'引导员'">
+            <b-form-group :label="$t('statistics.view.operator')">
               <b-form-input v-model="filter.userName"/>
             </b-form-group>
           </b-col>
 
           <b-col>
-            <b-form-group :label="'统计步长'">
+            <b-form-group :label="$t('statistics.view.step-size')">
               <b-form-select v-model="filter.statWidth" :options="statisticalStepSizeOptions" plain/>
             </b-form-group>
           </b-col>
@@ -91,7 +91,7 @@
               <span class="font-weight-bold" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.total}}</span>
               <span v-else>0</span>
             </div>
-            <div><span>手检</span></div>
+            <div><span>{{$t('maintenance-management.process-task.hand')}}</span></div>
           </div>
         </b-card>
       </b-col>
@@ -109,7 +109,7 @@
                     <span v-else>0</span>
                   </div>
 
-                  <div><span>无查获</span></div>
+                  <div><span>{{$t('knowledge-base.no-seized')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -125,7 +125,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.noSeizureRate)}}%</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>无查获率</span></div>
+                  <div><span>{{$t('statistics.view.no-seizure-rate')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -142,7 +142,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.seizure}}</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>查获</span></div>
+                  <div><span>{{$t('knowledge-base.seized')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -158,7 +158,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.seizureRate)}}%</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>查获率</span></div>
+                  <div><span>{{$t('statistics.view.seizure-rate')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -176,7 +176,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.avgDuration-preViewData.totalStatistics.avgDuration%60)/60}}m{{Math.round(preViewData.totalStatistics.avgDuration)%60}}s</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>手检平均时长</span></div>
+                  <div><span>{{$t('statistics.hand-checks.avg')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -192,7 +192,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.maxDuration-preViewData.totalStatistics.maxDuration%60)/60}}m{{preViewData.totalStatistics.maxDuration%60}}s</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>手检最高时长</span></div>
+                  <div><span>{{$t('statistics.hand-checks.max')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -208,7 +208,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.minDuration-preViewData.totalStatistics.minDuration%60)/60}}m{{preViewData.totalStatistics.minDuration%60}}s</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>手检最低时长</span></div>
+                  <div><span>{{$t('statistics.hand-checks.min')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -248,14 +248,14 @@
                   <div class="legend-group part-2">
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">查获</div>
+                      <div class="legend-name">{{$t('knowledge-base.seized')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">
                         {{preViewData.totalStatistics.seizure}}
                       </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">无查获</div>
+                      <div class="legend-name">{{$t('knowledge-base.no-seized')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">
                         {{preViewData.totalStatistics.noSeizure}}
                       </div>
@@ -270,7 +270,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>判图</h5>
+                <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
@@ -286,7 +286,9 @@
       <b-col v-if="pageStatus1==='table'">
         <b-card>
           <b-card-header>
-            <h5 class="text-center my-4">毫米波人体查验手检统计</h5>
+
+            <h5 class="text-center my-4">{{$t('statistics.view.table-title')}}</h5>
+
           </b-card-header>
 
           <div class="table-wrapper table-responsive overflow-auto">
@@ -319,7 +321,7 @@
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton2()">
-            <i class="icofont-exchange"/>&nbsp;切换
+            <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default"
                     :disabled="checkPermItem('hand_statistics_export')" @click="onExportButton('statistics')">
@@ -348,7 +350,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>查获</h5>
+                <h5>{{$t('knowledge-base.seized')}}</h5>
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
@@ -364,48 +366,48 @@
       <b-col v-show="pageStatus2==='table'">
         <b-card>
           <b-card-header>
-            <h5 class="text-center my-4">毫米波人体查验手检统计</h5>
+            <h5 class="text-center my-4">{{$t('statistics.view.table-title')}}</h5>
           </b-card-header>
 
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>现场:</b></b-col>
+            <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
             <b-col cols="11">
               <span v-if="filter.fieldId === null">{{this.allField}}</span>
               <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>安检仪:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
             <b-col cols="11">
               <span v-if="filter.deviceId === null">{{allDevice}}</span>
               <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>操作员类型:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
             <b-col cols="11"><span>引导员</span></b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>操作员:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
             <b-col cols="11">
-              <span v-if="filter.userName===null">全部</span>
+              <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
               <span v-else>{{filter.userName}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>时间:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
             <b-col cols="11"><span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>统计步长:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
             <b-col cols="11">
-              <span v-if="filter.statWidth==='hour'">时</span>
-              <span v-else-if="filter.statWidth==='day'">天</span>
-              <span v-else-if="filter.statWidth==='week'">周</span>
-              <span v-else-if="filter.statWidth==='month'">月</span>
-              <span v-else-if="filter.statWidth==='quarter'">季度</span>
-              <span v-else>年</span>
+              <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
+              <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
+              <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
+              <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
+              <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
+              <span v-else>{{$t('statistics.year')}}</span>
             </b-col>
           </b-row>
 
@@ -491,7 +493,7 @@
   import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
-  import {checkPermissionItem, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import highcharts from "../../../data/highcharts";
   import wordcloud from "../../../data/wordcloud"
 
@@ -535,7 +537,7 @@
       this.getManualDeviceData();
       this.getPreviewData();
       this.getGraphData();
-
+      this.setPeriodLabel('hour');
     },
     data() {
 
@@ -548,7 +550,7 @@
             data: []
           }],
           title: {
-            text: '词云图'
+            text: this.$t('statistics.hand-checks.word-cloud')
           }
         },
 
@@ -576,7 +578,7 @@
           },
           color: [
             '#ff0000',
-            '#ff6600'
+            '#009900'
           ],
           series: [
             {
@@ -596,8 +598,8 @@
                 length2: -30
               },
               data: [
-                {value: 0, name: '查获'},
-                {value: 0, name: '无查获'}
+                {value: 0, name: this.$t('knowledge-base.seized')},
+                {value: 0, name: this.$t('knowledge-base.no-seized')}
               ]
             },
 
@@ -613,7 +615,7 @@
             }
           },
           legend: {
-            data: ['无查获', '查获'],
+            data: [this.$t('knowledge-base.no-seized'), this.$t('knowledge-base.seized')],
             icon: 'rect',
             right: 25
           },
@@ -650,17 +652,17 @@
               show: false
             }
           },
-          color: ['#ff6600', '#ff0000'],
+          color: ['#009900', '#ff0000'],
 
           series: [
             {
-              name: '无查获',
+              name: this.$t('knowledge-base.no-seized'),
               type: 'bar',
               data: [0],
               barGap: '0%',
             },
             {
-              name: '查获',
+              name: this.$t('knowledge-base.seized'),
               type: 'bar',
               data: [0],
               barGap: '0%',
@@ -675,7 +677,7 @@
             }
           },
           legend: {
-            data: ['查获'],
+            data: [this.$t('knowledge-base.seized')],
             icon: 'rect',
             right: 25
           },
@@ -715,10 +717,10 @@
           color: ['#1989fa'],
           series: [
             {
-              name: '查获',
+              name: this.$t('knowledge-base.seized'),
               type: 'bar',
               barWidth: '30%',
-              data: [0]
+              data: []
             }
           ]
         },
@@ -767,32 +769,34 @@
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
         onSiteOptions: [
-          {value: null, text: "全部"},
+          {value: null, text: this.$t('personal-inspection.all')},
           {value: 'way_1', text: "通道1"},
           {value: 'way_2', text: "通道2"},
           {value: 'way_3', text: "通道3"},
         ],
         onSiteOption: [],
         securityDeviceOptions: [
-          {value: null, text: "全部"},
+          {value: null, text: this.$t('personal-inspection.all')},
           {value: 'security_device_1', text: "安检仪001"},
           {value: 'security_device_2', text: "安检仪002"},
           {value: 'security_device_3', text: "安检仪003"},
         ],
         operatorTypeOptions: [
-          {value: null, text: "全部"},
+          {value: null, text: this.$t('personal-inspection.all')},
           {value: '引导员', text: "引导员"},
           {value: '判图员', text: "判图员"},
           {value: '手检员', text: "手检员"},
         ],
         statisticalStepSizeOptions: [
-          {value: 'hour', text: "时"},
-          {value: 'day', text: "天"},
-          {value: 'week', text: "周"},
-          {value: 'month', text: "月"},
-          {value: 'quarter', text: "季度"},
-          {value: 'year', text: "年"},
+          {value: 'hour', text: this.$t('statistics.hour')},
+          {value: 'day', text: this.$t('statistics.day')},
+          {value: 'week', text: this.$t('statistics.week')},
+          {value: 'month', text: this.$t('statistics.month')},
+          {value: 'quarter', text: this.$t('statistics.quarter')},
+          {value: 'year', text: this.$t('statistics.year')},
         ],
+
+        periodLabel : '期间(時)',
 
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/statistics/get-handexamination-statistics`,
@@ -803,37 +807,34 @@
               dataClass: 'text-center'
             },
             {
-              name: 'time',
+              name: '__sequence',
               title: this.$t('personal-inspection.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (time) => {
-                if (this.filter.statWidth === 'hour') return time + 1;
-                else return time;
-              }
+
             },
             {
               name: 'time',
-              title: '期间',
+              title : this.setPeriodLabel,
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'total',
-              title: '手检总量',
+              title:  this.$t('statistics.hand-checks.total'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'noSeizure',
-              title: '无查获量',
+              title: this.$t('statistics.view.no-seizure'),
               titleClass: 'text-center',
               dataClass: 'text-center',
 
             },
             {
               name: 'noSeizureRate',
-              title: '无查获率',
+              title: this.$t('statistics.view.no-seizure-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (noSeizureRate) => {
@@ -843,13 +844,13 @@
             },
             {
               name: 'seizure',
-              title: '查获',
+              title: this.$t('statistics.view.seizure'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'seizureRate',
-              title: '查获率',
+              title: this.$t('statistics.view.seizure-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (seizureRate) => {
@@ -859,19 +860,19 @@
             },
             {
               name: 'avgDuration',
-              title: '手检平均时长',
+              title: this.$t('statistics.hand-checks.avg'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'maxDuration',
-              title: '手检最高时长',
+              title: this.$t('statistics.hand-checks.max'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'minDuration',
-              title: '手检最低时长',
+              title: this.$t('statistics.hand-checks.min'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             }
@@ -889,49 +890,45 @@
               dataClass: 'text-center'
             },
             {
-              name: 'time',
+              name: '__sequence',
               title: this.$t('personal-inspection.serial-number'),
-              sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (time) => {
-                if (this.filter.statWidth === 'hour') return time + 1;
-                else return time;
-              }
+
             },
             {
               name: 'time',
-              title: '期间',
+              title: this.setPeriodLabel,
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: '1000001601',
-              title: '物品1',
+              title: '安眠药',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: '1000001602',
-              title: '物品2',
+              title: '仿真枪',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: '1000001603',
-              title: '物品3',
+              title: '玩具枪',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: '1000001604',
-              title: '物品4',
+              title: '气枪',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: '1000001605',
-              title: '物品5',
+              title: '打火机',
               titleClass: 'text-center',
               dataClass: 'text-center'
             }
@@ -968,6 +965,53 @@
       }
     },
     methods: {
+      setPeriodLabel (newVal) {
+        if(getLocale() === 'zh') {
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = '期间(時)';
+              break;
+            case 'day':
+              this.periodLabel = '期间(天)';
+              break;
+            case 'week':
+              this.periodLabel = '期间(周)';
+              break;
+            case 'month':
+              this.periodLabel = '期间(月)';
+              break;
+            case 'quarter':
+              this.periodLabel = '期间(季度)';
+              break;
+            case 'year':
+              this.periodLabel = '期间(年)';
+              break;
+          }
+        }else{
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = 'periods(hour)';
+              break;
+            case 'day':
+              this.periodLabel = 'periods(day)';
+              break;
+            case 'week':
+              this.periodLabel = 'periods(week)';
+              break;
+            case 'month':
+              this.periodLabel = 'periods(month)';
+              break;
+            case 'quarter':
+              this.periodLabel = 'periods(quarter)';
+              break;
+            case 'year':
+              this.periodLabel = 'periods(year)';
+              break;
+          }
+        }
+        return this.periodLabel;
+
+      },
       selectAll(value) {
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
         this.$refs.taskVuetable.isCheckAllStatus = value;
@@ -1089,7 +1133,7 @@
             data: this.wordCloudData
           }],
           title: {
-            text: '词云图'
+            text: this.$t('statistics.hand-checks.word-cloud')
           }
         });
       },
@@ -1202,7 +1246,7 @@
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus1 === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus1 === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus1 === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -1225,7 +1269,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus1 === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus1 === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus1 === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -1248,7 +1292,7 @@
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus2 === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus2 === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus2 === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -1273,7 +1317,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus2 === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus2 === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus2 === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -1346,42 +1390,71 @@
           this.wordCloudData = [];
 
           let tmpKey = Object.keys(this.graphData.totalStatistics);
-          let keyData = []
+          let keyData = [];
+          console.log(tmpKey.length);
 
           // this.xDay = Object.keys(this.graphData.totalStatistics);
           let xAxis = [], tmp = 0, k = 0;
-          for (let i = 0; i < tmpKey.length; i++) {
-            tmp = 0;
-            for (let j = 0; j < tmpKey.length; j++) {
-              if (this.graphData.totalStatistics[tmpKey[tmp]] < this.graphData.totalStatistics[tmpKey[j]]) {
-                tmp = j;
+          if(tmpKey.length !== 0) {
+            for (let i = 0; i < tmpKey.length; i++) {
+              tmp = 0;
+              for (let j = 0; j < tmpKey.length; j++) {
+                if (this.graphData.totalStatistics[tmpKey[tmp]] < this.graphData.totalStatistics[tmpKey[j]]) {
+                  tmp = j;
+                }
+              }
+              xAxis[k] = tmpKey[tmp];
+              k++;
+              i--;
+              tmpKey.splice(tmp, 1);
+            }
+          }
+
+          // "1000001601": `安眠药`,
+          //   "1000001602": `仿真枪`,
+          //   "1000001603": `玩具枪`,
+          //   "1000001604": `气枪`,
+          //   "1000001605": `打火机`,
+
+          if(xAxis.length !== 0) {
+            for (let i = 0; i < xAxis.length; i++) {
+
+              if (this.graphData.totalStatistics != null) {
+                let key = xAxis[i];
+
+                keyData[i] = this.getDataCodeValue(xAxis[i]);
+                this.bar3ChartOptions.series[0].data[i] = this.graphData.totalStatistics[key];
+
               }
             }
-            xAxis[k] = tmpKey[tmp];
-            k++;
-            i--;
-            tmpKey.splice(tmp, 1);
+          }
+          else {
+            this.bar3ChartOptions.series[0].data = [0, 0, 0, 0, 0];
+            keyData = [`安眠药`, `仿真枪`, `玩具枪`, `气枪`, `打火机`]
           }
 
-          for (let i = 0; i < xAxis.length; i++) {
-
-            if (this.graphData.totalStatistics != null) {
-              let key = xAxis[i];
-
-              keyData[i] = this.getDataCodeValue(xAxis[i]);
-              this.bar3ChartOptions.series[0].data[i] = this.graphData.totalStatistics[key];
-
-            }
-          }
           this.bar3ChartOptions.xAxis.data = keyData;
+          console.log(this.bar3ChartOptions.xAxis.data);
 
-          for (let i = 0; i < xAxis.length; i++) {
-            this.wordCloudData.push({
-              name: this.getDataCodeValue(xAxis[i]),
-              weight: this.graphData.totalStatistics[xAxis[i]]
-            });
+          if(xAxis.length !== 0) {
+
+            for (let i = 0; i < xAxis.length; i++) {
+              this.wordCloudData.push({
+                name: this.getDataCodeValue(xAxis[i]),
+                weight: this.graphData.totalStatistics[xAxis[i]]
+              });
+            }
+            this.drawWordCloud();
           }
-          this.drawWordCloud();
+          else {
+            for(let i=0; i<keyData.length; i++){
+              this.wordCloudData.push({
+                name: keyData[i],
+                weight: 0
+              });
+            }
+            this.drawWordCloud();
+          }
 
         });
 
@@ -1389,6 +1462,8 @@
       onSearchButton() {
 
         this.getPreviewData();
+        this.getGraphData();
+        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
         this.$refs.taskVuetable2.refresh();
       },
@@ -1766,7 +1841,7 @@
                   }
 
                   &:nth-child(2) .legend-icon {
-                    background-color: #ff6600;
+                    background-color: #009900;
                   }
 
                 }

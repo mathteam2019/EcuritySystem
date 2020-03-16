@@ -53,10 +53,6 @@
     },
 
     methods: {
-      setDownloadPath(){
-        //downloadPath();
-        window.location.href = result;
-      },
       downLoadImage(){
         if(this.imgUrl.length!==0) {
           for (let i = 0; i < this.imgUrl.length; i++) {
@@ -108,7 +104,7 @@
                       this.imgUrl.push(item);
                     });
                   }
-                  this.downLoadImage();
+                  //this.downLoadImage();
                   break;
               }
               })

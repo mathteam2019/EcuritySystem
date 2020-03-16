@@ -302,7 +302,7 @@
           </b-tabs>
         </div>
 
-        <div class="text-right mr-3 mt-3">
+        <div class="text-right mr-3 mt-3" style="margin-top: 0.5rem;">
           <b-button v-if="tabIndex === 0" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()"
                     :disabled="checkPermItem('platform_check_modify')">
             <i class="icofont-save"/>
@@ -380,16 +380,16 @@
                         <b-button
                           v-if="props.rowData.status==='1000000702'"
                           size="sm" @click="onAction('activate',props.rowData)"
-                          variant="warning default btn-square" :disabled="checkPermItem('scan_param_update_status')"
+                          variant="success default btn-square" :disabled="checkPermItem('scan_param_update_status')"
                         >
-                          <i class="icofont-ban"/>
+                          <i class="icofont-check-circled"/>
                         </b-button>
                         <b-button @click="onAction('inactivate',props.rowData)"
                                   v-if="props.rowData.status==='1000000701'"
                                   size="sm"
-                                  variant="success default btn-square" :disabled="checkPermItem('scan_param_update_status')"
+                                  variant="warning default btn-square" :disabled="checkPermItem('scan_param_update_status')"
                         >
-                          <i class="icofont-check-circled"/>
+                          <i class="icofont-ban"/>
                         </b-button>
                       </div>
                     </template>
@@ -424,7 +424,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.device-classification')}}
                   </template>
-                  <label>安检仪</label>
+                  <label>{{$t('statistics.evaluate-monitors.security-device')}}</label>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -908,7 +908,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'scanParamsId',
+              name: '__sequence',
               title: this.$t('permission-management.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -1315,6 +1315,7 @@
       savePlatFormData() {
         //save platform main data
         if (this.tabIndex === 0) {
+          console.log(this.platFormData.scanRecogniseColour);
 
           this.$v.platFormData.$touch();
           if (this.$v.platFormData.$invalid) {

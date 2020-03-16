@@ -13,13 +13,13 @@
         <b-row>
 
           <b-col>
-            <b-form-group :label="'设备类型'">
+            <b-form-group :label="$t('device-management.device-table.device-type')">
               <b-form-select v-model="filter.deviceType" :options="categoryFilterDatas" plain/>
             </b-form-group>
           </b-col>
 
           <b-col>
-            <b-form-group :label="'设备'">
+            <b-form-group :label="$t('maintenance-management.maintenance-task.device')">
               <b-form-input v-model="filter.deviceName"/>
             </b-form-group>
           </b-col>
@@ -67,7 +67,7 @@
             <div>
               <div><span class="span-font">D{{totalData['day'].value}} {{totalData['hour'].value}}: {{totalData['minute'].value}}: {{totalData['second'].value}}</span>
               </div>
-              <div><span>累计运行时长</span></div>
+              <div><span>{{$t('statistics.operating-hours.total-time') }}</span></div>
             </div>
           </div>
         </b-card>
@@ -81,7 +81,7 @@
             <div>
               <div><span class="span-font">D{{scanData['day'].value}} {{scanData['hour'].value}}: {{scanData['minute'].value}}: {{scanData['second'].value}}</span>
               </div>
-              <div><span>安检仪累计运行时长</span></div>
+              <div><span>{{$t('statistics.operating-hours.security-time') }}</span></div>
             </div>
           </div>
         </b-card>
@@ -95,7 +95,7 @@
             <div>
               <div><span class="span-font">D{{judgeData['day'].value}} {{judgeData['hour'].value}}: {{judgeData['minute'].value}}: {{judgeData['second'].value}}</span>
               </div>
-              <div><span>判图站累计运行时长</span></div>
+              <div><span>{{$t('statistics.operating-hours.judge-time') }}</span></div>
             </div>
           </div>
         </b-card>
@@ -109,7 +109,7 @@
             <div>
               <div><span class="span-font">D{{handData['day'].value}} {{handData['hour'].value}}: {{handData['minute'].value}}: {{handData['second'].value}}</span>
               </div>
-              <div><span>手检站累计运行时长</span></div>
+              <div><span>{{$t('statistics.operating-hours.hand-time') }}</span></div>
             </div>
           </div>
         </b-card>
@@ -140,7 +140,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>工时统计</h5>
+                <h5>{{$t('statistics.operating-hours.time-statistics') }}</h5>
               </b-card-header>
               <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
                 <div class="d-flex align-items-center justify-content-around">
@@ -153,21 +153,21 @@
                     <div class="value">{{scanData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
-                      安检仪累计运行时长
+                      {{$t('statistics.operating-hours.security-time') }}
                     </div>
                   </b-col>
                   <b-col class="legend-item">
                     <div class="value">{{handData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
-                      手检站累计运行时长
+                      {{$t('statistics.operating-hours.judge-time') }}
                     </div>
                   </b-col>
                   <b-col class="legend-item">
                     <div class="value">{{judgeData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
-                      判图站累计运行时长
+                      {{$t('statistics.operating-hours.hand-time') }}
                     </div>
                   </b-col>
                 </b-row>
@@ -179,7 +179,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>工时统计</h5>
+                <h5>{{$t('statistics.operating-hours.time-statistics') }}</h5>
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
@@ -195,47 +195,47 @@
       <b-col v-if="pageStatus==='table'">
         <b-card>
           <b-card-header>
-            <h5 class="text-center my-4">设备运行时长统计</h5>
+            <h5 class="text-center my-4">{{$t('statistics.operating-hours.title-table') }}</h5>
           </b-card-header>
 
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>现场:</b></b-col>
+            <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
             <b-col cols="11">
               <span>{{allField}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>安检仪:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
             <b-col cols="11">
               <span>{{allDevice}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>操作员类型:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
             <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>操作员:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
             <b-col cols="11">
               <span v-if="filter.userName===null">张三, 李四, 王五</span>
               <span v-else>{{filter.userName}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>时间:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
             <b-col cols="11">
               <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>统计步长:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
             <b-col cols="11">
-              <span v-if="filter.statWidth==='hour'">时</span>
-              <span v-else-if="filter.statWidth==='day'">天</span>
-              <span v-else-if="filter.statWidth==='week'">周</span>
-              <span v-else-if="filter.statWidth==='month'">月</span>
-              <span v-else-if="filter.statWidth==='quarter'">季度</span>
-              <span v-else>年</span>
+              <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
+              <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
+              <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
+              <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
+              <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
+              <span v-else>{{$t('statistics.year')}}</span>
             </b-col>
           </b-row>
 
@@ -250,14 +250,9 @@
               track-by="id"
               pagination-path="pagination"
               class="table-hover"
-                      @vuetable:checkbox-toggled="onCheckStatusChange"
+              @vuetable:checkbox-toggled="onCheckStatusChange"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
             >
-              <template slot="period" slot-scope="props">
-                        <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
-                          {{props.rowData.period}}
-                        </span>
-              </template>
             </vuetable>
           </div>
           <div class="pagination-wrapper">
@@ -421,9 +416,9 @@
                 length2: -30
               },
               data: [
-                {value: doublePieChartData['安检仪累计运行时长'].value, name: '安检仪累计运行时长'},
-                {value: doublePieChartData['判图站累计运行时长'].value, name: '判图站累计运行时长'},
-                {value: doublePieChartData['手检站累计运行时长'].value, name: '手检站累计运行时长'},
+                {value: doublePieChartData['安检仪累计运行时长'].value, name: this.$t('statistics.operating-hours.security-time') },
+                {value: doublePieChartData['判图站累计运行时长'].value, name: this.$t('statistics.operating-hours.judge-time') },
+                {value: doublePieChartData['手检站累计运行时长'].value, name: this.$t('statistics.operating-hours.hand-time') },
               ]
             }
           ]
@@ -436,7 +431,7 @@
             }
           },
           legend: {
-            data: ['安检仪', '判图', '手检'],
+            data: [this.$t('statistics.operating-hours.security') , this.$t('statistics.operating-hours.judge') , this.$t('statistics.operating-hours.hand') ],
             icon: 'rect',
             right: 25,
           },
@@ -453,11 +448,11 @@
               show: true
             },
             axisLabel: {
-              interval:0
+              interval: 0
             },
             axisTick: {
               show: false,
-              interval:0,
+              interval: 0,
             }
 
           },
@@ -480,22 +475,23 @@
           color: ['#1989fa', '#ff0000', '#ffd835'],
           series: [
             {
-              name: '安检仪',
+              name: this.$t('statistics.operating-hours.security') ,
               type: 'bar',
-              stack: '总量',
+              stack: this.$t('statistics.view.total'),
               data: [0]
             },
             {
-              name: '判图',
+              name: this.$t('statistics.operating-hours.judge') ,
               type: 'bar',
-              stack: '总量',
+              stack: this.$t('statistics.view.total'),
+
               data: [0]
             },
             {
-              name: '手检',
+              name: this.$t('statistics.operating-hours.hand') ,
               type: 'bar',
-              stack: '总量',
-              data: [0]
+              stack: this.$t('statistics.view.total'),
+              data: []
             }
           ]
         },
@@ -506,7 +502,7 @@
         name: '',
 
         fileSelection: [],
-        renderedCheckList:[],
+        renderedCheckList: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -525,7 +521,7 @@
 
         siteData: [],
         allField: '',
-        allDevice:'',
+        allDevice: '',
         preViewData: [],
         graphData: [],
         total: [],
@@ -536,19 +532,19 @@
         categoryData: [],
         categoryFilterData: [],
         categoryFilterDatas: [
-          {value: null, text: "全部"},
-          {value: 1000001901, text: "安检仪"},
-          {value: 1000001902, text: "审图端"},
-          {value: 1000001903, text: "手检端"}
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: 1000001901, text: this.$t('statistics.operating-hours.security') },
+          {value: 1000001902, text: this.$t('statistics.operating-hours.judge') },
+          {value: 1000001903, text: this.$t('statistics.operating-hours.hand') }
         ],
 
         statisticalStepSizeOptions: [
-          {value: 'hour', text: "时"},
-          {value: 'day', text: "天"},
-          {value: 'week', text: "周"},
-          {value: 'month', text: "月"},
-          {value: 'quarter', text: "季度"},
-          {value: 'year', text: "年"},
+          {value: 'hour', text: this.$t('statistics.hour')},
+          {value: 'day', text: this.$t('statistics.day')},
+          {value: 'week', text: this.$t('statistics.week')},
+          {value: 'month', text: this.$t('statistics.month')},
+          {value: 'quarter', text: this.$t('statistics.quarter')},
+          {value: 'year', text: this.$t('statistics.year')},
         ],
 
         totalData: {
@@ -629,20 +625,20 @@
               dataClass: 'text-center'
             },
             {
-              name: 'id',
-              title: '序号',
+              name: '__sequence',
+              title: this.$t('knowledge-base.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
               name: 'name',
-              title: '设备名',
+              title:  this.$t('statistics.operating-hours.device-name'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
               name: 'scanStatistics',
-              title: '扫描总量',
+              title: this.$t('statistics.view.scan-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
@@ -652,7 +648,7 @@
             },
             {
               name: 'scanStatistics',
-              title: '无效扫描量',
+              title: this.$t('statistics.view.invalid-scan-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
@@ -662,7 +658,7 @@
             },
             {
               name: 'scanStatistics',
-              title: '无效率',
+              title: this.$t('statistics.view.invalid-scan-rate-table'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
@@ -672,7 +668,7 @@
             },
             {
               name: 'judgeStatistics',
-              title: '判图量',
+              title: this.$t('statistics.view.judge-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
@@ -682,7 +678,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '手检量',
+              title: this.$t('statistics.view.hand-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -692,7 +688,7 @@
             },
             {
               name: 'judgeStatistics',
-              title: '无嫌疑量',
+              title: this.$t('statistics.view.no-suspiction-judge'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
@@ -702,7 +698,7 @@
             },
             {
               name: 'judgeStatistics',
-              title: '无嫌疑率',
+              title: this.$t('statistics.view.no-suspiction-judge-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
@@ -712,7 +708,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '无查获量',
+              title: this.$t('statistics.view.no-seizure'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -722,7 +718,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '无查获率',
+              title: this.$t('statistics.view.no-seizure-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -732,7 +728,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '查获量',
+              title: this.$t('statistics.view.seizure'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -742,7 +738,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '查获率',
+              title: this.$t('statistics.view.seizure-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -784,47 +780,48 @@
 
     },
     methods: {
-       selectAll(value){
+      selectAll(value) {
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.taskVuetable.isCheckAllStatus=value;
+        this.$refs.taskVuetable.isCheckAllStatus = value;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = value;
       },
-      selectNone(){
+      selectNone() {
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = false;
       },
-      changeCheckAllStatus(){
+      changeCheckAllStatus() {
         let selectList = this.$refs.taskVuetable.selectedTo;
         let renderedList = this.renderedCheckList;
-        if(selectList.length>=renderedList.length){
+        if (selectList.length >= renderedList.length) {
           let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
+          for (let i = 0; i < renderedList.length; i++) {
             isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
             }
-            if(isEqual===false){
+            if (isEqual === false) {
               this.selectNone();
               break;
             }
-            if(i===renderedList.length-1){
+            if (i === renderedList.length - 1) {
               this.selectAll(true);
             }
           }
-        }
-        else {
+        } else {
           this.selectNone();
         }
 
       },
-      onCheckStatusChange(isChecked){
-        if(isChecked){
+      onCheckStatusChange(isChecked) {
+        if (isChecked) {
           this.changeCheckAllStatus();
-        }
-        else {
+        } else {
           this.selectNone();
         }
       },
@@ -868,7 +865,7 @@
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -887,7 +884,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -915,7 +912,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -960,17 +957,17 @@
           filter: this.filter
         }).then((response) => {
           this.graphData = response.data.data;
-          this.bar3ChartOptions.xAxis.data=[];
+          this.bar3ChartOptions.xAxis.data = [];
           let keyData = Object.keys(this.graphData.detailedStatistics);
           let xAxisChart = [];
-          let allUserStr="";
+          let allUserStr = "";
 
           for (let i = 0; i < keyData.length; i++) {
 
             let key = keyData[i];
-            if(i===0){
+            if (i === 0) {
               allUserStr = allUserStr + this.graphData.detailedStatistics[key].name;
-            }else {
+            } else {
               allUserStr = allUserStr + ", " + this.graphData.detailedStatistics[key].name;
             }
 
@@ -991,7 +988,7 @@
               this.bar3ChartOptions.series[2].data[i] = 0;
             }
           }
-          this.allDevice=allUserStr;
+          this.allDevice = allUserStr;
 
           this.bar3ChartOptions.xAxis.data = xAxisChart;
         })

@@ -115,15 +115,15 @@
                   <b-button
                     v-if="props.rowData.status==='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
-                    variant="warning default btn-square">
-                    <i class="icofont-ban"/>
+                    variant="success default btn-square">
+                    <i class="icofont-check-circled"/>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status==='1000000701'"
                     size="sm" @click="onAction('inactivate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
-                    variant="success default btn-square"
+                    variant="warning default btn-square"
                   >
-                    <i class="icofont-check-circled"/>
+                    <i class="icofont-ban"/>
                   </b-button>
                   <b-button
                     size="sm" @click="onAction('delete',props.rowData)"
@@ -461,7 +461,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'archiveId',
+              name: '__sequence',
               title: this.$t('system-setting.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'

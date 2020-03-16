@@ -19,7 +19,7 @@
           </b-col>
 
           <b-col>
-            <b-form-group :label="'业务类型'">
+            <b-form-group :label="$t('statistics.view.task-type')">
               <b-form-select v-model="filter.workMode" :options="categoryFilterData" plain/>
             </b-form-group>
           </b-col>
@@ -31,13 +31,13 @@
           </b-col>
 
           <b-col>
-            <b-form-group :label="'引导员'">
+            <b-form-group :label="$t('statistics.view.operator')">
               <b-form-input v-model="filter.userName"/>
             </b-form-group>
           </b-col>
 
           <b-col>
-            <b-form-group :label="'统计步长'">
+            <b-form-group :label="$t('statistics.view.step-size')">
               <b-form-select v-model="filter.statWidth" :options="statisticalStepSizeOptions" plain/>
             </b-form-group>
           </b-col>
@@ -99,7 +99,7 @@
                 <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.totalScan}}</span>
                 <span v-else>0</span>
             </div>
-            <div><span>扫描总量</span></div>
+            <div><span>{{this.$t('statistics.view.scan-total')}}</span></div>
           </div>
         </b-card>
       </b-col>
@@ -116,7 +116,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.validScan}}</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>有效扫描</span></div>
+                  <div><span>{{$t('statistics.view.valid-scan')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -132,7 +132,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.validScanRate)}}%</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>有效扫描率</span></div>
+                  <div><span>{{$t('statistics.view.valid-scan-rate')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -148,7 +148,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.invalidScan}}</span>
                 <span v-else>0</span>
                   </div>
-                  <div><span>无效扫描</span></div>
+                  <div><span>{{$t('statistics.view.invalid-scan')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -164,7 +164,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.invalidScanRate)}}%</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>无效扫描率</span></div>
+                  <div><span>{{$t('statistics.view.invalid-scan-rate')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -182,7 +182,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.passedScan}}</span>
                 <span v-else>0</span>
                   </div>
-                  <div><span>通过</span></div>
+                  <div><span>{{$t('permission-management.permission-control.pending-success')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -198,7 +198,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.passedScanRate)}}%</span>
                 <span v-else>0</span>
                   </div>
-                  <div><span>通过率</span></div>
+                  <div><span>{{$t('statistics.view.passed-scan-rate')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -214,7 +214,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.alarmScan}}</span>
                 <span v-else>0</span>
                   </div>
-                  <div><span>报警</span></div>
+                  <div><span>{{$t('statistics.view.alarm-scan')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -230,7 +230,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.alarmScanRate)}}%</span>
                 <span v-else>0</span>
                   </div>
-                  <div><span>报警率</span></div>
+                  <div><span>{{$t('statistics.view.alarm-scan-rate')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -263,7 +263,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>扫描</h5>
+                <h5>{{$t('maintenance-management.process-task.scan')}}</h5>
               </b-card-header>
               <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
 
@@ -276,23 +276,23 @@
                   <div class="legend-group">
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">无效扫描</div>
+                      <div class="legend-name">{{$t('statistics.view.invalid-scan')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.invalidScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">有效扫描</div>
+                      <div class="legend-name">{{$t('statistics.view.valid-scan')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.validScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">报警</div>
+                      <div class="legend-name">{{$t('statistics.view.alarm-scan')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.alarmScan}}</div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">通过</div>
+                      <div class="legend-name">{{$t('permission-management.permission-control.pending-success')}}</div>
                       <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.passedScan}}</div>
                     </div>
                   </div>
@@ -305,7 +305,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>扫描历史</h5>
+                <h5>{{$t('statistics.view.scan-history')}}</h5>
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
@@ -324,52 +324,52 @@
         <b-card class="flex-grow-1 ">
           <b-card-header>
 
-            <h5 class="text-center my-4">人体查验综合统计</h5>
+            <h5 class="text-center my-4">{{$t('statistics.view.table-title')}}</h5>
 
           </b-card-header>
 
           <div class="flex-grow-1 ">
             <div class="container-fluid">
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>现场:</b></b-col>
+                <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
                 <b-col cols="11">
                   <span v-if="filter.fieldId === null">{{allField}}</span>
                   <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>安检仪:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
                 <b-col cols="11">
                   <span v-if="filter.deviceId === null">{{allDevice}}</span>
                   <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>操作员类型:</b></b-col>
-                <b-col cols="11"><span>引导员</span></b-col>
+                <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
+                <b-col cols="11"><span>{{$t('statistics.view.operator')}}</span></b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>操作员:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.userName===null">全部</span>
+                  <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
                   <span v-else>{{filter.userName}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>时间:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
                 <b-col cols="11">
-                  <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+                  <span>{{getDateTimeFormat(filter.startTime)}}-{{getDateTimeFormat(filter.endTime)}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>统计步长:</b></b-col>
+                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.statWidth==='hour'">时</span>
-                  <span v-else-if="filter.statWidth==='day'">天</span>
-                  <span v-else-if="filter.statWidth==='week'">周</span>
-                  <span v-else-if="filter.statWidth==='month'">月</span>
-                  <span v-else-if="filter.statWidth==='quarter'">季度</span>
-                  <span v-else>年</span>
+                  <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
+                  <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
+                  <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
+                  <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
+                  <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
+                  <span v-else>{{$t('statistics.year')}}</span>
                 </b-col>
               </b-row>
               <b-row class="no-gutters">
@@ -466,7 +466,7 @@
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
 
-  import {checkPermissionItem, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection,getLocale} from "../../../utils";
   import {validationMixin} from "vuelidate";
   import Modal from '../../../components/Modal/modal'
 
@@ -492,6 +492,7 @@
       this.getSiteOption();
       this.getManualDeviceData();
       this.getPreviewData();
+      this.setPeriodLabel('hour');
     },
     data() {
 
@@ -568,8 +569,8 @@
                 length2: -30
               },
               data: [
-                {value: doublePieChartData['无效扫描'].value, name: '无效扫描'},
-                {value: doublePieChartData['有效扫描'].value, name: '有效扫描'},
+                {value: doublePieChartData['无效扫描'].value, name: this.$t('statistics.view.invalid-scan')},
+                {value: doublePieChartData['有效扫描'].value, name: this.$t('statistics.view.valid-scan')},
               ]
             },
             {
@@ -590,8 +591,8 @@
                 length2: -15
               },
               data: [
-                {value: doublePieChartData['报警'].value, name: '报警'},
-                {value: doublePieChartData['通过'].value, name: '通过'},
+                {value: doublePieChartData['报警'].value, name: this.$t('statistics.view.alarm-scan')},
+                {value: doublePieChartData['通过'].value, name: this.$t('permission-management.permission-control.pending-success')},
               ]
             }
           ]
@@ -604,7 +605,7 @@
             }
           },
           legend: {
-            data: ['通过', '报警', '无效扫描'],
+            data: [this.$t('permission-management.permission-control.pending-success'), this.$t('statistics.view.alarm-scan'), this.$t('statistics.view.invalid-scan')],
             icon: 'rect',
             right: 25
           },
@@ -644,23 +645,23 @@
           color: ['#ff6600', '#009900', '#cccccc'],
           series: [
             {
-              name: '报警',
+              name: this.$t('permission-management.permission-control.pending-success'),
               type: 'bar',
-              stack: '总量',
+              stack: this.$t('statistics.view.total'),
               data: [0]
             },
             {
-              name: '通过',
+              name: this.$t('statistics.view.alarm-scan'),
               type: 'bar',
-              stack: '总量',
+              stack: this.$t('statistics.view.total'),
 
               data: [0]
             },
             {
-              name: '无效扫描',
+              name: this.$t('statistics.view.invalid-scan'),
               type: 'bar',
-              stack: '总量',
-              data: [0]
+              stack: this.$t('statistics.view.total'),
+              data: []
             }
           ]
         },
@@ -707,39 +708,40 @@
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
         onSiteOptions: [
-          {value: null, text: "全部"},
+          {value: null, text: this.$t('personal-inspection.all')},
           {value: 'way_1', text: "通道1"},
           {value: 'way_2', text: "通道2"},
           {value: 'way_3', text: "通道3"},
         ],
         onSiteOption: [],
         categoryFilterData: [
-          {value: null, text: "全部"},
-          {value: "1000002602", text: "扫描"},
-          {value: "1000002603", text: "判图"},
-          {value: "1000002604", text: "手检"}
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: "1000002602", text: this.$t('maintenance-management.process-task.scan')},
+          {value: "1000002603", text: this.$t('maintenance-management.process-task.judge')},
+          {value: "1000002604", text: this.$t('maintenance-management.process-task.hand')}
         ],
         securityDeviceOptions: [
-          {value: null, text: "全部"},
+          {value: null, text: this.$t('personal-inspection.all')},
           {value: 'security_device_1', text: "安检仪001"},
           {value: 'security_device_2', text: "安检仪002"},
           {value: 'security_device_3', text: "安检仪003"},
         ],
         operatorTypeOptions: [
-          {value: null, text: "全部"},
-          {value: '1000002404', text: "扫描"},
-          {value: '1000002403', text: "判图"},
-          {value: '1000002402', text: "手检"},
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: '1000002404', text: this.$t('maintenance-management.process-task.scan')},
+          {value: '1000002403', text: this.$t('maintenance-management.process-task.judge')},
+          {value: '1000002402', text: this.$t('maintenance-management.process-task.hand')},
         ],
         statisticalStepSizeOptions: [
-          {value: 'hour', text: "时"},
-          {value: 'day', text: "天"},
-          {value: 'week', text: "周"},
-          {value: 'month', text: "月"},
-          {value: 'quarter', text: "季度"},
-          {value: 'year', text: "年"},
+          {value: 'hour', text: this.$t('statistics.hour')},
+          {value: 'day', text: this.$t('statistics.day')},
+          {value: 'week', text: this.$t('statistics.week')},
+          {value: 'month', text: this.$t('statistics.month')},
+          {value: 'quarter', text: this.$t('statistics.quarter')},
+          {value: 'year', text: this.$t('statistics.year')},
         ],
 
+        periodLabel : '期间(時)',
 
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/statistics/scan`,
@@ -750,36 +752,33 @@
               dataClass: 'text-center'
             },
             {
-              name: 'time',
-              title: '序号',
+              name: '__sequence',
+              title: this.$t('knowledge-base.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (time) => {
-                if (this.filter.statWidth === 'hour') return time+1;
-                else return time;
-              }
+
             },
             {
               name: 'time',
-              title: '期间',
+              title : this.setPeriodLabel,
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
               name: 'totalScan',
-              title: '扫描总量',
+              title: this.$t('statistics.view.scan-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
               name: 'validScan',
-              title: '有效扫描量',
+              title: this.$t('statistics.view.valid-scan-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
               name: 'validScanRate',
-              title: '有效率',
+              title: this.$t('statistics.view.valid-scan-rate-table'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (validScanRate) => {
@@ -789,14 +788,14 @@
             },
             {
               name: 'invalidScan',
-              title: '无效扫描量',
+              title: this.$t('statistics.view.invalid-scan-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center',
 
             },
             {
               name: 'invalidScanRate',
-              title: '无效率',
+              title: this.$t('statistics.view.invalid-scan-rate-table'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (invalidScanRate) => {
@@ -807,13 +806,13 @@
             },
             {
               name: 'passedScan',
-              title: '通过量',
+              title: this.$t('statistics.view.passed-scan-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'passedScanRate',
-              title: '通过率',
+              title: this.$t('statistics.view.passed-scan-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (passedScanRate) => {
@@ -823,13 +822,13 @@
             },
             {
               name: 'alarmScan',
-              title: '报警量',
+              title: this.$t('statistics.view.alarm-scan-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'alarmScanRate',
-              title: '报警率',
+              title: this.$t('statistics.view.alarm-scan-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (alarmScanRate) => {
@@ -869,6 +868,52 @@
       }
     },
     methods: {
+      setPeriodLabel (newVal) {
+        if(getLocale() === 'zh') {
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = '期间(時)';
+              break;
+            case 'day':
+              this.periodLabel = '期间(天)';
+              break;
+            case 'week':
+              this.periodLabel = '期间(周)';
+              break;
+            case 'month':
+              this.periodLabel = '期间(月)';
+              break;
+            case 'quarter':
+              this.periodLabel = '期间(季度)';
+              break;
+            case 'year':
+              this.periodLabel = '期间(年)';
+              break;
+          }
+        }else{
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = 'periods(hour)';
+              break;
+            case 'day':
+              this.periodLabel = 'periods(day)';
+              break;
+            case 'week':
+              this.periodLabel = 'periods(week)';
+              break;
+            case 'month':
+              this.periodLabel = 'periods(month)';
+              break;
+            case 'quarter':
+              this.periodLabel = 'periods(quarter)';
+              break;
+            case 'year':
+              this.periodLabel = 'periods(year)';
+              break;
+          }
+        }
+        return this.periodLabel;
+      },
       selectAll(value){
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
         this.$refs.taskVuetable.isCheckAllStatus=value;
@@ -999,7 +1044,7 @@
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0  || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0  || this.pageStatus==='charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
@@ -1019,7 +1064,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
@@ -1048,7 +1093,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
@@ -1132,6 +1177,7 @@
       onSearchButton() {
 
         this.getPreviewData();
+        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
 
       },

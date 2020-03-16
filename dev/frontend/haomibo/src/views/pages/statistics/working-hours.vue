@@ -13,13 +13,13 @@
         <b-row>
 
           <b-col>
-            <b-form-group :label="'业务类型'">
+            <b-form-group :label="$t('statistics.view.task-type')">
               <b-form-select v-model="filter.modeId" :options="categoryFilterData" plain/>
             </b-form-group>
           </b-col>
 
           <b-col>
-            <b-form-group :label="'操作员'">
+            <b-form-group :label="$t('statistics.view.operator')">
               <b-form-input v-model="filter.userName"/>
             </b-form-group>
           </b-col>
@@ -68,7 +68,7 @@
             <div>
               <div><span class="span-font">D{{totalData['day'].value}} {{totalData['hour'].value}}: {{totalData['minute'].value}}: {{totalData['second'].value}}</span>
               </div>
-              <div><span>累计工时</span></div>
+              <div><span>{{$t('statistics.operating-hours.total-time') }}</span></div>
             </div>
           </div>
         </b-card>
@@ -82,7 +82,7 @@
             <div>
               <div><span class="span-font">D{{scanData['day'].value}} {{scanData['hour'].value}}: {{scanData['minute'].value}}: {{scanData['second'].value}}</span>
               </div>
-              <div><span>扫描累计工时</span></div>
+              <div><span>{{$t('statistics.working-hours.security-time') }}</span></div>
             </div>
           </div>
         </b-card>
@@ -96,7 +96,7 @@
             <div>
               <div><span class="span-font">D{{judgeData['day'].value}} {{judgeData['hour'].value}}: {{judgeData['minute'].value}}: {{judgeData['second'].value}}</span>
               </div>
-              <div><span>判图累计工时</span></div>
+              <div><span>{{$t('statistics.working-hours.judge-time') }}</span></div>
             </div>
           </div>
         </b-card>
@@ -110,7 +110,7 @@
             <div>
               <div><span class="span-font">D{{handData['day'].value}} {{handData['hour'].value}}: {{handData['minute'].value}}: {{handData['second'].value}}</span>
               </div>
-              <div><span>手检累计工时</span></div>
+              <div><span>{{$t('statistics.working-hours.hand-time') }}</span></div>
             </div>
           </div>
         </b-card>
@@ -141,7 +141,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>工时统计</h5>
+                <h5>{{$t('statistics.working-hours.time-statistics') }}</h5>
               </b-card-header>
               <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
                 <div class="d-flex align-items-center justify-content-around">
@@ -154,21 +154,21 @@
                     <div class="value">{{scanData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
-                      扫描
+                      {{$t('statistics.working-hours.security-time') }}
                     </div>
                   </b-col>
                   <b-col class="legend-item">
                     <div class="value">{{handData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
-                      手检
+                      {{$t('statistics.working-hours.judge-time') }}
                     </div>
                   </b-col>
                   <b-col class="legend-item">
                     <div class="value">{{judgeData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
-                      判图
+                      {{$t('statistics.working-hours.hand-time') }}
                     </div>
                   </b-col>
                 </b-row>
@@ -180,7 +180,7 @@
             <b-card>
 
               <b-card-header>
-                <h5>工时统计</h5>
+                <h5>{{$t('statistics.working-hours.time-statistics') }}</h5>
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
@@ -196,47 +196,47 @@
       <b-col v-if="pageStatus==='table'">
         <b-card>
           <b-card-header>
-            <h5 class="text-center my-4">人员工时统计</h5>
+            <h5 class="text-center my-4">{{$t('statistics.working-hours.title-table') }}</h5>
           </b-card-header>
 
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>现场:</b></b-col>
+            <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
             <b-col cols="11">
               <span>{{allField}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>安检仪:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
             <b-col cols="11">
               <span>{{allDevice}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>操作员类型:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
             <b-col cols="11"><span v-if="filter.modeId===null">扫描, 判图, 手检</span>
               <span v-else>{{getCategoryLabel(filter.modeId)}}</span></b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>操作员:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
             <b-col cols="11">
               <span>{{allUser}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>时间:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
             <b-col cols="11">
               <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
             </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
-            <b-col cols="1"><b>统计步长:</b></b-col>
+            <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
             <b-col cols="11">
-              <span v-if="filter.statWidth==='hour'">时</span>
-              <span v-else-if="filter.statWidth==='day'">天</span>
-              <span v-else-if="filter.statWidth==='week'">周</span>
-              <span v-else-if="filter.statWidth==='month'">月</span>
-              <span v-else-if="filter.statWidth==='quarter'">季度</span>
-              <span v-else>年</span>
+              <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
+              <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
+              <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
+              <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
+              <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
+              <span v-else>{{$t('statistics.year')}}</span>
             </b-col>
           </b-row>
 
@@ -403,9 +403,9 @@
                 length2: -30
               },
               data: [
-                {value: 0, name: '扫描'},
-                {value: 0, name: '判图'},
-                {value: 0, name: '手检'},
+                {value: 0, name: this.$t('statistics.working-hours.security-time') },
+                {value: 0, name: this.$t('statistics.working-hours.judge-time') },
+                {value: 0, name: this.$t('statistics.working-hours.hand-time') },
               ]
             }
           ]
@@ -418,7 +418,7 @@
             }
           },
           legend: {
-            data: ['安检仪', '判图', '手检'],
+            data: [this.$t('statistics.working-hours.security') , this.$t('statistics.working-hours.judge') , this.$t('statistics.working-hours.hand') ],
             icon: 'rect',
             right: 25,
           },
@@ -461,22 +461,23 @@
           color: ['#1989fa', '#ff0000', '#ffd835'],
           series: [
             {
-              name: '安检仪',
+              name: this.$t('statistics.working-hours.security') ,
               type: 'bar',
-              stack: '总量',
+              stack: this.$t('statistics.view.total'),
               data: [0]
             },
             {
-              name: '判图',
+              name: this.$t('statistics.working-hours.judge') ,
               type: 'bar',
-              stack: '总量',
+              stack: this.$t('statistics.view.total'),
+
               data: [0]
             },
             {
-              name: '手检',
+              name: this.$t('statistics.working-hours.hand') ,
               type: 'bar',
-              stack: '总量',
-              data: [0]
+              stack: this.$t('statistics.view.total'),
+              data: []
             }
           ]
         },
@@ -516,19 +517,19 @@
         hand: [],
 
         categoryFilterData: [
-          {value: null, text: "全部"},
-          {value: "1000002602", text: "扫描"},
-          {value: "1000002603", text: "判图"},
-          {value: "1000002604", text: "手检"}
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: "1000002602", text: this.$t('maintenance-management.process-task.scan')},
+          {value: "1000002603", text: this.$t('maintenance-management.process-task.judge')},
+          {value: "1000002604", text: this.$t('maintenance-management.process-task.hand')}
         ],
 
         statisticalStepSizeOptions: [
-          {value: 'hour', text: "时"},
-          {value: 'day', text: "天"},
-          {value: 'week', text: "周"},
-          {value: 'month', text: "月"},
-          {value: 'quarter', text: "季度"},
-          {value: 'year', text: "年"},
+          {value: 'hour', text: this.$t('statistics.hour')},
+          {value: 'day', text: this.$t('statistics.day')},
+          {value: 'week', text: this.$t('statistics.week')},
+          {value: 'month', text: this.$t('statistics.month')},
+          {value: 'quarter', text: this.$t('statistics.quarter')},
+          {value: 'year', text: this.$t('statistics.year')},
         ],
 
         totalData: {
@@ -609,20 +610,20 @@
               dataClass: 'text-center'
             },
             {
-              name: 'id',
-              title: '序号',
+              name: '__sequence',
+              title: this.$t('knowledge-base.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'name',
-              title: '用户名',
+              title:  this.$t('statistics.working-hours.user-name'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
               name: 'scanStatistics',
-              title: '扫描总量',
+              title: this.$t('statistics.view.scan-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
@@ -632,7 +633,7 @@
             },
             {
               name: 'scanStatistics',
-              title: '无效扫描量',
+              title: this.$t('statistics.view.invalid-scan-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
@@ -642,17 +643,17 @@
             },
             {
               name: 'scanStatistics',
-              title: '无效率',
+              title: this.$t('statistics.view.invalid-scan-rate-table'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
                 if (scanStatistics == null) return '';
-                return scanStatistics.invalidScanRate;
+                return scanStatistics.invalidScanRate.toFixed(1);
               }
             },
             {
               name: 'judgeStatistics',
-              title: '判图量',
+              title: this.$t('statistics.view.judge-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
@@ -662,7 +663,7 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '手检量',
+              title: this.$t('statistics.view.hand-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -672,7 +673,7 @@
             },
             {
               name: 'judgeStatistics',
-              title: '无嫌疑量',
+              title: this.$t('statistics.view.no-suspiction-judge'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
@@ -682,17 +683,17 @@
             },
             {
               name: 'judgeStatistics',
-              title: '无嫌疑率',
+              title: this.$t('statistics.view.no-suspiction-judge-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
                 if (judgeStatistics == null) return '';
-                return judgeStatistics.noSuspictionJudgeRate;
+                return judgeStatistics.noSuspictionJudgeRate.toFixed(1);
               }
             },
             {
               name: 'handExaminationStatistics',
-              title: '无查获量',
+              title: this.$t('statistics.view.no-seizure'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -702,17 +703,17 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '无查获率',
+              title: this.$t('statistics.view.no-seizure-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.noSeizureHandExaminationRate;
+                return handExaminationStatistics.noSeizureHandExaminationRate.toFixed(1);
               }
             },
             {
               name: 'handExaminationStatistics',
-              title: '查获量',
+              title: this.$t('statistics.view.seizure'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
@@ -722,12 +723,12 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: '查获率',
+              title: this.$t('statistics.view.seizure-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.seizureHandExaminationRate;
+                return handExaminationStatistics.seizureHandExaminationRate.toFixed(1);
               }
             },
           ],
@@ -825,7 +826,7 @@
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -844,7 +845,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
@@ -872,7 +873,7 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };

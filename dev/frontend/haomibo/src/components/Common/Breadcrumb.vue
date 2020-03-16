@@ -38,7 +38,7 @@ export default {
       if(sub!=='app'){
         this.items.push({
           text: this.$t('menu.' + sub),
-          to: this.getUrl(path, sub, index)
+          // to: this.getUrl(path, sub, index)
         })
       }
 

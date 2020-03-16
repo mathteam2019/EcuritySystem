@@ -534,10 +534,10 @@
 
               case responseMessages['pre-user-pending-status']:
                 setInvalidCount(this.account);
-                // this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.forbidden-warning`), {
-                //   duration: 3000,
-                //   permanent: false
-                // });
+                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.invalid-password`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
 
               case responseMessages['user-pending-status']:

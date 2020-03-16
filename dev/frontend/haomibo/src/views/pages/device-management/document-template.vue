@@ -79,17 +79,17 @@
                     v-if="props.rowData.status==='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)"
                     :disabled="checkPermItem('device_template_update_status')"
-                    variant="warning default btn-square"
+                    variant="success default btn-square"
                   >
-                    <i class="icofont-ban"/>
+                    <i class="icofont-check-circled"/>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status==='1000000701'"
                     :disabled="checkPermItem('device_template_update_status')"
                     size="sm" @click="onAction('inactivate',props.rowData)"
-                    variant="success default btn-square"
+                    variant="warning default btn-square"
                   >
-                    <i class="icofont-check-circled"/>
+                    <i class="icofont-ban"/>
                   </b-button>
                   <b-button @click="onAction('delete',props.rowData)"
                             size="sm"
@@ -515,7 +515,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'archivesTemplateId',
+              name: '__sequence',
               title: this.$t('system-setting.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -1142,7 +1142,9 @@
                   duration: 3000,
                   permanent: false
                 });
+                //console.log(this.indicatorData[index], value);
                 this.indicatorData[index].isNull = value;
+                item.isNull = value;
                 break;
             }
           })
@@ -1208,7 +1210,7 @@
           }));
         }
         this.categoryFilterData = JSON.parse(JSON.stringify(this.categorySelectOptions));
-        this.categoryFilterData.push({value: null, text: `${this.$t('permission-management.all')}`})
+        this.categoryFilterData.push({value: null, text: `全部`})
       },
       indicatorData(newVal, oldVal) {
         if (this.$refs.indicatorTable !== undefined)
