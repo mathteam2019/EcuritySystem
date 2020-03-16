@@ -62,7 +62,9 @@ public class FieldServiceImpl implements FieldService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultSort = "fieldSerial";
 
     public String getJsonFromField(SysField field) {
         SysField newField = SysField.builder()
@@ -314,7 +316,7 @@ public class FieldServiceImpl implements FieldService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("fieldId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultSort).ascending());
         }
 
         long total = sysFieldRepository.count(predicate);
@@ -391,7 +393,7 @@ public class FieldServiceImpl implements FieldService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("fieldId").ascending();
+            sort = Sort.by(defaultSort).ascending();
         }
         //get all field list
         List<SysField> fieldList;

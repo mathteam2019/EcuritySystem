@@ -34,6 +34,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Locale;
 
@@ -60,7 +61,7 @@ public class PlatformOtherManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     private static class PlatformOtherModifyRequestBody {
-
+        @Size(max = 255)
         String initialPassword;
         @NotNull
         Long loginNumber;

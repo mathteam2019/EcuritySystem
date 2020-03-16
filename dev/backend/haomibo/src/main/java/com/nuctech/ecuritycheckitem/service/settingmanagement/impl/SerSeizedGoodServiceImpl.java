@@ -52,7 +52,9 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultSerizedSort = "seizedGoodsCode";
 
     public String getJsonFromSeized(SerSeizedGood seizedGood) {
         SerSeizedGood newDictionary = SerSeizedGood.builder()
@@ -169,7 +171,7 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("goodsId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultSerizedSort).ascending());
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {

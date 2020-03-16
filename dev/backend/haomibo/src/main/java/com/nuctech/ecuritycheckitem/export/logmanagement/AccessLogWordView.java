@@ -77,7 +77,7 @@ public class AccessLogWordView extends BaseWordView {
      * @param exportList
      * @return
      */
-    public static InputStream buildWordDocument(List<EsSysAccessLog> exportList) {
+    public static InputStream buildWordDocument(List<SysAccessLog> exportList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -93,7 +93,7 @@ public class AccessLogWordView extends BaseWordView {
 
             for (Integer i = 0; i < exportList.size(); i ++) {
 
-                EsSysAccessLog log = exportList.get(i);
+                SysAccessLog log = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 

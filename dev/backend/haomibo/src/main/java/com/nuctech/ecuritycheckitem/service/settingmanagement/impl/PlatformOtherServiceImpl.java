@@ -38,7 +38,7 @@ public class PlatformOtherServiceImpl implements PlatformOtherService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
 
     public String getJsonFromPlatform(SerPlatformOtherParams params) {
 

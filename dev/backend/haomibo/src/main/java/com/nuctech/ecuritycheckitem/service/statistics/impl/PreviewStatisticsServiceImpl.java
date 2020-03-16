@@ -25,6 +25,7 @@ import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminati
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
+import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.service.statistics.PreviewStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +52,12 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    UserService userService;
+
     private CategoryUser categoryUser;
+
+    private String relateUserIdListStr;
 
 
     /**
@@ -71,6 +77,13 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
         categoryUser = authService.getDataCategoryUserList();
+
+        if(userCategory != null) {
+            List<Long> relateUserIdList = userService.getUserListByResource(Constants.userCategory.get(userCategory));
+            relateUserIdListStr = StringUtils.join(relateUserIdList, ",");
+
+        }
+
 
         //.... Get Total Statistics
         String strQuery = makeQuery().replace(":whereScan", getWhereCauseScan(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
@@ -272,7 +285,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
         if (userCategory != null && !userCategory.isEmpty()) {
 
-            whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
+            //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
         if(categoryUser.isAll() == false) {
@@ -282,26 +295,15 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
 
         if (userCategory != null && !userCategory.isEmpty()) {
-
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN (\n" +
-                    "\tSELECT\n" +
-                    "\t\tu.user_id, r.role_id \n" +
-                    "\tFROM\n" +
-                    "\t\tsys_user u\n" +
-                    "\t\tLEFT JOIN sys_role_user ru ON u.USER_ID = ru.user_id\n" +
-                    "\t\tLEFT JOIN sys_role r ON ru.ROLE_ID = r.ROLE_ID \n" +
-                    "\t\twhere r.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)) +
-                    "\t) as u ON s.SCAN_POINTSMAN_ID = u.user_id ");
+            whereCause.add(" u.user_id in (" + relateUserIdListStr + ") ");
         }
-        else {
 
 
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN \n" +
-                    "\t\tsys_user u\n" +
-                    "\t\tON s.SCAN_POINTSMAN_ID = u.user_id ");
-        }
+        stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
+                "\t\tLEFT JOIN \n" +
+                "\t\tsys_user u\n" +
+                "\t\tON s.SCAN_POINTSMAN_ID = u.user_id ");
+
 
 
 
@@ -352,7 +354,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
         if (userCategory != null && !userCategory.isEmpty()) {
 
-            whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
+            //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
         if(categoryUser.isAll() == false) {
@@ -362,26 +364,16 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
 
         if (userCategory != null && !userCategory.isEmpty()) {
-
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN (\n" +
-                    "\tSELECT\n" +
-                    "\t\tu.user_id, r.role_id \n" +
-                    "\tFROM\n" +
-                    "\t\tsys_user u\n" +
-                    "\t\tLEFT JOIN sys_role_user ru ON u.USER_ID = ru.user_id\n" +
-                    "\t\tLEFT JOIN sys_role r ON ru.ROLE_ID = r.ROLE_ID \n" +
-                    "\t\twhere r.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)) +
-                    "\t) as u  ON j.JUDGE_USER_ID = u.user_id ");
-
+            whereCause.add(" u.user_id in (" + relateUserIdListStr + ") ");
         }
-        else {
 
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN " +
-                    "\t\tsys_user u\n" +
-                    "\t\tON j.JUDGE_USER_ID = u.user_id ");
-        }
+
+
+        stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
+                "\t\tLEFT JOIN " +
+                "\t\tsys_user u\n" +
+                "\t\tON j.JUDGE_USER_ID = u.user_id ");
+
 
         if (!whereCause.isEmpty()) {
 
@@ -430,7 +422,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
         if (userCategory != null && !userCategory.isEmpty()) {
 
-            whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
+            //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
         if(categoryUser.isAll() == false) {
@@ -440,27 +432,14 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
 
         if (userCategory != null && !userCategory.isEmpty()) {
-
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN (\n" +
-                    "\tSELECT\n" +
-                    "\t\tu.user_id, r.role_id \n" +
-                    "\tFROM\n" +
-                    "\t\tsys_user u\n" +
-                    "\t\tLEFT JOIN sys_role_user ru ON u.USER_ID = ru.user_id\n" +
-                    "\t\tLEFT JOIN sys_role r ON ru.ROLE_ID = r.ROLE_ID \n" +
-                    "\t\twhere r.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)) +
-                    "\t) as u" +
-                    " ON h.HAND_USER_ID = u.user_id ");
-        }
-        else {
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN " +
-                    "\t\tsys_user u\n" +
-                    "\t\tON h.HAND_USER_ID = u.user_id ");
+            whereCause.add(" u.user_id in (" + relateUserIdListStr + ") ");
         }
 
 
+        stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
+                "\t\tLEFT JOIN " +
+                "\t\tsys_user u\n" +
+                "\t\tON h.HAND_USER_ID = u.user_id ");
 
         if (!whereCause.isEmpty()) {
 

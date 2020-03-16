@@ -134,7 +134,7 @@ public interface PermissionService {
      * @param perPage
      * @return
      */
-    PageResult<SysDataGroup> getDataGroupListByPage(String sortBy, String order, String dataGroupName, int currentPage, int perPage);
+    PageResult<SysDataGroup> getDataGroupListByPage(String sortBy, String order, String dataGroupName, String userName, int currentPage, int perPage);
 
     /**
      * get datagroup export list
@@ -143,7 +143,7 @@ public interface PermissionService {
      * @param idList
      * @return
      */
-    List<SysDataGroup> getExportGroupListByFilter(String sortBy, String order, String dataGroupName, boolean isAll, String idList);
+    List<SysDataGroup> getExportGroupListByFilter(String sortBy, String order, String dataGroupName, String userName, boolean isAll, String idList);
 
     /**
      * find all resources

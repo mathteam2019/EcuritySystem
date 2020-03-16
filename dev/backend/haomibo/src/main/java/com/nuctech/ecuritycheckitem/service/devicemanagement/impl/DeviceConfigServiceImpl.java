@@ -84,7 +84,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultConfigSort = "device.deviceSerial";
 
     public String getJsonFromDeviceConfig(SysDeviceConfig deviceConfig) {
         SysDeviceConfig newConfig = SysDeviceConfig.builder()
@@ -200,7 +202,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("configId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultConfigSort).ascending());
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {

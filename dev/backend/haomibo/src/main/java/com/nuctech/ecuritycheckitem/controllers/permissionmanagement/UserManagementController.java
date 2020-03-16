@@ -50,10 +50,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -95,27 +92,38 @@ public class UserManagementController extends BaseController {
         @NotNull
         long orgId;
         @NotNull
+        @Size(max = 50)
         String userName;
         @NotNull
+        @Size(max = 20)
         String userAccount;
         @NotNull
         @Pattern(regexp = PasswordType.DEFAULT + "|" + PasswordType.OTHER)
         String passwordType;
         String passwordValue;
         @NotNull
+        @Size(max = 50)
         String userNumber;
         @NotNull
         @Pattern(regexp = SysUser.Gender.MALE + "|" + SysUser.Gender.FEMALE + "|" + SysUser.Gender.OTHER)
         String gender;
         @NotNull
+        @Size(max = 50)
         String identityCard;
+        @Size(max = 50)
         String post;
+        @Size(max = 20)
         String education;
+        @Size(max = 20)
         String degree;
         @Email
+        @Size(max = 50)
         String email;
+        @Size(max = 20)
         String mobile;
+        @Size(max = 50)
         String address;
+        @Size(max = 500)
         String note;
 
         private MultipartFile portrait;
@@ -364,6 +372,7 @@ public class UserManagementController extends BaseController {
         @AllArgsConstructor
         static class Filter {
             String groupName;
+            String userName;
         }
 
         @NotNull
@@ -942,8 +951,10 @@ public class UserManagementController extends BaseController {
         int perPage = requestBody.getPerPage();
 
         String groupName = "";
+        String userName = "";
         if (requestBody.getFilter() != null) {
             groupName = requestBody.getFilter().getGroupName();
+            userName = requestBody.getFilter().getUserName();
         }
 
         String sortBy = "";
@@ -956,7 +967,7 @@ public class UserManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        PageResult<SysUserGroup> result = userService.getUserGroupListByPage(sortBy, order, groupName, currentPage, perPage);
+        PageResult<SysUserGroup> result = userService.getUserGroupListByPage(sortBy, order, groupName, userName, currentPage, perPage);
         long total = result.getTotal();
         List<SysUserGroup> data = result.getDataList();
 
@@ -1000,8 +1011,10 @@ public class UserManagementController extends BaseController {
         }
 
         String groupName = "";
+        String userName = "";
         if (requestBody.getFilter() != null) {
             groupName = requestBody.getFilter().getGroupName();
+            userName = requestBody.getFilter().getUserName();
         }
 
         String sortBy = "";
@@ -1015,7 +1028,7 @@ public class UserManagementController extends BaseController {
             }
         }
 
-        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, userName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
         UserGroupExcelView.setMessageSource(messageSource);
         InputStream inputStream = UserGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -1043,8 +1056,10 @@ public class UserManagementController extends BaseController {
         }
 
         String groupName = "";
+        String userName = "";
         if (requestBody.getFilter() != null) {
             groupName = requestBody.getFilter().getGroupName();
+            userName = requestBody.getFilter().getUserName();
         }
 
         String sortBy = "";
@@ -1058,7 +1073,7 @@ public class UserManagementController extends BaseController {
             }
         }
 
-        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, userName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
         UserGroupWordView.setMessageSource(messageSource);
         InputStream inputStream = UserGroupWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -1089,8 +1104,10 @@ public class UserManagementController extends BaseController {
         }
 
         String groupName = "";
+        String userName = "";
         if (requestBody.getFilter() != null) {
             groupName = requestBody.getFilter().getGroupName();
+            userName = requestBody.getFilter().getUserName();
         }
 
         String sortBy = "";
@@ -1104,7 +1121,7 @@ public class UserManagementController extends BaseController {
             }
         }
 
-        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, userName, requestBody.getIsAll(), requestBody.getIdList());
         UserGroupPdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
         InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported

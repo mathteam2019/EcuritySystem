@@ -33,7 +33,7 @@ public interface AccessLogService {
      * @param perPage
      * @return
      */
-    PageResult<EsSysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+    PageResult<SysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, String action, String operateResult, Date operateStartTime,
                                                         Date operateEndTime, int currentPage, int perPage);
 
     /**
@@ -46,7 +46,7 @@ public interface AccessLogService {
      * @param idList
      * @return
      */
-    List<EsSysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+    List<SysAccessLog> getExportList(String sortBy, String order, String clientIp, String action, String operateResult, String operateAccount, Date operateStartTime,
                                   Date operateEndTime, boolean isAll, String idList);
 
     /**

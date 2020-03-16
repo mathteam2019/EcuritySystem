@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -141,8 +142,9 @@ public class DictionaryManagementController extends BaseController {
         @NotNull
         Long dictionaryId;
         @NotNull
+        @Size(max = 50)
         String dictionaryName;
-
+        @Size(max = 500)
         String note;
     }
 
@@ -161,9 +163,12 @@ public class DictionaryManagementController extends BaseController {
         @NotNull
         Long dictionaryId;
         @NotNull
+        @Size(max = 10)
         String dataCode;
         @NotNull
+        @Size(max = 200)
         String dataValue;
+        @Size(max = 500)
         String note;
     }
 
@@ -178,8 +183,9 @@ public class DictionaryManagementController extends BaseController {
     private static class DictionaryCreateRequestBody {
 
         @NotNull
+        @Size(max = 50)
         String dictionaryName;
-
+        @Size(max = 500)
         String note;
     }
 
@@ -196,10 +202,13 @@ public class DictionaryManagementController extends BaseController {
         @NotNull
         Long dictionaryId;
         @NotNull
+        @Size(max = 10)
         String dataCode;
         @NotNull
+        @Size(max = 200)
         String dataValue;
 
+        @Size(max = 500)
         String note;
     }
 

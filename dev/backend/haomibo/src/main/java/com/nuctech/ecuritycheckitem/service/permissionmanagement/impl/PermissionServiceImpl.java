@@ -96,7 +96,11 @@ public class PermissionServiceImpl implements PermissionService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultRoleSort = "roleNumber";
+
+    public static String defaultDataGroiupSort = "dataGroupNumber";
 
     public String getJsonFromRole(SysRole role) {
         SysRole newRole = SysRole.builder()
@@ -246,7 +250,7 @@ public class PermissionServiceImpl implements PermissionService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("roleId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultRoleSort).ascending());
         }
         long total = sysRoleRepository.count(predicate);
         List<SysRole> data = sysRoleRepository.findAll(predicate, pageRequest).getContent();
@@ -311,7 +315,7 @@ public class PermissionServiceImpl implements PermissionService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("roleId").ascending();
+            sort = Sort.by(defaultRoleSort).ascending();
         }
 
         //get all role list
@@ -555,13 +559,17 @@ public class PermissionServiceImpl implements PermissionService {
      * @param dataGroupName
      * @return
      */
-    private BooleanBuilder getDataGroupPredicate(String dataGroupName) {
+    private BooleanBuilder getDataGroupPredicate(String dataGroupName, String userName) {
         QSysDataGroup builder = QSysDataGroup.sysDataGroup;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
         if (!StringUtils.isEmpty(dataGroupName)) {
             predicate.and(builder.dataGroupName.contains(dataGroupName));
+        }
+
+        if (!StringUtils.isEmpty(userName)) {
+            predicate.and(builder.users.any().userName.contains(userName));
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {
@@ -580,8 +588,8 @@ public class PermissionServiceImpl implements PermissionService {
      * @return
      */
     @Override
-    public PageResult<SysDataGroup> getDataGroupListByPage(String sortBy, String order, String dataGroupName, int currentPage, int perPage) {
-        BooleanBuilder predicate = getDataGroupPredicate(dataGroupName);
+    public PageResult<SysDataGroup> getDataGroupListByPage(String sortBy, String order, String dataGroupName, String userName, int currentPage, int perPage) {
+        BooleanBuilder predicate = getDataGroupPredicate(dataGroupName, userName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -592,7 +600,7 @@ public class PermissionServiceImpl implements PermissionService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("dataGroupId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultDataGroiupSort).ascending());
         }
 
         long total = sysDataGroupRepository.count(predicate);
@@ -643,8 +651,8 @@ public class PermissionServiceImpl implements PermissionService {
      * @return
      */
     @Override
-    public List<SysDataGroup> getExportGroupListByFilter(String sortBy, String order, String dataGroupName, boolean isAll, String idList) {
-        BooleanBuilder predicate = getDataGroupPredicate(dataGroupName);
+    public List<SysDataGroup> getExportGroupListByFilter(String sortBy, String order, String dataGroupName, String userName, boolean isAll, String idList) {
+        BooleanBuilder predicate = getDataGroupPredicate(dataGroupName, userName);
         String[] splits = idList.split(",");
         List<Long> dataGroupIdList = new ArrayList<>();
         for(String idStr: splits) {
@@ -658,7 +666,7 @@ public class PermissionServiceImpl implements PermissionService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("dataGroupId").ascending();
+            sort = Sort.by(defaultDataGroiupSort).ascending();
         }
         //get all data group list
         List<SysDataGroup> dataGroupList;

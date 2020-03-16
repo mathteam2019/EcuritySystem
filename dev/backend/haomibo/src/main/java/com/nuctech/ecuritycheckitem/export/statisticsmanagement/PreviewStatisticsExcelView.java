@@ -124,10 +124,11 @@ public class PreviewStatisticsExcelView extends BaseExcelView {
                 row.createCell(6).setCellValue(record.getHandExaminationStatistics().getTotalHandExamination());
                 row.createCell(7).setCellValue(record.getJudgeStatistics().getNoSuspictionJudge());
                 row.createCell(8).setCellValue(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                row.createCell(9).setCellValue(record.getHandExaminationStatistics().getSeizureHandExamination());
-                row.createCell(10).setCellValue(df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
-                row.createCell(11).setCellValue(record.getHandExaminationStatistics().getNoSeizureHandExamination());
-                row.createCell(12).setCellValue(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                row.createCell(9).setCellValue(record.getHandExaminationStatistics().getNoSeizureHandExamination());
+                row.createCell(10).setCellValue(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                row.createCell(11).setCellValue(record.getHandExaminationStatistics().getSeizureHandExamination());
+                row.createCell(12).setCellValue(df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
+
 
             }
 

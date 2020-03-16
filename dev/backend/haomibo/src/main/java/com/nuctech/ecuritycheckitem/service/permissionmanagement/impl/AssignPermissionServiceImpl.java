@@ -95,6 +95,10 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
     @Autowired
     AuthService authService;
 
+    public static String defaultUserAssignSort = "userName";
+
+    public static String defaultUserGroupAssignSort = "groupName";
+
     /**
      * Check user role assigned
      * @param userId
@@ -301,7 +305,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("userId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultUserAssignSort).ascending());
         }
         long total = sysUserRepository.count(predicate);
         List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
@@ -327,7 +331,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("userId").ascending();
+            sort = Sort.by(defaultUserAssignSort).ascending();
         }
         if(sort != null) {
             return StreamSupport
@@ -362,7 +366,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("userGroupId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultUserGroupAssignSort).ascending());
         }
         long total = sysUserGroupRepository.count(predicate);
         List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
@@ -387,7 +391,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("userGroupId").ascending();
+            sort = Sort.by(defaultUserGroupAssignSort).ascending();
         }
         return StreamSupport
                 .stream(sysUserGroupRepository.findAll(predicate, sort).spliterator(), false)

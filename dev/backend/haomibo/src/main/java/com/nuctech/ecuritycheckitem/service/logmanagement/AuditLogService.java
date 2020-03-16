@@ -22,7 +22,8 @@ public interface AuditLogService {
 
     /**
      * get paginated and filtered audit log
-     * @param clientIp
+     * @param operateAccount
+     * @param action
      * @param operateResult
      * @param operateObject
      * @param operateStartTime
@@ -31,12 +32,13 @@ public interface AuditLogService {
      * @param perPage
      * @return
      */
-    PageResult<SysAuditLog> getAuditLogListByFilter(String sortBy, String order, String clientIp, String operateResult, String operateObject, Date operateStartTime,
+    PageResult<SysAuditLog> getAuditLogListByFilter(String sortBy, String order, String operateAccount, String action, String operateResult, String operateObject, Date operateStartTime,
                                                      Date operateEndTime, int currentPage, int perPage);
 
     /**
      * get audit log export list
-     * @param clientIp
+     * @param operateAccount
+     * @param action
      * @param operateResult
      * @param operateObject
      * @param operateStartTime
@@ -45,7 +47,7 @@ public interface AuditLogService {
      * @param idList
      * @return
      */
-    List<SysAuditLog> getExportList(String sortBy, String order, String clientIp, String operateResult, String operateObject, Date operateStartTime,
+    List<SysAuditLog> getExportList(String sortBy, String order, String operateAccount, String action, String operateResult, String operateObject, Date operateStartTime,
                                      Date operateEndTime, boolean isAll, String idList);
 
     /**

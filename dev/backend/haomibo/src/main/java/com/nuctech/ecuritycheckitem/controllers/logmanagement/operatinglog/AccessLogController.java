@@ -78,6 +78,8 @@ public class AccessLogController extends BaseController {
         static class Filter {
             String clientIp;
             String operateAccount;
+            String action;
+            String operateResult;
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date operateStartTime;
             //@JsonFormat(pattern = Constants.LOG_DATETIME_FORMAT)
@@ -119,20 +121,24 @@ public class AccessLogController extends BaseController {
      * @param perPage
      * @return
      */
-    private PageResult<EsSysAccessLog> getPageResult(String sortBy, String order, AccessLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
+    private PageResult<SysAccessLog> getPageResult(String sortBy, String order, AccessLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
         String clientIp = "";
         String operateAccount = "";
+        String action = "";
+        String operateResult = "";
         Date operateStartTime = null;
         Date operateEndTime = null;
 
         if(filter != null) {
+            action = filter.getAction();
+            operateResult = filter.getOperateResult();
             clientIp = filter.getClientIp();
             operateAccount = filter.getOperateAccount();
             operateStartTime = filter.getOperateStartTime();
             operateEndTime = filter.getOperateEndTime();
         }
 
-        PageResult<EsSysAccessLog> result = accessLogService.getAccessLogListByFilter(sortBy, order, clientIp, operateAccount, operateStartTime, operateEndTime, currentPage, perPage);
+        PageResult<SysAccessLog> result = accessLogService.getAccessLogListByFilter(sortBy, order, clientIp, operateAccount, action, operateResult, operateStartTime, operateEndTime, currentPage, perPage);
         return result;
     }
 
@@ -143,20 +149,24 @@ public class AccessLogController extends BaseController {
      * @param idList
      * @return
      */
-    private List<EsSysAccessLog> getExportResult(String sortBy, String order, AccessLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+    private List<SysAccessLog> getExportResult(String sortBy, String order, AccessLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String clientIp = "";
         String operateAccount = "";
+        String action = "";
+        String operateResult = "";
         Date operateStartTime = null;
         Date operateEndTime = null;
 
         if(filter != null) {
+            action = filter.getAction();
+            operateResult = filter.getOperateResult();
             clientIp = filter.getClientIp();
             operateAccount = filter.getOperateAccount();
             operateStartTime = filter.getOperateStartTime();
             operateEndTime = filter.getOperateEndTime();
         }
 
-        List<EsSysAccessLog> result = accessLogService.getExportList(sortBy, order, clientIp, operateAccount, operateStartTime, operateEndTime, isAll, idList);
+        List<SysAccessLog> result = accessLogService.getExportList(sortBy, order, clientIp, operateAccount, action, operateResult, operateStartTime, operateEndTime, isAll, idList);
         return result;
     }
 
@@ -187,10 +197,10 @@ public class AccessLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        PageResult<EsSysAccessLog> result = getPageResult(sortBy, order, requestBody.getFilter(), currentPage, perPage);
+        PageResult<SysAccessLog> result = getPageResult(sortBy, order, requestBody.getFilter(), currentPage, perPage);
 
         long total = result.getTotal();
-        List<EsSysAccessLog> data = result.getDataList();
+        List<SysAccessLog> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
@@ -235,7 +245,7 @@ public class AccessLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<EsSysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(); //set dictionary data
         AccessLogExcelView.setMessageSource(messageSource);
         InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -273,7 +283,7 @@ public class AccessLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<EsSysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
         AccessLogWordView.setMessageSource(messageSource);
         InputStream inputStream = AccessLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -312,7 +322,7 @@ public class AccessLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<EsSysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
         AccessLogPdfView.setResource(getFontResource()); //set font resource
         AccessLogPdfView.setMessageSource(messageSource);

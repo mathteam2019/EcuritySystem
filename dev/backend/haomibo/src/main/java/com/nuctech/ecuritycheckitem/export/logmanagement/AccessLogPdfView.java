@@ -37,7 +37,7 @@ public class AccessLogPdfView extends BasePdfView {
      * @param exportLogList
      * @return
      */
-    public static InputStream buildPDFDocument(List<EsSysAccessLog> exportLogList) {
+    public static InputStream buildPDFDocument(List<SysAccessLog> exportLogList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -61,7 +61,7 @@ public class AccessLogPdfView extends BasePdfView {
                     });
 
 
-            for (EsSysAccessLog log : exportLogList) {
+            for (SysAccessLog log : exportLogList) {
                 addTableCell(table, log.getId().toString());
                 addTableCell(table, formatDate(log.getOperateTime()));
                 addTableCell(table, log.getAction());

@@ -76,6 +76,9 @@ public class UserServiceImpl implements UserService {
     SysUserLookupRepository sysUserLookupRepository;
 
     @Autowired
+    SysRoleResourceRepository sysRoleResourceRepository;
+
+    @Autowired
     AuthService authService;
 
     @Autowired
@@ -84,7 +87,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultUserSort = "userNumber";
+
+    public static String defaultUserGroupSort = "groupNumber";
 
     public String getJsonFromUser(SysUser user) {
         SysUser newUser = SysUser.builder()
@@ -407,7 +414,7 @@ public class UserServiceImpl implements UserService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("userId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultUserSort).ascending());
         }
 
         long total = sysUserRepository.count(predicate);
@@ -476,7 +483,7 @@ public class UserServiceImpl implements UserService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("userId").ascending();
+            sort = Sort.by(defaultUserSort).ascending();
         }
         //get all user list
         List<SysUser> userList;
@@ -601,7 +608,7 @@ public class UserServiceImpl implements UserService {
      * @param groupName
      * @return
      */
-    private BooleanBuilder getUserGroupPredicate(String groupName) {
+    private BooleanBuilder getUserGroupPredicate(String groupName, String userName) {
         // Build query.
         QSysUserGroup builder = QSysUserGroup.sysUserGroup;
 
@@ -610,6 +617,10 @@ public class UserServiceImpl implements UserService {
 
         if (!StringUtils.isEmpty(groupName)) {
             predicate.and(builder.groupName.contains(groupName));
+        }
+
+        if (!StringUtils.isEmpty(userName)) {
+            predicate.and(builder.users.any().userName.contains(userName));
         }
 
         CategoryUser categoryUser = authService.getDataCategoryUserList();
@@ -629,8 +640,8 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public PageResult<SysUserGroup> getUserGroupListByPage(String sortBy, String order, String groupName, int currentPage, int perPage) {
-        BooleanBuilder predicate = getUserGroupPredicate(groupName);
+    public PageResult<SysUserGroup> getUserGroupListByPage(String sortBy, String order, String groupName, String userName, int currentPage, int perPage) {
+        BooleanBuilder predicate = getUserGroupPredicate(groupName, userName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -641,7 +652,7 @@ public class UserServiceImpl implements UserService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("userGroupId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultUserGroupSort).ascending());
         }
         long total = sysUserGroupRepository.count(predicate);
         List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
@@ -691,8 +702,8 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public List<SysUserGroup> getExportUserGroupListByPage(String sortBy, String order, String groupName, boolean isAll, String idList) {
-        BooleanBuilder predicate = getUserGroupPredicate(groupName);
+    public List<SysUserGroup> getExportUserGroupListByPage(String sortBy, String order, String groupName, String userName, boolean isAll, String idList) {
+        BooleanBuilder predicate = getUserGroupPredicate(groupName, userName);
         String[] splits = idList.split(",");
         List<Long> userGroupIdList = new ArrayList<>();
         for(String idStr: splits) {
@@ -706,7 +717,7 @@ public class UserServiceImpl implements UserService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("userGroupId").ascending();
+            sort = Sort.by(defaultUserGroupSort).ascending();
         }
         //get all user group list;
         List<SysUserGroup> userGroupList;
@@ -842,5 +853,45 @@ public class UserServiceImpl implements UserService {
         List<SysResource> availableSysResourceList = authService.getAvailableSysResourceList(sysUser);
 
         return availableSysResourceList;
+    }
+
+    /**
+     * get user id list by resource id
+     * @param resourceId
+     * @return
+     */
+    @Override
+    public List<Long> getUserListByResource(Long resourceId) {
+        Date startTime = new Date();
+        Iterable<SysRoleResource> sysRoleResourceList = sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.resourceId.eq(resourceId));
+        List<Long> roleIds = new ArrayList<>();
+        sysRoleResourceList.forEach(x -> roleIds.add(x.getRoleId()));
+        Iterable<SysRoleUser> roleUserList = sysRoleUserRepository.findAll(QSysRoleUser.sysRoleUser.roleId.in(roleIds));
+        Iterable<SysUserGroupRole> roleUserGroupList = sysUserGroupRoleRepository.findAll(QSysUserGroupRole.sysUserGroupRole.roleId.in(roleIds));
+        List<Long> preUserGroupIdList = new ArrayList<>();
+        roleUserGroupList.forEach(sysUserGroupRole -> {
+            Long userGroupId = sysUserGroupRole.getUserGroupId();
+            if(!preUserGroupIdList.contains(userGroupId)) {
+                preUserGroupIdList.add(userGroupId);
+            }
+        });
+        Iterable<SysUserGroupUser> userGroupUserList = sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.in(preUserGroupIdList));
+        List<Long> userIdList = new ArrayList<>();
+        roleUserList.forEach(sysRoleUser -> {
+            Long userId = sysRoleUser.getUserId();
+            if(!userIdList.contains(userId)) {
+                userIdList.add(userId);
+            }
+        });
+
+        userGroupUserList.forEach(sysUserGroupUser -> {
+            Long userId = sysUserGroupUser.getUserId();
+            if(!userIdList.contains(userId)) {
+                userIdList.add(userId);
+            }
+        });
+        Date endTime = new Date();
+        Long difference = endTime.getTime() - startTime.getTime();
+        return userIdList;
     }
 }

@@ -184,7 +184,7 @@ public interface UserService {
      * @param perPage
      * @return
      */
-    PageResult<SysUserGroup> getUserGroupListByPage(String sortBy, String order, String groupName, int currentPage, int perPage);
+    PageResult<SysUserGroup> getUserGroupListByPage(String sortBy, String order, String groupName, String userName, int currentPage, int perPage);
 
     /**
      * get export usergroup list
@@ -193,7 +193,7 @@ public interface UserService {
      * @param idList
      * @return
      */
-    List<SysUserGroup> getExportUserGroupListByPage(String sortBy, String order, String groupName, boolean isAll, String idList);
+    List<SysUserGroup> getExportUserGroupListByPage(String sortBy, String order, String groupName, String userName, boolean isAll, String idList);
 
     /**
      * check if usergroup exists
@@ -237,4 +237,12 @@ public interface UserService {
      * @return
      */
     List<SysResource> getResourceList(long userId);
+
+
+    /**
+     * get User List by Resource
+     * @param resourceId
+     * @return
+     */
+    List<Long> getUserListByResource(Long resourceId);
 }

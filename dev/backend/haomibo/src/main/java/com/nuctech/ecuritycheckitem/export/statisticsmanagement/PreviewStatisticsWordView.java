@@ -121,10 +121,11 @@ public class PreviewStatisticsWordView extends BaseWordView {
                 tableRow.getCell(6).setText(Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
                 tableRow.getCell(7).setText(Long.toString(record.getJudgeStatistics().getNoSuspictionJudge()));
                 tableRow.getCell(8).setText(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                tableRow.getCell(9).setText(Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
-                tableRow.getCell(10).setText(df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
-                tableRow.getCell(11).setText(Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
-                tableRow.getCell(12).setText(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                tableRow.getCell(9).setText(Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
+                tableRow.getCell(10).setText(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                tableRow.getCell(11).setText(Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
+                tableRow.getCell(12).setText(df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
+
 
             }
 

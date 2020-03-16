@@ -39,7 +39,7 @@ import java.util.Locale;
  */
 public class BaseController {
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
 
     @Autowired
     public EntityManager entityManager;

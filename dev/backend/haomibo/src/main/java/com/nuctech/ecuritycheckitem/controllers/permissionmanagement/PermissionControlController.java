@@ -54,6 +54,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -91,11 +92,14 @@ public class PermissionControlController extends BaseController {
     private static class RoleCreateRequestBody {
 
         @NotNull
+        @Size(max = 50)
         String roleNumber;
         @NotNull
+        @Size(max = 50)
         String roleName;
         @NotNull
         List<Long> resourceIdList;
+        @Size(max = 500)
         String note;
 
         SysRole convert2SysRole() { //create new object from input parameters
@@ -201,6 +205,7 @@ public class PermissionControlController extends BaseController {
         static class Filter {
 
             String dataGroupName;
+            String userName;
         }
 
         @NotNull
@@ -240,11 +245,14 @@ public class PermissionControlController extends BaseController {
     private static class DataGroupCreateRequestBody {
 
         @NotNull
+        @Size(max = 50)
         String dataGroupName;
         @NotNull
+        @Size(max = 50)
         String dataGroupNumber;
         @NotNull
         List<Long> userIdList;
+        @Size(max = 500)
         String note;
 
         SysDataGroup convert2SysDataGroup() { //create new object from input parameters
@@ -721,11 +729,13 @@ public class PermissionControlController extends BaseController {
         int perPage = requestBody.getPerPage();
 
         String dataGroupName = "";
+        String userName = "";
         if(requestBody.getFilter() != null) {
             dataGroupName = requestBody.getFilter().getDataGroupName();
+            userName = requestBody.getFilter().getUserName();
         }
 
-        PageResult<SysDataGroup> result = permissionService.getDataGroupListByPage(sortBy, order, dataGroupName, currentPage, perPage);
+        PageResult<SysDataGroup> result = permissionService.getDataGroupListByPage(sortBy, order, dataGroupName, userName, currentPage, perPage);
         long total = result.getTotal();
         List<SysDataGroup> data = result.getDataList();
 
@@ -767,8 +777,10 @@ public class PermissionControlController extends BaseController {
         }
 
         String dataGroupName = "";
+        String userName = "";
         if(requestBody.getFilter() != null) {
             dataGroupName = requestBody.getFilter().getDataGroupName();
+            userName = requestBody.getFilter().getUserName();
         }
         String sortBy = "";
         String order = "";
@@ -781,7 +793,7 @@ public class PermissionControlController extends BaseController {
             }
         }
 
-        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, userName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
         DataGroupExcelView.setMessageSource(messageSource);
         InputStream inputStream = DataGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -811,8 +823,10 @@ public class PermissionControlController extends BaseController {
         }
 
         String dataGroupName = "";
+        String userName = "";
         if(requestBody.getFilter() != null) {
             dataGroupName = requestBody.getFilter().getDataGroupName();
+            userName = requestBody.getFilter().getUserName();
         }
         String sortBy = "";
         String order = "";
@@ -825,7 +839,7 @@ public class PermissionControlController extends BaseController {
             }
         }
 
-        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, userName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();//set dictionary data
         DataGroupWordView.setMessageSource(messageSource);
         InputStream inputStream = DataGroupWordView.buildWordDocument(exportList);//create inputstream of result to be exported
@@ -852,8 +866,10 @@ public class PermissionControlController extends BaseController {
         }
 
         String dataGroupName = "";
+        String userName = "";
         if(requestBody.getFilter() != null) {
             dataGroupName = requestBody.getFilter().getDataGroupName();
+            userName = requestBody.getFilter().getUserName();
         }
         String sortBy = "";
         String order = "";
@@ -866,7 +882,7 @@ public class PermissionControlController extends BaseController {
             }
         }
 
-        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, userName, requestBody.getIsAll(), requestBody.getIdList());
         DataGroupPdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
         DataGroupPdfView.setMessageSource(messageSource);

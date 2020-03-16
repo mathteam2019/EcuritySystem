@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.*;
 
 /**
@@ -100,10 +101,13 @@ public class SeizedGoodsManagementController extends BaseController {
         @NotNull
         Long goodsId;
         @NotNull
+        @Size(max = 10)
         String seizedGoodsCode;
         @NotNull
+        @Size(max = 10)
         String seizedGoodType;
         @NotNull
+        @Size(max = 10)
         String seizedGoodsLevel;
 
         SerSeizedGood convert2SerSeizedGood() { //create new object from input parameters
@@ -128,10 +132,13 @@ public class SeizedGoodsManagementController extends BaseController {
     private static class SeizedCreateRequestBody {
 
         @NotNull
+        @Size(max = 10)
         String seizedGoodsCode;
         @NotNull
+        @Size(max = 10)
         String seizedGoodType;
         @NotNull
+        @Size(max = 10)
         String seizedGoodsLevel;
 
         SerSeizedGood convert2SerSeizedGood() { //create new object from input parameters

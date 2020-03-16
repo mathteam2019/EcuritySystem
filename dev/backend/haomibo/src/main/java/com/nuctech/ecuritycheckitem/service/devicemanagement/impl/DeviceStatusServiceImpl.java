@@ -52,6 +52,8 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
     @Autowired
     AuthService authService;
 
+    public static String defaultStatusSort = "device.deviceSerial";
+
     /**
      * get record list
      * @param devicueStatus
@@ -132,7 +134,7 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         }
 
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage, Sort.by("statusId").ascending());
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultStatusSort).ascending());
         long total = serDeviceStatusRepository.count(predicate);
         List<SerDeviceStatus> data = serDeviceStatusRepository.findAll(predicate, pageRequest).getContent();
 

@@ -76,7 +76,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     AuthService authService;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultSort = "orgNumber";
 
     public String getJsonFromOrg(SysOrg org) {
         SysOrg newOrg = SysOrg.builder()
@@ -338,7 +340,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("orgId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultSort).ascending());
         }
 
         long total = sysOrgRepository.count(predicate);
@@ -365,7 +367,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("orgId").ascending();
+            sort = Sort.by(defaultSort).ascending();
         }
         if(sort != null) {
             return StreamSupport

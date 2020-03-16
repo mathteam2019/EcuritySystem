@@ -74,9 +74,10 @@ public class AuditLogController extends BaseController {
         @NoArgsConstructor
         @AllArgsConstructor
         static class Filter {
-            String clientIp;
             String operateResult;
             String operateObject;
+            String operateAccount;
+            String action;
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date operateStartTime;
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
@@ -118,21 +119,23 @@ public class AuditLogController extends BaseController {
      * @return
      */
     private PageResult<SysAuditLog> getPageResult(String sortBy, String order, AuditLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
-        String clientIp = "";
+        String operateAccount = "";
+        String action = "";
         String operateResult = "";
         String operateObject = "";
         Date operateStartTime = null;
         Date operateEndTime = null;
 
         if(filter != null) {
-            clientIp = filter.getClientIp();
+            operateAccount = filter.getOperateAccount();
+            action = filter.getAction();
             operateResult = filter.getOperateResult();
             operateObject = filter.getOperateObject();
             operateStartTime = filter.getOperateStartTime();
             operateEndTime = filter.getOperateEndTime();
         }
 
-        PageResult<SysAuditLog> result = auditLogService.getAuditLogListByFilter(sortBy, order, clientIp, operateResult, operateObject, operateStartTime, operateEndTime, currentPage, perPage);
+        PageResult<SysAuditLog> result = auditLogService.getAuditLogListByFilter(sortBy, order, operateAccount, action, operateResult, operateObject, operateStartTime, operateEndTime, currentPage, perPage);
         return result;
     }
 
@@ -144,21 +147,23 @@ public class AuditLogController extends BaseController {
      * @return
      */
     private List<SysAuditLog> getExportResult(String sortBy, String order, AuditLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
-        String clientIp = "";
+        String operateAccount = "";
+        String action = "";
         String operateResult = "";
         String operateObject = "";
         Date operateStartTime = null;
         Date operateEndTime = null;
 
         if(filter != null) {
-            clientIp = filter.getClientIp();
+            operateAccount = filter.getOperateAccount();
+            action = filter.getAction();
             operateResult = filter.getOperateResult();
             operateObject = filter.getOperateObject();
             operateStartTime = filter.getOperateStartTime();
             operateEndTime = filter.getOperateEndTime();
         }
 
-        List<SysAuditLog> result = auditLogService.getExportList(sortBy, order, clientIp, operateResult, operateObject, operateStartTime, operateEndTime, isAll, idList);
+        List<SysAuditLog> result = auditLogService.getExportList(sortBy, order, operateAccount, action, operateResult, operateObject, operateStartTime, operateEndTime, isAll, idList);
         return result;
     }
 

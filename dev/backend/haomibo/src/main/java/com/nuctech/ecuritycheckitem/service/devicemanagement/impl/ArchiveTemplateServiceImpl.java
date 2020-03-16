@@ -77,7 +77,9 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultSort = "archivesTemplateNumber";
 
     /**
      * get prediate from filter parameters
@@ -169,7 +171,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("archivesTemplateId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultSort).ascending());
         }
 
         long total = serArchiveTemplateRepository.count(predicate);
@@ -520,7 +522,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("archivesTemplateId").ascending();
+            sort = Sort.by(defaultSort).ascending();
         }
         String[] splits = idList.split(",");
         List<Long> templateIdList = new ArrayList<>();

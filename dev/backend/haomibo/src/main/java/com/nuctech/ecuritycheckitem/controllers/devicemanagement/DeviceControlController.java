@@ -50,6 +50,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.InputStream;
 import java.util.*;
 
@@ -145,23 +146,33 @@ public class DeviceControlController extends BaseController {
     private static class DeviceCreateRequestBody {
 
         @NotNull
+        @Size(max = 50)
         String deviceName;
         @NotNull
+        @Size(max = 50)
         String deviceType;
         @NotNull
         Long archiveId;
         @NotNull
+        @Size(max = 50)
         String deviceSerial;
+        @Size(max = 50)
         String originalFactoryNumber;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
+        @Size(max = 50)
         String supplier;
+        @Size(max = 50)
         String contacts;
+        @Size(max = 50)
         String mobile;
+        @Size(max = 20)
         String deviceIp;
+        @Size(max = 255)
         String guid;
+        @Size(max = 500)
         String note;
 
         private MultipartFile imageUrl;
@@ -201,23 +212,33 @@ public class DeviceControlController extends BaseController {
         @NotNull
         Long deviceId;
         @NotNull
+        @Size(max = 50)
         String deviceName;
         @NotNull
+        @Size(max = 50)
         String deviceType;
         @NotNull
         Long archiveId;
         @NotNull
+        @Size(max = 50)
         String deviceSerial;
+        @Size(max = 50)
         String originalFactoryNumber;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
+        @Size(max = 50)
         String supplier;
+        @Size(max = 50)
         String contacts;
+        @Size(max = 50)
         String mobile;
+        @Size(max = 20)
         String deviceIp;
+        @Size(max = 255)
         String guid;
+        @Size(max = 500)
         String note;
 
         private MultipartFile imageUrl;

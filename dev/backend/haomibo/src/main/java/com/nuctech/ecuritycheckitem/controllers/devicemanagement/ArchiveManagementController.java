@@ -56,6 +56,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.InputStream;
 import java.util.*;
 
@@ -134,9 +135,12 @@ public class ArchiveManagementController extends BaseController {
         @NotNull
         Long archivesTemplateId;
         @NotNull
+        @Size(max = 50)
         String archivesName;
         @NotNull
+        @Size(max = 50)
         String archivesNumber;
+        @Size(max = 500)
         String note;
         private MultipartFile imageUrl;
         String json;
@@ -168,9 +172,12 @@ public class ArchiveManagementController extends BaseController {
         @NotNull
         Long archivesTemplateId;
         @NotNull
+        @Size(max = 50)
         String archivesName;
         @NotNull
+        @Size(max = 50)
         String archivesNumber;
+        @Size(max = 500)
         String note;
         private MultipartFile imageUrl;
         String json;

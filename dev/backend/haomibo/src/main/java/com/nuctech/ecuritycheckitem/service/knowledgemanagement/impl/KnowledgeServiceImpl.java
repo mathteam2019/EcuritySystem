@@ -65,7 +65,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
 
     public String getJsonFromKnowledge(SerKnowledgeCase knowledgeCase) {
         SerKnowledgeCase newKnowledge = SerKnowledgeCase.builder()

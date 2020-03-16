@@ -96,10 +96,10 @@ public class Constants {
 
     public static final Long MAX_EXPORT_NUMBER = 50000L;
 
-    public static final TreeMap<String, String> userCategory = new TreeMap<String, String>() {{
-        put("1000002404", "1");
-        put("1000002403", "2");
-        put("1000002402", "3");
+    public static final TreeMap<String, Long> userCategory = new TreeMap<String, Long>() {{
+        put("1000002404", 180L);
+        put("1000002403", 181L);
+        put("1000002402", 182L);
     }};
 
 

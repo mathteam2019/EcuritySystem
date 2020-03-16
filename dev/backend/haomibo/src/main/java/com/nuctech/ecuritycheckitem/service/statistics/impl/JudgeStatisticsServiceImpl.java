@@ -147,6 +147,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
             JudgeStatisticsResponseModel item = new JudgeStatisticsResponseModel();
+            item.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
             item.setTime(i);
             data.put(i, item);
         }
@@ -347,10 +348,10 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             record.setTotal(Long.parseLong(item[7].toString()));
             record.setAvgDuration(Double.parseDouble(item[8].toString()));
             record.setMaxDuration(Double.parseDouble(item[9].toString()));
-            record.setMinDuration(Double.parseDouble(item[1].toString()));
-            record.setAvgArtificialJudgeDuration(Long.parseLong(item[1].toString()));
-            record.setMaxArtificialJudgeDuration(Long.parseLong(item[1].toString()));
-            record.setMinArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+            record.setMinDuration(Double.parseDouble(item[10].toString()));
+            record.setAvgArtificialJudgeDuration(Double.parseDouble(item[11].toString()));
+            record.setMaxArtificialJudgeDuration(Double.parseDouble(item[12].toString()));
+            record.setMinArtificialJudgeDuration(Double.parseDouble(item[13].toString()));
             record.setArtificialResultRate(0);
             record.setAssignTimeoutResultRate(0);
             record.setJudgeTimeoutResultRate(0);
@@ -358,7 +359,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             record.setNoSuspictionRate(0);
             record.setScanResultRate(0);
             if (record.getTotal() > 0) {
-                record.setArtificialResultRate(record.getArtificialResult() * 100 / (double) record.getTotal());
+                record.setArtificialResultRate(record.getArtificialJudge() * 100 / (double) record.getTotal());
                 record.setAssignTimeoutResultRate(record.getAssignTimeout() * 100 / (double) record.getTotal());
                 record.setJudgeTimeoutResultRate(record.getJudgeTimeout() * 100 / (double) record.getTotal());
                 record.setSuspictionRate(record.getSuspiction() * 100 / (double) record.getTotal());

@@ -77,7 +77,7 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @param operateEndTime
      * @return
      */
-    private BooleanBuilder getPredicatePre(String clientIp, String operateAccount, Date operateStartTime, Date operateEndTime) {
+    private BooleanBuilder getPredicatePre(String clientIp, String operateAccount, String action, String operateResult, Date operateStartTime, Date operateEndTime) {
         QSysAccessLog builder = QSysAccessLog.sysAccessLog;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -88,6 +88,14 @@ public class AccessLogServiceImpl implements AccessLogService {
 
         if (!StringUtils.isEmpty(operateAccount)) {
             predicate.and(builder.operateAccount.eq(operateAccount));
+        }
+
+        if (!StringUtils.isEmpty(action)) {
+            predicate.and(builder.action.contains(action));
+        }
+
+        if (!StringUtils.isEmpty(operateResult)) {
+            predicate.and(builder.operateResult.eq(operateResult));
         }
 
         if(operateStartTime != null) {
@@ -106,9 +114,9 @@ public class AccessLogServiceImpl implements AccessLogService {
 
 
 
-    public PageResult<SysAccessLog> getAccessLogListByFilterPre(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+    public PageResult<SysAccessLog> getAccessLogListByFilterPre(String sortBy, String order, String clientIp, String operateAccount, String action, String operateResult, Date operateStartTime,
                                                              Date operateEndTime, int currentPage, int perPage) {
-        BooleanBuilder predicate = getPredicatePre(clientIp, operateAccount, operateStartTime, operateEndTime);
+        BooleanBuilder predicate = getPredicatePre(clientIp, operateAccount, action, operateResult, operateStartTime, operateEndTime);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if (order.equals(Constants.SortOrder.ASC)) {
@@ -118,7 +126,7 @@ public class AccessLogServiceImpl implements AccessLogService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("id").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("id").descending());
         }
         long total = originalSysAccessLogRepository.count(predicate);
         List<SysAccessLog> data = originalSysAccessLogRepository.findAll(predicate, pageRequest).getContent();
@@ -138,9 +146,9 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @param idList
      * @return
      */
-    private List<SysAccessLog> getExportListPre(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
+    private List<SysAccessLog> getExportListPre(String sortBy, String order, String clientIp, String operateAccount, String action, String operateResult, Date operateStartTime,
                                        Date operateEndTime, boolean isAll, String idList) {
-        BooleanBuilder predicate = getPredicatePre(clientIp, operateAccount, operateStartTime, operateEndTime);
+        BooleanBuilder predicate = getPredicatePre(clientIp, operateAccount, action, operateResult, operateStartTime, operateEndTime);
         String[] splits = idList.split(",");
         Long max_size = 5000L;
         try {
@@ -159,7 +167,7 @@ public class AccessLogServiceImpl implements AccessLogService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("id").ascending();
+            sort = Sort.by("id").descending();
         }
         List<SysAccessLog> logList;
         if(sort != null) {
@@ -290,8 +298,8 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @return
      */
     @Override
-    public PageResult<EsSysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
-                                                          Date operateEndTime, int currentPage, int perPage) {
+    public PageResult<SysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, String action, String operateResult,
+                                                             Date operateStartTime, Date operateEndTime, int currentPage, int perPage) {
 
 //        BoolQueryBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
 //        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
@@ -308,14 +316,14 @@ public class AccessLogServiceImpl implements AccessLogService {
 //        //Page<EsSysAccessLog> pageResult = sysAccessLogRepository.search(predicate, pageRequest);
 //        long total = 0;//pageResult.getTotalElements();
 //        List<EsSysAccessLog> data = new ArrayList<>();//pageResult.getContent();
-        PageResult<SysAccessLog> preResult = getAccessLogListByFilterPre(sortBy, order, clientIp, operateAccount, operateStartTime, operateEndTime, currentPage, perPage);
+        PageResult<SysAccessLog> preResult = getAccessLogListByFilterPre(sortBy, order, clientIp, operateAccount, action, operateResult, operateStartTime, operateEndTime, currentPage, perPage);
         long total = preResult.getTotal();
         List<SysAccessLog> logResult = preResult.getDataList();
         List<EsSysAccessLog> data = new ArrayList<>();
         for(int i = 0; i < logResult.size(); i ++) {
             data.add(convertAccessLog(logResult.get(i)));
         }
-        return new PageResult<>(total, data);
+        return preResult;//new PageResult<>(total, data);
     }
 
     /**
@@ -329,8 +337,8 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @return
      */
     @Override
-    public List<EsSysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
-                                         Date operateEndTime, boolean isAll, String idList) {
+    public List<SysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, String action, String operateResult,
+                                            Date operateStartTime, Date operateEndTime, boolean isAll, String idList) {
 //        BoolQueryBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
 //        Long max_size = 5000L;
 //        try {
@@ -364,12 +372,12 @@ public class AccessLogServiceImpl implements AccessLogService {
 //            answerList.add(logList.get(i));
 //        }
 //        return answerList;
-        List<SysAccessLog> preResult = getExportListPre(sortBy, order, clientIp, operateAccount, operateStartTime, operateEndTime, isAll, idList);
+        List<SysAccessLog> preResult = getExportListPre(sortBy, order, clientIp, operateAccount, action, operateResult, operateStartTime, operateEndTime, isAll, idList);
         List<EsSysAccessLog> data = new ArrayList<>();
         for(int i = 0; i < preResult.size(); i ++) {
             data.add(convertAccessLog(preResult.get(i)));
         }
-        return data;
+        return preResult;//data;
 
     }
 

@@ -52,6 +52,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.InputStream;
 import java.util.*;
 
@@ -83,13 +84,18 @@ public class FieldManagementController extends BaseController {
     private static class FieldCreateRequestBody {
 
         @NotNull
+        @Size(max = 50)
         String fieldSerial;
         @NotNull
+        @Size(max = 50)
         String fieldDesignation;
         @NotNull
         Long parentFieldId;
+        @Size(max = 50)
         String leader;
+        @Size(max = 50)
         String mobile;
+        @Size(max = 255)
         String note;
         SysField convert2SysField() { //create new object from input parameters
             return SysField

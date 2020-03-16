@@ -84,7 +84,9 @@ public class ArchiveServiceImpl implements ArchiveService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultSort = "archivesNumber";
 
 
     /**
@@ -138,7 +140,7 @@ public class ArchiveServiceImpl implements ArchiveService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("archiveId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultSort).ascending());
         }
 
         long total = serArchiveRepository.count(predicate);
@@ -453,7 +455,7 @@ public class ArchiveServiceImpl implements ArchiveService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("archiveId").ascending();
+            sort = Sort.by(defaultSort).ascending();
         }
         String[] splits = idList.split(",");
         List<Long> archiveIdList = new ArrayList<>();

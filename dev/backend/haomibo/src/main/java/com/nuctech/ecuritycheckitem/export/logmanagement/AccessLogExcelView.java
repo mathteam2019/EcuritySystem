@@ -59,7 +59,7 @@ public class AccessLogExcelView extends BaseExcelView {
      * @param exportLogList
      * @return
      */
-    public static InputStream buildExcelDocument(List<EsSysAccessLog> exportLogList) {
+    public static InputStream buildExcelDocument(List<SysAccessLog> exportLogList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
 
@@ -81,7 +81,7 @@ public class AccessLogExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
-            for (EsSysAccessLog log : exportLogList) {
+            for (SysAccessLog log : exportLogList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(log.getId().toString());
                 row.createCell(1).setCellValue(formatDate(log.getOperateTime()));

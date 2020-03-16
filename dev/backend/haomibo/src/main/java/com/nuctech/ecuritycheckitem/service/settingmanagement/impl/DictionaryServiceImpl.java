@@ -62,7 +62,11 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultDictionarySort = "dictionaryName";
+
+    public static String defaultDictionaryDataSort = "dataCode";
 
     public String getJsonFromDictionary(SysDictionary dictionary) {
         SysDictionary newDictionary = SysDictionary.builder()
@@ -308,7 +312,7 @@ public class DictionaryServiceImpl implements DictionaryService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("dictionaryId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultDictionarySort).ascending());
         }
 
         long total = sysDictionaryRepository.count(predicate);
@@ -355,7 +359,7 @@ public class DictionaryServiceImpl implements DictionaryService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("dataId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultDictionaryDataSort).ascending());
         }
         long total = sysDictionaryDataRepository.count(predicate);
         List<SysDictionaryData> data = sysDictionaryDataRepository.findAll(predicate, pageRequest).getContent();

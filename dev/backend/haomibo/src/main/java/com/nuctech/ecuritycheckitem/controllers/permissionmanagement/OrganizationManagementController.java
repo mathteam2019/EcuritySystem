@@ -54,6 +54,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.InputStream;
 import java.util.*;
 
@@ -86,13 +87,18 @@ public class OrganizationManagementController extends BaseController {
     private static class OrganizationCreateRequestBody {
 
         @NotNull
+        @Size(max = 50)
         String orgName;
         @NotNull
+        @Size(max = 50)
         String orgNumber;
         @NotNull
         Long parentOrgId;
+        @Size(max = 50)
         String leader;
+        @Size(max = 50)
         String mobile;
+        @Size(max = 500)
         String note;
 
         SysOrg convert2SysOrg() { //create new object from input parameters
@@ -182,13 +188,18 @@ public class OrganizationManagementController extends BaseController {
         @NotNull
         Long orgId;
         @NotNull
+        @Size(max = 50)
         String orgName;
         @NotNull
+        @Size(max = 50)
         String orgNumber;
         @NotNull
         Long parentOrgId;
+        @Size(max = 50)
         String leader;
+        @Size(max = 50)
         String mobile;
+        @Size(max = 500)
         String note;
 
         SysOrg convert2SysOrg() { //create new object from input parameters

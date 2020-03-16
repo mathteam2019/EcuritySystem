@@ -82,10 +82,10 @@ public class PreviewStatisticsPdfView extends BasePdfView {
                 addTableCell(table, Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
                 addTableCell(table, Long.toString(record.getJudgeStatistics().getNoSuspictionJudge()));
                 addTableCell(table, df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                addTableCell(table, Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
-                addTableCell(table, df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
                 addTableCell(table, Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
                 addTableCell(table, df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                addTableCell(table, Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
+                addTableCell(table, df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
 
             }
 

@@ -63,7 +63,9 @@ public class ScanParamServiceImpl implements ScanParamService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultScanSort = "device.deviceSerial";
 
     public String getJsonFromScanParam(SerScanParam scanParam) {
         SerScanParam newParam = SerScanParam.builder()
@@ -186,7 +188,7 @@ public class ScanParamServiceImpl implements ScanParamService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanParamsId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultScanSort).ascending());
         }
         long total = serScanParamRepository.count(predicate);
         List<SerScanParam> data = serScanParamRepository.findAll(predicate, pageRequest).getContent();

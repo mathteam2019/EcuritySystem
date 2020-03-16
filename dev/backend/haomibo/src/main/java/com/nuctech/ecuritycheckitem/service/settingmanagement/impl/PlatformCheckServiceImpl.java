@@ -43,7 +43,7 @@ public class PlatformCheckServiceImpl implements PlatformCheckService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
 
     public String getJsonFromPlatform(SerPlatformCheckParams params) {
 

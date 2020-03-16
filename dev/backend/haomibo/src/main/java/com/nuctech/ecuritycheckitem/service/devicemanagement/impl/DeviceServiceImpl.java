@@ -107,7 +107,9 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.ENGLISH;
+    public static Locale currentLocale = Locale.CHINESE;
+
+    public static String defaultSort = "deviceSerial";
 
     public String getJsonFromDevice(SysDevice device) {
         SysDevice newDevice = SysDevice.builder()
@@ -342,7 +344,7 @@ public class DeviceServiceImpl implements DeviceService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("deviceId").ascending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultSort).ascending());
         }
 
         long total = sysDeviceRepository.count(predicate);
@@ -409,8 +411,17 @@ public class DeviceServiceImpl implements DeviceService {
             deviceIdList.add(Long.valueOf(idStr));
         }
         predicate.and(QSysDevice.sysDevice.deviceId.in(deviceIdList));
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = Sort.by(sortBy).ascending();
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = Sort.by(sortBy).descending();
+            }
+        } else {
+            sort = Sort.by(defaultSort).ascending();
+        }
         List<SysDevice> preList = StreamSupport
-                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
+                .stream(sysDeviceRepository.findAll(predicate, sort).spliterator(), false)
                 .collect(Collectors.toList());
         return preList;
     }

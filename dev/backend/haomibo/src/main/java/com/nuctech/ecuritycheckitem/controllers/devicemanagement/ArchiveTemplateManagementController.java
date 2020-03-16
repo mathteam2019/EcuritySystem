@@ -55,6 +55,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.InputStream;
 import java.util.*;
 
@@ -171,13 +172,18 @@ public class ArchiveTemplateManagementController extends BaseController {
     private static class ArchiveTemplateCreateRequestBody {
 
         @NotNull
+        @Size(max = 50)
         String templateName; //template name
         @NotNull
+        @Size(max = 50)
         String archivesTemplateNumber; //template number
         @NotNull
         Long categoryId; //category id
+        @Size(max = 10)
         String manufacturer; //manufacturer name
+        @Size(max = 50)
         String originalModel; //original model
+        @Size(max = 500)
         String note; //note
 
         List<SerArchiveIndicators> archiveIndicatorsList; //archive indiciator list
@@ -214,7 +220,9 @@ public class ArchiveTemplateManagementController extends BaseController {
     private static class ArchiveIndicatorCreateRequestBody {
 
         @NotNull
+        @Size(max = 20)
         String indicatorsName;
+        @Size(max = 20)
         String indicatorsUnit;
 
         @NotNull
@@ -246,13 +254,18 @@ public class ArchiveTemplateManagementController extends BaseController {
         @NotNull
         Long archivesTemplateId;
         @NotNull
+        @Size(max = 50)
         String templateName;
         @NotNull
+        @Size(max = 50)
         String archivesTemplateNumber;
         @NotNull
         Long categoryId;
+        @Size(max = 10)
         String manufacturer;
+        @Size(max = 50)
         String originalModel;
+        @Size(max = 500)
         String note;
         List<SerArchiveIndicators> archiveIndicatorsList;
 
