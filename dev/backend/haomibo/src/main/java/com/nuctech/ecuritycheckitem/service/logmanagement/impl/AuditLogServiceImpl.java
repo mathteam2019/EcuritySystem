@@ -58,7 +58,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     /**
      * get predicate from filter parameters
-     * @param operateAccount
+     * @param userName
      * @param action
      * @param operateResult
      * @param operateObject
@@ -66,13 +66,13 @@ public class AuditLogServiceImpl implements AuditLogService {
      * @param operateEndTime
      * @return
      */
-    private BooleanBuilder getPredicate(String operateAccount, String action, String operateResult, String operateObject, Date operateStartTime, Date operateEndTime) {
+    private BooleanBuilder getPredicate(String userName, String action, String operateResult, String operateObject, Date operateStartTime, Date operateEndTime) {
         QSysAuditLog builder = QSysAuditLog.sysAuditLog;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        if (!StringUtils.isEmpty(operateAccount)) {
-            predicate.and(builder.operateAccount.contains(operateAccount));
+        if (!StringUtils.isEmpty(userName)) {
+            predicate.and(builder.user.userName.contains(userName));
         }
 
         if (!StringUtils.isEmpty(action)) {
@@ -145,7 +145,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     /**
      * get paginated and filtered audit log list
-     * @param operateAccount
+     * @param userName
      * @param action
      * @param operateResult
      * @param operateObject
@@ -156,9 +156,9 @@ public class AuditLogServiceImpl implements AuditLogService {
      * @return
      */
     @Override
-    public PageResult<SysAuditLog> getAuditLogListByFilter(String sortBy, String order, String operateAccount, String action, String operateResult, String operateObject, Date operateStartTime,
+    public PageResult<SysAuditLog> getAuditLogListByFilter(String sortBy, String order, String userName, String action, String operateResult, String operateObject, Date operateStartTime,
                                                     Date operateEndTime, int currentPage, int perPage) {
-        BooleanBuilder predicate = getPredicate(operateAccount, action, operateResult, operateObject, operateStartTime, operateEndTime);
+        BooleanBuilder predicate = getPredicate(userName, action, operateResult, operateObject, operateStartTime, operateEndTime);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if (order.equals(Constants.SortOrder.ASC)) {
@@ -177,7 +177,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     /**
      * get audit log export list
-     * @param operateAccount
+     * @param userName
      * @param action
      * @param operateResult
      * @param operateObject
@@ -188,9 +188,9 @@ public class AuditLogServiceImpl implements AuditLogService {
      * @return
      */
     @Override
-    public List<SysAuditLog> getExportList(String sortBy, String order, String operateAccount, String action, String operateResult, String operateObject, Date operateStartTime,
+    public List<SysAuditLog> getExportList(String sortBy, String order, String userName, String action, String operateResult, String operateObject, Date operateStartTime,
                                     Date operateEndTime, boolean isAll, String idList) {
-        BooleanBuilder predicate = getPredicate(operateAccount, action, operateResult, operateObject, operateStartTime, operateEndTime);
+        BooleanBuilder predicate = getPredicate(userName, action, operateResult, operateObject, operateStartTime, operateEndTime);
         String[] splits = idList.split(",");
         Long max_size = 5000L;
         try {

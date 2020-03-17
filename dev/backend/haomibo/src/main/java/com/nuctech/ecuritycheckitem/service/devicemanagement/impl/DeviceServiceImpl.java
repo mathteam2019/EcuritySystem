@@ -136,6 +136,8 @@ public class DeviceServiceImpl implements DeviceService {
                 .status(device.getStatus())
                 .currentStatus(device.getCurrentStatus())
                 .workStatus(device.getWorkStatus())
+                .softwareVersion(device.getSoftwareVersion())
+                .algorithmVersion(device.getAlgorithmVersion())
                 .build();
         ObjectMapper objectMapper = new ObjectMapper();
 

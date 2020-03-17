@@ -1122,7 +1122,7 @@ public class UserManagementController extends BaseController {
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, userName, requestBody.getIsAll(), requestBody.getIdList());
-        UserGroupPdfView.setResource(getFontResource()); //set font resource
+        UserGroupWordView.setMessageSource(messageSource);
         setDictionary();  //set dictionary data
         InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 

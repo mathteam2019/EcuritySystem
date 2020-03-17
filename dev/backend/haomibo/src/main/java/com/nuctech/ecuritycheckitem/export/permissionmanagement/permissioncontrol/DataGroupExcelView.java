@@ -15,6 +15,8 @@ package com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontr
 
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataGroupExcelView extends BaseExcelView {
@@ -46,6 +49,9 @@ public class DataGroupExcelView extends BaseExcelView {
 
         Cell headerCellName = header.createCell(2);
         headerCellName.setCellValue(messageSource.getMessage("DataGroup.Name",null, currentLocale));
+
+        Cell headerCellUser = header.createCell(3);
+        headerCellUser.setCellValue(messageSource.getMessage("DataGroup.User",null, currentLocale));
 
     }
 
@@ -81,6 +87,12 @@ public class DataGroupExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(dataGroup.getDataGroupId().toString());
                 row.createCell(1).setCellValue(dataGroup.getDataGroupNumber());
                 row.createCell(2).setCellValue(dataGroup.getDataGroupName());
+                List<String> userNames = new ArrayList<>();
+                for(SysUser user: dataGroup.getUsers()) {
+                    userNames.add(user.getUserName());
+                }
+                String userName = StringUtils.join(userNames, ",");
+                row.createCell(3).setCellValue(userName);
             }
 
             workbook.write(out);

@@ -136,7 +136,7 @@ public class TaskServiceImpl implements TaskService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("taskId").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("serScan.scanStartTime").descending());
         }
 
         long total = serTaskRepository.count(predicate);
@@ -232,7 +232,7 @@ public class TaskServiceImpl implements TaskService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("taskId").descending();
+            sort = Sort.by("serScan.scanStartTime").descending();
         }
 
         List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();

@@ -15,7 +15,9 @@ package com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -27,6 +29,7 @@ import org.apache.poi.xwpf.usermodel.TableWidthType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserGroupWordView extends BaseWordView {
@@ -67,6 +70,7 @@ public class UserGroupWordView extends BaseWordView {
         tableRowHeader.getCell(0).setText(messageSource.getMessage("UserGroup.No", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("UserGroup.Number", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("UserGroup.Name", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("UserGroup.User", null, currentLocale));
 
     }
 
@@ -95,7 +99,12 @@ public class UserGroupWordView extends BaseWordView {
                 tableRow.getCell(0).setText(userGroup.getUserGroupId().toString());
                 tableRow.getCell(1).setText(userGroup.getGroupNumber());
                 tableRow.getCell(2).setText(userGroup.getGroupName());
-
+                List<String> userNames = new ArrayList<>();
+                for(SysUser user: userGroup.getUsers()) {
+                    userNames.add(user.getUserName());
+                }
+                String userName = StringUtils.join(userNames, ",");
+                tableRow.getCell(3).setText(userName);
             }
 
             document.write(out);

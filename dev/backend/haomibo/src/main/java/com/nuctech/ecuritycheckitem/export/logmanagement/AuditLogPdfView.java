@@ -51,7 +51,7 @@ public class AuditLogPdfView extends BasePdfView {
             PdfPTable table = new PdfPTable(9);
 
             table.setWidthPercentage(99);
-            Stream.of("AuditLog.No", "AuditLog.OperatorId", "AuditLog.ClientIp", "AuditLog.OperateObject", "AuditLog.Action", "AuditLog.OperateContent", "AuditLog.OperateResult", "AuditLog.ReasonCode", "AuditLog.OperateTime")
+            Stream.of("AuditLog.No", "AuditLog.OperateAccount", "AuditLog.UserName", "AuditLog.ClientIp", "AuditLog.Action", "AuditLog.OperateObject",  "AuditLog.OperateResult", "AuditLog.ReasonCode", "AuditLog.OperateTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -62,11 +62,11 @@ public class AuditLogPdfView extends BasePdfView {
 
             for (SysAuditLog log : exportLogList) {
                 addTableCell(table, log.getId().toString());
-                addTableCell(table, log.getOperatorId().toString());
+                addTableCell(table, log.getOperateAccount());
+                addTableCell(table, log.getUser().getUserName());
                 addTableCell(table, log.getClientIp());
-                addTableCell(table, log.getOperateObject());
                 addTableCell(table, log.getAction());
-                addTableCell(table, log.getOperateContent());
+                addTableCell(table, log.getOperateObject());
                 addTableCell(table, ConstantDictionary.getDataValue(log.getOperateResult()));
                 addTableCell(table, log.getReasonCode());
                 addTableCell(table, formatDate(log.getOperateTime()));

@@ -66,11 +66,11 @@ public class AuditLogWordView extends BaseWordView {
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
         tableRowHeader.getCell(0).setText(messageSource.getMessage("AuditLog.No", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperatorId", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateAccount", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.UserName", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.ClientIp", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateObject", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.Action", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateContent", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateObject", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateResult", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.ReasonCode", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateTime", null, currentLocale));
@@ -100,11 +100,11 @@ public class AuditLogWordView extends BaseWordView {
                 XWPFTableRow tableRow = table.createRow();
 
                 tableRow.getCell(0).setText(log.getId().toString());
-                tableRow.getCell(1).setText(log.getOperatorId().toString());
-                tableRow.getCell(2).setText(log.getClientIp());
-                tableRow.getCell(3).setText(log.getOperateObject());
+                tableRow.getCell(1).setText(log.getOperateAccount());
+                tableRow.getCell(2).setText(log.getUser().getUserName());
+                tableRow.getCell(3).setText(log.getClientIp());
                 tableRow.getCell(4).setText(log.getAction());
-                tableRow.getCell(5).setText(log.getOperateContent());
+                tableRow.getCell(5).setText(log.getOperateObject());
                 tableRow.getCell(6).setText(ConstantDictionary.getDataValue(log.getOperateResult()));
                 tableRow.getCell(7).setText(log.getReasonCode());
                 tableRow.getCell(8).setText(formatDate(log.getOperateTime()));

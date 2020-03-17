@@ -21,13 +21,10 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -71,5 +68,12 @@ public class SysAccessLog extends BaseEntity implements Serializable {
 
     @Column(name = "ONLINE_TIME", length = 11)
     private Long onlineTime;
+
+    @ManyToOne()
+    @JoinColumn(name = "OPERATE_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SysUser user;
+
+
     
 }

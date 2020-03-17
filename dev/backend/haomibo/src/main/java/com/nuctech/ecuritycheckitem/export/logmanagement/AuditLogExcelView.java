@@ -41,20 +41,20 @@ public class AuditLogExcelView extends BaseExcelView {
         Cell headerCellNo = header.createCell(0);
         headerCellNo.setCellValue(messageSource.getMessage("AuditLog.No", null, currentLocale));
 
-        Cell headerCellOperatorId = header.createCell(1);
-        headerCellOperatorId.setCellValue(messageSource.getMessage("AuditLog.OperatorId", null, currentLocale));
+        Cell headerCellOperateAccount = header.createCell(1);
+        headerCellOperateAccount.setCellValue(messageSource.getMessage("AuditLog.OperateAccount", null, currentLocale));
 
-        Cell headerCellClientIp = header.createCell(2);
+        Cell headerCellUserName = header.createCell(2);
+        headerCellUserName.setCellValue(messageSource.getMessage("AuditLog.UserName", null, currentLocale));
+
+        Cell headerCellClientIp = header.createCell(3);
         headerCellClientIp.setCellValue(messageSource.getMessage("AuditLog.ClientIp", null, currentLocale));
-
-        Cell headerCellOperateObject = header.createCell(3);
-        headerCellOperateObject.setCellValue(messageSource.getMessage("AuditLog.OperateObject", null, currentLocale));
 
         Cell headerCellAction = header.createCell(4);
         headerCellAction.setCellValue(messageSource.getMessage("AuditLog.Action", null, currentLocale));
 
-        Cell headerCellOperateContent = header.createCell(5);
-        headerCellOperateContent.setCellValue(messageSource.getMessage("AuditLog.OperateContent", null, currentLocale));
+        Cell headerCellOperateObject = header.createCell(5);
+        headerCellOperateObject.setCellValue(messageSource.getMessage("AuditLog.OperateObject", null, currentLocale));
 
         Cell headerCellOperateResult = header.createCell(6);
         headerCellOperateResult.setCellValue(messageSource.getMessage("AuditLog.OperateResult", null, currentLocale));
@@ -96,11 +96,11 @@ public class AuditLogExcelView extends BaseExcelView {
             for (SysAuditLog log : exportLogList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(log.getId().toString());
-                row.createCell(1).setCellValue(log.getOperatorId().toString());
-                row.createCell(2).setCellValue(log.getClientIp());
-                row.createCell(3).setCellValue(log.getOperateObject());
+                row.createCell(1).setCellValue(log.getOperateAccount());
+                row.createCell(2).setCellValue(log.getUser().getUserName());
+                row.createCell(3).setCellValue(log.getClientIp());
                 row.createCell(4).setCellValue(log.getAction());
-                row.createCell(5).setCellValue(log.getOperateContent());
+                row.createCell(5).setCellValue(log.getOperateObject());
                 row.createCell(6).setCellValue(ConstantDictionary.getDataValue(log.getOperateResult()));
                 row.createCell(7).setCellValue(log.getReasonCode());
                 row.createCell(8).setCellValue(formatDate(log.getOperateTime()));

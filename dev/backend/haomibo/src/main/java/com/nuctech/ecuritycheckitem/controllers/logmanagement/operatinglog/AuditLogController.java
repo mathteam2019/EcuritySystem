@@ -14,6 +14,8 @@ package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
@@ -76,7 +78,7 @@ public class AuditLogController extends BaseController {
         static class Filter {
             String operateResult;
             String operateObject;
-            String operateAccount;
+            String userName;
             String action;
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date operateStartTime;
@@ -119,7 +121,7 @@ public class AuditLogController extends BaseController {
      * @return
      */
     private PageResult<SysAuditLog> getPageResult(String sortBy, String order, AuditLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
-        String operateAccount = "";
+        String userName = "";
         String action = "";
         String operateResult = "";
         String operateObject = "";
@@ -127,7 +129,7 @@ public class AuditLogController extends BaseController {
         Date operateEndTime = null;
 
         if(filter != null) {
-            operateAccount = filter.getOperateAccount();
+            userName = filter.getUserName();
             action = filter.getAction();
             operateResult = filter.getOperateResult();
             operateObject = filter.getOperateObject();
@@ -135,7 +137,7 @@ public class AuditLogController extends BaseController {
             operateEndTime = filter.getOperateEndTime();
         }
 
-        PageResult<SysAuditLog> result = auditLogService.getAuditLogListByFilter(sortBy, order, operateAccount, action, operateResult, operateObject, operateStartTime, operateEndTime, currentPage, perPage);
+        PageResult<SysAuditLog> result = auditLogService.getAuditLogListByFilter(sortBy, order, userName, action, operateResult, operateObject, operateStartTime, operateEndTime, currentPage, perPage);
         return result;
     }
 
@@ -147,7 +149,7 @@ public class AuditLogController extends BaseController {
      * @return
      */
     private List<SysAuditLog> getExportResult(String sortBy, String order, AuditLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
-        String operateAccount = "";
+        String userName = "";
         String action = "";
         String operateResult = "";
         String operateObject = "";
@@ -155,7 +157,7 @@ public class AuditLogController extends BaseController {
         Date operateEndTime = null;
 
         if(filter != null) {
-            operateAccount = filter.getOperateAccount();
+            userName = filter.getUserName();
             action = filter.getAction();
             operateResult = filter.getOperateResult();
             operateObject = filter.getOperateObject();
@@ -163,7 +165,7 @@ public class AuditLogController extends BaseController {
             operateEndTime = filter.getOperateEndTime();
         }
 
-        List<SysAuditLog> result = auditLogService.getExportList(sortBy, order, operateAccount, action, operateResult, operateObject, operateStartTime, operateEndTime, isAll, idList);
+        List<SysAuditLog> result = auditLogService.getExportList(sortBy, order, userName, action, operateResult, operateObject, operateStartTime, operateEndTime, isAll, idList);
         return result;
     }
 
@@ -214,9 +216,9 @@ public class AuditLogController extends BaseController {
                         .build()));
 
         // Set filters.
-        FilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName")); //only return userName from SysWorkMode model
         value.setFilters(filters);
-
         return value;
     }
 

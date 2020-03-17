@@ -174,6 +174,10 @@ public class DeviceControlController extends BaseController {
         String guid;
         @Size(max = 500)
         String note;
+        @Size(max = 255)
+        String softwareVersion;
+        @Size(max = 255)
+        String algorithmVersion;
 
         private MultipartFile imageUrl;
 
@@ -195,6 +199,8 @@ public class DeviceControlController extends BaseController {
                     .status(SysDevice.Status.INACTIVE)
                     .currentStatus(SysDevice.DeviceStatus.UNREGISTER)
                     .workStatus(SysDevice.DeviceWorkStatus.FREE)
+                    .softwareVersion(Optional.ofNullable(this.getSoftwareVersion()).orElse(""))
+                    .algorithmVersion(Optional.ofNullable(this.getAlgorithmVersion()).orElse(""))
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
         }
@@ -238,6 +244,10 @@ public class DeviceControlController extends BaseController {
         String deviceIp;
         @Size(max = 255)
         String guid;
+        @Size(max = 255)
+        String softwareVersion;
+        @Size(max = 255)
+        String algorithmVersion;
         @Size(max = 500)
         String note;
 
@@ -259,6 +269,8 @@ public class DeviceControlController extends BaseController {
                     .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
                     .deviceIp(Optional.ofNullable(this.getDeviceIp()).orElse(""))
                     .guid(this.getGuid())
+                    .softwareVersion(Optional.ofNullable(this.getSoftwareVersion()).orElse(""))
+                    .algorithmVersion(Optional.ofNullable(this.getAlgorithmVersion()).orElse(""))
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
         }

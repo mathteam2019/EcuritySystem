@@ -14,6 +14,8 @@ package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
@@ -77,7 +79,7 @@ public class AccessLogController extends BaseController {
         @AllArgsConstructor
         static class Filter {
             String clientIp;
-            String operateAccount;
+            String userName;
             String action;
             String operateResult;
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
@@ -123,7 +125,7 @@ public class AccessLogController extends BaseController {
      */
     private PageResult<SysAccessLog> getPageResult(String sortBy, String order, AccessLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
         String clientIp = "";
-        String operateAccount = "";
+        String userName = "";
         String action = "";
         String operateResult = "";
         Date operateStartTime = null;
@@ -133,12 +135,12 @@ public class AccessLogController extends BaseController {
             action = filter.getAction();
             operateResult = filter.getOperateResult();
             clientIp = filter.getClientIp();
-            operateAccount = filter.getOperateAccount();
+            userName = filter.getUserName();
             operateStartTime = filter.getOperateStartTime();
             operateEndTime = filter.getOperateEndTime();
         }
 
-        PageResult<SysAccessLog> result = accessLogService.getAccessLogListByFilter(sortBy, order, clientIp, operateAccount, action, operateResult, operateStartTime, operateEndTime, currentPage, perPage);
+        PageResult<SysAccessLog> result = accessLogService.getAccessLogListByFilter(sortBy, order, clientIp, userName, action, operateResult, operateStartTime, operateEndTime, currentPage, perPage);
         return result;
     }
 
@@ -151,7 +153,7 @@ public class AccessLogController extends BaseController {
      */
     private List<SysAccessLog> getExportResult(String sortBy, String order, AccessLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String clientIp = "";
-        String operateAccount = "";
+        String userName = "";
         String action = "";
         String operateResult = "";
         Date operateStartTime = null;
@@ -161,12 +163,12 @@ public class AccessLogController extends BaseController {
             action = filter.getAction();
             operateResult = filter.getOperateResult();
             clientIp = filter.getClientIp();
-            operateAccount = filter.getOperateAccount();
+            userName = filter.getUserName();
             operateStartTime = filter.getOperateStartTime();
             operateEndTime = filter.getOperateEndTime();
         }
 
-        List<SysAccessLog> result = accessLogService.getExportList(sortBy, order, clientIp, operateAccount, action, operateResult, operateStartTime, operateEndTime, isAll, idList);
+        List<SysAccessLog> result = accessLogService.getExportList(sortBy, order, clientIp, userName, action, operateResult, operateStartTime, operateEndTime, isAll, idList);
         return result;
     }
 
@@ -215,7 +217,8 @@ public class AccessLogController extends BaseController {
                         .data(data) //set data
                         .build()));
 
-        FilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName")); //only return userName from SysWorkMode model
         value.setFilters(filters);
 
         return value;

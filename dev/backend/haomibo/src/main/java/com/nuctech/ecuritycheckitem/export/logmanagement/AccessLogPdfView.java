@@ -49,9 +49,10 @@ public class AccessLogPdfView extends BasePdfView {
             document.add(getTitle(messageSource.getMessage("AccessLog.Title", null, currentLocale)));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(5);
+            PdfPTable table = new PdfPTable(8);
             table.setWidthPercentage(99);
-            Stream.of("AccessLog.No", "AccessLog.OperateTime", "AccessLog.Action", "AccessLog.ClientIp", "AccessLog.OperateAccount")
+            Stream.of("AccessLog.No", "AccessLog.OperateAccount", "AccessLog.OperateUser", "AccessLog.ClientIp", "AccessLog.Action",
+                    "AccessLog.OperateResult", "AccessLog.ReasonCode", "AccessLog.OperateTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -63,10 +64,13 @@ public class AccessLogPdfView extends BasePdfView {
 
             for (SysAccessLog log : exportLogList) {
                 addTableCell(table, log.getId().toString());
-                addTableCell(table, formatDate(log.getOperateTime()));
-                addTableCell(table, log.getAction());
-                addTableCell(table, log.getClientIp());
                 addTableCell(table, log.getOperateAccount());
+                addTableCell(table, log.getUser().getUserName());
+                addTableCell(table, log.getClientIp());
+                addTableCell(table, log.getAction());
+                addTableCell(table, log.getOperateResult());
+                addTableCell(table, log.getReasonCode());
+                addTableCell(table, formatDate(log.getOperateTime()));
             }
 
             document.add(table);

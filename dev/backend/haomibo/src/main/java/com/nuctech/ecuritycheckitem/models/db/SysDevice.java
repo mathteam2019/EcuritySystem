@@ -150,6 +150,12 @@ public class SysDevice extends BaseEntity implements Serializable {
     @Column(name = "WORK_STATUS", length = 30)
     private String workStatus;
 
+    @Column(name = "SOFTWARE_VERSION", length = 255)
+    private String softwareVersion;
+
+    @Column(name = "ALGORITHM_VERSION", length = 255)
+    private String algorithmVersion;
+
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FIELD_ID", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)

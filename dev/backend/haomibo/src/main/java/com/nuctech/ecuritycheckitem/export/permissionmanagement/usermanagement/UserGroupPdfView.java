@@ -21,11 +21,14 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -46,9 +49,9 @@ public class UserGroupPdfView extends BasePdfView {
             document.add(getTitle(messageSource.getMessage("UserGroup.Title", null, currentLocale)));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(3);
+            PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(99);
-            Stream.of("UserGroup.No", "UserGroup.Number", "UserGroup.Name")
+            Stream.of("UserGroup.No", "UserGroup.Number", "UserGroup.Name", "UserGroup.User")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -63,6 +66,12 @@ public class UserGroupPdfView extends BasePdfView {
                 addTableCell(table, userGroup.getUserGroupId().toString());
                 addTableCell(table, userGroup.getGroupNumber());
                 addTableCell(table, userGroup.getGroupName());
+                List<String> userNames = new ArrayList<>();
+                for(SysUser user: userGroup.getUsers()) {
+                    userNames.add(user.getUserName());
+                }
+                String userName = StringUtils.join(userNames, ",");
+                addTableCell(table, userName);
             }
 
             document.add(table);

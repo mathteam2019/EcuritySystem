@@ -16,6 +16,8 @@ package com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontr
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -27,6 +29,7 @@ import org.apache.poi.xwpf.usermodel.TableWidthType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataGroupWordView extends BaseWordView {
@@ -67,6 +70,7 @@ public class DataGroupWordView extends BaseWordView {
         tableRowHeader.getCell(0).setText(messageSource.getMessage("DataGroup.No", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DataGroup.Number", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DataGroup.Name", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DataGroup.User", null, currentLocale));
     }
 
     /**
@@ -97,6 +101,12 @@ public class DataGroupWordView extends BaseWordView {
                 tableRow.getCell(0).setText(dataGroup.getDataGroupId().toString());
                 tableRow.getCell(1).setText(dataGroup.getDataGroupNumber());
                 tableRow.getCell(2).setText(dataGroup.getDataGroupName());
+                List<String> userNames = new ArrayList<>();
+                for(SysUser user: dataGroup.getUsers()) {
+                    userNames.add(user.getUserName());
+                }
+                String userName = StringUtils.join(userNames, ",");
+                tableRow.getCell(3).setText(userName);
 
             }
 

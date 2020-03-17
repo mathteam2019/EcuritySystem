@@ -129,7 +129,7 @@ public class HistoryServiceImpl implements HistoryService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("historyId").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
         }
 
         long total = historyTableRepository.count(predicate); //get total count from database using repsitory
@@ -203,7 +203,7 @@ public class HistoryServiceImpl implements HistoryService {
                 sort = Sort.by(sortBy).descending();
             }
         } else {
-            sort = Sort.by("historyId").descending();
+            sort = Sort.by("scanStartTime").descending();
         }
 
         List<HistorySimplifiedForHistoryTableManagement> data = new ArrayList<>();

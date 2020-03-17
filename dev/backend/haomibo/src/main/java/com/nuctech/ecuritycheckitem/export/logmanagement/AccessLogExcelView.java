@@ -41,17 +41,26 @@ public class AccessLogExcelView extends BaseExcelView {
         Cell headerCellNo = header.createCell(0);
         headerCellNo.setCellValue(messageSource.getMessage("AccessLog.No", null, currentLocale));
 
-        Cell headerCellOperateTime = header.createCell(1);
-        headerCellOperateTime.setCellValue(messageSource.getMessage("AccessLog.OperateTime", null, currentLocale));
+        Cell headerCellOperateAccount = header.createCell(1);
+        headerCellOperateAccount.setCellValue(messageSource.getMessage("AccessLog.OperateAccount", null, currentLocale));
 
-        Cell headerCellAction = header.createCell(2);
-        headerCellAction.setCellValue(messageSource.getMessage("AccessLog.Action", null, currentLocale));
+        Cell headerCellOperateUser = header.createCell(2);
+        headerCellOperateUser.setCellValue(messageSource.getMessage("AccessLog.OperateUser", null, currentLocale));
 
         Cell headerCellClientIp = header.createCell(3);
         headerCellClientIp.setCellValue(messageSource.getMessage("AccessLog.ClientIp", null, currentLocale));
 
-        Cell headerCellOperateAccount = header.createCell(4);
-        headerCellOperateAccount.setCellValue(messageSource.getMessage("AccessLog.OperateAccount", null, currentLocale));
+        Cell headerCellAction = header.createCell(4);
+        headerCellAction.setCellValue(messageSource.getMessage("AccessLog.Action", null, currentLocale));
+
+        Cell headerCellOperateResult = header.createCell(5);
+        headerCellOperateResult.setCellValue(messageSource.getMessage("AccessLog.OperateResult", null, currentLocale));
+
+        Cell headerCellReasonCode = header.createCell(6);
+        headerCellReasonCode.setCellValue(messageSource.getMessage("AccessLog.ReasonCode", null, currentLocale));
+
+        Cell headerCellOperateTime = header.createCell(7);
+        headerCellOperateTime.setCellValue(messageSource.getMessage("AccessLog.OperateTime", null, currentLocale));
     }
 
     /**
@@ -84,10 +93,14 @@ public class AccessLogExcelView extends BaseExcelView {
             for (SysAccessLog log : exportLogList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(log.getId().toString());
-                row.createCell(1).setCellValue(formatDate(log.getOperateTime()));
-                row.createCell(2).setCellValue(log.getAction());
+                row.createCell(1).setCellValue(log.getOperateAccount());
+                row.createCell(2).setCellValue(log.getUser().getUserName());
                 row.createCell(3).setCellValue(log.getClientIp());
-                row.createCell(4).setCellValue(log.getOperateAccount());
+                row.createCell(4).setCellValue(log.getAction());
+                row.createCell(5).setCellValue(log.getOperateResult());
+                row.createCell(6).setCellValue(log.getReasonCode());
+                row.createCell(7).setCellValue(formatDate(log.getOperateTime()));
+
             }
 
             workbook.write(out);
