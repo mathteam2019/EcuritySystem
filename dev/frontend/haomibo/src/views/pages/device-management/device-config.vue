@@ -473,7 +473,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.male-guide-object')}}
                   </template>
-                  <b-form-select v-model="configForm.manDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301'" :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.manDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301' || configForm.manualSwitch ==='1000000602'" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -481,7 +481,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.female-guide-object')}}
                   </template>
-                  <b-form-select v-model="configForm.womanDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301'" :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.womanDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301' || configForm.manualSwitch ==='1000000602'" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -896,6 +896,7 @@
           this.configForm.manManualGender = null;
           this.configForm.womanManualGender = null;
           this.configForm.atrSwitch = null;
+          this.configForm.manualSwitch = '1000000602';
         }
         if(value===2){
           this.configForm.manManualGender = this.genderFilterOptions[1].value;
@@ -903,6 +904,7 @@
           this.configForm.manRemoteGender = null;
           this.configForm.womanRemoteGender = null;
           this.configForm.atrSwitch = this.atrOptions[0].value;
+          this.configForm.manualSwitch = '1000000602';
         }
         if(value===4){
           this.configForm.manRemoteGender = this.genderFilterOptions[1].value;
@@ -910,6 +912,7 @@
           this.configForm.manManualGender = this.genderFilterOptions[1].value;
           this.configForm.womanManualGender = this.genderFilterOptions[2].value;
           this.configForm.atrSwitch = null;
+          this.configForm.manualSwitch = '1000000602';
         }
       },
 
@@ -917,6 +920,10 @@
         if(value==='1000000602'){
           this.configForm.manDeviceGender = null;
           this.configForm.womanDeviceGender = null;
+        }
+        if(value==='1000000601'){
+          this.configForm.manDeviceGender = '1000000001';
+          this.configForm.womanDeviceGender = '1000000002';
         }
       },
       selectAll(value){

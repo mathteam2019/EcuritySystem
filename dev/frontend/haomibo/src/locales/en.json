@@ -613,6 +613,8 @@
       "supplier-contact": " supplier contact",
       "supplier-contact-information": " supplier contact information ",
       "ip": "IP",
+      "software-version" : "software version",
+      "algorithm-version" : "algorithm version",
       "template": " template ",
       "make-inactive-prompt": " inactive or not ",
       "make-active-prompt": "active or not",

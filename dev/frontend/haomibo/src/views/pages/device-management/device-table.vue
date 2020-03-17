@@ -262,6 +262,16 @@
                   <b-form-input v-model="mainForm.deviceIp"/>
                 </b-form-group>
               </b-col>
+              <b-col cols="4">
+                <b-form-group :label="$t('device-management.device-list.software-version')">
+                  <b-form-input v-model="mainForm.softwareVersion"/>
+                </b-form-group>
+              </b-col>
+              <b-col cols="4">
+              <b-form-group :label="$t('device-management.device-list.algorithm-version')">
+                <b-form-input v-model="mainForm.algorithmVersion"/>
+              </b-form-group>
+              </b-col>
 
             </b-row>
           </b-col>
@@ -402,6 +412,16 @@
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.ip')">
                       <b-form-input v-model="mainForm.deviceIp"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.software-version')">
+                      <b-form-input v-model="mainForm.softwareVersion"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.algorithm-version')">
+                      <b-form-input v-model="mainForm.algorithmVersion"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -872,6 +892,8 @@
           contacts: '',
           mobile: '',
           deviceIp: '',
+          softwareVersion:'',
+          algorithmVersion : '',
           guid: '',
           image: null,
           imageUrl: null,
@@ -1082,6 +1104,8 @@
             contacts: '',
             mobile: '',
             deviceIp: '',
+            softwareVersion: '',
+            algorithmVersion: '',
             guid: '',
             image: null,
             imageUrl: null,

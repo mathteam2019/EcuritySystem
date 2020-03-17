@@ -48,7 +48,7 @@
       <span class="logo-mobile d-block d-xs-none"/>
     </router-link>
     <router-link class="navbar-title" tag="a" to="/">
-      <span class="logo d-none d-xs-block"/>
+      <span class="logo d-none d-xs-block" style="font-size: 2rem;color: white">{{$t('dashboard.title')}}</span>
       <span class="logo-mobile d-block d-xs-none"/>
     </router-link>
 

@@ -1,4 +1,4 @@
-import {apiBaseUrl, defaultDirection, refreshTokenTimeDiff} from '../constants/config'
+import {apiBaseUrl, defaultDirection, apiImageUrl, refreshTokenTimeDiff} from '../constants/config'
 import {getApiManager} from "../api";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
@@ -470,15 +470,17 @@ export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => 
     url2 = '';
   }
 
-  url1 = apiBaseUrl + url1;
-  url2 = apiBaseUrl + url2;
+  url1 = apiImageUrl + url1;
+  url2 = apiImageUrl + url2;
+  console.log("Before toDataUrl:", url1, url2);
 
   toDataUrl(url1, function (url) {
-
+    console.log("64bit image string:", url);
     if(url != null){
-      let urlspl = url.split(':');
-      url1 = 'data:image/png' + urlspl[1];
+      //let urlspl = url.split(':');
+      url1 = 'data:image/png;base64,' + url;
     }
+    console.log("getResponse left:", url1);
     imgObj = new Chobi(url1, isToggled, true);
     imgObj.ready(function () {
       this.canvas = document.getElementById("firstcanvas");
@@ -487,11 +489,12 @@ export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => 
   });
 
   toDataUrl(url2, function (url) {
-
+    console.log("64bit image string:", url);
     if(url != null){
-      let urlspl = url.split(':');
-      url2 = 'data:image/png' + urlspl[1];
+      //let urlspl = url.split(':');
+      url2 = 'data:image/png;base64,' + url;
     }
+    console.log("getResponse right:", url2);
     imgObj2 = new Chobi(url2, isToggled);
     imgObj2.ready(function () {
       this.canvas = document.getElementById("secondcanvas");

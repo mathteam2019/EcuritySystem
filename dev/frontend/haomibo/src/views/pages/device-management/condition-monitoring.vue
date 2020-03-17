@@ -446,7 +446,7 @@
                   <b-col cols="8" class="right-side d-flex flex-column">
                     <label v-if="(item.device.currentStatus==='1000002003' || item.device.currentStatus==='1000002005') && (item.deviceOnline === 1 && item.device.status === '1000000701')" class="text-top">{{$t('device-management.device-monitoring.running-time')}}
                       {{item.runningTimeValue}}</label>
-                    <label v-else class="text-top">{{$t('device-management.device-monitoring.running-time')}}</label>
+                    <label v-else class="text-top" style="opacity: 0">{{$t('device-management.device-monitoring.running-time')}}</label>
                     <div class="flex-grow-1 d-flex content flex-column justify-content-end">
                       <div class="w-100">
                         <label>{{$t('device-management.site')}}:</label>

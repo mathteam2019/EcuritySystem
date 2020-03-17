@@ -32,7 +32,7 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.access-user')">
-                      <b-form-input v-model="accessFilter.operateAccount"/>
+                      <b-form-input v-model="accessFilter.userName"/>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -117,7 +117,7 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.access-user')">
-                      <b-form-input v-model="operatingFilter.operateAccount"/>
+                      <b-form-input v-model="operatingFilter.userName"/>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -313,12 +313,12 @@
           clientIp: null,
           action :null,
           operateResult :null,
-          operateAccount: null,
+          userName: null,
           operateStartTime: null,
           operateEndTime: null
         },
         operatingFilter: {
-          operateAccount: null,
+          userName: null,
           action: null,
           operateResult: null,
           operateObject: "",
@@ -352,10 +352,14 @@
               dataClass: 'text-center'
             },
             {
-              name: 'operateAccount',
+              name: 'user',
               title: this.$t('log-management.operating-log.access-user'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (user) => {
+                if (user == null) return '';
+                return user.userName;
+              }
             },
             {
               name: 'clientIp',
@@ -412,9 +416,19 @@
             },
             {
               name: 'operateAccount',
+              title: this.$t('permission-management.user-account'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'user',
               title: this.$t('log-management.operating-log.access-user'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback: (user) => {
+                if (user == null) return '';
+                return user.userName;
+              }
             },
             {
               name: 'clientIp',
@@ -654,7 +668,7 @@
           clientIp: null,
           action :null,
           operateResult :null,
-          operateAccount: null,
+          userName: null,
           operateStartTime: null,
           operateEndTime: null
         };
@@ -733,7 +747,7 @@
       },
       onOperatingResetButton() {
         this.operatingFilter = {
-          operateAccount:null,
+          userName:null,
           action:null,
           operateResult: null,
           operateObject: "",

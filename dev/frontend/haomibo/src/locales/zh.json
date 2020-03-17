@@ -615,6 +615,8 @@
       "supplier-contact": "联系人",
       "supplier-contact-information": "联系方式",
       "ip": "IP",
+      "software-version" : "软件版本号",
+      "algorithm-version" : "算法版本号",
       "template": "模板",
       "make-inactive-prompt": "是否未生效",
       "make-active-prompt": "是否生效",

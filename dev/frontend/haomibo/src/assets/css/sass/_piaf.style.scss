@@ -1876,7 +1876,7 @@ button {
     position: absolute;
     left: $nav-title-start;
     right: 0;
-    top: ($nav-height - $nav-title-height) / 2;
+    top: 1rem;
     margin: 0;
 
     .logo {
