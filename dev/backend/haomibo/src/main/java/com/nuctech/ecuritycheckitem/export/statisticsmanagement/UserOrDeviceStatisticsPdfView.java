@@ -97,23 +97,23 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
                     addTableCell(table, df.format(record.getScanStatistics().getInvalidScanRate()));
                 }
                 else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (record.getJudgeStatistics() != null) {
                     addTableCell(table, Long.toString(record.getJudgeStatistics().getTotalJudge()));
                 }
                 else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (record.getHandExaminationStatistics() != null) {
                     addTableCell(table, Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
                 }
                 else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (record.getJudgeStatistics() != null) {
@@ -121,8 +121,8 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
                     addTableCell(table, df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
                 }
                 else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (record.getHandExaminationStatistics() != null) {
@@ -132,10 +132,10 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
                     addTableCell(table, df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
                 }
                 else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
             }

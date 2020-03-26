@@ -92,13 +92,15 @@ public class DataGroupWordView extends BaseWordView {
 
             createTableHeader(table);
 
+            int number = 0;
+
             for (Integer i = 0; i < exportList.size(); i ++) {
 
                 SysDataGroup dataGroup = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(dataGroup.getDataGroupId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ number));
                 tableRow.getCell(1).setText(dataGroup.getDataGroupNumber());
                 tableRow.getCell(2).setText(dataGroup.getDataGroupName());
                 List<String> userNames = new ArrayList<>();

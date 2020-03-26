@@ -286,6 +286,7 @@ public class UserManagementController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         UserGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -399,6 +400,7 @@ public class UserManagementController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         UserGroupGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -646,7 +648,7 @@ public class UserManagementController extends BaseController {
             }
         }
         List<SysUser> exportList = userService.getExportUserListByPage(sortBy, order, userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         InputStream inputStream = UserExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -696,8 +698,13 @@ public class UserManagementController extends BaseController {
             }
         }
         List<SysUser> exportList = userService.getExportUserListByPage(sortBy, order, userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();//set dictionary data
+        setDictionary(requestBody.getLocale());//set dictionary data
         UserWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            UserWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            UserWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = UserWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -745,8 +752,13 @@ public class UserManagementController extends BaseController {
         }
         List<SysUser> exportList = userService.getExportUserListByPage(sortBy, order, userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         UserPdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         UserPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            UserPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            UserPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = UserPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -1029,8 +1041,13 @@ public class UserManagementController extends BaseController {
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, userName, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         UserGroupExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            UserGroupExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            UserGroupExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = UserGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -1074,8 +1091,13 @@ public class UserManagementController extends BaseController {
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, userName, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         UserGroupWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            UserGroupWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            UserGroupWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = UserGroupWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -1122,8 +1144,13 @@ public class UserManagementController extends BaseController {
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, userName, requestBody.getIsAll(), requestBody.getIdList());
-        UserGroupWordView.setMessageSource(messageSource);
-        setDictionary();  //set dictionary data
+        UserGroupPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            UserGroupPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            UserGroupPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
+        setDictionary(requestBody.getLocale());  //set dictionary data
         InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

@@ -93,9 +93,10 @@ public class OrganizationExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int number = 0;
             for (SysOrg org : exportOrgList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(org.getOrgId().toString());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(org.getOrgNumber());
                 row.createCell(2).setCellValue(org.getOrgName());
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(org.getStatus()));
@@ -103,8 +104,8 @@ public class OrganizationExcelView extends BaseExcelView {
                     row.createCell(4).setCellValue(org.getParent().getOrgNumber());
                     row.createCell(5).setCellValue(org.getParent().getOrgName());
                 } else {
-                    row.createCell(4).setCellValue("无");
-                    row.createCell(5).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
 
                 }
                 row.createCell(6).setCellValue(org.getLeader());

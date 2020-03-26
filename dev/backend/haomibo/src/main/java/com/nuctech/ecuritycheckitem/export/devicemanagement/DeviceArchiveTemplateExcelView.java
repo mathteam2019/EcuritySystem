@@ -87,16 +87,18 @@ public class DeviceArchiveTemplateExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int id = 0;
             for (SerArchiveTemplate template : exportTemplateList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(template.getArchivesTemplateId().toString());
+                id ++;
+                row.createCell(0).setCellValue(String.valueOf(id));
                 row.createCell(1).setCellValue(template.getArchivesTemplateNumber());
                 row.createCell(2).setCellValue(template.getTemplateName());
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(template.getStatus()));
                 if(template.getDeviceCategory() != null) {
                     row.createCell(4).setCellValue(template.getDeviceCategory().getCategoryName());
                 } else {
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
 
                 }
                 row.createCell(5).setCellValue(ConstantDictionary.getDataValue(template.getManufacturer()));

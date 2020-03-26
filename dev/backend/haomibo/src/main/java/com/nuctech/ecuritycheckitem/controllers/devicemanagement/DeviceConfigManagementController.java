@@ -290,6 +290,13 @@ public class DeviceConfigManagementController extends BaseController {
                     messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        if(!deviceConfigService.checkDeviceHaveField(sysDeviceConfig.getDeviceId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                    messageSource.getMessage("Device.Error.NotField", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.DEVICE_NOT_FIELD);
+        }
         List<Long> manualDeviceIdList = requestBody.getManualDeviceIdList(); //get Manual Device IdList from input paramenter
         List<Long> judgeDeviceIdList = requestBody.getJudgeDeviceIdList(); //get Judge Device IdList from input paramenter
         List<Long> configDeviceIdList = requestBody.getFromDeviceIdList(); //get From Device IdList from input paramenter

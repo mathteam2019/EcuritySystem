@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
+import com.nuctech.ecuritycheckitem.repositories.HistoryImageRepository;
 import com.nuctech.ecuritycheckitem.repositories.HistoryRepository;
 import com.nuctech.ecuritycheckitem.repositories.HistoryTableRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformCheckParamRepository;
@@ -41,6 +42,9 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Autowired
     HistoryRepository historyRepository;
+
+    @Autowired
+    HistoryImageRepository historyImageRepository;
 
     @Autowired
     HistoryTableRepository historyTableRepository;
@@ -71,13 +75,11 @@ public class HistoryServiceImpl implements HistoryService {
             predicate.and(builder.task.taskNumber.contains(taskNumber));
         }
         if (modeId != null) { //if mode id is input
-            predicate.and(builder.mode.eq(modeId));
+            predicate.and(builder.workMode.modeId.eq(modeId));
         }
-        if (taskStatus != null && !taskStatus.isEmpty()) { //if taskStatus is input
-            predicate.and(builder.task.taskStatus.eq(taskStatus));
-        }
+
         if (fieldId != null) { //if field id is input
-            predicate.and(builder.task.fieldId.eq(fieldId));
+            predicate.and(builder.task.field.fieldId.eq(fieldId));
         }
         if (userName != null && !userName.isEmpty()) { //if username is input
             Predicate scanUserName = builder.scanPointsman.userName.contains(userName);
@@ -94,7 +96,6 @@ public class HistoryServiceImpl implements HistoryService {
             predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
         }
         predicate.and(builder.serCheckResultList.size().ne(0));
-
         return predicate;
     }
 
@@ -221,6 +222,48 @@ public class HistoryServiceImpl implements HistoryService {
         return data;
     }
 
+
+    @Override
+    public List<HistorySimplifiedForHistoryImageManagement> getExportHistoryImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+
+        QHistorySimplifiedForHistoryImageManagement builder = QHistorySimplifiedForHistoryImageManagement.historySimplifiedForHistoryImageManagement;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        String[] splits = idList.split(",");
+        List<Long> historyIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            historyIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(builder.historyId.in(historyIdList));
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("taskNumber")) {
+                sortBy = "task.taskNumber";
+            }
+
+            sort = Sort.by(sortBy).ascending();
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = Sort.by(sortBy).descending();
+            }
+        } else {
+            sort = Sort.by("scanStartTime").descending();
+        }
+
+        List<HistorySimplifiedForHistoryImageManagement> data = new ArrayList<>();
+        if (sort != null) {
+            data = StreamSupport
+                    .stream(historyImageRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+        else {
+            data = StreamSupport
+                    .stream(historyImageRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
+        return data;
+    }
+
     /**
      * Get one HistorySimplifiedForHistoryTaskManagement information
      * @param taskId : id of a HistorySimplifiedForHistoryTaskManagement task
@@ -228,7 +271,6 @@ public class HistoryServiceImpl implements HistoryService {
      */
     @Override
     public HistorySimplifiedForHistoryTaskManagement getOne(Long taskId) {
-
         QHistorySimplifiedForHistoryTaskManagement builder = QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement;
         Optional<HistorySimplifiedForHistoryTaskManagement> data = historyRepository.findOne(builder.historyId.eq(taskId)); //get a HistorySimplifiedForHistoryTaskManagement record from database using repository
         if (!data.isPresent()) {
@@ -249,7 +291,6 @@ public class HistoryServiceImpl implements HistoryService {
 
         HistorySimplifiedForHistoryTaskManagement history = data.get();
         history.setPlatFormCheckParams(platformCheckParams);
-
         return history;
     }
 

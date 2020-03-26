@@ -13,6 +13,8 @@
 package com.nuctech.ecuritycheckitem.service.auth.impl;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
@@ -22,6 +24,7 @@ import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
+import com.nuctech.ecuritycheckitem.utils.RedisUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +75,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     SysOrgRepository sysOrgRepository;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
 
     /**
@@ -250,8 +256,7 @@ public class AuthServiceImpl implements AuthService {
         return availableSysResourceList;
     }
 
-    @Override
-    public CategoryUser getDataCategoryUserList() {
+    private CategoryUser getDataCategoryUserListPre() {
         Date startTime = new Date();
         SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
         SysUserSimplifiedOnlyHasName sysUserSimple = sysUserSimpleRepository.findOne(QSysUserSimplifiedOnlyHasName.sysUserSimplifiedOnlyHasName.userId.eq(sysUser.getUserId())).get();
@@ -411,6 +416,38 @@ public class AuthServiceImpl implements AuthService {
         }
         categoryUser.setUserIdList(answerUserIdList);
         return categoryUser;
+    }
+
+    @Override
+    public void uploadCategoryUserListRedis() {
+        CategoryUser categoryUser = getDataCategoryUserListPre();
+        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+        Long userId = sysUser.getUserId();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String categoryUserStr = "";
+        try {
+            categoryUserStr = objectMapper.writeValueAsString(categoryUser);
+            redisUtil.set(Constants.REDIS_CATEGORY_USER_INFO + "_" + userId,
+                    categoryUserStr, Integer.MAX_VALUE);
+        } catch (Exception ex) {
+
+        }
+
+    }
+
+    @Override
+    public CategoryUser getDataCategoryUserList() {
+//        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+//        Long userId = sysUser.getUserId();
+//        try {
+//            String categoryUserStr = redisUtil.get(Constants.REDIS_CATEGORY_USER_INFO + "_" + userId);
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            CategoryUser categoryUser = objectMapper.readValue(categoryUserStr, CategoryUser.class);
+//            return categoryUser;
+//        } catch (Exception ex) {
+//        }
+//        return null;
+        return getDataCategoryUserListPre();
     }
 
 }

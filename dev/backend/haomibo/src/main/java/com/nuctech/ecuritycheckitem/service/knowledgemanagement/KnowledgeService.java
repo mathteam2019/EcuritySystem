@@ -14,6 +14,7 @@ package com.nuctech.ecuritycheckitem.service.knowledgemanagement;
 
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDealImage;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 import java.util.List;
@@ -24,6 +25,9 @@ public interface KnowledgeService {
 
     List<SerKnowledgeCaseDeal> getDealExportList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
                                                  Long fieldId, String handGoods, boolean isAll, String idList);
+
+    List<SerKnowledgeCaseDealImage> getDealImageList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
+                                                      Long fieldId, String handGoods, boolean isAll, String idList);
 
     boolean checkKnowledgeExist(Long caseId);
 

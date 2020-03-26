@@ -50,10 +50,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/log-management/device-log")
@@ -110,6 +107,7 @@ public class DeviceLogController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         DeviceLogGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -248,8 +246,13 @@ public class DeviceLogController extends BaseController {
             }
         }
         List<SerDevLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceLogExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceLogExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceLogExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -286,8 +289,13 @@ public class DeviceLogController extends BaseController {
             }
         }
         List<SerDevLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //set list to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceLogWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceLogWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceLogWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -326,8 +334,13 @@ public class DeviceLogController extends BaseController {
         }
         List<SerDevLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
         DeviceLogPdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceLogPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceLogPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceLogPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.HistoryTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
@@ -28,6 +29,7 @@ import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPers
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDealImage;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
@@ -169,6 +171,7 @@ public class KnowledgeDealManagementController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -296,6 +299,7 @@ public class KnowledgeDealManagementController extends BaseController {
         //serKnowledgeCaseDeal.setHandAttachedId(history.getHandAttached());
         serKnowledgeCaseDeal.setHandCollectLabel(history.getHandCollectLabel());
         serKnowledgeCaseDeal.setHandAppraise(history.getHandAppraise());
+        serKnowledgeCaseDeal.setHandAppraiseSecond(history.getHandAppraiseSecond());
         serKnowledgeCaseDeal.setJudgeStartTime(history.getJudgeStartTime());
         serKnowledgeCaseDeal.setJudgeEndTime(history.getJudgeEndTime());
         serKnowledgeCaseDeal.setJudgeUserId(history.getJudgeUserId());
@@ -495,7 +499,23 @@ public class KnowledgeDealManagementController extends BaseController {
                     order = sortParams.get("order");
                 }
             }
-            List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
+            String caseStatus = "";
+            String modeName = "";
+            String taskNumber = "";
+            String taskResult = "";
+            Long fieldId = null;
+            String handGoods = "";
+            if (filter != null) {
+                caseStatus = filter.getCaseStatus(); //get case status from input parameter
+                modeName = filter.getModeName(); //get mode name from input parameter
+                taskNumber = filter.getTaskNumber(); //get task number from input parameter
+                taskResult = filter.getTaskResult(); //get task result from input parameter
+                fieldId = filter.getFieldId(); //get field name from input parameter
+                handGoods = filter.getHandGoods(); //get handgoods from input parameter
+            }
+            List<SerKnowledgeCaseDealImage> exportList = knowledgeService.getDealImageList(sortBy, order, caseStatus, modeName, taskNumber, taskResult,
+                    fieldId, handGoods, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+
             List<String> cartoonImageList = new ArrayList<>();
             List<String> originalImageList = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -573,8 +593,13 @@ public class KnowledgeDealManagementController extends BaseController {
             }
         }
         List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPendingExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            KnowledgeDealPendingExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            KnowledgeDealPendingExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = KnowledgeDealPendingExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -614,8 +639,13 @@ public class KnowledgeDealManagementController extends BaseController {
             }
         }
         List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPendingWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            KnowledgeDealPendingWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            KnowledgeDealPendingWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = KnowledgeDealPendingWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -656,8 +686,13 @@ public class KnowledgeDealManagementController extends BaseController {
         }
         List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be printed
         KnowledgeDealPendingPdfView.setResource(getFontResource()); //set font resource
-        setDictionary();  //set dictionary data
+        setDictionary(requestBody.getLocale());  //set dictionary data
         KnowledgeDealPendingPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            KnowledgeDealPendingPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            KnowledgeDealPendingPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         //KnowledgeDealPendingPdfView.setResourceFile(resourceFile);
         InputStream inputStream = KnowledgeDealPendingPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
@@ -698,8 +733,13 @@ public class KnowledgeDealManagementController extends BaseController {
             }
         }
         List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPersonalExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            KnowledgeDealPersonalExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            KnowledgeDealPersonalExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -739,8 +779,13 @@ public class KnowledgeDealManagementController extends BaseController {
             }
         }
         List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPersonalWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            KnowledgeDealPersonalWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            KnowledgeDealPersonalWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = KnowledgeDealPersonalWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -781,8 +826,13 @@ public class KnowledgeDealManagementController extends BaseController {
         }
         List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         KnowledgeDealPersonalPdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPersonalPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            KnowledgeDealPersonalPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            KnowledgeDealPersonalPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

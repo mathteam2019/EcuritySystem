@@ -93,9 +93,11 @@ public class DeviceExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int id = 0;
             for (SysDevice device : exportDeviceList) {
+                id ++;
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(device.getDeviceId().toString());
+                row.createCell(0).setCellValue(String.valueOf(id));
                 row.createCell(1).setCellValue(device.getDeviceSerial());
                 row.createCell(2).setCellValue(device.getDeviceName());
 
@@ -103,19 +105,19 @@ public class DeviceExcelView extends BaseExcelView {
                 if(device.getArchive() != null) {
                     row.createCell(4).setCellValue(device.getArchive().getArchivesName());
                 } else {
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getCategory() != null) {
                     row.createCell(5).setCellValue(device.getCategory().getCategoryName());
                 } else {
-                    row.createCell(5).setCellValue("无");
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null) {
                     row.createCell(6).setCellValue(ConstantDictionary.getDataValue(device.getArchive().getArchiveTemplate().getManufacturer()));
                     row.createCell(7).setCellValue(device.getArchive().getArchiveTemplate().getOriginalModel());
                 } else {
-                    row.createCell(6).setCellValue("无");
-                    row.createCell(7).setCellValue("无");
+                    row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
             }

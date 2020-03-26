@@ -60,8 +60,9 @@ public class DataGroupPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
+            int number = 0;
             for (SysDataGroup dataGroup : exportDataGroupList) {
-                addTableCell(table, dataGroup.getDataGroupId().toString());
+                addTableCell(table, String.valueOf(++ number));
                 addTableCell(table, dataGroup.getDataGroupNumber());
                 addTableCell(table, dataGroup.getDataGroupName());
                 List<String> userNames = new ArrayList<>();

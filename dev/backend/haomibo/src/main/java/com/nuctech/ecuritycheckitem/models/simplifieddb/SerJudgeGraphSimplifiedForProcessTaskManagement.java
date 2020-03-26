@@ -66,6 +66,9 @@ public class SerJudgeGraphSimplifiedForProcessTaskManagement extends BaseEntityS
     @Column(name = "JUDGE_SUBMITRECTS", length = 255)
     private String judgeSubmitrects;
 
+    @Column(name = "JUDGE_CARTOONRECTS", length = 255)
+    private String judgeCartoonRects;
+
     @Column(name = "JUDGE_TIME", length = 255)
     private String judgeTime;
 

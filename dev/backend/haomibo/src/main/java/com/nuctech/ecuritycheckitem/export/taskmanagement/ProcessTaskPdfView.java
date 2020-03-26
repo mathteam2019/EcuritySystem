@@ -22,6 +22,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 
 import java.io.ByteArrayInputStream;
@@ -37,7 +38,7 @@ public class ProcessTaskPdfView extends BasePdfView {
      * @param exportTaskList
      * @return
      */
-    public static InputStream buildPDFDocument(List<SerTaskSimplifiedForProcessTaskManagement> exportTaskList) {
+    public static InputStream buildPDFDocument(List<SerTaskSimplifiedForProcessTableManagement> exportTaskList) {
 
         Document document = new Document();
 
@@ -63,9 +64,10 @@ public class ProcessTaskPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
-            for (SerTaskSimplifiedForProcessTaskManagement task : exportTaskList) {
+            int number = 0;
+            for (SerTaskSimplifiedForProcessTableManagement task : exportTaskList) {
 
-                addTableCell(table, task.getTaskId().toString());
+                addTableCell(table, String.valueOf(++ number));
 
                 addTableCell(table, task.getTaskNumber());
 
@@ -73,10 +75,10 @@ public class ProcessTaskPdfView extends BasePdfView {
                     if (task.getWorkFlow().getWorkMode() != null) {
                         addTableCell(table, ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                     } else {
-                        addTableCell(table, "无");
+                        addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                     }
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 addTableCell(table, ConstantDictionary.getDataValue(task.getTaskStatus()));
@@ -84,7 +86,7 @@ public class ProcessTaskPdfView extends BasePdfView {
                 if (task.getField() != null) {
                     addTableCell(table, task.getField().getFieldDesignation());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getSerScan() != null) {
@@ -92,22 +94,22 @@ public class ProcessTaskPdfView extends BasePdfView {
                     if (task.getSerScan().getScanDevice() != null) {
                         addTableCell(table, task.getSerScan().getScanDevice().getDeviceName());
                     } else {
-                        addTableCell(table, "无");
+                        addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                     }
 
                     if (task.getSerScan().getScanPointsman() != null) {
                         addTableCell(table, task.getSerScan().getScanPointsman().getUserName());
                     } else {
-                        addTableCell(table, "无");
+                        addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                     }
 
                     addTableCell(table, formatDate(task.getSerScan().getScanStartTime()));
                     addTableCell(table, formatDate(task.getSerScan().getScanEndTime()));
                 } else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
 

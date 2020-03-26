@@ -61,8 +61,10 @@ public class DeviceCategoryPdfView extends BasePdfView {
 
 
 
+            int id = 0;
             for (SysDeviceCategory category : exportCategoryList) {
-                addTableCell(table, category.getCategoryId().toString());
+                id ++;
+                addTableCell(table, String.valueOf(id));
                 addTableCell(table, category.getCategoryNumber());
                 addTableCell(table, category.getCategoryName());
                 addTableCell(table, ConstantDictionary.getDataValue(category.getStatus()));
@@ -70,8 +72,8 @@ public class DeviceCategoryPdfView extends BasePdfView {
                     addTableCell(table, category.getParent().getCategoryNumber());
                     addTableCell(table, category.getParent().getCategoryName());
                 } else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 addTableCell(table, category.getNote());
 

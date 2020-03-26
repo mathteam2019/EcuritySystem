@@ -415,11 +415,12 @@ public class DictionaryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USED_DICTIONARY_CODE);
         }
 
-//        if(dictionaryService.checkDictionaryData(requestBody.getDataValue(), requestBody.getDataId())) {
-//            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-//                    , "", messageSource.getMessage("UsedDictionaryValue", null, currentLocale), requestBody.getDataValue(),null);
-//            return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
-//        }
+        if(dictionaryService.checkDictionaryData(requestBody.getDataValue(), requestBody.getDataId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DictionaryData", null, currentLocale),
+                    messageSource.getMessage("UsedDictionaryValue", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.USED_DICTIONARY_VALUE);
+        }
 
 
         SysDictionaryData sysDictionaryData = SysDictionaryData.builder()

@@ -59,8 +59,9 @@ public class UserPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
+            int number = 0;
             for (SysUser user : exportUserList) {
-                addTableCell(table, user.getUserId().toString());
+                addTableCell(table, String.valueOf(++ number));
                 addTableCell(table, user.getUserNumber());
                 addTableCell(table, user.getUserName());
                 addTableCell(table, ConstantDictionary.getDataValue(user.getGender()));

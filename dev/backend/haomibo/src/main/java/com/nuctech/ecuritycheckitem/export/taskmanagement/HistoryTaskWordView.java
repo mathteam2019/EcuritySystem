@@ -98,29 +98,30 @@ public class HistoryTaskWordView extends BaseWordView {
 
             createTableHeader(table);
 
+            int number = 0;
             for (Integer i = 0; i < exportTaskList.size(); i ++) {
 
                 HistorySimplifiedForHistoryTableManagement task = exportTaskList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
-                tableRow.getCell(0).setText(task.getHistoryId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ number));
 
                 if (task.getTask() != null) {
                     if (task.getTask().getTaskNumber() != null) {
                         tableRow.getCell(1).setText(task.getTask().getTaskNumber());
                     }
                     else {
-                        tableRow.getCell(1).setText("无");
+                        tableRow.getCell(1).setText(messageSource.getMessage("None", null, currentLocale));
                     }
                 }
                 else {
-                    tableRow.getCell(1).setText("无");
+                    tableRow.getCell(1).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getWorkMode() != null) {
                     tableRow.getCell(2).setText(ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));
                 } else {
-                    tableRow.getCell(2).setText("无");
+                    tableRow.getCell(2).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(task.getHandTaskResult()));
@@ -130,40 +131,40 @@ public class HistoryTaskWordView extends BaseWordView {
                         if (task.getTask().getField().getFieldDesignation() != null) {
                             tableRow.getCell(4).setText(task.getTask().getField().getFieldDesignation());
                         } else {
-                            tableRow.getCell(4).setText("无");
+                            tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                         }
                     }
                     else {
-                        tableRow.getCell(4).setText("无");
+                        tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                     }
                 }
                 else {
-                    tableRow.getCell(4).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
 
                 if (task.getScanDevice() != null) {
                     tableRow.getCell(5).setText(task.getScanDevice().getDeviceName());
                 } else {
-                    tableRow.getCell(5).setText("无");
+                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getScanPointsman() != null) {
                     tableRow.getCell(6).setText(task.getScanPointsman().getUserName());
                 } else {
-                    tableRow.getCell(6).setText("无");
+                    tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getScanStartTime() != null) {
                     tableRow.getCell(7).setText(formatDate(task.getScanStartTime()));
                 } else {
-                    tableRow.getCell(7).setText("无");
+                    tableRow.getCell(7).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getScanEndTime() != null) {
                     tableRow.getCell(8).setText(formatDate(task.getScanEndTime()));
                 } else {
-                    tableRow.getCell(8).setText("无");
+                    tableRow.getCell(8).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
             }

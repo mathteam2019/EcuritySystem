@@ -51,10 +51,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/log-management/operating-log/audit")
@@ -111,6 +108,7 @@ public class AuditLogController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         AuditLogGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -247,8 +245,13 @@ public class AuditLogController extends BaseController {
             }
         }
         List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AuditLogExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AuditLogExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AuditLogExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -285,8 +288,13 @@ public class AuditLogController extends BaseController {
             }
         }
         List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AuditLogWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AuditLogWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AuditLogWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AuditLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -326,8 +334,13 @@ public class AuditLogController extends BaseController {
         List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         AuditLogPdfView.setResource(getFontResource()); // set font resource
         //AuditLogPdfView.setResourceFile(resourceFile); // set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AuditLogPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AuditLogPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AuditLogPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

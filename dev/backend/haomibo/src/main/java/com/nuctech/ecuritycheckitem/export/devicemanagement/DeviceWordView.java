@@ -92,13 +92,15 @@ public class DeviceWordView extends BaseWordView {
             XWPFTable table = document.createTable();
             createTableHeader(table);
 
+            int id = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
+                id ++;
                 SysDevice device = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(device.getDeviceId().toString());
+                tableRow.getCell(0).setText(String.valueOf(id));
                 tableRow.getCell(1).setText(device.getDeviceSerial());
                 tableRow.getCell(2).setText(device.getDeviceName());
 
@@ -106,19 +108,19 @@ public class DeviceWordView extends BaseWordView {
                 if(device.getArchive() != null) {
                     tableRow.getCell(4).setText(device.getArchive().getArchivesName());
                 } else {
-                    tableRow.getCell(4).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getCategory() != null) {
                     tableRow.getCell(5).setText(device.getCategory().getCategoryName());
                 } else {
-                    tableRow.getCell(5).setText("无");
+                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null) {
                     tableRow.getCell(6).setText(ConstantDictionary.getDataValue(device.getArchive().getArchiveTemplate().getManufacturer()));
                     tableRow.getCell(7).setText(device.getArchive().getArchiveTemplate().getOriginalModel());
                 } else {
-                    tableRow.getCell(6).setText("无");
-                    tableRow.getCell(7).setText("无");
+                    tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(7).setText(messageSource.getMessage("None", null, currentLocale));
                 }
             }
 

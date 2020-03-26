@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -115,6 +116,7 @@ public class DeviceControlController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         DeviceGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -461,8 +463,13 @@ public class DeviceControlController extends BaseController {
 
         List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -516,8 +523,13 @@ public class DeviceControlController extends BaseController {
 
         List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -573,8 +585,13 @@ public class DeviceControlController extends BaseController {
         List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList());  //get list of device to be exported
         DevicePdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DevicePdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DevicePdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DevicePdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DevicePdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -629,8 +646,13 @@ public class DeviceControlController extends BaseController {
 
         List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceFieldExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceFieldExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceFieldExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceFieldExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -686,8 +708,13 @@ public class DeviceControlController extends BaseController {
 
         List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceFieldWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceFieldWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceFieldWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceFieldWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -743,8 +770,13 @@ public class DeviceControlController extends BaseController {
         List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         DeviceFieldPdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceFieldPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceFieldPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceFieldPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceFieldPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -1024,6 +1056,25 @@ public class DeviceControlController extends BaseController {
                 break;
         }
         value.setFilters(filters);
+
+        return value;
+    }
+
+
+    /**
+     * Device  get all security device request.
+     * @return
+     */
+    @RequestMapping(value = "/device/get-active-security", method = RequestMethod.POST)
+    public Object deviceGetAllSecurity() {
+
+
+        List<SysDevice> sysDeviceList = deviceService.findAllSecurity();
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except  parent from SysDeviceCategory model
+        value.setFilters(filters);
+
 
         return value;
     }

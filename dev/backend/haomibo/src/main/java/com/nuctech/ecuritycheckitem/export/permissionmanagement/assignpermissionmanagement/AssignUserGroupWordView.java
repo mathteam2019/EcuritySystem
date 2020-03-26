@@ -92,13 +92,14 @@ public class AssignUserGroupWordView extends BaseWordView {
             XWPFTable table = document.createTable();
             createTableHeader(table);
 
+            int number = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
                 SysUserGroup userGroup = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(userGroup.getUserGroupId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ number));
                 tableRow.getCell(1).setText(userGroup.getGroupName());
                 String strMember = "";
                 List<SysUser> sysUserList = new ArrayList<>();

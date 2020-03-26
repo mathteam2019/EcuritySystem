@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.export.logmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import org.apache.poi.ss.usermodel.Cell;
@@ -89,19 +90,20 @@ public class DeviceLogExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int number = 0;
             for (SerDevLog log : exportLogList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(log.getId().toString());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
                 if(log.getDevice() != null) {
                     row.createCell(1).setCellValue(log.getDevice().getDeviceName());
                     row.createCell(2).setCellValue(log.getDevice().getDeviceSerial());
                 } else {
-                    row.createCell(1).setCellValue("无");
-                    row.createCell(2).setCellValue("无");
+                    row.createCell(1).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
                 row.createCell(3).setCellValue(log.getLoginName());
-                row.createCell(4).setCellValue(log.getCategory().toString());
-                row.createCell(5).setCellValue(log.getLevel().toString());
+                row.createCell(4).setCellValue(ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogCategory"));
+                row.createCell(5).setCellValue(ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogLevel"));
                 row.createCell(6).setCellValue(log.getContent());
                 row.createCell(7).setCellValue(formatDate(log.getTime()));
 

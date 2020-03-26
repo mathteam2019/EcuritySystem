@@ -14,6 +14,7 @@
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -91,6 +92,7 @@ public class ArchiveManagementController extends BaseController {
         @AllArgsConstructor
         static class Filter {
             String archivesName; //archieve name
+            String templateName; //template name
             String status; //status
             Long categoryId; //category id
         }
@@ -102,6 +104,8 @@ public class ArchiveManagementController extends BaseController {
         int perPage; //record count per page
         Filter filter;
         String sort;
+
+
     }
 
     /**
@@ -223,6 +227,7 @@ public class ArchiveManagementController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         ArchiveGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -242,6 +247,7 @@ public class ArchiveManagementController extends BaseController {
         }
 
         String archiveName = "";
+        String templateName = "";
         String status = "";
         Long categoryId = null;
 
@@ -249,6 +255,7 @@ public class ArchiveManagementController extends BaseController {
             archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input paramter
             status = requestBody.getFilter().getStatus(); //get status from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get category id from input parameter
+            templateName = requestBody.getFilter().getTemplateName();
         }
 
         String sortBy = "";
@@ -267,7 +274,7 @@ public class ArchiveManagementController extends BaseController {
         currentPage--;
 
         //get archive list from database through service
-        PageResult<SerArchive> result = archiveService.getArchiveListByPage(sortBy, order, archiveName, status, categoryId,
+        PageResult<SerArchive> result = archiveService.getArchiveListByPage(sortBy, order, archiveName, templateName, status, categoryId,
                 currentPage, perPage);
 
         long total = result.getTotal(); //get total count of result
@@ -539,10 +546,12 @@ public class ArchiveManagementController extends BaseController {
         }
 
         String archiveName = "";
+        String templateName = "";
         String status = "";
         Long categoryId = null;
         if (requestBody.getFilter() != null) {
             archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input parameter
+            templateName = requestBody.getFilter().getTemplateName();
             status = requestBody.getFilter().getStatus(); //get archive status from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
         }
@@ -559,9 +568,14 @@ public class ArchiveManagementController extends BaseController {
         }
 
         //get list of archives from database through archiveService
-        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
+        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary(requestBody.getLocale());
         DeviceArchiveExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceArchiveExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceArchiveExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -591,12 +605,14 @@ public class ArchiveManagementController extends BaseController {
         }
 
         String archiveName = "";
+        String templateName = "";
         String status = "";
         Long categoryId = null;
         if (requestBody.getFilter() != null) {
             archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input parameter
             status = requestBody.getFilter().getStatus(); //get archive status from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
+            templateName = requestBody.getFilter().getTemplateName();
         }
 
         String sortBy = "";
@@ -611,9 +627,14 @@ public class ArchiveManagementController extends BaseController {
         }
 
         //get list of archives from database through archiveService
-        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
+        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary(requestBody.getLocale());
         DeviceArchiveWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceArchiveWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceArchiveWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceArchiveWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -644,12 +665,14 @@ public class ArchiveManagementController extends BaseController {
         }
 
         String archiveName = "";
+        String templateName = "";
         String status = "";
         Long categoryId = null;
         if (requestBody.getFilter() != null) {
             archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input parameter
             status = requestBody.getFilter().getStatus(); //get archive status from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
+            templateName = requestBody.getFilter().getTemplateName();
         }
 
         String sortBy = "";
@@ -664,10 +687,15 @@ public class ArchiveManagementController extends BaseController {
         }
 
         //get list of archives from database through archiveService
-        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         DeviceArchivePdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceArchivePdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceArchivePdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceArchivePdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);  //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();

@@ -18,11 +18,10 @@ import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.QSerTaskSimplifiedForProcessTaskManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SerPlatformCheckParamsSimplifiedForTaskManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformCheckParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerTaskRepository;
+import com.nuctech.ecuritycheckitem.repositories.SerTaskTableRepository;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -46,6 +45,9 @@ public class TaskServiceImpl implements TaskService {
     SerTaskRepository serTaskRepository;
 
     @Autowired
+    SerTaskTableRepository serTaskTableRepository;
+
+    @Autowired
     SerPlatformCheckParamRepository serPlatformCheckParamRepository;
 
     @Autowired
@@ -64,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     private BooleanBuilder getPredicate(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
-        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
+        QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
@@ -75,16 +77,14 @@ public class TaskServiceImpl implements TaskService {
         if (modeId != null) {
             predicate.and(builder.workFlow.workMode.modeId.eq(modeId));
         }
-        if (taskStatus != null && !taskStatus.isEmpty()) {
-            predicate.and(builder.taskStatus.eq(taskStatus));
-        }
+//        if (taskStatus != null && !taskStatus.isEmpty()) {
+//            predicate.and(builder.taskStatus.eq(taskStatus));
+//        }
         if (fieldId != null) {
             predicate.and(builder.fieldId.eq(fieldId));
         }
         if (userName != null && !userName.isEmpty()) {
-            Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(userName)
-                    .or(builder.serJudgeGraph.judgeUser.userName.contains(userName))
-                    .or(builder.serJudgeGraph.judgeUser.userName.contains(userName));
+            Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(userName);
             predicate.and(scanUserName);
         }
         if (startTime != null) {
@@ -116,9 +116,9 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public PageResult<SerTaskSimplifiedForProcessTaskManagement> getProcessTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
+    public PageResult<SerTaskSimplifiedForProcessTableManagement> getProcessTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
 
-        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
+        QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
         predicate.and(builder.serCheckResultList.size().eq(0));
@@ -139,10 +139,10 @@ public class TaskServiceImpl implements TaskService {
             pageRequest = PageRequest.of(currentPage, perPage, Sort.by("serScan.scanStartTime").descending());
         }
 
-        long total = serTaskRepository.count(predicate);
-        List<SerTaskSimplifiedForProcessTaskManagement> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
+        long total = serTaskTableRepository.count(predicate);
+        List<SerTaskSimplifiedForProcessTableManagement> data = serTaskTableRepository.findAll(predicate, pageRequest).getContent();
 
-        return new PageResult<SerTaskSimplifiedForProcessTaskManagement>(total, data);
+        return new PageResult<SerTaskSimplifiedForProcessTableManagement>(total, data);
 
     }
 
@@ -207,9 +207,9 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public List<SerTaskSimplifiedForProcessTaskManagement> getExportProcessTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+    public List<SerTaskSimplifiedForProcessTableManagement> getExportProcessTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
 
-        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
+        QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
         predicate.and(builder.serCheckResultList.size().eq(0));
@@ -235,15 +235,15 @@ public class TaskServiceImpl implements TaskService {
             sort = Sort.by("serScan.scanStartTime").descending();
         }
 
-        List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();
+        List<SerTaskSimplifiedForProcessTableManagement> data = new ArrayList<>();
         if (sort != null) {
             data = StreamSupport
-                    .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
+                    .stream(serTaskTableRepository.findAll(predicate, sort).spliterator(), false)
                     .collect(Collectors.toList());
         }
         else {
             data = StreamSupport
-                    .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                    .stream(serTaskTableRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
 
@@ -297,9 +297,9 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public PageResult<SerTaskSimplifiedForProcessTaskManagement> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
+    public PageResult<SerTaskSimplifiedForProcessTableManagement> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
 
-        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
+        QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
@@ -316,13 +316,13 @@ public class TaskServiceImpl implements TaskService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("taskId").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("serScan.scanStartTime").descending());
         }
 
-        long total = serTaskRepository.count(predicate);
-        List<SerTaskSimplifiedForProcessTaskManagement> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
+        long total = serTaskTableRepository.count(predicate);
+        List<SerTaskSimplifiedForProcessTableManagement> data = serTaskTableRepository.findAll(predicate, pageRequest).getContent();
 
-        return new PageResult<SerTaskSimplifiedForProcessTaskManagement>(total, data);
+        return new PageResult<SerTaskSimplifiedForProcessTableManagement>(total, data);
 
     }
 
@@ -389,9 +389,9 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public List<SerTaskSimplifiedForProcessTaskManagement> getExportInvalidTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+    public List<SerTaskSimplifiedForProcessTableManagement> getExportInvalidTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
 
-        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
+        QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
         String[] splits = idList.split(",");
@@ -417,15 +417,15 @@ public class TaskServiceImpl implements TaskService {
             sort = Sort.by("taskId").descending();
         }
 
-        List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();
+        List<SerTaskSimplifiedForProcessTableManagement> data = new ArrayList<>();
         if (sort != null) {
             data = StreamSupport
-                    .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
+                    .stream(serTaskTableRepository.findAll(predicate, sort).spliterator(), false)
                     .collect(Collectors.toList());
         }
         else {
             data = StreamSupport
-                    .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                    .stream(serTaskTableRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
 

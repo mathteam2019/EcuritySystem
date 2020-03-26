@@ -19,6 +19,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseDealImageRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseDealRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerTaskTagRepository;
@@ -46,6 +47,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Autowired
     SerKnowledgeCaseDealRepository serKnowledgeCaseDealRepository;
+
+    @Autowired
+    SerKnowledgeCaseDealImageRepository serKnowledgeCaseDealImageRepository;
 
     @Autowired
     SerKnowledgeCaseRepository serKnowledgeCaseRepository;
@@ -237,6 +241,54 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         } else {
             dealList = StreamSupport
                     .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
+        //List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, isAll, idList);
+        return dealList;
+    }
+
+    /**
+     * get knowledge case deal export list
+     * @param caseStatus
+     * @param taskNumber
+     * @param modeName
+     * @param taskResult
+     * @param fieldId
+     * @param handGoods
+     * @param isAll
+     * @param idList
+     * @return
+     */
+    @Override
+    public List<SerKnowledgeCaseDealImage> getDealImageList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
+                                                        Long fieldId, String handGoods, boolean isAll, String idList) {
+        QSerKnowledgeCaseDealImage builder = QSerKnowledgeCaseDealImage.serKnowledgeCaseDealImage;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        String[] splits = idList.split(",");
+        List<Long> caseDealIdList = new ArrayList<>();
+        for(String idStr: splits) {
+            caseDealIdList.add(Long.valueOf(idStr));
+        }
+        predicate.and(QSerKnowledgeCaseDealImage.serKnowledgeCaseDealImage.caseDealId.in(caseDealIdList));
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sortBy = "task.taskNumber";
+            sort = Sort.by(sortBy).ascending();
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = Sort.by(sortBy).descending();
+            }
+        } else {
+            sort = Sort.by("caseDealId").descending();
+        }
+        List<SerKnowledgeCaseDealImage> dealList;
+        if(sort != null) {
+            dealList = StreamSupport
+                    .stream(serKnowledgeCaseDealImageRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            dealList = StreamSupport
+                    .stream(serKnowledgeCaseDealImageRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
 

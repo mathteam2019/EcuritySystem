@@ -218,12 +218,18 @@ public class BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public void setDictionary() {
+    public void setDictionary(String locale) {
         List<SysDictionaryData> dictionaryDataList = authService.findAllDictionary();
-        ConstantDictionary.Dictionary[] dictionaryList = new ConstantDictionary.Dictionary[dictionaryDataList.size() + ConstantDictionary.originalDictionaryList.length];
+        ConstantDictionary.Dictionary[] originalDictionaryList;
+        if(Constants.CHINESE_LOCALE.equals(locale)) {
+            originalDictionaryList = ConstantDictionary.originalChineseDictionaryList;
+        } else {
+            originalDictionaryList = ConstantDictionary.originalEnglishDictionaryList;
+        }
+        ConstantDictionary.Dictionary[] dictionaryList = new ConstantDictionary.Dictionary[dictionaryDataList.size() + originalDictionaryList.length];
         int index = 0;
-        for(int i = 0; i < ConstantDictionary.originalDictionaryList.length; i ++) {
-            dictionaryList[index ++] = ConstantDictionary.originalDictionaryList[i];
+        for(int i = 0; i < originalDictionaryList.length; i ++) {
+            dictionaryList[index ++] = originalDictionaryList[i];
         }
         for(int i = 0; i < dictionaryDataList.size(); i ++) {
             ConstantDictionary.Dictionary dictionary = new ConstantDictionary.Dictionary(dictionaryDataList.get(i).getDataCode(),

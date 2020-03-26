@@ -75,6 +75,9 @@ public class AuthController extends BaseController {
     @Autowired
     AuthenticationFacade authenticationFacade;
 
+    @Autowired
+    AsyncController asyncController;
+
     /**
      * Login request body.
      */
@@ -230,7 +233,7 @@ public class AuthController extends BaseController {
                 , "", null);
 
         List<SysDeviceDictionaryData> sysDeviceDictionaryDataList = authService.findAllDeviceDictionary();
-        List<SysDictionaryData> sysDictionaryDataList = authService.findAllDictionary();
+        List<SysDictionaryData> sysDictionaryDataList =authService.findAllDictionary();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -249,6 +252,7 @@ public class AuthController extends BaseController {
                 )
         ));
 
+        //asyncController.uploadCategoryToRedis();
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SYS_DICTONARY_DATA, SimpleBeanPropertyFilter.filterOutAllExcept("dictionaryId", "dataCode", "dataValue"))

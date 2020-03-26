@@ -89,19 +89,21 @@ public class DeviceArchiveTemplateWordView extends BaseWordView {
             XWPFTable table = document.createTable();
 
             createTableHeader(table);
+            int id = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
+                id ++;
                 SerArchiveTemplate template = exportList.get(i);
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(template.getArchivesTemplateId().toString());
+                tableRow.getCell(0).setText(String.valueOf(id));
                 tableRow.getCell(1).setText(template.getArchivesTemplateNumber());
                 tableRow.getCell(2).setText(template.getTemplateName());
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(template.getStatus()));
                 if(template.getDeviceCategory() != null) {
                     tableRow.getCell(4).setText(template.getDeviceCategory().getCategoryName());
                 } else {
-                    tableRow.getCell(4).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
 
                 }
                 tableRow.getCell(5).setText(ConstantDictionary.getDataValue(template.getManufacturer()));

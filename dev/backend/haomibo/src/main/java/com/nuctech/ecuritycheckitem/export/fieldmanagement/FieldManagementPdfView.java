@@ -61,8 +61,9 @@ public class FieldManagementPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
+            int id = 0;
             for (SysField field : exportFieldList) {
-                addTableCell(table, field.getFieldId().toString());
+                addTableCell(table, String.valueOf(++ id));
                 addTableCell(table, field.getFieldSerial());
                 addTableCell(table, field.getFieldDesignation());
                 addTableCell(table, ConstantDictionary.getDataValue(field.getStatus()));
@@ -70,8 +71,8 @@ public class FieldManagementPdfView extends BasePdfView {
                     addTableCell(table, field.getParent().getFieldSerial());
                     addTableCell(table, field.getParent().getFieldDesignation());
                 } else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 addTableCell(table, field.getLeader());
                 addTableCell(table, field.getMobile());

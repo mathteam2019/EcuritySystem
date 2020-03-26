@@ -50,13 +50,16 @@ public class DeviceArchiveExcelView extends BaseExcelView {
         Cell headerCellStatus = header.createCell(3);
         headerCellStatus.setCellValue(messageSource.getMessage("DeviceArchive.Status", null, currentLocale));
 
-        Cell headerCellCategory = header.createCell(4);
+        Cell headerCellTemplate = header.createCell(4);
+        headerCellTemplate.setCellValue(messageSource.getMessage("DeviceArchive.TemplateName", null, currentLocale));
+
+        Cell headerCellCategory = header.createCell(5);
         headerCellCategory.setCellValue(messageSource.getMessage("DeviceArchive.Category", null, currentLocale));
 
-        Cell headerCellManufacturer = header.createCell(5);
+        Cell headerCellManufacturer = header.createCell(6);
         headerCellManufacturer.setCellValue(messageSource.getMessage("DeviceArchive.Manufacturer", null, currentLocale));
 
-        Cell headerCellOriginalModel = header.createCell(6);
+        Cell headerCellOriginalModel = header.createCell(7);
         headerCellOriginalModel.setCellValue(messageSource.getMessage("DeviceArchive.OriginalModel", null, currentLocale));
     }
 
@@ -87,24 +90,31 @@ public class DeviceArchiveExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int id = 0;
             for (SerArchive archive : exportArchiveList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(archive.getArchiveId().toString());
+                id ++;
+                row.createCell(0).setCellValue(id);
                 row.createCell(1).setCellValue(archive.getArchivesNumber());
                 row.createCell(2).setCellValue(archive.getArchivesName());
 
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(archive.getStatus()));
-                if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
-                    row.createCell(4).setCellValue(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
+                if(archive.getArchiveTemplate() != null ) {
+                    row.createCell(4).setCellValue(archive.getArchiveTemplate().getTemplateName());
                 } else {
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                }
+                if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
+                    row.createCell(5).setCellValue(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
+                } else {
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(archive.getArchiveTemplate() != null) {
-                    row.createCell(5).setCellValue(ConstantDictionary.getDataValue(archive.getArchiveTemplate().getManufacturer()));
-                    row.createCell(6).setCellValue(archive.getArchiveTemplate().getOriginalModel());
+                    row.createCell(6).setCellValue(ConstantDictionary.getDataValue(archive.getArchiveTemplate().getManufacturer()));
+                    row.createCell(7).setCellValue(archive.getArchiveTemplate().getOriginalModel());
                 } else {
-                    row.createCell(5).setCellValue("无");
-                    row.createCell(6).setCellValue("无");
+                    row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
             }

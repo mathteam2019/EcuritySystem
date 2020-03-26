@@ -60,9 +60,10 @@ public class RolePdfView extends BasePdfView {
                     });
 
 
+            int number = 0;
 
             for (SysRole role : exportRoleList) {
-                addTableCell(table, role.getRoleId().toString());
+                addTableCell(table, String.valueOf(++ number));
                 addTableCell(table, role.getRoleNumber());
                 addTableCell(table, role.getRoleName());
             }

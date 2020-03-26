@@ -141,16 +141,16 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
                     row.createCell(4).setCellValue(df.format(record.getScanStatistics().getInvalidScanRate()));
                 }
                 else {
-                    row.createCell(2).setCellValue("无");
-                    row.createCell(3).setCellValue("无");
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(3).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (record.getJudgeStatistics() != null) {
                     row.createCell(5).setCellValue(Long.toString(record.getJudgeStatistics().getTotalJudge()));
                 }
                 else {
-                    row.createCell(5).setCellValue("无");
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (record.getHandExaminationStatistics() != null) {

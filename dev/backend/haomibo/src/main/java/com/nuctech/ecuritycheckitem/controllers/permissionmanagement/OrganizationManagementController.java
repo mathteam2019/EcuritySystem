@@ -173,6 +173,7 @@ public class OrganizationManagementController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         OrganizationGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -652,8 +653,13 @@ public class OrganizationManagementController extends BaseController {
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         OrganizationExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            OrganizationExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            OrganizationExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = OrganizationExcelView.buildExcelDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -699,8 +705,13 @@ public class OrganizationManagementController extends BaseController {
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();//set dictionary data
+        setDictionary(requestBody.getLocale());//set dictionary data
         OrganizationWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            OrganizationWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            OrganizationWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = OrganizationWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -746,8 +757,13 @@ public class OrganizationManagementController extends BaseController {
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 
         OrganizationPdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         OrganizationPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            OrganizationPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            OrganizationPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = OrganizationPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

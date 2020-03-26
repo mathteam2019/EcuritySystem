@@ -42,10 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task/statistics/")
@@ -100,6 +97,7 @@ public class JudgeStatisticsController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         StatisticsRequestBody filter;
+        String locale;
     }
 
     /**
@@ -182,8 +180,13 @@ public class JudgeStatisticsController extends BaseController {
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         JudgeStatisticsPdfView.setResource(getFontResource());  //set header font
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         JudgeStatisticsPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            JudgeStatisticsPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            JudgeStatisticsPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = JudgeStatisticsPdfView.buildPDFDocument(exportList); //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -230,8 +233,13 @@ public class JudgeStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();  //set dictionary data key and values
+        setDictionary(requestBody.getLocale());  //set dictionary data key and values
         JudgeStatisticsExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            JudgeStatisticsExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            JudgeStatisticsExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = JudgeStatisticsExcelView.buildExcelDocument(exportList); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -278,8 +286,13 @@ public class JudgeStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         JudgeStatisticsWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            JudgeStatisticsWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            JudgeStatisticsWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = JudgeStatisticsWordView.buildWordDocument(exportList); //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();

@@ -62,8 +62,9 @@ public class AccessLogPdfView extends BasePdfView {
                     });
 
 
+            int number = 0;
             for (SysAccessLog log : exportLogList) {
-                addTableCell(table, log.getId().toString());
+                addTableCell(table, String.valueOf(++ number));
                 addTableCell(table, log.getOperateAccount());
                 addTableCell(table, log.getUser().getUserName());
                 addTableCell(table, log.getClientIp());

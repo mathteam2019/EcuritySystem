@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.export.taskmanagement;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -82,7 +83,7 @@ public class ProcessTaskWordView extends BaseWordView {
      * @param exportTaskList
      * @return
      */
-    public static InputStream buildWordDocument(List<SerTaskSimplifiedForProcessTaskManagement> exportTaskList) {
+    public static InputStream buildWordDocument(List<SerTaskSimplifiedForProcessTableManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -96,19 +97,20 @@ public class ProcessTaskWordView extends BaseWordView {
 
             createTableHeader(table);
 
+            int number = 0;
             for (Integer i = 0; i < exportTaskList.size(); i ++) {
 
-                SerTaskSimplifiedForProcessTaskManagement task = exportTaskList.get(i);
+                SerTaskSimplifiedForProcessTableManagement task = exportTaskList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
-                tableRow.getCell(0).setText(task.getTaskId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ number));
                 tableRow.getCell(1).setText(task.getTaskNumber());
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {
                         tableRow.getCell(2).setText(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                     } else {
-                        tableRow.getCell(2).setText("无");
+                        tableRow.getCell(2).setText(messageSource.getMessage("None", null, currentLocale));
                     }
                 } else {
 
@@ -119,42 +121,42 @@ public class ProcessTaskWordView extends BaseWordView {
                 if (task.getField() != null) {
                     tableRow.getCell(4).setText(task.getField().getFieldDesignation());
                 } else {
-                    tableRow.getCell(4).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getSerScan() != null) {
                     if (task.getSerScan().getScanDevice() != null) {
                         tableRow.getCell(5).setText(task.getSerScan().getScanDevice().getDeviceName());
                     } else {
-                        tableRow.getCell(5).setText("无");
+                        tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                     }
 
                     if (task.getSerScan().getScanPointsman() != null) {
                         tableRow.getCell(6).setText(task.getSerScan().getScanPointsman().getUserName());
                     } else {
-                        tableRow.getCell(6).setText("无");
+                        tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
                     }
 
                     if (task.getSerScan().getScanStartTime() != null) {
                         tableRow.getCell(7).setText(formatDate(task.getSerScan().getScanStartTime()));
                     }
                     else {
-                        tableRow.getCell(7).setText("无");
+                        tableRow.getCell(7).setText(messageSource.getMessage("None", null, currentLocale));
                     }
 
                     if (task.getSerScan().getScanEndTime() != null) {
                         tableRow.getCell(8).setText(formatDate(task.getSerScan().getScanEndTime()));
                     }
                     else {
-                        tableRow.getCell(8).setText("无");
+                        tableRow.getCell(8).setText(messageSource.getMessage("None", null, currentLocale));
                     }
 
 
                 } else {
-                    tableRow.getCell(5).setText("无");
-                    tableRow.getCell(6).setText("无");
-                    tableRow.getCell(7).setText("无");
-                    tableRow.getCell(8).setText("无");
+                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(7).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(8).setText(messageSource.getMessage("None", null, currentLocale));
                 }
             }
 

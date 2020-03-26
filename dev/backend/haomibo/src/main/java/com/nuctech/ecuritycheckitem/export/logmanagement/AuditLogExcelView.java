@@ -93,9 +93,10 @@ public class AuditLogExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int number = 0;
             for (SysAuditLog log : exportLogList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(log.getId().toString());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(log.getOperateAccount());
                 row.createCell(2).setCellValue(log.getUser().getUserName());
                 row.createCell(3).setCellValue(log.getClientIp());

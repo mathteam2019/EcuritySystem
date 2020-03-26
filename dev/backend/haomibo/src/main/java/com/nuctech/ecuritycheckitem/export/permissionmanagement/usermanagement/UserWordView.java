@@ -93,13 +93,15 @@ public class UserWordView extends BaseWordView {
 
             createTableHeader(table);
 
+            int number = 0;
+
             for (Integer i = 0; i < exportList.size(); i ++) {
 
                 SysUser user = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(user.getUserId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ number));
                 tableRow.getCell(1).setText(user.getUserNumber());
                 tableRow.getCell(2).setText(user.getUserName());
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(user.getGender()));

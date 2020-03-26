@@ -52,17 +52,10 @@ public class SerTaskSimplifiedForHistoryTaskManagement extends BaseEntitySimple 
     @Column(name = "TASK_ID", length = 20)
     private Long taskId;
 
-    @Column(name = "DEVICE_ID", length = 20)
-    private Long deviceId;
 
     @Column(name = "TASK_NUMBER", length = 50)
     private String taskNumber;
 
-    @Column(name = "SCENE", length = 20)
-    private Long fieldId;
-
-    @Column(name = "TASK_STATUS", length = 10)
-    private String taskStatus;
 
     @Column(name = "WORKFLOW_ID", length = 20)
     private Long workflowId;
@@ -72,14 +65,14 @@ public class SerTaskSimplifiedForHistoryTaskManagement extends BaseEntitySimple 
     @NotFound(action = NotFoundAction.IGNORE)
     private SysFieldSimplifiedForProcessTaskManagement field;
 
-    @OneToOne()
-    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SysWorkflowSimplifiedForProcessTaskManagement workFlow;
+//    @OneToOne()
+//    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SysWorkflowSimplifiedForProcessTaskManagement workFlow;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
 
 }

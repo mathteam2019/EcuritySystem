@@ -96,13 +96,14 @@ public class FieldManagementWordView extends BaseWordView {
 
             createTableHeader(table);
 
+            int id = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
                 SysField field = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(field.getFieldId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ id));
                 tableRow.getCell(1).setText(field.getFieldSerial());
                 tableRow.getCell(2).setText(field.getFieldDesignation());
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(field.getStatus()));
@@ -110,8 +111,8 @@ public class FieldManagementWordView extends BaseWordView {
                     tableRow.getCell(4).setText(field.getParent().getFieldSerial());
                     tableRow.getCell(5).setText(field.getParent().getFieldDesignation());
                 } else {
-                    tableRow.getCell(4).setText("无");
-                    tableRow.getCell(5).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
 
                 }
                 tableRow.getCell(6).setText(field.getLeader());

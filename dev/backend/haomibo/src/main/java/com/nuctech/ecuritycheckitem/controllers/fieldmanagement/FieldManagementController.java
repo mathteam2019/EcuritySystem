@@ -14,6 +14,7 @@ package com.nuctech.ecuritycheckitem.controllers.fieldmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -178,6 +179,7 @@ public class FieldManagementController extends BaseController {
         Boolean isAll;
         String sort;
         FieldGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -553,8 +555,13 @@ public class FieldManagementController extends BaseController {
             }
         }
         List<SysField> exportList = fieldService.getExportList(sortBy, order, designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         FieldManagementExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            FieldManagementExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            FieldManagementExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -601,8 +608,13 @@ public class FieldManagementController extends BaseController {
             }
         }
         List<SysField> exportList = fieldService.getExportList(sortBy, order, designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         FieldManagementWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            FieldManagementWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            FieldManagementWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = FieldManagementWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -652,8 +664,13 @@ public class FieldManagementController extends BaseController {
         List<SysField> exportList = fieldService.getExportList(sortBy, order, designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
 
         FieldManagementPdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         FieldManagementPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            FieldManagementPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            FieldManagementPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.service.taskmanagement;
 
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryImageManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -62,6 +63,20 @@ public interface HistoryService {
      * @return
      */
     List<HistorySimplifiedForHistoryTableManagement> getExportHistoryTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
+
+
+    /**
+     * get All history task with filter
+     * @param taskNumber : task number
+     * @param modeId : mode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @return
+     */
+    List<HistorySimplifiedForHistoryImageManagement> getExportHistoryImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
 
     /**
      * Get one history task with id

@@ -80,7 +80,7 @@ public class BasePdfView {
             BaseFont baseFont = BaseFont.createFont(fontResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             return baseFont;
         }catch(Exception ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         return null;
     }

@@ -90,9 +90,10 @@ public class AssignUserExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int number = 0;
             for (SysUser user : exportUserList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(user.getUserId().toString());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(user.getUserName());
                 row.createCell(2).setCellValue(ConstantDictionary.getDataValue(user.getGender()));
                 row.createCell(3).setCellValue(user.getUserAccount());
@@ -108,7 +109,7 @@ public class AssignUserExcelView extends BaseExcelView {
                     }
                     row.createCell(5).setCellValue(str);
                 } else {
-                    row.createCell(5).setCellValue("无");
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 row.createCell(6).setCellValue(ConstantDictionary.getDataValue(user.getDataRangeCategory()));

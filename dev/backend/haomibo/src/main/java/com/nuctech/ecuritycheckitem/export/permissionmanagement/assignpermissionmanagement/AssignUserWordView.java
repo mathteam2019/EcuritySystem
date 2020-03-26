@@ -94,13 +94,14 @@ public class AssignUserWordView extends BaseWordView {
             XWPFTable table = document.createTable();
             createTableHeader(table);
 
+            int number = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
                 SysUser user = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(user.getUserId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ number));
                 tableRow.getCell(1).setText(user.getUserName());
                 tableRow.getCell(2).setText(ConstantDictionary.getDataValue(user.getGender()));
                 tableRow.getCell(3).setText(user.getUserAccount());
@@ -116,7 +117,7 @@ public class AssignUserWordView extends BaseWordView {
                     }
                     tableRow.getCell(5).setText(str);
                 } else {
-                    tableRow.getCell(5).setText("无");
+                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 tableRow.getCell(6).setText(ConstantDictionary.getDataValue(user.getDataRangeCategory()));

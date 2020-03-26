@@ -20,6 +20,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
@@ -62,20 +63,21 @@ public class DeviceLogPdfView extends BasePdfView {
                     });
 
 
+            int number = 0;
             for (SerDevLog log : exportLogList) {
-                addTableCell(table, log.getId().toString());
+                addTableCell(table, String.valueOf(++ number));
                 if(log.getDevice() != null) {
                     addTableCell(table, log.getDevice().getDeviceName());
                     addTableCell(table, log.getDevice().getDeviceSerial());
                 } else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 addTableCell(table, log.getLoginName());
 
 
-                addTableCell(table, log.getCategory().toString());
-                addTableCell(table, log.getLevel().toString());
+                addTableCell(table, ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogCategory"));
+                addTableCell(table, ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogLevel"));
                 addTableCell(table, log.getContent());
                 addTableCell(table, formatDate(log.getTime()));
             }

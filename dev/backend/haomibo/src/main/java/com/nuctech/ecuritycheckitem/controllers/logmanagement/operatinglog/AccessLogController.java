@@ -52,10 +52,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/log-management/operating-log/access")
@@ -114,6 +111,7 @@ public class AccessLogController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         AccessLogGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -249,8 +247,13 @@ public class AccessLogController extends BaseController {
             }
         }
         List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AccessLogExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AccessLogExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AccessLogExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -287,8 +290,13 @@ public class AccessLogController extends BaseController {
             }
         }
         List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AccessLogWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AccessLogWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AccessLogWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AccessLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -326,9 +334,14 @@ public class AccessLogController extends BaseController {
             }
         }
         List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AccessLogPdfView.setResource(getFontResource()); //set font resource
         AccessLogPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AccessLogPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AccessLogPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();

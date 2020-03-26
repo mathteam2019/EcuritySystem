@@ -59,44 +59,45 @@ public class KnowledgeDealPendingPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
+            int id = 0;
 
             for (SerKnowledgeCaseDeal deal : exportDealList) {
-                addTableCell(table, deal.getCaseDealId().toString());
+                addTableCell(table, String.valueOf(++ id));
                 if(deal.getTask() != null) {
                     addTableCell(table, deal.getTask().getTaskNumber());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getWorkMode() != null) {
                     addTableCell(table, ConstantDictionary.getDataValue(deal.getWorkMode().getModeName()));
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 addTableCell(table, ConstantDictionary.getDataValue(deal.getHandTaskResult()));
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     addTableCell(table, deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getScanDevice() != null) {
                     addTableCell(table, deal.getScanDevice().getDeviceName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getJudgeDevice() != null) {
                     addTableCell(table, deal.getJudgeDevice().getDeviceName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getHandDevice() != null) {
                     addTableCell(table, deal.getHandDevice().getDeviceName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 String goods = deal.getHandGoods();
                 String convertGoods = "";

@@ -180,6 +180,9 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @Column(name = "HAND_APPRAISE", length = 10)
     private String handAppraise;
 
+    @Column(name = "HAND_APPRAISE2", length = 10)
+    private String handAppraiseSecond;
+
     @Column(name = "JUDGE_START_TIME", nullable = false)
     private Date judgeStartTime;
 
@@ -220,10 +223,10 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDeviceSimple judgeDevice;
 
-    @OneToOne()
-    @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SerScanSimplifiedForTaskManagement serScan;
+//    @OneToOne()
+//    @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SerScanSimplifiedForTaskManagement serScan;
 
 
 

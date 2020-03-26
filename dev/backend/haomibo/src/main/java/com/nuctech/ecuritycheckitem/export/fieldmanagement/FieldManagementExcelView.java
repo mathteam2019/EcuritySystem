@@ -93,9 +93,10 @@ public class FieldManagementExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int id = 0;
             for (SysField field : exportFieldList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(field.getFieldId().toString());
+                row.createCell(0).setCellValue(String.valueOf(++ id));
                 row.createCell(1).setCellValue(field.getFieldSerial());
                 row.createCell(2).setCellValue(field.getFieldDesignation());
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(field.getStatus()));
@@ -103,8 +104,8 @@ public class FieldManagementExcelView extends BaseExcelView {
                     row.createCell(4).setCellValue(field.getParent().getFieldSerial());
                     row.createCell(5).setCellValue(field.getParent().getFieldDesignation());
                 } else {
-                    row.createCell(4).setCellValue("无");
-                    row.createCell(5).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
 
                 }
                 row.createCell(6).setCellValue(field.getLeader());

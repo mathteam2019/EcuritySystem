@@ -62,8 +62,9 @@ public class AssignUserPdfView extends BasePdfView {
 
 
 
+            int number = 0;
             for (SysUser user : exportUserList) {
-                addTableCell(table, user.getUserId().toString());
+                addTableCell(table, String.valueOf(++ number));
                 addTableCell(table, user.getUserName());
                 addTableCell(table, ConstantDictionary.getDataValue(user.getGender()));
                 addTableCell(table, user.getUserAccount());
@@ -82,7 +83,7 @@ public class AssignUserPdfView extends BasePdfView {
                     }
                     addTableCell(table, str);
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
 

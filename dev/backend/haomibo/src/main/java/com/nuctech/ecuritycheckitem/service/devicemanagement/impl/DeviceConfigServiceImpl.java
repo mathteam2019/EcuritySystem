@@ -378,7 +378,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
         for (int i = 0; i < preSysDeviceConfigList.size(); i++) {
             if (preSysDeviceConfigList.get(i).getDeviceId() != deviceId) {
-                if(preSysDeviceConfigList.get(i).getDevice().getCategoryId() == 3) {
+                if(preSysDeviceConfigList.get(i).getDevice().getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
                     sysDeviceConfigList.add(preSysDeviceConfigList.get(i));
                 }
 

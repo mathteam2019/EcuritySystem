@@ -56,11 +56,11 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
 
     /**
      * get record list
-     * @param devicueStatus
+     * @param deviceStatus
      * @param deviceTrafficSetting
      * @return
      */
-    private SerDeviceStatus.MonitorRecord getRecordList(SerDeviceStatus devicueStatus, int deviceTrafficSetting) {
+    private SerDeviceStatus.MonitorRecord getRecordList(SerDeviceStatus deviceStatus, int deviceTrafficSetting) {
         Date curDate = new Date();
         long times = curDate.getTime();
         long unitMiliSecond = deviceTrafficSetting * 60 * 1000;
@@ -72,7 +72,7 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             rangeDate[i] = new Date(startDateTime + unitMiliSecond * i);
             countArray[i] = 0;
         }
-        List<SerScanSimple> scanDataList = devicueStatus.getScanList();
+        List<SerScanSimple> scanDataList = deviceStatus.getScanList();
 
 
         if (scanDataList != null) {
@@ -92,7 +92,6 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         List<Integer> countList = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
-            SerDeviceStatus.MonitorRecord record = new SerDeviceStatus.MonitorRecord();
             SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
             String strTime = formatter.format(rangeDate[i + 1]);
             timeList.add(strTime);
@@ -139,43 +138,41 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         List<SerDeviceStatus> data = serDeviceStatusRepository.findAll(predicate, pageRequest).getContent();
 
 
-//        int deviceTrafficSetting = 10;
-//        int deviceTrafficMiddle = 30;
-//        int deviceTrafficHigh = 80;
-//        int storageAlarm = 0;
-//        List<SerPlatformOtherParams> paramList = serPlatformOtherParamRepository.findAll();
-//        if (paramList != null && paramList.size() > 0) {
-//            deviceTrafficSetting = paramList.get(0).getDeviceTrafficSettings();
-//            deviceTrafficMiddle = paramList.get(0).getDeviceTrafficMiddle();
-//            deviceTrafficHigh = paramList.get(0).getDeviceTrafficHigh();
-//        }
-//
-//        for (int i = 0; i < data.size(); i++) {
-//            SerDeviceStatus deviceStatus = data.get(i);
-//            deviceStatus.setDeviceTrafficHigh(deviceTrafficHigh);
-//            deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
-//            //deviceStatus.setRecord(getRecordList(deviceStatus, deviceTrafficSetting));
-//
-//            List<SerScanParamSimple> serScanParamList = deviceStatus.getSerScanParamList();
-//            if (serScanParamList != null && serScanParamList.size() > 0) {
-//                try {
-//                    String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
-//                    int currentSpace = Integer.parseInt(splitDiskSpace[0]);
-//                    int totalSpace = Integer.parseInt(splitDiskSpace[1]);
-//                    Integer deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
-//                    Integer deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
-//                    if (deviceStorageAlarm != null && currentSpace > deviceStorageAlarm) {
-//                        storageAlarm = 1;
-//                    } else if (deviceStorageAlarmPercent != null && currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {
-//                        storageAlarm = 2;
-//                    }
-//                } catch (Exception ex) {
-//
-//                }
-//
-//                deviceStatus.setDeviceStorageAlarm(storageAlarm);
-//            }
-//        }
+        int deviceTrafficMiddle = 30;
+        int deviceTrafficHigh = 80;
+        int storageAlarm = 0;
+        List<SerPlatformOtherParams> paramList = serPlatformOtherParamRepository.findAll();
+        if (paramList != null && paramList.size() > 0) {
+            deviceTrafficMiddle = paramList.get(0).getDeviceTrafficMiddle();
+            deviceTrafficHigh = paramList.get(0).getDeviceTrafficHigh();
+        }
+
+        for (int i = 0; i < data.size(); i++) {
+            SerDeviceStatus deviceStatus = data.get(i);
+            deviceStatus.setDeviceTrafficHigh(deviceTrafficHigh);
+            deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
+            //deviceStatus.setRecord(getRecordList(deviceStatus, deviceTrafficSetting));
+
+            List<SerScanParamSimple> serScanParamList = deviceStatus.getSerScanParamList();
+            if (serScanParamList != null && serScanParamList.size() > 0) {
+                try {
+                    String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
+                    int currentSpace = Integer.parseInt(splitDiskSpace[0]);
+                    int totalSpace = Integer.parseInt(splitDiskSpace[1]);
+                    Integer deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
+                    Integer deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
+                    if (deviceStorageAlarm != null && currentSpace > deviceStorageAlarm) {
+                        storageAlarm = 1;
+                    } else if (deviceStorageAlarmPercent != null && currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {
+                        storageAlarm = 2;
+                    }
+                } catch (Exception ex) {
+
+                }
+
+                deviceStatus.setDeviceStorageAlarm(storageAlarm);
+            }
+        }
         return new PageResult<>(total, data);
     }
 
@@ -215,24 +212,24 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
         deviceStatus.setRecord(getRecordList(deviceStatus, deviceTrafficSetting));
 
-//        List<SerScanParamSimple> serScanParamList = deviceStatus.getSerScanParamList();
-//        if (serScanParamList != null && serScanParamList.size() > 0) {
-//            try {
-//                String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
-//                int currentSpace = Integer.parseInt(splitDiskSpace[0]);
-//                int totalSpace = Integer.parseInt(splitDiskSpace[1]);
-//                Integer deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
-//                Integer deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
-//                if (deviceStorageAlarm != null && currentSpace > deviceStorageAlarm) {
-//                    storageAlarm = 1;
-//                } else if (deviceStorageAlarmPercent != null && currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {
-//                    storageAlarm = 2;
-//                }
-//            } catch (Exception ex) {
-//
-//            }
-//            deviceStatus.setDeviceStorageAlarm(storageAlarm);
-//        }
+        List<SerScanParamSimple> serScanParamList = deviceStatus.getSerScanParamList();
+        if (serScanParamList != null && serScanParamList.size() > 0) {
+            try {
+                String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
+                int currentSpace = Integer.parseInt(splitDiskSpace[0]);
+                int totalSpace = Integer.parseInt(splitDiskSpace[1]);
+                Integer deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
+                Integer deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
+                if (deviceStorageAlarm != null && currentSpace > deviceStorageAlarm) {
+                    storageAlarm = 1;
+                } else if (deviceStorageAlarmPercent != null && currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {
+                    storageAlarm = 2;
+                }
+            } catch (Exception ex) {
+
+            }
+            deviceStatus.setDeviceStorageAlarm(storageAlarm);
+        }
         return deviceStatus;
     }
 }

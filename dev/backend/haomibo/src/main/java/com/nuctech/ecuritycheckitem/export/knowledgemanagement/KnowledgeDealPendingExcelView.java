@@ -92,45 +92,46 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
             int counter = 4;
 
             CellStyle style = workbook.createCellStyle();
+            int id = 0;
             style.setWrapText(true);
             for (SerKnowledgeCaseDeal deal : exportDealList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(deal.getCaseDealId());
+                row.createCell(0).setCellValue(String.valueOf(++ id));
                 if(deal.getTask() != null) {
                     row.createCell(1).setCellValue(deal.getTask().getTaskNumber());
                 } else {
-                    row.createCell(1).setCellValue("无");
+                    row.createCell(1).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getWorkMode() != null) {
                     row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getWorkMode().getModeName()));
                 } else {
-                    row.createCell(2).setCellValue("无");
+                    row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     row.createCell(4).setCellValue(deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getScanDevice() != null) {
                     row.createCell(5).setCellValue(deal.getScanDevice().getDeviceName());
                 } else {
-                    row.createCell(5).setCellValue("无");
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getJudgeDevice() != null) {
                     row.createCell(6).setCellValue(deal.getJudgeDevice().getDeviceName());
                 } else {
-                    row.createCell(6).setCellValue("无");
+                    row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getHandDevice() != null) {
                     row.createCell(7).setCellValue(deal.getHandDevice().getDeviceName());
                 } else {
-                    row.createCell(7).setCellValue("无");
+                    row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
                 String goods = deal.getHandGoods();
                 String convertGoods = "";

@@ -29,6 +29,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
 import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -55,11 +56,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.ArrayList;
+import java.util.*;
 
 
 @RestController
@@ -138,6 +135,7 @@ public class InvalidTaskController extends BaseController {
 
         String sort; //sortby and order ex: deviceName|asc
         TaskGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
 
@@ -199,7 +197,7 @@ public class InvalidTaskController extends BaseController {
         currentPage --;
 
         //get result from service
-        PageResult<SerTaskSimplifiedForProcessTaskManagement> result = taskService.getInvalidTaskByFilter(
+        PageResult<SerTaskSimplifiedForProcessTableManagement> result = taskService.getInvalidTaskByFilter(
                 requestBody.getFilter().getTaskNumber(), //task number from request body
                 requestBody.getFilter().getMode(), //modeId from request body
                 requestBody.getFilter().getStatus(), //status from request body
@@ -213,7 +211,7 @@ public class InvalidTaskController extends BaseController {
                 perPage);
 
         long total = result.getTotal(); // get total count
-        List<SerTaskSimplifiedForProcessTaskManagement> data = result.getDataList(); //get data list to return
+        List<SerTaskSimplifiedForProcessTableManagement> data = result.getDataList(); //get data list to return
 
         //make response body
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -231,6 +229,12 @@ public class InvalidTaskController extends BaseController {
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("task", "scanStartTime", "scanEndTime", "scanDevice", "scanPointsman"))
+                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "field", "taskId", "serScan", "workFlow"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
         filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")); //only return modeName from SysWorkMode model
         value.setFilters(filters);
 
@@ -274,8 +278,8 @@ public class InvalidTaskController extends BaseController {
         return exportList;
     }
 
-    private List<SerTaskSimplifiedForProcessTaskManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
-        List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
+    private List<SerTaskSimplifiedForProcessTableManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
+        List<SerTaskSimplifiedForProcessTableManagement> taskList = new ArrayList<>();
         taskList = taskService.getExportInvalidTask(
                 requestBody.getFilter().getTaskNumber(),//get task numer from request body
                 requestBody.getFilter().getMode(),//get mode id from request body
@@ -332,7 +336,7 @@ public class InvalidTaskController extends BaseController {
             }
 
             //get all pending case deal list
-            List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+            List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
             List<String> cartoonImageList = new ArrayList<>();
             List<String> originalImageList = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -387,9 +391,14 @@ public class InvalidTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
-        setDictionary(); //set dictionary key and values
+        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        setDictionary(requestBody.getLocale()); //set dictionary key and values
         InvalidTaskExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            InvalidTaskExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            InvalidTaskExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = InvalidTaskExcelView.buildExcelDocument(exportList);
 
 
@@ -423,9 +432,14 @@ public class InvalidTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
-        setDictionary(); //set dictionary key and values
+        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        setDictionary(requestBody.getLocale()); //set dictionary key and values
         InvalidTaskWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            InvalidTaskWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            InvalidTaskWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = InvalidTaskWordView.buildWordDocument(exportList);
 
 
@@ -460,10 +474,15 @@ public class InvalidTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         InvalidTaskPdfView.setResource(getFontResource()); //set header font
-        setDictionary(); //set dicionary key and values
+        setDictionary(requestBody.getLocale()); //set dicionary key and values
         InvalidTaskPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            InvalidTaskPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            InvalidTaskPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = InvalidTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

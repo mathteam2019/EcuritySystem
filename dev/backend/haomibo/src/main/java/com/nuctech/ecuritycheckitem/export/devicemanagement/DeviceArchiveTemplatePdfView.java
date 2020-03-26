@@ -58,15 +58,17 @@ public class DeviceArchiveTemplatePdfView extends BasePdfView {
                     });
 
 
+            int id = 0;
             for (SerArchiveTemplate template : exportTemplateList) {
-                addTableCell(table, template.getArchivesTemplateId().toString());
+                id ++;
+                addTableCell(table, String.valueOf(id));
                 addTableCell(table, template.getArchivesTemplateNumber());
                 addTableCell(table, template.getTemplateName());
                 addTableCell(table, ConstantDictionary.getDataValue(template.getStatus()));
                 if(template.getDeviceCategory() != null) {
                     addTableCell(table, template.getDeviceCategory().getCategoryName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 addTableCell(table, ConstantDictionary.getDataValue(template.getManufacturer()));
                 addTableCell(table, template.getOriginalModel());

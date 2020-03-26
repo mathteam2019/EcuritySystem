@@ -51,4 +51,7 @@ public class HistorySimplifiedForProcessTaskManagement extends BaseEntitySimple 
     @Column(name = "HAND_APPRAISE", length = 10)
     private String handAppraise;
 
+    @Column(name = "HAND_APPRAISE2", length = 10)
+    private String handAppraiseSecond;
+
 }

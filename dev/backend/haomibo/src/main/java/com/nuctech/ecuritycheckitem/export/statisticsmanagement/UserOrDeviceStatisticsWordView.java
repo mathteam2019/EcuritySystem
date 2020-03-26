@@ -134,16 +134,16 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
                     tableRow.getCell(4).setText(df.format(record.getScanStatistics().getInvalidScanRate()));
                 }
                 else {
-                    tableRow.getCell(2).setText("无");
-                    tableRow.getCell(3).setText("无");
-                    tableRow.getCell(4).setText("无");
+                    tableRow.getCell(2).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(3).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (record.getJudgeStatistics() != null) {
                     tableRow.getCell(5).setText(Long.toString(record.getJudgeStatistics().getTotalJudge()));
                 }
                 else {
-                    tableRow.getCell(5).setText("无");
+                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (record.getHandExaminationStatistics() != null) {

@@ -63,21 +63,22 @@ public class HistoryTaskPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
+            int number = 0;
             for (HistorySimplifiedForHistoryTableManagement task : exportTaskList) {
 
-                addTableCell(table, task.getHistoryId().toString());
+                addTableCell(table, String.valueOf(++ number));
 
                 if (task.getTask() != null) {
                     addTableCell(table, task.getTask().getTaskNumber());
                 }
                 else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getWorkMode() != null) {
                     addTableCell(table, ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 addTableCell(table, ConstantDictionary.getDataValue(task.getHandTaskResult()));
@@ -87,40 +88,40 @@ public class HistoryTaskPdfView extends BasePdfView {
                         if (task.getTask().getField().getFieldDesignation() != null) {
                             addTableCell(table, task.getTask().getField().getFieldDesignation());
                         } else {
-                            addTableCell(table, "无");
+                            addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                         }
                     } else {
-                        addTableCell(table, "无");
+                        addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                     }
 
                 }
                 else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
 
                 if (task.getScanDevice() != null) {
                     addTableCell(table, task.getScanDevice().getDeviceName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getScanPointsman() != null) {
                     addTableCell(table, task.getScanPointsman().getUserName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getScanStartTime() != null) {
                     addTableCell(table, formatDate(task.getScanStartTime()));
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getScanEndTime() != null) {
                     addTableCell(table, formatDate(task.getScanEndTime()));
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
             }

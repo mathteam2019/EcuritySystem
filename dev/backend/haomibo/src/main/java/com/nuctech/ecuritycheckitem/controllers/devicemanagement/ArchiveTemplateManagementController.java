@@ -14,6 +14,7 @@
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -121,6 +122,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         ArchiveTemplateGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -417,8 +419,13 @@ public class ArchiveTemplateManagementController extends BaseController {
             }
         }
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(sortBy, order, templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList()); //get list of archiveTemplates from database through archiveTemplateService
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceArchiveTemplateExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceArchiveTemplateExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceArchiveTemplateExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceArchiveTemplateExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -465,8 +472,13 @@ public class ArchiveTemplateManagementController extends BaseController {
             }
         }
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(sortBy, order, templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList()); //get list of archiveTemplates from database through archiveTemplateService
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceArchiveTemplateWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceArchiveTemplateWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceArchiveTemplateWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceArchiveTemplateWordView.buildWordDocument(exportList);//make input stream to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -517,8 +529,13 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(sortBy, order, templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList()); //get list of archiveTemplates from database through archiveTemplatesService
         DeviceArchiveTemplatePdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary date
+        setDictionary(requestBody.getLocale()); //set dictionary date
         DeviceArchiveTemplatePdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceArchiveTemplatePdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceArchiveTemplatePdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceArchiveTemplatePdfView.buildPDFDocument(exportList); //make input stream to be printed
 
         HttpHeaders headers = new HttpHeaders();

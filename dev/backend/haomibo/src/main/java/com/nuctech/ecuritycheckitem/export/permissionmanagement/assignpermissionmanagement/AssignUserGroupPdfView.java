@@ -61,8 +61,9 @@ public class AssignUserGroupPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
+            int number = 0;
             for (SysUserGroup userGroup : exportUserGroupList) {
-                addTableCell(table, userGroup.getUserGroupId().toString());
+                addTableCell(table, String.valueOf(++ number));
                 addTableCell(table, userGroup.getGroupName());
                 String strMember = "";
                 List<SysUser> sysUserList = new ArrayList<>();

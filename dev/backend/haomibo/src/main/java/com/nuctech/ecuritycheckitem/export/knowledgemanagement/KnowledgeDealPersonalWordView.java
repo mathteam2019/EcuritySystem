@@ -90,30 +90,31 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
             XWPFTable table = document.createTable();
             createTableHeader(table);
 
+            int number = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
                 SerKnowledgeCaseDeal deal = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(deal.getCaseDealId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ number));
                 if(deal.getTask() != null) {
                     tableRow.getCell(1).setText(deal.getTask().getTaskNumber());
                 } else {
-                    tableRow.getCell(1).setText("无");
+                    tableRow.getCell(1).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 tableRow.getCell(2).setText(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     tableRow.getCell(3).setText(deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    tableRow.getCell(3).setText("无");
+                    tableRow.getCell(3).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getScanDevice() != null) {
                     tableRow.getCell(4).setText(deal.getScanDevice().getDevicePassageWay());
                 } else {
-                    tableRow.getCell(4).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 String goods = deal.getHandGoods();

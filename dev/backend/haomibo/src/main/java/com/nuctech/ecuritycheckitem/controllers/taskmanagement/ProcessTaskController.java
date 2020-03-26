@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
 import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -54,11 +55,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.ArrayList;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task")
@@ -150,6 +147,7 @@ public class ProcessTaskController extends BaseController {
 
         String sort; //sortby and order ex: deviceName|asc
         TaskGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -205,7 +203,7 @@ public class ProcessTaskController extends BaseController {
         Integer currentPage = requestBody.getCurrentPage();
         Integer perPage = requestBody.getPerPage();
         currentPage --;
-        PageResult<SerTaskSimplifiedForProcessTaskManagement> result = taskService.getProcessTaskByFilter(
+        PageResult<SerTaskSimplifiedForProcessTableManagement> result = taskService.getProcessTaskByFilter(
                 requestBody.getFilter().getTaskNumber(),//task number from request body
                 requestBody.getFilter().getMode(), //modeId from request body
                 requestBody.getFilter().getStatus(), //status from request body
@@ -219,7 +217,7 @@ public class ProcessTaskController extends BaseController {
                 perPage);
 
         long total = result.getTotal(); // get total count
-        List<SerTaskSimplifiedForProcessTaskManagement> data = result.getDataList(); //get data list to return
+        List<SerTaskSimplifiedForProcessTableManagement> data = result.getDataList(); //get data list to return
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
@@ -236,7 +234,15 @@ public class ProcessTaskController extends BaseController {
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")); //only return modeName from SysWorkMode model
+        filters.addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("task", "scanStartTime", "scanEndTime", "scanDevice", "scanPointsman"))
+                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "field", "taskId", "serScan", "workFlow", "serAssignList", "taskStatus"))
+                .addFilter(ModelJsonFilters.FILTER_SER_ASSIGN, SimpleBeanPropertyFilter.filterOutAllExcept("assignId"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"));
+
         value.setFilters(filters);
 
         return value;
@@ -278,8 +284,8 @@ public class ProcessTaskController extends BaseController {
         return exportList;
     }
 
-    private List<SerTaskSimplifiedForProcessTaskManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
-        List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
+    private List<SerTaskSimplifiedForProcessTableManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
+        List<SerTaskSimplifiedForProcessTableManagement> taskList = new ArrayList<>();
         taskList = taskService.getExportProcessTask(
                 requestBody.getFilter().getTaskNumber(),//get task numer from request body
                 requestBody.getFilter().getMode(),//get mode id from request body
@@ -336,7 +342,7 @@ public class ProcessTaskController extends BaseController {
             }
 
             //get all pending case deal list
-            List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+            List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
             List<String> cartoonImageList = new ArrayList<>();
             List<String> originalImageList = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -389,9 +395,14 @@ public class ProcessTaskController extends BaseController {
             }
         }
 
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
-        setDictionary();
+        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        setDictionary(requestBody.getLocale());
         ProcessTaskExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            ProcessTaskExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            ProcessTaskExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -424,9 +435,14 @@ public class ProcessTaskController extends BaseController {
             }
         }
 
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
-        setDictionary();  //set dictionary key and values
+        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        setDictionary(requestBody.getLocale());  //set dictionary key and values
         ProcessTaskWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            ProcessTaskWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            ProcessTaskWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = ProcessTaskWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -458,10 +474,15 @@ public class ProcessTaskController extends BaseController {
             }
         }
 
-        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         ProcessTaskPdfView.setResource(getFontResource()); //set header font
-        setDictionary(); //set dictionary key and values
+        setDictionary(requestBody.getLocale()); //set dictionary key and values
         ProcessTaskPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            ProcessTaskPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            ProcessTaskPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = ProcessTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

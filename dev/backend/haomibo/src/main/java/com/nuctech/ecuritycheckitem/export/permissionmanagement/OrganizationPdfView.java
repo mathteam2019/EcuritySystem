@@ -61,8 +61,9 @@ public class OrganizationPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
+            int number = 0;
             for (SysOrg org : exportOrgList) {
-                addTableCell(table, org.getOrgId().toString());
+                addTableCell(table, String.valueOf(++ number));
                 addTableCell(table, org.getOrgNumber());
                 addTableCell(table, org.getOrgName());
                 addTableCell(table, ConstantDictionary.getDataValue(org.getStatus()));
@@ -70,8 +71,8 @@ public class OrganizationPdfView extends BasePdfView {
                     addTableCell(table, org.getParent().getOrgNumber());
                     addTableCell(table, org.getParent().getOrgName());
                 } else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 addTableCell(table, org.getLeader());

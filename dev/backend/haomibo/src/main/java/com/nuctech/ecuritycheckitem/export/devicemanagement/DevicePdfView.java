@@ -55,9 +55,11 @@ public class DevicePdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
+            int id = 0;
             for (SysDevice device : exportDeviceList) {
 
-                addTableCell(table, device.getDeviceId().toString());
+                id ++;
+                addTableCell(table, String.valueOf(id));
                 addTableCell(table, device.getDeviceSerial());
                 addTableCell(table, device.getDeviceName());
 
@@ -65,19 +67,19 @@ public class DevicePdfView extends BasePdfView {
                 if(device.getArchive() != null) {
                     addTableCell(table, device.getArchive().getArchivesName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getCategory() != null) {
                     addTableCell(table, device.getCategory().getCategoryName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getArchive() != null &&  device.getArchive().getArchiveTemplate() != null) {
                     addTableCell(table, ConstantDictionary.getDataValue(device.getArchive().getArchiveTemplate().getManufacturer()));
                     addTableCell(table, device.getArchive().getArchiveTemplate().getOriginalModel());
                 } else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
             }
 

@@ -63,12 +63,13 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
                     });
 
 
+            int number = 0;
             for (SerKnowledgeCaseDeal deal : exportDealList) {
-                addTableCell(table, deal.getCaseDealId().toString());
+                addTableCell(table, String.valueOf(++ number));
                 if(deal.getTask() != null) {
                     addTableCell(table, deal.getTask().getTaskNumber());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
 
@@ -77,13 +78,13 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     addTableCell(table, deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getScanDevice() != null) {
                     addTableCell(table, deal.getScanDevice().getDevicePassageWay());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 String goods = deal.getHandGoods();
                 String convertGoods = "";

@@ -82,9 +82,10 @@ public class UserGroupExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int number = 0;
             for (SysUserGroup userGroup : exportUserGroupList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(userGroup.getUserGroupId().toString());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(userGroup.getGroupNumber());
                 row.createCell(2).setCellValue(userGroup.getGroupName());
                 List<String> userNames = new ArrayList<>();

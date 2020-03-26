@@ -164,6 +164,7 @@ public class AssignPermissionManagementController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         UserGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -211,6 +212,7 @@ public class AssignPermissionManagementController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         UserGroupGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -572,8 +574,13 @@ public class AssignPermissionManagementController extends BaseController {
 
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList()); //get export list
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AssignUserExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AssignUserExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AssignUserExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AssignUserExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -620,8 +627,13 @@ public class AssignPermissionManagementController extends BaseController {
                 requestBody.getFilter().getDataRangeCategory());
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AssignUserWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AssignUserWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AssignUserWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AssignUserWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -670,8 +682,13 @@ public class AssignPermissionManagementController extends BaseController {
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserPdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AssignUserPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AssignUserPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AssignUserPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AssignUserPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -819,8 +836,13 @@ public class AssignPermissionManagementController extends BaseController {
         );
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList()); //get export list
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AssignUserGroupExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AssignUserGroupExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AssignUserGroupExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AssignUserGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -868,8 +890,13 @@ public class AssignPermissionManagementController extends BaseController {
         );
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AssignUserGroupWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AssignUserGroupWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AssignUserGroupWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AssignUserGroupWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -919,8 +946,13 @@ public class AssignPermissionManagementController extends BaseController {
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserGroupPdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         AssignUserGroupPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            AssignUserGroupPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            AssignUserGroupPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = AssignUserGroupPdfView.buildPDFDocument(exportList);//create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();

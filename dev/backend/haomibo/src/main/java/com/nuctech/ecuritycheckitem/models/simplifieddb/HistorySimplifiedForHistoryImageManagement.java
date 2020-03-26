@@ -15,7 +15,6 @@ package com.nuctech.ecuritycheckitem.models.simplifieddb;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
-import com.nuctech.ecuritycheckitem.models.db.SerTaskTag;
 import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -36,58 +35,27 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
 @Table(name = "history")
-public class HistorySimplifiedForHistoryTableManagement extends BaseEntity implements Serializable {
+public class HistorySimplifiedForHistoryImageManagement extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HISTORY_ID", length = 20)
     private Long historyId;
 
-    @Column(name = "TASK_ID", length = 20)
-    private Long taskId;
 
     @Column(name = "SCAN_START_TIME", nullable = false)
     private Date scanStartTime;
-
-    @Column(name = "SCAN_END_TIME", nullable = false)
-    private Date scanEndTime;
-
-
-    @Column(name = "HAND_TASK_RESULT", length = 10)
-    private String handTaskResult;
-
-
-
-    @OneToOne()
-    @JoinColumn(name = "MODE", referencedColumnName = "MODE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SysWorkMode workMode;
-
-    @OneToOne()
-    @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SysDeviceSimplifiedOnlyHasName scanDevice;
-
-    @OneToOne()
-    @JoinColumn(name = "SCAN_POINTSMAN_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SysUserSimplifiedOnlyHasName scanPointsman;
-
 
     @OneToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SerTaskSimplifiedForHistoryTaskManagement task;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
 
-//    @OneToOne()
-//    @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)
-//    @NotFound(action = NotFoundAction.IGNORE)
-//    private SerScanSimplifiedForTaskManagement serScan;
+    @OneToOne()
+    @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SerScanSimplifiedForTaskManagement serScan;
 
 
 }

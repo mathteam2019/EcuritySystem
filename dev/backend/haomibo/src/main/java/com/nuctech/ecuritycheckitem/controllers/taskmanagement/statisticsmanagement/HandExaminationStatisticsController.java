@@ -43,10 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task/statistics/")
@@ -102,6 +99,7 @@ public class HandExaminationStatisticsController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         StatisticsRequestBody filter;
+        String locale;
     }
 
     /**
@@ -183,8 +181,13 @@ public class HandExaminationStatisticsController extends BaseController {
 
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         HandExaminationStatisticsPdfView.setResource(getFontResource()); //set header font
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         HandExaminationStatisticsPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            HandExaminationStatisticsPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            HandExaminationStatisticsPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = HandExaminationStatisticsPdfView.buildPDFDocument(exportList);  //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -231,8 +234,13 @@ public class HandExaminationStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         HandExaminationStatisticsExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            HandExaminationStatisticsExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            HandExaminationStatisticsExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = HandExaminationStatisticsExcelView.buildExcelDocument(exportList);  //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -278,8 +286,13 @@ public class HandExaminationStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();  //set dictionary data key and values
+        setDictionary(requestBody.getLocale());  //set dictionary data key and values
         HandExaminationStatisticsWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            HandExaminationStatisticsWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            HandExaminationStatisticsWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = HandExaminationStatisticsWordView.buildWordDocument(exportList);  //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();

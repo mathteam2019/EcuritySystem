@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.export.taskmanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -67,7 +68,7 @@ public class ProcessTaskExcelView extends BaseExcelView {
     }
 
 
-    public static InputStream buildExcelDocument(List<SerTaskSimplifiedForProcessTaskManagement> exportTaskList) {
+    public static InputStream buildExcelDocument(List<SerTaskSimplifiedForProcessTableManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -91,11 +92,12 @@ public class ProcessTaskExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
-            for (SerTaskSimplifiedForProcessTaskManagement task : exportTaskList) {
+            int number = 0;
+            for (SerTaskSimplifiedForProcessTableManagement task : exportTaskList) {
 
                 Row row = sheet.createRow(counter++);
 
-                row.createCell(0).setCellValue(task.getTaskId());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
 
                 row.createCell(1).setCellValue(task.getTaskNumber());
 
@@ -103,7 +105,7 @@ public class ProcessTaskExcelView extends BaseExcelView {
                     if (task.getWorkFlow().getWorkMode() != null) {
                         row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                     } else {
-                        row.createCell(2).setCellValue("无");
+                        row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
                     }
                 } else {
 
@@ -114,42 +116,42 @@ public class ProcessTaskExcelView extends BaseExcelView {
                 if (task.getField() != null) {
                     row.createCell(4).setCellValue(task.getField().getFieldDesignation());
                 } else {
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getSerScan() != null) {
                     if (task.getSerScan().getScanDevice() != null) {
                         row.createCell(5).setCellValue(task.getSerScan().getScanDevice().getDeviceName());
                     } else {
-                        row.createCell(5).setCellValue("无");
+                        row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                     }
 
                     if (task.getSerScan().getScanPointsman() != null) {
                         row.createCell(6).setCellValue(task.getSerScan().getScanPointsman().getUserName());
                     } else {
-                        row.createCell(6).setCellValue("无");
+                        row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
                     }
 
                     if (task.getSerScan().getScanStartTime() != null) {
                         row.createCell(7).setCellValue(formatDate(task.getSerScan().getScanStartTime()));
                     }
                     else {
-                        row.createCell(7).setCellValue("无");
+                        row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
                     }
 
                     if (task.getSerScan().getScanEndTime() != null) {
                         row.createCell(8).setCellValue(formatDate(task.getSerScan().getScanEndTime()));
                     }
                     else {
-                        row.createCell(8).setCellValue("无");
+                        row.createCell(8).setCellValue(messageSource.getMessage("None", null, currentLocale));
                     }
 
 
                 } else {
-                    row.createCell(5).setCellValue("无");
-                    row.createCell(6).setCellValue("无");
-                    row.createCell(7).setCellValue("无");
-                    row.createCell(8).setCellValue("无");
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(8).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
 

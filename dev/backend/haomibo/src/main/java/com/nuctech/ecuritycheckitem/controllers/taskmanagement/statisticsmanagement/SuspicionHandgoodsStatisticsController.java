@@ -106,6 +106,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data
         String sort;
         StatisticsRequestBody filter;
+        String locale;
     }
 
     /**
@@ -184,8 +185,13 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         HandExaminationStatisticsPdfView.setResource(getFontResource()); //get header font
-        setDictionary();//set dictionary data key and values
+        setDictionary(requestBody.getLocale());//set dictionary data key and values
         SuspictionHandgoodsStatisticsPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            SuspictionHandgoodsStatisticsPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            SuspictionHandgoodsStatisticsPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = SuspictionHandgoodsStatisticsPdfView.buildPDFDocument(exportList); //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -232,8 +238,13 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         SuspictionHandgoodsStatisticsExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            SuspictionHandgoodsStatisticsExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            SuspictionHandgoodsStatisticsExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = SuspictionHandgoodsStatisticsExcelView.buildExcelDocument(exportList); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -279,8 +290,13 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();   //set dictionary data key and values
+        setDictionary(requestBody.getLocale());   //set dictionary data key and values
         SuspictionHandgoodsStatisticsWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            SuspictionHandgoodsStatisticsWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            SuspictionHandgoodsStatisticsWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = SuspictionHandgoodsStatisticsWordView.buildWordDocument(exportList); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();

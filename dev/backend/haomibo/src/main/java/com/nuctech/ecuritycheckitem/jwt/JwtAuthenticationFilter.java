@@ -82,6 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
+        Date startTime = new Date();
         // Get token from header.
         String token = request.getHeader(Constants.REQUEST_HEADER_AUTH_TOKEN_KEY);
 
@@ -135,6 +136,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
+        Date endTime = new Date();
+        long dif_claim = endTime.getTime() - startTime.getTime();
 
 
 
@@ -163,16 +166,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
-
+        SysUser sysUser = optionalSysUser.get();
         forbiddenToken.setEditedTime(new Date());
         forbiddenTokenRepository.save(forbiddenToken);
+        endTime = new Date();
+        long dif_forbi_save = endTime.getTime() - startTime.getTime();
 
-        SysUser sysUser = optionalSysUser.get();
+
 
         // Get all available resources for user.
         List<SysResource> availableSysResourceList = authService.getAvailableSysResourceList(sysUser);
-
-
+        endTime = new Date();
+        long dif_forbi_available = endTime.getTime() - startTime.getTime();
 
         // Generate roles for this user.
         List<GrantedAuthority> roles = availableSysResourceList
@@ -180,6 +185,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .map(sysResource -> Role.Authority.ROLE_PREFIX + sysResource.getResourceName())
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+
+        endTime = new Date();
+        long dif_roles = endTime.getTime() - startTime.getTime();
 
         String ipAddress = request.getRemoteAddr();
 
@@ -192,7 +200,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Set as authenticated.
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        endTime = new Date();
+        long differennce = endTime.getTime() - startTime.getTime();
         // Continue to next filter.
         filterChain.doFilter(request, response);
     }

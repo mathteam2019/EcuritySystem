@@ -91,10 +91,12 @@ public class DeviceCategoryWordView extends BaseWordView {
             XWPFTable table = document.createTable();
             createTableHeader(table);
 
+            int id = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
+                id ++;
                 SysDeviceCategory category = exportList.get(i);
                 XWPFTableRow tableRow = table.createRow();
-                tableRow.getCell(0).setText(category.getCategoryId().toString());
+                tableRow.getCell(0).setText(String.valueOf(id));
                 tableRow.getCell(1).setText(category.getCategoryNumber());
                 tableRow.getCell(2).setText(category.getCategoryName());
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(category.getStatus()));
@@ -102,8 +104,8 @@ public class DeviceCategoryWordView extends BaseWordView {
                     tableRow.getCell(4).setText(category.getParent().getCategoryNumber());
                     tableRow.getCell(5).setText(category.getParent().getCategoryName());
                 } else {
-                    tableRow.getCell(4).setText("无");
-                    tableRow.getCell(5).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
                 tableRow.getCell(6).setText(category.getNote());
             }

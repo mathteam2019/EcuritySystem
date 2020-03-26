@@ -95,28 +95,30 @@ public class HistoryTaskExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
+            int number = 0;
+
             for (HistorySimplifiedForHistoryTableManagement task : exportTaskList) {
 
                 Row row = sheet.createRow(counter++);
 
-                row.createCell(0).setCellValue(task.getHistoryId());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
 
                 if (task.getTask() != null) {
                     if (task.getTask().getTaskNumber() != null) {
                         row.createCell(1).setCellValue(task.getTask().getTaskNumber());
                     }
                     else {
-                        row.createCell(1).setCellValue("无");
+                        row.createCell(1).setCellValue(messageSource.getMessage("None", null, currentLocale));
                     }
                 }
                 else {
-                    row.createCell(1).setCellValue("无");
+                    row.createCell(1).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getWorkMode() != null) {
                     row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));
                 } else {
-                    row.createCell(2).setCellValue("无");
+                    row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(task.getHandTaskResult()));
@@ -126,40 +128,40 @@ public class HistoryTaskExcelView extends BaseExcelView {
                         if (task.getTask().getField().getFieldDesignation() != null) {
                             row.createCell(4).setCellValue(task.getTask().getField().getFieldDesignation());
                         } else {
-                            row.createCell(4).setCellValue("无");
+                            row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                         }
                     }
                     else {
-                        row.createCell(4).setCellValue("无");
+                        row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                     }
                 }
                 else {
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
 
                 if (task.getScanDevice() != null) {
                     row.createCell(5).setCellValue(task.getScanDevice().getDeviceName());
                 } else {
-                    row.createCell(5).setCellValue("无");
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getScanPointsman() != null) {
                     row.createCell(6).setCellValue(task.getScanPointsman().getUserName());
                 } else {
-                    row.createCell(6).setCellValue("无");
+                    row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getScanStartTime() != null) {
                     row.createCell(7).setCellValue(formatDate(task.getScanStartTime()));
                 } else {
-                    row.createCell(7).setCellValue("无");
+                    row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if (task.getScanEndTime() != null) {
                     row.createCell(8).setCellValue(formatDate(task.getScanEndTime()));
                 } else {
-                    row.createCell(8).setCellValue("无");
+                    row.createCell(8).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
 

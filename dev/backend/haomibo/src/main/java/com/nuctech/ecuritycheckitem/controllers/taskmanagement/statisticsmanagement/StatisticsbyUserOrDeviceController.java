@@ -41,10 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task/statistics/")
@@ -129,6 +126,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data
         String sort;
         StatisticsByDeviceRequestBody filter;
+        String locale;
     }
 
     /**
@@ -146,6 +144,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data
         String sort;
         StatisticsByUserRequestBody filter;
+        String locale;
     }
 
     /**
@@ -260,8 +259,13 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         UserOrDeviceStatisticsPdfView.setResource(getFontResource()); //get header font
-        setDictionary();//set dictionary data key and values
+        setDictionary(requestBody.getLocale());//set dictionary data key and values
         UserOrDeviceStatisticsPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            UserOrDeviceStatisticsPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            UserOrDeviceStatisticsPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, true); //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -307,8 +311,13 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         TreeMap<Long, TotalStatistics> userStatistics = response.getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         UserOrDeviceStatisticsExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            UserOrDeviceStatisticsExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            UserOrDeviceStatisticsExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = UserOrDeviceStatisticsExcelView.buildExcelDocument(exportList, true); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -354,8 +363,13 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         TreeMap<Long, TotalStatistics> userStatistics = response.getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         UserOrDeviceStatisticsWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            UserOrDeviceStatisticsWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            UserOrDeviceStatisticsWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = UserOrDeviceStatisticsWordView.buildWordDocument(exportList, true); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -399,7 +413,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
         UserOrDeviceStatisticsPdfView.setResource(getFontResource()); //set header font
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, false); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -443,7 +457,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 null);
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         InputStream inputStream = UserOrDeviceStatisticsExcelView.buildExcelDocument(exportList, false); //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -488,7 +502,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 null);
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         InputStream inputStream = UserOrDeviceStatisticsWordView.buildWordDocument(exportList, false);
 
         HttpHeaders headers = new HttpHeaders();

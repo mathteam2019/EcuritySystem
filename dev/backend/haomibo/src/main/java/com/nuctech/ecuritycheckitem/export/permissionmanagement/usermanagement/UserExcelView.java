@@ -86,12 +86,13 @@ public class UserExcelView extends BaseExcelView {
             setHeader(sheet);
             int counter = 4;
 
+            int number = 0;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
             for (SysUser user : exportUserList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(user.getUserId().toString());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(user.getUserNumber());
                 row.createCell(2).setCellValue(user.getUserName());
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(user.getGender()));

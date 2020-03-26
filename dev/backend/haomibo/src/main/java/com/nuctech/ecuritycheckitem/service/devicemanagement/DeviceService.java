@@ -149,6 +149,12 @@ public interface DeviceService {
     List<SysDevice> findAll();
 
     /**
+     * find all active security device
+     * @return
+     */
+    List<SysDevice> findAllSecurity();
+
+    /**
      * get empty field device
      * @param categoryId
      * @return

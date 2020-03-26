@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -160,6 +161,7 @@ public class DeviceCategoryManagementController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         DeviceCategoryGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -462,8 +464,13 @@ public class DeviceCategoryManagementController extends BaseController {
 
         List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(sortBy, order, categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of SysDeviceCategory from database through deviceCategoryService
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceCategoryExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceCategoryExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceCategoryExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceCategoryExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -512,8 +519,13 @@ public class DeviceCategoryManagementController extends BaseController {
 
         List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(sortBy, order, categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of SysDeviceCategory from database through deviceCategoryService
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceCategoryWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceCategoryWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceCategoryWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceCategoryWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
 
@@ -566,8 +578,13 @@ public class DeviceCategoryManagementController extends BaseController {
         List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(sortBy, order, categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of SysDeviceCategory from database through deviceCategoryService
         DeviceCategoryPdfView.setResource(getFontResource()); //set font resource
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceCategoryPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DeviceCategoryPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DeviceCategoryPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DeviceCategoryPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

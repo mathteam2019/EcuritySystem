@@ -14,6 +14,7 @@ package com.nuctech.ecuritycheckitem.controllers.permissionmanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -172,6 +173,7 @@ public class PermissionControlController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         RoleGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
 
@@ -232,6 +234,7 @@ public class PermissionControlController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
         String sort;
         DataGroupGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
 
@@ -447,8 +450,13 @@ public class PermissionControlController extends BaseController {
             }
         }
         List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         RoleExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            RoleExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            RoleExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = RoleExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -491,8 +499,13 @@ public class PermissionControlController extends BaseController {
         }
 
         List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         RoleWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            RoleWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            RoleWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = RoleWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -538,8 +551,13 @@ public class PermissionControlController extends BaseController {
 
         List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, requestBody.getIsAll(), requestBody.getIdList());
         RolePdfView.setResource(getFontResource()); //set font resource
-        setDictionary();  //set dictionary data
+        setDictionary(requestBody.getLocale());  //set dictionary data
         RolePdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            RolePdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            RolePdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = RolePdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -794,8 +812,13 @@ public class PermissionControlController extends BaseController {
         }
 
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, userName, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data
+        setDictionary(requestBody.getLocale()); //set dictionary data
         DataGroupExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DataGroupExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DataGroupExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DataGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -840,8 +863,13 @@ public class PermissionControlController extends BaseController {
         }
 
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, userName, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();//set dictionary data
+        setDictionary(requestBody.getLocale());//set dictionary data
         DataGroupWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DataGroupWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DataGroupWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DataGroupWordView.buildWordDocument(exportList);//create inputstream of result to be exported
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=data-group.docx"); //set filename
@@ -884,8 +912,13 @@ public class PermissionControlController extends BaseController {
 
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, userName, requestBody.getIsAll(), requestBody.getIdList());
         DataGroupPdfView.setResource(getFontResource()); //set font resource
-        setDictionary();  //set dictionary data
+        setDictionary(requestBody.getLocale());  //set dictionary data
         DataGroupPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            DataGroupPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            DataGroupPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = DataGroupPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

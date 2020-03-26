@@ -93,13 +93,14 @@ public class OrganizationWordView extends BaseWordView {
             XWPFTable table = document.createTable();
             createTableHeader(table);
 
+            int number = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
                 SysOrg org = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(org.getOrgId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ number));
                 tableRow.getCell(1).setText(org.getOrgNumber());
                 tableRow.getCell(2).setText(org.getOrgName());
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(org.getStatus()));
@@ -107,8 +108,8 @@ public class OrganizationWordView extends BaseWordView {
                     tableRow.getCell(4).setText(org.getParent().getOrgNumber());
                     tableRow.getCell(5).setText(org.getParent().getOrgName());
                 } else {
-                    tableRow.getCell(4).setText("无");
-                    tableRow.getCell(5).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
 
                 }
                 tableRow.getCell(6).setText(org.getLeader());

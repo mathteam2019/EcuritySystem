@@ -194,6 +194,9 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
     @Column(name = "HAND_APPRAISE", length = 10)
     private String handAppraise;
 
+    @Column(name = "HAND_APPRAISE2", length = 10)
+    private String handAppraiseSecond;
+
     @Column(name = "JUDGE_START_TIME", nullable = false)
     private Date judgeStartTime;
 

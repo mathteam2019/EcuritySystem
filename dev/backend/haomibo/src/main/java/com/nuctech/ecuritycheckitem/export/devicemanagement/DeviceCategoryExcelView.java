@@ -88,9 +88,11 @@ public class DeviceCategoryExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int id = 0;
             for (SysDeviceCategory category : exportCategoryList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(category.getCategoryId().toString());
+                id ++;
+                row.createCell(0).setCellValue(String.valueOf(id));
                 row.createCell(1).setCellValue(category.getCategoryNumber());
                 row.createCell(2).setCellValue(category.getCategoryName());
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(category.getStatus()));
@@ -98,8 +100,8 @@ public class DeviceCategoryExcelView extends BaseExcelView {
                     row.createCell(4).setCellValue(category.getParent().getCategoryNumber());
                     row.createCell(5).setCellValue(category.getParent().getCategoryName());
                 } else {
-                    row.createCell(4).setCellValue("无");
-                    row.createCell(5).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
 
                 }
                 row.createCell(6).setCellValue(category.getNote());

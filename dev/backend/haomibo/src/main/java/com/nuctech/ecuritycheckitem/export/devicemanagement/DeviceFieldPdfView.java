@@ -58,21 +58,23 @@ public class DeviceFieldPdfView extends BasePdfView {
                     });
 
 
+            int id = 0;
 
             for (SysDevice device : exportDeviceList) {
-                addTableCell(table, device.getDeviceId().toString());
+                id ++;
+                addTableCell(table, String.valueOf(id));
                 addTableCell(table, device.getDeviceSerial());
 
                 addTableCell(table, device.getDeviceName());
                 if(device.getCategory() != null) {
                     addTableCell(table, device.getCategory().getCategoryName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getField() != null) {
                     addTableCell(table, device.getField().getFieldDesignation());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
             }
 

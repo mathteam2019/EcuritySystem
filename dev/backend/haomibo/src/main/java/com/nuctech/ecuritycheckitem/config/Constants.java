@@ -38,6 +38,8 @@ public class Constants {
     public static final long DEFAULT_RECOGNIZE_RATE = 0L;
     public static final int DEFAULT_STORAGE_ALARM = 5;
     public static final int DEFAULT_STORAGE_PERCENT = 80;
+    public static final String CHINESE_LOCALE = "ch";
+    public static final String ENGLISH_LOCALE = "en";
 
     public static final String[] EXCLUDE_URL_PATTERNS = {
             "/",
@@ -69,6 +71,7 @@ public class Constants {
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String REDIS_SECURITY_INFO = "sys.security.info";
     public static final String REDIS_PLATFORM_CHECK = "sys.setting.platform.check";
+    public static final String REDIS_CATEGORY_USER_INFO = "sys.category.user.info";
 
     //add by tiny 2019/12/12
     public static class StatisticWidth {

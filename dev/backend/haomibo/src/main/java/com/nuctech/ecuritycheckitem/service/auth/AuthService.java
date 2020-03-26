@@ -64,5 +64,7 @@ public interface AuthService {
     List<SysResource> getAvailableSysResourceList(SysUser sysUser);
 
 
+    void uploadCategoryUserListRedis();
+
     CategoryUser getDataCategoryUserList();
 }

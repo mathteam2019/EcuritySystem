@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
 import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryImageManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
@@ -56,11 +57,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.ArrayList;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task/history-task")
@@ -137,6 +134,7 @@ public class HistoryTaskController extends BaseController {
 
         String sort; //sortby and order ex: deviceName|asc
         HistoryGetByFilterAndPageRequestBody.Filter filter;
+        String locale;
     }
 
     /**
@@ -152,8 +150,11 @@ public class HistoryTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Date startTime = new Date();
         HistorySimplifiedForHistoryTaskManagement optionalHistory = historyService.getOne(requestBody.getHistoryId()); //get detailed history task from historyService
 
+        Date endTime = new Date();
+        long difference = endTime.getTime() - startTime.getTime();
         if (optionalHistory == null) { //if history task with specified id does not exist
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER); //return invalid parameter
         }
@@ -163,10 +164,20 @@ public class HistoryTaskController extends BaseController {
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters
                 .getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")); //only return "modeName" from SysWorkMode model
+        filters.addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.filterOutAllExcept("historyId", "scanStartTime", "scanEndTime", "scanPointsmanName",
+                "judgeResult", "handResult", "handStartTime", "handEndTime", "handTaskResult", "handGoods", "handAttached", "handAppraise", "handAppraiseSecond",
+                "judgeStartTime", "judgeEndTime", "workMode", "scanDevice", "scanPointsman", "judgeDevice", "judgeUser", "handDevice", "handUser", "task", "serScan",
+                "serJudgeGraph", "serKnowledgeCase", "tagList", "platFormCheckParams"));
+//                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
+//                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
+////                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "field"))
+////                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"))
+////                .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanDeviceImages"))
+//                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")); //only return "modeName" from SysWorkMode model
 
         value.setFilters(filters); //apply filter to response data
-
+        endTime = new Date();
+        long difference_1 = endTime.getTime() - startTime.getTime();
         return value;
     }
 
@@ -228,12 +239,12 @@ public class HistoryTaskController extends BaseController {
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-//        filters.addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.filterOutAllExcept("historyId", "task", "handTaskResult", "scanStartTime", "scanEndTime", "workMode", "scanDevice", "scanPointsman"))
-//                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "field"))
-//                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
-//                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
-//                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
-//                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
+        filters.addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.filterOutAllExcept("historyId", "task", "handTaskResult", "scanStartTime", "scanEndTime", "workMode", "scanDevice", "scanPointsman"))
+                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "field"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
 
         value.setFilters(filters);
 
@@ -298,7 +309,17 @@ public class HistoryTaskController extends BaseController {
             }
 
             //get all pending case deal list
-            List<HistorySimplifiedForHistoryTableManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
+            List<HistorySimplifiedForHistoryImageManagement> exportList = historyService.getExportHistoryImage(
+                    requestBody.getFilter().getTaskNumber(), //get task number from input parameter
+                    requestBody.getFilter().getMode(), //get mode id from input parameter
+                    requestBody.getFilter().getStatus(), //get status from input parameter
+                    requestBody.getFilter().getFieldId(), //get field id from input parameter
+                    requestBody.getFilter().getUserName(), //get user name from input parameter
+                    requestBody.getFilter().getStartTime(), //get start time from input parameter
+                    requestBody.getFilter().getEndTime(), //get end time from input parameter
+                    sortParams.get("sortBy"), //field name
+                    sortParams.get("order"),
+                    requestBody.getIdList());
             List<String> cartoonImageList = new ArrayList<>();
             List<String> originalImageList = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -318,9 +339,7 @@ public class HistoryTaskController extends BaseController {
                 } catch (Exception ex){
                     ex.printStackTrace();
                 }
-                if(isEnabledCartoon) {
 
-                }
             }
             downImage.setCartoonImageList(cartoonImageList);
             downImage.setOriginalImageList(originalImageList);
@@ -353,8 +372,13 @@ public class HistoryTaskController extends BaseController {
 
         //get all pending case deal list
         List<HistorySimplifiedForHistoryTableManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         HistoryTaskExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            HistoryTaskExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            HistoryTaskExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = HistoryTaskExcelView.buildExcelDocument(exportList); //get inputstream to be exported
 
 
@@ -392,8 +416,13 @@ public class HistoryTaskController extends BaseController {
 
         //get all pending case deal list
         List<HistorySimplifiedForHistoryTableManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         HistoryTaskWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            HistoryTaskWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            HistoryTaskWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = HistoryTaskWordView.buildWordDocument(exportList); //get inputstream to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -426,8 +455,13 @@ public class HistoryTaskController extends BaseController {
         }
 
         List<HistorySimplifiedForHistoryTableManagement> exportList = getExportListFromnRequest(requestBody, sortParams);
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         HistoryTaskPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            HistoryTaskPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            HistoryTaskPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         //HistoryTaskPdfView.setResourceFile(resourceFile);
         HistoryTaskPdfView.setResource(getFontResource()); //set header font
 

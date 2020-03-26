@@ -54,7 +54,7 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
 
     public static Locale currentLocale = Locale.CHINESE;
 
-    public static String defaultSerizedSort = "seizedGoodsCode";
+    public static String defaultSerizedSort = "sysDictionaryData.dataValue";
 
     public String getJsonFromSeized(SerSeizedGood seizedGood) {
         SerSeizedGood newDictionary = SerSeizedGood.builder()
@@ -165,10 +165,10 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if (order.equals(Constants.SortOrder.ASC)) {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultSerizedSort).ascending());
             }
             else {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultSerizedSort).descending());
             }
         } else {
             pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultSerizedSort).ascending());

@@ -48,9 +48,9 @@ public class DeviceArchivePdfView extends BasePdfView {
 
             document.add(getTitle(messageSource.getMessage("DeviceArchive.Title", null, currentLocale)));
             document.add(getTime());
-            PdfPTable table = new PdfPTable(7);
+            PdfPTable table = new PdfPTable(8);
             table.setWidthPercentage(99);
-            Stream.of("DeviceArchive.No", "DeviceArchive.Archive", "DeviceArchive.Name", "DeviceArchive.Status", "DeviceArchive.Category", "DeviceArchive.Manufacturer", "DeviceArchive.OriginalModel")
+            Stream.of("DeviceArchive.No", "DeviceArchive.Archive", "DeviceArchive.Name", "DeviceArchive.Status", "DeviceArchive.TemplateName", "DeviceArchive.Category", "DeviceArchive.Manufacturer", "DeviceArchive.OriginalModel")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
                         header.setBorderWidth(2);
@@ -58,22 +58,29 @@ public class DeviceArchivePdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
+            int id = 0;
             for (SerArchive archive : exportArchiveList) {
-                addTableCell(table, archive.getArchiveId().toString());
+                id ++;
+                addTableCell(table, String.valueOf(id));
                 addTableCell(table, archive.getArchivesNumber());
                 addTableCell(table, archive.getArchivesName());
                 addTableCell(table, ConstantDictionary.getDataValue(archive.getStatus()));
+                if(archive.getArchiveTemplate() != null) {
+                    addTableCell(table, archive.getArchiveTemplate().getTemplateName());
+                } else {
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                }
                 if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
                     addTableCell(table, archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
                 } else {
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 if(archive.getArchiveTemplate() != null) {
                     addTableCell(table, ConstantDictionary.getDataValue(archive.getArchiveTemplate().getManufacturer()));
                     addTableCell(table, archive.getArchiveTemplate().getOriginalModel());
                 } else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
             }
 

@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.export.logmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
@@ -91,24 +92,25 @@ public class DeviceLogWordView extends BaseWordView {
             XWPFTable table = document.createTable();
             createTableHeader(table);
 
+            int number = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
                 SerDevLog log = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(log.getId().toString());
+                tableRow.getCell(0).setText(String.valueOf(++ number));
                 if(log.getDevice() != null) {
                     tableRow.getCell(1).setText(log.getDevice().getDeviceName());
                     tableRow.getCell(2).setText(log.getDevice().getDeviceSerial());
                 } else {
-                    tableRow.getCell(1).setText("无");
-                    tableRow.getCell(2).setText("无");
+                    tableRow.getCell(1).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(2).setText(messageSource.getMessage("None", null, currentLocale));
                 }
                 tableRow.getCell(3).setText(log.getLoginName());
 
-                tableRow.getCell(4).setText(log.getCategory().toString());
-                tableRow.getCell(5).setText(log.getLevel().toString());
+                tableRow.getCell(4).setText(ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogCategory"));
+                tableRow.getCell(5).setText(ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogLevel"));
                 tableRow.getCell(6).setText(log.getContent());
                 tableRow.getCell(7).setText(formatDate(log.getTime()));
 

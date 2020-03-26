@@ -82,25 +82,28 @@ public class DeviceFieldWordView extends BaseWordView {
             XWPFTable table = document.createTable();
             createTableHeader(table);
 
+            int id = 0;
+
             for (Integer i = 0; i < exportList.size(); i ++) {
 
+                id ++;
                 SysDevice device = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(device.getDeviceId().toString());
+                tableRow.getCell(0).setText(String.valueOf(id));
                 tableRow.getCell(1).setText(device.getDeviceSerial());
 
                 tableRow.getCell(2).setText(device.getDeviceName());
                 if(device.getCategory() != null) {
                     tableRow.getCell(3).setText(device.getCategory().getCategoryName());
                 } else {
-                    tableRow.getCell(3).setText("无");
+                    tableRow.getCell(3).setText(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getField() != null) {
                     tableRow.getCell(4).setText(device.getField().getFieldDesignation());
                 } else {
-                    tableRow.getCell(4).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
                 
             }

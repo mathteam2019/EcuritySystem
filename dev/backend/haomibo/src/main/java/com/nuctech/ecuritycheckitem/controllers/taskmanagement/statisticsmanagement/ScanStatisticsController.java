@@ -44,10 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task/statistics/")
@@ -103,6 +100,7 @@ public class ScanStatisticsController extends BaseController {
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data
         String sort;
         StatisticsRequestBody filter;
+        String locale;
     }
 
     /**
@@ -186,8 +184,13 @@ public class ScanStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();//set dictionary data key and values
+        setDictionary(requestBody.getLocale());//set dictionary data key and values
         ScanStatisticsExcelView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            ScanStatisticsExcelView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            ScanStatisticsExcelView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = ScanStatisticsExcelView.buildExcelDocument(exportList);  //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -235,8 +238,13 @@ public class ScanStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         ScanStatisticsWordView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            ScanStatisticsWordView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            ScanStatisticsWordView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = ScanStatisticsWordView.buildWordDocument(exportList);//make inputstream of data to be exported
 
 
@@ -285,9 +293,14 @@ public class ScanStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary(); //set dictionary data key and values
+        setDictionary(requestBody.getLocale()); //set dictionary data key and values
         ScanStatisticsPdfView.setResource(getFontResource()); //set header font
         ScanStatisticsPdfView.setMessageSource(messageSource);
+        if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
+            ScanStatisticsPdfView.setCurrentLocale(Locale.CHINESE);
+        } else {
+            ScanStatisticsPdfView.setCurrentLocale(Locale.ENGLISH);
+        }
         InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(exportList);//make input stream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();

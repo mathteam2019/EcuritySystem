@@ -82,9 +82,10 @@ public class DataGroupExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int number = 0;
             for (SysDataGroup dataGroup : exportDataGroupList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(dataGroup.getDataGroupId().toString());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(dataGroup.getDataGroupNumber());
                 row.createCell(2).setCellValue(dataGroup.getDataGroupName());
                 List<String> userNames = new ArrayList<>();

@@ -75,9 +75,10 @@ public class RoleExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int number = 0;
             for (SysRole role : exportRoleList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(role.getRoleId().toString());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(role.getRoleNumber());
                 row.createCell(2).setCellValue(role.getRoleName());
             }

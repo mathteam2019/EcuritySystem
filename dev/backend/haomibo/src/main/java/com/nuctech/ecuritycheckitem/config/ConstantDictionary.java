@@ -13,6 +13,8 @@
 
 package com.nuctech.ecuritycheckitem.config;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ConstantDictionary {
     public static class Dictionary {
         String dataCode; //data code
@@ -32,9 +34,9 @@ public class ConstantDictionary {
 
     private static Dictionary[] dictionaryList = {};
 
-    public static Dictionary[] originalDictionaryList = {
+    public static Dictionary[] originalChineseDictionaryList = {
         new Dictionary("active", "生效"),
-            new Dictionary("inactive", "未生效"),
+            new Dictionary("inactive", "未效"),
             new Dictionary("male", "男"),
             new Dictionary("female", "女"),
             new Dictionary("1000001301", "安检仪+(本地手检)"),
@@ -60,6 +62,53 @@ public class ConstantDictionary {
             new Dictionary("while_inspection", "查验中"),
             new Dictionary("0", "失败"),
             new Dictionary("1", "成功"),
+            new Dictionary("0", "安检仪", "DeviceLogCategory"),
+            new Dictionary("1", "审图站", "DeviceLogCategory"),
+            new Dictionary("2", "手检站", "DeviceLogCategory"),
+            new Dictionary("0", "调试", "DeviceLogLevel"),
+            new Dictionary("1", "信息", "DeviceLogLevel"),
+            new Dictionary("2", "警告", "DeviceLogLevel"),
+            new Dictionary("3", "错误", "DeviceLogLevel"),
+            new Dictionary("4", "致命", "DeviceLogLevel"),
+    };
+
+
+    public static Dictionary[] originalEnglishDictionaryList = {
+            new Dictionary("active", "Active"),
+            new Dictionary("inactive", "Inactive"),
+            new Dictionary("male", "Male"),
+            new Dictionary("female", "Female"),
+            new Dictionary("1000001301", "安检仪+(本地手检)"),
+            new Dictionary("1000001302", "安检仪+手检端"),
+            new Dictionary("1000001303", "安检仪+审图端"),
+            new Dictionary("1000001304", "安检仪+审图端+手检端"),
+            new Dictionary("1000000501", "个人数据"),
+            new Dictionary("1000000502", "隶属机构所有人数"),
+            new Dictionary("1000000503", "隶属机构及下级机构所有人"),
+            new Dictionary("1000000504", "所有人数据"),
+            new Dictionary("1000000505", "自定义数据组"),
+            new Dictionary("1000000506", "组内所有人数据"),
+            new Dictionary("1000000901", "同方"),
+            new Dictionary("1000000902", "威视"),
+            new Dictionary("FALSE", "Not Seized"),
+            new Dictionary("TRUE", "Seized"),
+            new Dictionary("doubt", "Suspect"),
+            new Dictionary("nodoubt", "No Suspect"),
+            new Dictionary("pending_dispatch", "Pending Dispatch"),
+            new Dictionary("pending_review", "Pending Review"),
+            new Dictionary("while_review", "Judging"),
+            new Dictionary("pending_inspection", "Pending Inspection"),
+            new Dictionary("while_inspection", "Inspecting"),
+            new Dictionary("0", "Failure"),
+            new Dictionary("1", "Success"),
+            new Dictionary("0", "Manual", "DeviceLogCategory"),
+            new Dictionary("1", "Judge", "DeviceLogCategory"),
+            new Dictionary("2", "Hand", "DeviceLogCategory"),
+            new Dictionary("0", "Debug", "DeviceLogLevel"),
+            new Dictionary("1", "Info", "DeviceLogLevel"),
+            new Dictionary("2", "Warn", "DeviceLogLevel"),
+            new Dictionary("3", "Error", "DeviceLogLevel"),
+            new Dictionary("4", "Fatal", "DeviceLogLevel"),
     };
 
     public static void setDictionaryList(Dictionary[] newDictionaryList) {
@@ -75,7 +124,7 @@ public class ConstantDictionary {
         String answer = "";
         for(int i = 0; i < dictionaryList.length; i ++) {
             Dictionary dicationary = dictionaryList[i];
-            if(dicationary.dataCode.equals(dataCode)) {
+            if(dicationary.dataCode.equals(dataCode) && StringUtils.isEmpty(dicationary.dictionaryName)) {
                 answer = dicationary.dataValue;
             }
         }
@@ -92,7 +141,7 @@ public class ConstantDictionary {
         String answer = "";
         for(int i = 0; i < dictionaryList.length; i ++) {
             Dictionary dicationary = dictionaryList[i];
-            if(dicationary.dataCode.equals(dataCode) && dicationary.dictionaryName.equals(dictionaryName)) {
+            if(dicationary.dataCode.equals(dataCode) && dictionaryName.equals(dicationary.dictionaryName)) {
                 answer = dicationary.dataValue;
             }
         }

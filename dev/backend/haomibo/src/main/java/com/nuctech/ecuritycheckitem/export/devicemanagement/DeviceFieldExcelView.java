@@ -78,21 +78,23 @@ public class DeviceFieldExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int id = 0;
             for (SysDevice device : exportDeviceList) {
+                id ++;
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(device.getDeviceId().toString());
+                row.createCell(0).setCellValue(String.valueOf(id));
                 row.createCell(1).setCellValue(device.getDeviceSerial());
 
                 row.createCell(2).setCellValue(device.getDeviceName());
                 if(device.getCategory() != null) {
                     row.createCell(3).setCellValue(device.getCategory().getCategoryName());
                 } else {
-                    row.createCell(3).setCellValue("无");
+                    row.createCell(3).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getField() != null) {
                     row.createCell(4).setCellValue(device.getField().getFieldDesignation());
                 } else {
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
             }
 

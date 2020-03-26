@@ -69,6 +69,7 @@ public class DeviceArchiveWordView extends BaseWordView {
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceArchive.Archive", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceArchive.Name", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceArchive.Status", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceArchive.TemplateName", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceArchive.Category", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceArchive.Manufacturer", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceArchive.OriginalModel", null, currentLocale));
@@ -94,28 +95,35 @@ public class DeviceArchiveWordView extends BaseWordView {
 
             createTableHeader(table);
 
+            int id = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
+                id ++;
 
                 SerArchive archive = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
-                tableRow.getCell(0).setText(archive.getArchiveId().toString());
+                tableRow.getCell(0).setText(String.valueOf(id));
                 tableRow.getCell(1).setText(archive.getArchivesNumber());
                 tableRow.getCell(2).setText(archive.getArchivesName());
 
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(archive.getStatus()));
-                if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
-                    tableRow.getCell(4).setText(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
+                if(archive.getArchiveTemplate() != null) {
+                    tableRow.getCell(4).setText(archive.getArchiveTemplate().getTemplateName());
                 } else {
-                    tableRow.getCell(4).setText("无");
+                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
+                }
+                if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
+                    tableRow.getCell(5).setText(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
+                } else {
+                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(archive.getArchiveTemplate() != null) {
-                    tableRow.getCell(5).setText(ConstantDictionary.getDataValue(archive.getArchiveTemplate().getManufacturer()));
-                    tableRow.getCell(6).setText(archive.getArchiveTemplate().getOriginalModel());
+                    tableRow.getCell(6).setText(ConstantDictionary.getDataValue(archive.getArchiveTemplate().getManufacturer()));
+                    tableRow.getCell(7).setText(archive.getArchiveTemplate().getOriginalModel());
                 } else {
-                    tableRow.getCell(5).setText("无");
-                    tableRow.getCell(6).setText("无");
+                    tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
+                    tableRow.getCell(7).setText(messageSource.getMessage("None", null, currentLocale));
                 }
             }
 

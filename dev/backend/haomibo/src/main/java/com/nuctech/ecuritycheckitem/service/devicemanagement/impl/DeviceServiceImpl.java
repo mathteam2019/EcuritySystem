@@ -779,5 +779,29 @@ public class DeviceServiceImpl implements DeviceService {
         return getInactiveConfigDevice(sysDeviceList);
     }
 
+    /**
+     * get device by field
+     * @return
+     */
+    @Override
+    @Transactional
+    public List<SysDevice> findAllSecurity() {
+        QSysDevice builder = QSysDevice.sysDevice;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.categoryId.eq(Long.valueOf(Constants.SECURITY_CATEGORY_ID)));
+        predicate.and(builder.status.eq(SysDevice.Status.ACTIVE));
+
+
+
+
+        List<SysDevice> sysDeviceList = StreamSupport
+                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        return sysDeviceList;
+    }
+
 
 }

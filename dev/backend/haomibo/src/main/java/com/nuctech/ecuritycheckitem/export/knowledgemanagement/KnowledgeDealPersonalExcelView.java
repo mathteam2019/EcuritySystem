@@ -84,26 +84,27 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
+            int number = 0;
             for (SerKnowledgeCaseDeal deal : exportDealList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(deal.getCaseDealId());
+                row.createCell(0).setCellValue(String.valueOf(++ number));
                 if(deal.getTask() != null) {
                     row.createCell(1).setCellValue(deal.getTask().getTaskNumber());
                 } else {
-                    row.createCell(1).setCellValue("无");
+                    row.createCell(1).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     row.createCell(3).setCellValue(deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    row.createCell(3).setCellValue("无");
+                    row.createCell(3).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 if(deal.getScanDevice() != null) {
                     row.createCell(4).setCellValue(deal.getScanDevice().getDevicePassageWay());
                 } else {
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
                 String goods = deal.getHandGoods();
                 String convertGoods = "";
