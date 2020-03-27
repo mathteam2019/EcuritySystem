@@ -113,6 +113,24 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
      */
     @Override
     public PageResult<SerDeviceStatus> getDeviceStatusByFilter(Long fieldId, String deviceName, Long categoryId, int currentPage, int perPage) {
+
+
+        int deviceTrafficSetting = 10;
+        int deviceTrafficMiddle = 30;
+        int deviceTrafficHigh = 80;
+        int storageAlarm = 0;
+        List<SerPlatformOtherParams> paramList = serPlatformOtherParamRepository.findAll();
+        if (paramList != null && paramList.size() > 0) {
+            deviceTrafficMiddle = paramList.get(0).getDeviceTrafficMiddle();
+            deviceTrafficHigh = paramList.get(0).getDeviceTrafficHigh();
+            deviceTrafficSetting = paramList.get(0).getDeviceTrafficSettings();
+        }
+
+        Date curDate = new Date();
+        long startDateTime = curDate.getTime() - deviceTrafficSetting * 60 * 1000 * 10;
+        Date startDate = new Date(startDateTime);
+
+
         QSerDeviceStatus builder = QSerDeviceStatus.serDeviceStatus;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -133,19 +151,13 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         }
 
 
+
+
         PageRequest pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultStatusSort).ascending());
         long total = serDeviceStatusRepository.count(predicate);
         List<SerDeviceStatus> data = serDeviceStatusRepository.findAll(predicate, pageRequest).getContent();
 
 
-        int deviceTrafficMiddle = 30;
-        int deviceTrafficHigh = 80;
-        int storageAlarm = 0;
-        List<SerPlatformOtherParams> paramList = serPlatformOtherParamRepository.findAll();
-        if (paramList != null && paramList.size() > 0) {
-            deviceTrafficMiddle = paramList.get(0).getDeviceTrafficMiddle();
-            deviceTrafficHigh = paramList.get(0).getDeviceTrafficHigh();
-        }
 
         for (int i = 0; i < data.size(); i++) {
             SerDeviceStatus deviceStatus = data.get(i);
@@ -153,14 +165,14 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
             //deviceStatus.setRecord(getRecordList(deviceStatus, deviceTrafficSetting));
 
-            List<SerScanParamSimple> serScanParamList = deviceStatus.getSerScanParamList();
-            if (serScanParamList != null && serScanParamList.size() > 0) {
+            SerScanParamSimple serScanParam = deviceStatus.getSerScanParam();
+            if (serScanParam != null) {
                 try {
                     String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
                     int currentSpace = Integer.parseInt(splitDiskSpace[0]);
                     int totalSpace = Integer.parseInt(splitDiskSpace[1]);
-                    Integer deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
-                    Integer deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
+                    Integer deviceStorageAlarm = serScanParam.getDeviceStorageAlarm();
+                    Integer deviceStorageAlarmPercent = serScanParam.getDeviceStorageAlarmPercent();
                     if (deviceStorageAlarm != null && currentSpace > deviceStorageAlarm) {
                         storageAlarm = 1;
                     } else if (deviceStorageAlarmPercent != null && currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {
@@ -212,14 +224,14 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
         deviceStatus.setRecord(getRecordList(deviceStatus, deviceTrafficSetting));
 
-        List<SerScanParamSimple> serScanParamList = deviceStatus.getSerScanParamList();
-        if (serScanParamList != null && serScanParamList.size() > 0) {
+        SerScanParamSimple serScanParam = deviceStatus.getSerScanParam();
+        if (serScanParam != null ) {
             try {
                 String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
                 int currentSpace = Integer.parseInt(splitDiskSpace[0]);
                 int totalSpace = Integer.parseInt(splitDiskSpace[1]);
-                Integer deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
-                Integer deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
+                Integer deviceStorageAlarm = serScanParam.getDeviceStorageAlarm();
+                Integer deviceStorageAlarmPercent = serScanParam.getDeviceStorageAlarmPercent();
                 if (deviceStorageAlarm != null && currentSpace > deviceStorageAlarm) {
                     storageAlarm = 1;
                 } else if (deviceStorageAlarmPercent != null && currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {

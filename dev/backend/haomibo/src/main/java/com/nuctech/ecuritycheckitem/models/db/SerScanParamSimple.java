@@ -51,7 +51,7 @@ public class SerScanParamSimple extends BaseEntity implements Serializable {
     private Long scanParamsId;
 
 
-    @Column(name = "DEV_ID", length = 20)
+    @Column(name = "DEV_ID", length = 20, unique = true)
     private Long deviceId;
 
 

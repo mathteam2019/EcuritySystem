@@ -38,7 +38,7 @@ public class Constants {
     public static final long DEFAULT_RECOGNIZE_RATE = 0L;
     public static final int DEFAULT_STORAGE_ALARM = 5;
     public static final int DEFAULT_STORAGE_PERCENT = 80;
-    public static final String CHINESE_LOCALE = "ch";
+    public static final String CHINESE_LOCALE = "zh";
     public static final String ENGLISH_LOCALE = "en";
 
     public static final String[] EXCLUDE_URL_PATTERNS = {

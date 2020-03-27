@@ -13,13 +13,8 @@
 package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -37,7 +32,7 @@ import java.util.Set;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_USER)
 @Table(name = "sys_user")
-public class SysUser extends BaseEntity implements Serializable {
+public class SysAssignUser extends BaseEntity implements Serializable {
 
 
     public static class Gender {
@@ -138,13 +133,13 @@ public class SysUser extends BaseEntity implements Serializable {
     @MapsId("org")
     private SysOrg org; // Relation to SysOrg table.
 
-//    @OneToMany(fetch = FetchType.EAGER)
-//    @JoinTable(
-//            name = "sys_role_user",
-//            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
-//            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
-//    )
-//    private Set<SysRole> roles; // Relation to SysRole table.
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sys_role_user",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
+    )
+    private Set<SysRole> roles; // Relation to SysRole table.
 
 //    @OneToMany(fetch = FetchType.EAGER)
 //    @JoinTable(

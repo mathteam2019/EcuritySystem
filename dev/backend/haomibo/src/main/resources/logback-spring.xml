@@ -13,7 +13,7 @@
     <springProfile name="prod">
 
         <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>security/logs/app.log</file>
+            <file>ecurity/logs/app.log</file>
 
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
                 <fileNamePattern>ecurity/logs/archived/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>

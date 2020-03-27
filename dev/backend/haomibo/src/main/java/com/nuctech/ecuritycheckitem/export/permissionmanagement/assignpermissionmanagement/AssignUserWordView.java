@@ -17,6 +17,7 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
+import com.nuctech.ecuritycheckitem.models.db.SysAssignUser;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
@@ -83,7 +84,7 @@ public class AssignUserWordView extends BaseWordView {
      * @param exportList
      * @return
      */
-    public static InputStream buildWordDocument(List<SysUser> exportList) {
+    public static InputStream buildWordDocument(List<SysAssignUser> exportList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -97,7 +98,7 @@ public class AssignUserWordView extends BaseWordView {
             int number = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
-                SysUser user = exportList.get(i);
+                SysAssignUser user = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 

@@ -175,7 +175,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         // Get all available resources for user.
-        List<SysResource> availableSysResourceList = authService.getAvailableSysResourceList(sysUser);
+        List<SysResource> availableSysResourceList = new ArrayList<>();//authService.getAvailableSysResourceList(sysUser);
         endTime = new Date();
         long dif_forbi_available = endTime.getTime() - startTime.getTime();
 

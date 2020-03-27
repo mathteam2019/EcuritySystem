@@ -320,7 +320,7 @@ public class PermissionControlController extends BaseController {
     /**
      * Role create request.
      */
-    @PreAuthorize(Role.Authority.HAS_ROLE_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_ROLE_CREATE)
     @RequestMapping(value = "/role/create", method = RequestMethod.POST)
     public Object roleCreate(
             @RequestBody @Valid RoleCreateRequestBody requestBody,
@@ -425,7 +425,7 @@ public class PermissionControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ROLE_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_ROLE_EXPORT)
     @RequestMapping(value = "/role/xlsx", method = RequestMethod.POST)
     public Object roleGenerateExelFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
@@ -524,7 +524,7 @@ public class PermissionControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ROLE_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_ROLE_PRINT)
     @RequestMapping(value = "/role/pdf", method = RequestMethod.POST)
     public Object roleGeneratePDFFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
                                        BindingResult bindingResult) {
@@ -576,7 +576,7 @@ public class PermissionControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ROLE_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_ROLE_MODIFY)
     @RequestMapping(value = "/role/modify", method = RequestMethod.POST)
     public Object roleModify(
             @RequestBody @Valid RoleModifyRequestBody requestBody,
@@ -630,7 +630,7 @@ public class PermissionControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ROLE_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_ROLE_DELETE)
     @RequestMapping(value = "/role/delete", method = RequestMethod.POST)
     public Object roleDelete(
             @RequestBody @Valid RoleDeleteRequestBody requestBody,
@@ -681,7 +681,7 @@ public class PermissionControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_DATA_GROUP_CREATE)
     @RequestMapping(value = "/data-group/create", method = RequestMethod.POST)
     public Object dataGroupCreate(
             @RequestBody @Valid DataGroupCreateRequestBody requestBody,
@@ -785,7 +785,7 @@ public class PermissionControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_DATA_GROUP_EXPORT)
     @RequestMapping(value = "/data-group/xlsx", method = RequestMethod.POST)
     public Object dataGroupGenerateExcelFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
@@ -884,7 +884,7 @@ public class PermissionControlController extends BaseController {
     /**
      * Data Group generate pdf file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_DATA_GROUP_PRINT)
     @RequestMapping(value = "/data-group/pdf", method = RequestMethod.POST)
     public Object dataGroupGeneratePDFFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
@@ -937,7 +937,7 @@ public class PermissionControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_DATA_GROUP_MODIFY)
     @RequestMapping(value = "/data-group/modify", method = RequestMethod.POST)
     public Object dataGroupModify(
             @RequestBody @Valid DataGroupModifyRequestBody requestBody,
@@ -981,7 +981,7 @@ public class PermissionControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_DATA_GROUP_DELETE)
     @RequestMapping(value = "/data-group/delete", method = RequestMethod.POST)
     public Object dataGroupDelete(
             @RequestBody @Valid DataGroupDeleteRequestBody requestBody,

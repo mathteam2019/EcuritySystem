@@ -309,7 +309,7 @@ public class ArchiveManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_UPDATE_STATUS)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_UPDATE_STATUS)
     @RequestMapping(value = "/archive/update-status", method = RequestMethod.POST)
     public Object archiveUpdateStatus(
             @RequestBody @Valid ArchiveUpdateStatusRequestBody requestBody,
@@ -354,7 +354,7 @@ public class ArchiveManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_CREATE)
     @RequestMapping(value = "/archive/create", method = RequestMethod.POST)
     public Object archiveCreate(
             @ModelAttribute @Valid ArchiveCreateRequestBody requestBody,
@@ -404,7 +404,7 @@ public class ArchiveManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_MODIFY)
     @RequestMapping(value = "/archive/modify", method = RequestMethod.POST)
     public Object archiveModify(
             @ModelAttribute @Valid ArchiveModifyRequestBody requestBody,
@@ -469,7 +469,7 @@ public class ArchiveManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_DELETE)
     @RequestMapping(value = "/archive/delete", method = RequestMethod.POST)
     public Object archiveDelete(
             @RequestBody @Valid ArchiveDeleteRequestBody requestBody,
@@ -535,7 +535,7 @@ public class ArchiveManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_EXPORT)
     @RequestMapping(value = "/archive/xlsx", method = RequestMethod.POST)
     public Object archiveGenerateExcelFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
                                            BindingResult bindingResult) {
@@ -654,7 +654,7 @@ public class ArchiveManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_PRINT)
     @RequestMapping(value = "/archive/pdf", method = RequestMethod.POST)
     public Object archiveGeneratePDFFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
                                          BindingResult bindingResult) {

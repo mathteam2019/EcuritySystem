@@ -127,7 +127,7 @@ public class DeviceStatusController extends BaseController {
         // Set filters.
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SER_DEVICE_STATUS, SimpleBeanPropertyFilter.serializeAllExcept("serScanParamList", "scanList"));   //return all fields except specified fields from SysDevice model
+                .addFilter(ModelJsonFilters.FILTER_SER_DEVICE_STATUS, SimpleBeanPropertyFilter.serializeAllExcept("serScanParam", "scanList"));   //return all fields except specified fields from SysDevice model
 
         value.setFilters(filters);
 

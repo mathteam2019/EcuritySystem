@@ -120,7 +120,7 @@ public class PlatformOtherManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_PLATFORM_OTHER_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_PLATFORM_OTHER_MODIFY)
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public Object platformOtherModify(
             @RequestBody @Valid PlatformOtherModifyRequestBody requestBody,

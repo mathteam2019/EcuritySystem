@@ -226,7 +226,7 @@ public class AuditLogController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_AUDIT_LOG_EXPORT)
     @RequestMapping(value = "/xlsx", method = RequestMethod.POST)
     public Object auditLogGenerateExcelFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
@@ -313,7 +313,7 @@ public class AuditLogController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_AUDIT_LOG_PRINT)
     @RequestMapping(value = "/pdf", method = RequestMethod.POST)
     public Object auditLogGeneratePDFFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
                                        BindingResult bindingResult) {

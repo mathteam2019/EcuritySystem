@@ -243,7 +243,7 @@ public class FieldManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
     @RequestMapping(value = "/field/create", method = RequestMethod.POST)
     public Object fieldCreate(
             @RequestBody @Valid FieldCreateRequestBody requestBody,
@@ -287,7 +287,7 @@ public class FieldManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
     @RequestMapping(value = "/field/modify", method = RequestMethod.POST)
     public Object fieldModify(
             @RequestBody @Valid FieldModifyRequestBody requestBody,
@@ -346,7 +346,7 @@ public class FieldManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
     @RequestMapping(value = "/field/delete", method = RequestMethod.POST)
     public Object fieldDelete(
             @RequestBody @Valid FieldDeleteRequestBody requestBody,
@@ -388,7 +388,7 @@ public class FieldManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_UPDATE_STATUS)
+    //@PreAuthorize(Role.Authority.HAS_FIELD_UPDATE_STATUS)
     @RequestMapping(value = "/field/update-status", method = RequestMethod.POST)
     public Object fieldUpdateStatus(
             @RequestBody @Valid FieldUpdateStatusRequestBody requestBody,
@@ -526,7 +526,7 @@ public class FieldManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_FIELD_EXPORT)
     @RequestMapping(value = "/field/xlsx", method = RequestMethod.POST)
     public Object fieldGenerateExcelFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                      BindingResult bindingResult) {
@@ -633,7 +633,7 @@ public class FieldManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_FIELD_PRINT)
     @RequestMapping(value = "/field/pdf", method = RequestMethod.POST)
     public Object fieldGeneratePDFFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                          BindingResult bindingResult) {

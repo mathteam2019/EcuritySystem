@@ -244,7 +244,7 @@ public class DictionaryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-//    @PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
+//    //@PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
     @RequestMapping(value = "/dictionary/create", method = RequestMethod.POST)
     public Object dictionaryCreate(
             @RequestBody @Valid DictionaryCreateRequestBody requestBody,
@@ -281,7 +281,7 @@ public class DictionaryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-//    @PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
+//    //@PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
     @RequestMapping(value = "/dictionary-data/create", method = RequestMethod.POST)
     public Object dictionaryDataCreate(
             @RequestBody @Valid DictionaryDataCreateRequestBody requestBody,
@@ -333,7 +333,7 @@ public class DictionaryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-//    @PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
+//    //@PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
     @RequestMapping(value = "/dictionary/modify", method = RequestMethod.POST)
     public Object dictionaryModify(
             @RequestBody @Valid DictionaryModifyRequestBody requestBody,
@@ -386,7 +386,7 @@ public class DictionaryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-//    @PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
+//    //@PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
     @RequestMapping(value = "/dictionary-data/modify", method = RequestMethod.POST)
     public Object dictionaryDataModify(
             @RequestBody @Valid DictionaryDataModifyRequestBody requestBody,
@@ -443,7 +443,7 @@ public class DictionaryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-//    @PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
+//    //@PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
     @RequestMapping(value = "/dictionary/delete", method = RequestMethod.POST)
     public Object dictionaryDelete(
             @RequestBody @Valid DictionaryDeleteRequestBody requestBody,
@@ -474,7 +474,7 @@ public class DictionaryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-//    @PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
+//    //@PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
     @RequestMapping(value = "/dictionary-data/delete", method = RequestMethod.POST)
     public Object dictionaryDataDelete(
             @RequestBody @Valid DictionaryDataDeleteRequestBody requestBody,

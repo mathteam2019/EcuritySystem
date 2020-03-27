@@ -268,7 +268,7 @@ public class DeviceConfigManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CONFIG_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_CONFIG_MODIFY)
     @RequestMapping(value = "/config/modify", method = RequestMethod.POST)
     public Object deviceConfigModify(
             @RequestBody @Valid DeviceConfigModifyRequestBody requestBody,

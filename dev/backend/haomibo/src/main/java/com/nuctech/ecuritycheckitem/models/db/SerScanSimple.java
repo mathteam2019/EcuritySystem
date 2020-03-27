@@ -21,12 +21,7 @@ import lombok.ToString;
 import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -39,6 +34,16 @@ import java.util.Date;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SER_SCAN)
 @Table(name = "ser_scan")
+
+@NamedNativeQueries({
+        @NamedNativeQuery(
+                name = "getLimitScan",
+                query = "SELECT * " +
+                        "FROM employee " +
+                        "WHERE SCAN_START_TIME > 2020-03-18 21:21:08",
+                resultClass=SerScanSimple.class
+        ),
+})
 public class SerScanSimple extends BaseEntity implements Serializable {
 
 
@@ -46,8 +51,6 @@ public class SerScanSimple extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SCAN_ID", length = 20)
     private Long scanId;
-
-
 
     @Column(name = "SCAN_DEVICE_ID", length = 20)
     private Long scanDeviceId;

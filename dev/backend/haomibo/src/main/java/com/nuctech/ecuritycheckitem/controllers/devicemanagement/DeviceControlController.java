@@ -427,7 +427,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_EXPORT)
     @RequestMapping(value = "/device/xlsx", method = RequestMethod.POST)
     public Object deviceGenerateExcelFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
@@ -548,7 +548,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_PRINT)
     @RequestMapping(value = "/device/pdf", method = RequestMethod.POST)
     public Object deviceGeneratePDFFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                      BindingResult bindingResult) {
@@ -610,7 +610,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
     @RequestMapping(value = "/device/field/xlsx", method = RequestMethod.POST)
     public Object deviceFieldGenerateExcelFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                           BindingResult bindingResult) {
@@ -672,7 +672,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
     @RequestMapping(value = "/device/field/docx", method = RequestMethod.POST)
     public Object deviceFieldGenerateWordFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
@@ -733,7 +733,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_PRINT)
     @RequestMapping(value = "/device/field/pdf", method = RequestMethod.POST)
     public Object deviceFieldGeneratePDFFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
@@ -795,7 +795,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_UPDATE_STATUS)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_UPDATE_STATUS)
     @RequestMapping(value = "/device/update-status", method = RequestMethod.POST)
     public Object deviceUpdateStatus(
             @RequestBody @Valid DeviceUpdateStatusRequestBody requestBody,
@@ -845,7 +845,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_CREATE)
     @RequestMapping(value = "/device/create", method = RequestMethod.POST)
     public Object deviceCreate(
             @ModelAttribute @Valid DeviceCreateRequestBody requestBody,
@@ -896,7 +896,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_MODIFY)
     @RequestMapping(value = "/device/modify", method = RequestMethod.POST)
     public Object deviceModify(
             @ModelAttribute @Valid DeviceModifyRequestBody requestBody,
@@ -953,7 +953,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_DELETE)
     @RequestMapping(value = "/device/delete", method = RequestMethod.POST)
     public Object deviceDelete(
             @RequestBody @Valid DeviceDeleteRequestBody requestBody,
@@ -998,7 +998,7 @@ public class DeviceControlController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_MODIFY)
     @RequestMapping(value = "/device/field-modify", method = RequestMethod.POST)
     public Object deviceFieldModify(
             @RequestBody @Valid DeviceFieldModifyRequestBody requestBody,

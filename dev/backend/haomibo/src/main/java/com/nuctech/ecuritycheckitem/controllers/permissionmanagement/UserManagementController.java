@@ -418,7 +418,7 @@ public class UserManagementController extends BaseController {
     /**
      * User create request.
      */
-    @PreAuthorize(Role.Authority.HAS_USER_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_USER_CREATE)
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)
     public Object userCreate(
             @ModelAttribute @Valid UserCreateRequestBody requestBody,
@@ -490,7 +490,7 @@ public class UserManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_USER_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_USER_MODIFY)
     @RequestMapping(value = "/user/modify", method = RequestMethod.POST)
     public Object userModify(
             @ModelAttribute @Valid UserModifyRequestBody requestBody,
@@ -617,7 +617,7 @@ public class UserManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_USER_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_USER_EXPORT)
     @RequestMapping(value = "/user/xlsx", method = RequestMethod.POST)
     public Object userGenerateExcelFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
@@ -720,7 +720,7 @@ public class UserManagementController extends BaseController {
     /**
      * User generate pdf request.
      */
-    @PreAuthorize(Role.Authority.HAS_USER_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_USER_PRINT)
     @RequestMapping(value = "/user/pdf", method = RequestMethod.POST)
     public Object userGeneratePdfFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                       BindingResult bindingResult) {
@@ -778,7 +778,7 @@ public class UserManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_USER_UPDATE_STATUS)
+    //@PreAuthorize(Role.Authority.HAS_USER_UPDATE_STATUS)
     @RequestMapping(value = "/user/update-status", method = RequestMethod.POST)
     public Object userUpdateStatus(
             @RequestBody @Valid UserUpdateStatusRequestBody requestBody,
@@ -831,7 +831,7 @@ public class UserManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_USER_UPDATE_STATUS)
+    //@PreAuthorize(Role.Authority.HAS_USER_UPDATE_STATUS)
     @RequestMapping(value = "/user/modify-password", method = RequestMethod.POST)
     public Object userModifyPassword(
             @RequestBody @Valid UserModifyPasswordRequestBody requestBody,
@@ -901,7 +901,7 @@ public class UserManagementController extends BaseController {
     /**
      * User group create request.
      */
-    @PreAuthorize(Role.Authority.HAS_USER_GROUP_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_USER_GROUP_CREATE)
     @RequestMapping(value = "/user-group/create", method = RequestMethod.POST)
     public Object userGroupCreate(
             @RequestBody @Valid UserGroupCreateRequestBody requestBody,
@@ -1013,7 +1013,7 @@ public class UserManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_USER_GROUP_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_USER_GROUP_EXPORT)
     @RequestMapping(value = "/user-group/xlsx", method = RequestMethod.POST)
     public Object userGroupGenerateExcelFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
@@ -1116,7 +1116,7 @@ public class UserManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_USER_GROUP_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_USER_GROUP_PRINT)
     @RequestMapping(value = "/user-group/pdf", method = RequestMethod.POST)
     public Object userGroupGeneratePDFFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                            BindingResult bindingResult) {
@@ -1169,7 +1169,7 @@ public class UserManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_USER_GROUP_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_USER_GROUP_MODIFY)
     @RequestMapping(value = "/user-group/modify", method = RequestMethod.POST)
     public Object userGroupModify(@RequestBody @Valid UserGroupModifyRequestBody requestBody,
             BindingResult bindingResult) {
@@ -1197,7 +1197,7 @@ public class UserManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_USER_GROUP_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_USER_GROUP_DELETE)
     @RequestMapping(value = "/user-group/delete", method = RequestMethod.POST)
     public Object userGroupDelete(
             @RequestBody @Valid UserGroupDeleteRequestBody requestBody,

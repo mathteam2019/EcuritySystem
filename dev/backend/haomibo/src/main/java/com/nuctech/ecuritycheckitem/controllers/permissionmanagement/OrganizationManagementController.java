@@ -273,7 +273,7 @@ public class OrganizationManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ORG_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_ORG_CREATE)
     @RequestMapping(value = "/organization/create", method = RequestMethod.POST)
     public Object organizationCreate(
             @RequestBody @Valid OrganizationCreateRequestBody requestBody,
@@ -347,7 +347,7 @@ public class OrganizationManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ORG_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_ORG_MODIFY)
     @RequestMapping(value = "/organization/modify", method = RequestMethod.POST)
     public Object organizationModify(
             @RequestBody @Valid OrganizationModifyRequestBody requestBody,
@@ -393,7 +393,7 @@ public class OrganizationManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ORG_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_ORG_DELETE)
     @RequestMapping(value = "/organization/delete", method = RequestMethod.POST)
     public Object organizationDelete(
             @RequestBody @Valid OrganizationDeleteRequestBody requestBody,
@@ -422,7 +422,7 @@ public class OrganizationManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ORG_UPDATE_STATUS)
+    //@PreAuthorize(Role.Authority.HAS_ORG_UPDATE_STATUS)
     @RequestMapping(value = "/organization/update-status", method = RequestMethod.POST)
     public Object organizationUpdateStatus(
             @RequestBody @Valid OrganizationUpdateStatusRequestBody requestBody,
@@ -625,7 +625,7 @@ public class OrganizationManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ORG_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_ORG_EXPORT)
     @RequestMapping(value = "/organization/xlsx", method = RequestMethod.POST)
     public Object organizationGenerateExcelFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                                 BindingResult bindingResult) {
@@ -727,7 +727,7 @@ public class OrganizationManagementController extends BaseController {
     /**
      * Organization generate pdf request.
      */
-    @PreAuthorize(Role.Authority.HAS_ORG_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_ORG_PRINT)
     @RequestMapping(value = "/organization/pdf", method = RequestMethod.POST)
     public Object organizationGeneratePdfFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                               BindingResult bindingResult) {

@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.permissionmanagement;
 
+import com.nuctech.ecuritycheckitem.models.db.SysAssignUser;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
@@ -76,7 +77,7 @@ public interface AssignPermissionService {
      * @param perPage
      * @return
      */
-    PageResult<SysUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName,
+    PageResult<SysAssignUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName,
                                                String dataRangeCategory, Integer currentPage, Integer perPage);
 
     /**
@@ -86,7 +87,7 @@ public interface AssignPermissionService {
      * @param roleName
      * @return
      */
-    List<SysUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName, String dataRangeCategory);
+    List<SysAssignUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName, String dataRangeCategory);
 
     /**
      * Get paginated user group by filter and page

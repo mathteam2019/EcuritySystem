@@ -223,7 +223,7 @@ public class DeviceCategoryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_CREATE)
     @RequestMapping(value = "/category/create", method = RequestMethod.POST)
     public Object deviceCategoryCreate(
             @RequestBody @Valid DeviceCategoryCreateRequestBody requestBody,
@@ -264,7 +264,7 @@ public class DeviceCategoryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_MODIFY)
     @RequestMapping(value = "/category/modify", method = RequestMethod.POST)
     public Object deviceCategoryModify(
             @RequestBody @Valid DeviceCategoryModifyRequestBody requestBody,
@@ -317,7 +317,7 @@ public class DeviceCategoryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_DELETE)
     @RequestMapping(value = "/category/delete", method = RequestMethod.POST)
     public Object deviceCategoryDelete(
             @RequestBody @Valid DeviceCateogryDeleteRequestBody requestBody,
@@ -433,7 +433,7 @@ public class DeviceCategoryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_EXPORT)
     @RequestMapping(value = "/category/xlsx", method = RequestMethod.POST)
     public Object deviceCategoryGenerateExcelFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
@@ -546,7 +546,7 @@ public class DeviceCategoryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_PRINT)
     @RequestMapping(value = "/category/pdf", method = RequestMethod.POST)
     public Object deviceCategoryGeneratePDFFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
                                                 BindingResult bindingResult) {
@@ -603,7 +603,7 @@ public class DeviceCategoryManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_UPDATE_STATUS)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_UPDATE_STATUS)
     @RequestMapping(value = "/category/update-status", method = RequestMethod.POST)
     public Object deviceCategoryUpdateStatus(
             @RequestBody @Valid DeviceCategoryUpdateStatusRequestBody requestBody,

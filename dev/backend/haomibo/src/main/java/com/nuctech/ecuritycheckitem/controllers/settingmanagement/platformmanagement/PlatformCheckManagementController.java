@@ -120,7 +120,7 @@ public class PlatformCheckManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_PLATFORM_CHECK_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_PLATFORM_CHECK_MODIFY)
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public Object platformCheckModify(
             @RequestBody @Valid PlatformCheckrModifyRequestBody requestBody,

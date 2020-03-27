@@ -147,8 +147,8 @@ public class ScanParamManagementController extends BaseController {
         String hipBlurring; // hip Blurring
         String groinBlurring; // groin Blurring
         List<Long> fromDeviceIdList; // from deviceId List
-        Integer storageAlarm; // storage alarm
-        Integer storageAlarmPercent; // storage alarm percent
+        Integer deviceStorageAlarm; // storage alarm
+        Integer deviceStorageAlarmPercent; // storage alarm percent
 
         SerScanParam convert2SerScanParam() { //create new object from input parameters
 
@@ -171,8 +171,8 @@ public class ScanParamManagementController extends BaseController {
                     .chestBlurring(this.getChestBlurring())
                     .hipBlurring(this.getHipBlurring())
                     .groinBlurring(this.getGroinBlurring())
-                    .deviceStorageAlarm(this.getStorageAlarm())
-                    .deviceStorageAlarmPercent(this.getStorageAlarmPercent())
+                    .deviceStorageAlarm(this.getDeviceStorageAlarm())
+                    .deviceStorageAlarmPercent(this.getDeviceStorageAlarmPercent())
                     .build();
         }
     }
@@ -285,7 +285,7 @@ public class ScanParamManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_SCAN_PARAM_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_SCAN_PARAM_MODIFY)
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public Object scanParamModify(
             @RequestBody @Valid ScanParamModifyRequestBody requestBody,

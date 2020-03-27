@@ -13,34 +13,10 @@
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
-import com.nuctech.ecuritycheckitem.models.db.QSysUser;
-import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
-import com.nuctech.ecuritycheckitem.models.db.QSysDataGroup;
-import com.nuctech.ecuritycheckitem.models.db.QSysRoleUser;
-import com.nuctech.ecuritycheckitem.models.db.SysRoleUser;
-import com.nuctech.ecuritycheckitem.models.db.SysUserLookup;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserLookup;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserGroup;
-import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
-import com.nuctech.ecuritycheckitem.models.db.SysUserGroupRole;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupRole;
-import com.nuctech.ecuritycheckitem.models.db.SysUserGroupLookup;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupLookup;
-import com.nuctech.ecuritycheckitem.models.db.SysRole;
-import com.nuctech.ecuritycheckitem.models.db.SysOrg;
-import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
-import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysDataGroupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysRoleUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserLookupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRoleRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupLookupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysRoleRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
+import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
@@ -91,6 +67,9 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     @Autowired
     SysOrgRepository sysOrgRepository;
+
+    @Autowired
+    SysAssignUserRepository sysAssignUserRepository;
 
     @Autowired
     AuthService authService;
@@ -292,7 +271,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param perPage
      * @return
      */
-    public PageResult<SysUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName, String dataRangeCategory, Integer currentPage, Integer perPage) {
+    public PageResult<SysAssignUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName, String dataRangeCategory, Integer currentPage, Integer perPage) {
 
         BooleanBuilder predicate = getPredicate(userName, orgId, roleName, dataRangeCategory);
 
@@ -307,10 +286,10 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
         } else {
             pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultUserAssignSort).ascending());
         }
-        long total = sysUserRepository.count(predicate);
-        List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
+        long total = sysAssignUserRepository.count(predicate);
+        List<SysAssignUser> data = sysAssignUserRepository.findAll(predicate, pageRequest).getContent();
 
-        return new PageResult<SysUser>(total, data);
+        return new PageResult<SysAssignUser>(total, data);
 
     }
 
@@ -322,7 +301,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param roleName
      * @return
      */
-    public List<SysUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName, String dataRangeCategory) {
+    public List<SysAssignUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName, String dataRangeCategory) {
         BooleanBuilder predicate = getPredicate(userName, orgId, roleName, dataRangeCategory);
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -335,11 +314,11 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
         }
         if(sort != null) {
             return StreamSupport
-                    .stream(sysUserRepository.findAll(predicate, sort).spliterator(), false)
+                    .stream(sysAssignUserRepository.findAll(predicate, sort).spliterator(), false)
                     .collect(Collectors.toList());
         }
         return StreamSupport
-                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
+                .stream(sysAssignUserRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
     }
 
@@ -407,7 +386,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @return
      */
     private BooleanBuilder getPredicate(String userName, Long orgId, String roleName, String dataRangeCategory) {
-        QSysUser builder = QSysUser.sysUser;
+        QSysAssignUser builder = QSysAssignUser.sysAssignUser;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 

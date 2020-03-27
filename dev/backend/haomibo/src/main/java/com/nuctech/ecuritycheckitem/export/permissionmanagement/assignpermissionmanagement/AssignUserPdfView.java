@@ -22,6 +22,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
+import com.nuctech.ecuritycheckitem.models.db.SysAssignUser;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 
@@ -39,7 +40,7 @@ public class AssignUserPdfView extends BasePdfView {
      * @param exportUserList
      * @return
      */
-    public static InputStream buildPDFDocument(List<SysUser> exportUserList) {
+    public static InputStream buildPDFDocument(List<SysAssignUser> exportUserList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -63,7 +64,7 @@ public class AssignUserPdfView extends BasePdfView {
 
 
             int number = 0;
-            for (SysUser user : exportUserList) {
+            for (SysAssignUser user : exportUserList) {
                 addTableCell(table, String.valueOf(++ number));
                 addTableCell(table, user.getUserName());
                 addTableCell(table, ConstantDictionary.getDataValue(user.getGender()));

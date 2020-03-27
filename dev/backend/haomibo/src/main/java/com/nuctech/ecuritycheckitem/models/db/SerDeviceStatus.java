@@ -21,20 +21,12 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.*;
 
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +60,7 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     private Long statusId;
 
 
-    @Column(name = "DEVICE_ID", length = 20)
+    @Column(name = "DEVICE_ID", length = 20, unique = true)
     private Long deviceId;
 
     @Column(name = "DEVICE_ONLINE", length = 20)
@@ -163,11 +155,22 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
 
 
     @ToString.Exclude
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DEV_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEVICE_ID", referencedColumnName = "DEV_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("scan_param")
-    List<SerScanParamSimple> serScanParamList;
+    SerScanParamSimple serScanParam;
+
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @Fetch(FetchMode.JOIN)
+//    @JoinTable(
+//            name = "ser_scan",
+//            joinColumns = {@JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)}
+//    )
+////    @JoinFormula("(SELECT scan.SCAN_ID FROM ser_scan scan WHERE scan.SCAN_DEVICE_ID = DEVICE_ID ORDER BY login.CREATEDTIME DESC LIMIT 1)")
+//    @NotFound(action = NotFoundAction.IGNORE)
+////    @Size(max = 200)
+//    private List<SerScanSimple> scanSimples;
 
     @javax.persistence.Transient
     private List<SerScanSimple> scanList; // Relation to SysDevice table.

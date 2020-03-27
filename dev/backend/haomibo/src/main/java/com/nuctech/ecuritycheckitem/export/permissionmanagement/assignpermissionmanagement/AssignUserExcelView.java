@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissio
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
+import com.nuctech.ecuritycheckitem.models.db.SysAssignUser;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import org.apache.poi.ss.usermodel.Cell;
@@ -68,7 +69,7 @@ public class AssignUserExcelView extends BaseExcelView {
      * @param exportUserList
      * @return
      */
-    public static InputStream buildExcelDocument(List<SysUser> exportUserList) {
+    public static InputStream buildExcelDocument(List<SysAssignUser> exportUserList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
 
@@ -91,7 +92,7 @@ public class AssignUserExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
             int number = 0;
-            for (SysUser user : exportUserList) {
+            for (SysAssignUser user : exportUserList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(user.getUserName());

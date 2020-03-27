@@ -223,12 +223,12 @@ public class AssignPermissionManagementController extends BaseController {
      * @param idList
      * @return
      */
-    private List<SysUser> getExportList(List<SysUser> userList, boolean isAll, String idList) {
-        List<SysUser> exportList = new ArrayList<>();
+    private List<SysAssignUser> getExportList(List<SysAssignUser> userList, boolean isAll, String idList) {
+        List<SysAssignUser> exportList = new ArrayList<>();
         if (isAll == false) {
             String[] splits = idList.split(",");
             for (int i = 0; i < userList.size(); i++) {
-                SysUser user = userList.get(i);
+                SysAssignUser user = userList.get(i);
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
                     if (splits[j].equals(user.getUserId().toString())) {
@@ -258,7 +258,7 @@ public class AssignPermissionManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_ASSIGN_USER_CREATE)
     @RequestMapping(value = "/user/create/assign-role-and-data-range", method = RequestMethod.POST)
     public Object userCreateAssignRoleAndDataRange(
             @RequestBody @Valid UserAssignRoleAndDataRangeRequestBody requestBody,
@@ -308,7 +308,7 @@ public class AssignPermissionManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_ASSIGN_USER_MODIFY)
     @RequestMapping(value = "/user/modify/assign-role-and-data-range", method = RequestMethod.POST)
     public Object userModifyAssignRoleAndDataRange(
             @RequestBody @Valid UserAssignRoleAndDataRangeRequestBody requestBody,
@@ -349,7 +349,7 @@ public class AssignPermissionManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_CREATE)
     @RequestMapping(value = "/user-group/create/assign-role-and-data-range", method = RequestMethod.POST)
     public Object userGroupCreateAssignRoleAndDataRange(
             @RequestBody @Valid UserGroupAssignRoleAndDataRangeRequestBody requestBody,
@@ -400,7 +400,7 @@ public class AssignPermissionManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_MODIFY)
     @RequestMapping(value = "/user-group/modify/assign-role-and-data-range", method = RequestMethod.POST)
     public Object userGroupModifyAssignRoleAndDataRange(
             @RequestBody @Valid UserGroupAssignRoleAndDataRangeRequestBody requestBody,
@@ -503,7 +503,7 @@ public class AssignPermissionManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        PageResult<SysUser> result = assignPermissionService.userGetByFilterAndPage(sortBy, order,
+        PageResult<SysAssignUser> result = assignPermissionService.userGetByFilterAndPage(sortBy, order,
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getOrgId(), //get ord id  from input parameter
                 requestBody.getFilter().getRoleName(), //get role name from input parameter
@@ -512,7 +512,7 @@ public class AssignPermissionManagementController extends BaseController {
                 perPage);
 
         long total = result.getTotal();
-        List<SysUser> data = result.getDataList();
+        List<SysAssignUser> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
@@ -545,7 +545,7 @@ public class AssignPermissionManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_ASSIGN_USER_EXPORT)
     @RequestMapping(value = "/user/xlsx", method = RequestMethod.POST)
     public Object userGenerateExcelFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
@@ -566,14 +566,14 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         //get all user list from service
-        List<SysUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
+        List<SysAssignUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
                 requestBody.getFilter().getUserName(),
                 requestBody.getFilter().getOrgId(),
                 requestBody.getFilter().getRoleName(),
                 requestBody.getFilter().getDataRangeCategory());
 
 
-        List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        List<SysAssignUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(requestBody.getLocale()); //set dictionary data
         AssignUserExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -620,13 +620,13 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         //get all user list
-        List<SysUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
+        List<SysAssignUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
                 requestBody.getFilter().getUserName(),
                 requestBody.getFilter().getOrgId(),
                 requestBody.getFilter().getRoleName(),
                 requestBody.getFilter().getDataRangeCategory());
 
-        List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysAssignUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data
         AssignUserWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -653,7 +653,7 @@ public class AssignPermissionManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_ASSIGN_USER_PRINT)
     @RequestMapping(value = "/user/pdf", method = RequestMethod.POST)
     public Object userGeneratePDFFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                       BindingResult bindingResult) {
@@ -674,13 +674,13 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         //get all user list
-        List<SysUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
+        List<SysAssignUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
                 requestBody.getFilter().getUserName(),
                 requestBody.getFilter().getOrgId(),
                 requestBody.getFilter().getRoleName(),
                 requestBody.getFilter().getDataRangeCategory());
 
-        List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysAssignUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserPdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale()); //set dictionary data
         AssignUserPdfView.setMessageSource(messageSource);
@@ -807,7 +807,7 @@ public class AssignPermissionManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_EXPORT)
     @RequestMapping(value = "/user-group/xlsx", method = RequestMethod.POST)
     public Object userGroupGenerateExcelFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
@@ -916,7 +916,7 @@ public class AssignPermissionManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_PRINT)
     @RequestMapping(value = "/user-group/pdf", method = RequestMethod.POST)
     public Object userGroupGeneratePDFFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                            BindingResult bindingResult) {

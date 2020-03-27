@@ -170,7 +170,7 @@ public class SeizedGoodsManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-//    @PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
+//    //@PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
     @RequestMapping(value = "/seized/create", method = RequestMethod.POST)
     public Object goodsCreate(
             @RequestBody @Valid SeizedCreateRequestBody requestBody,
@@ -203,7 +203,7 @@ public class SeizedGoodsManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-//    @PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
+//    //@PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
     @RequestMapping(value = "/seized/modify", method = RequestMethod.POST)
     public Object goodsModify(
             @RequestBody @Valid SeizedModifyRequestBody requestBody,
@@ -245,7 +245,7 @@ public class SeizedGoodsManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-//    @PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
+//    //@PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
     @RequestMapping(value = "/seized/delete", method = RequestMethod.POST)
     public Object goodsDelete(
             @RequestBody @Valid SeizedDeleteRequestBody requestBody,

@@ -390,7 +390,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_EXPORT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_EXPORT)
     @RequestMapping(value = "/archive-template/xlsx", method = RequestMethod.POST)
     public Object archiveTemplateGenerateExcelFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
                                       BindingResult bindingResult) {
@@ -498,7 +498,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_PRINT)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_PRINT)
     @RequestMapping(value = "/archive-template/pdf", method = RequestMethod.POST)
     public Object archiveTemplateGeneratePDFFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
                                               BindingResult bindingResult) {
@@ -555,7 +555,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_UPDATE_STATUS)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_UPDATE_STATUS)
     @RequestMapping(value = "/archive-template/update-status", method = RequestMethod.POST)
     public Object archiveTemplateUpdateStatus(
             @RequestBody @Valid ArchiveTemplateUpdateStatusRequestBody requestBody,
@@ -596,7 +596,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_INDICATOR_UPDATE_ISNULL)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_INDICATOR_UPDATE_ISNULL)
     @RequestMapping(value = "/archive-indicator/update-isnull", method = RequestMethod.POST)
     public Object archiveIndicatorUpdateIsNull(
             @RequestBody @Valid ArchiveIndicatorUpdateIsNullRequestBody requestBody,
@@ -632,7 +632,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_CREATE)
     @RequestMapping(value = "/archive-template/create", method = RequestMethod.POST)
     public Object archiveTemplateCreate(
             @RequestBody @Valid ArchiveTemplateCreateRequestBody requestBody,
@@ -678,7 +678,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_INDICATOR_CREATE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_INDICATOR_CREATE)
     @RequestMapping(value = "/archive-indicator/create", method = RequestMethod.POST)
     public Object archiveIndicatorCreate(
             @RequestBody @Valid ArchiveIndicatorCreateRequestBody requestBody,
@@ -704,7 +704,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_MODIFY)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_MODIFY)
     @RequestMapping(value = "/archive-template/modify", method = RequestMethod.POST)
     public Object archiveTemplateModify(
             @RequestBody @Valid ArchiveTemplateModifyRequestBody requestBody,
@@ -766,7 +766,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_DELETE)
     @RequestMapping(value = "/archive-template/delete", method = RequestMethod.POST)
     public Object archiveTemplateDelete(
             @RequestBody @Valid ArchiveTemplateDeleteRequestBody requestBody,
@@ -810,7 +810,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_INDICATOR_DELETE)
+    //@PreAuthorize(Role.Authority.HAS_DEVICE_INDICATOR_DELETE)
     @RequestMapping(value = "/archive-indicator/delete", method = RequestMethod.POST)
     public Object archiveIndicatorDelete(
             @RequestBody @Valid ArchiveIndicatorDeleteRequestBody requestBody,
