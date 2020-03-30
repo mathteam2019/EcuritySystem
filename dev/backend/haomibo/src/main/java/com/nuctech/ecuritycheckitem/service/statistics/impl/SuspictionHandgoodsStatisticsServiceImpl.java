@@ -163,6 +163,9 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
 
         for (int i = 0; i < result.size(); i++) {
             Object[] item = (Object[]) result.get(i);
+            if(item[0] == null) {
+                continue;
+            }
             TreeMap<String, Long> record = new TreeMap<>();
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
                 record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Long.parseLong(item[j + 1].toString()));
@@ -282,12 +285,12 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             whereCause.add("h.HAND_START_TIME <= '" + strDate + "'");
         }
 
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-        }
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+//        }
 
         return whereCause;
     }

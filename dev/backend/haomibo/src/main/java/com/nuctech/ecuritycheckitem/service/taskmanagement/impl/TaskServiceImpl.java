@@ -93,10 +93,12 @@ public class TaskServiceImpl implements TaskService {
         if (endTime != null) {
             predicate.and(builder.serScan.scanStartTime.before(endTime));
         }
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
-        }
+
+        predicate.and(builder.serCheckResultList.isEmpty());
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+//        }
 
         return predicate;
     }
@@ -121,7 +123,7 @@ public class TaskServiceImpl implements TaskService {
         QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
-        predicate.and(builder.serCheckResultList.size().eq(0));
+//        predicate.and(builder.serCheckResult.checkResultId.isNull());
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -138,9 +140,15 @@ public class TaskServiceImpl implements TaskService {
         } else {
             pageRequest = PageRequest.of(currentPage, perPage, Sort.by("serScan.scanStartTime").descending());
         }
+        Date start = new Date();
 
         long total = serTaskTableRepository.count(predicate);
+        Date end = new Date();
+        long diff = end.getTime() - start.getTime();
         List<SerTaskSimplifiedForProcessTableManagement> data = serTaskTableRepository.findAll(predicate, pageRequest).getContent();
+
+        end = new Date();
+        long diff1 = end.getTime() - start.getTime();
 
         return new PageResult<SerTaskSimplifiedForProcessTableManagement>(total, data);
 
@@ -164,7 +172,7 @@ public class TaskServiceImpl implements TaskService {
         QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
-        predicate.and(builder.serCheckResultList.size().eq(0));
+        predicate.and(builder.serCheckResultList.isEmpty());
 
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -212,7 +220,8 @@ public class TaskServiceImpl implements TaskService {
         QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
-        predicate.and(builder.serCheckResultList.size().eq(0));
+//        predicate.and(builder.serCheckResult.checkResultId.isNull());
+        //predicate.and(builder.serCheckResultList.size().eq(0));
         String[] splits = idList.split(",");
         List<Long> fieldIdList = new ArrayList<>();
         for(String idStr: splits) {

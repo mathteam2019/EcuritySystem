@@ -91,11 +91,13 @@ public class HistoryServiceImpl implements HistoryService {
         if (endTime != null) { //if end time is input
             predicate.and(builder.scanStartTime.before(endTime));
         }
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
-        }
-        predicate.and(builder.serCheckResultList.size().ne(0));
+
+        //predicate.and(builder.serCheckResultList.isNotEmpty());
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+//        }
+        predicate.and(builder.serCheckResult.checkResultId.isNotNull());
         return predicate;
     }
 
@@ -114,7 +116,7 @@ public class HistoryServiceImpl implements HistoryService {
      */
     @Override
     public PageResult<HistorySimplifiedForHistoryTableManagement> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
-
+        Date start = new Date();
         QHistorySimplifiedForHistoryTaskManagement builder = QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
 
@@ -133,9 +135,13 @@ public class HistoryServiceImpl implements HistoryService {
             pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
         }
 
-        long total = historyTableRepository.count(predicate); //get total count from database using repsitory
-        List<HistorySimplifiedForHistoryTableManagement> data = historyTableRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
 
+        long total = historyTableRepository.count(predicate); //get total count from database using repsitory
+        Date end = new Date();
+        long diff = end.getTime() - start.getTime();
+        List<HistorySimplifiedForHistoryTableManagement> data = historyTableRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
+        end = new Date();
+        long diff1 = end.getTime() - start.getTime();
         return new PageResult<>(total, data);
 
     }

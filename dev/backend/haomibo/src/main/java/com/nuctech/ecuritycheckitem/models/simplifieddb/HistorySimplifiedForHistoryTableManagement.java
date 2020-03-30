@@ -36,7 +36,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
 @Table(name = "history")
-public class HistorySimplifiedForHistoryTableManagement extends BaseEntity implements Serializable {
+public class HistorySimplifiedForHistoryTableManagement implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -79,10 +79,15 @@ public class HistorySimplifiedForHistoryTableManagement extends BaseEntity imple
     @NotFound(action = NotFoundAction.IGNORE)
     private SerTaskSimplifiedForHistoryTaskManagement task;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
+    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
+
+//    @OneToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
 
 //    @OneToOne()
 //    @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)

@@ -39,7 +39,7 @@ import java.io.Serializable;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_DEVICE)
 @Table(name = "sys_device")
-public class SysDeviceSimplifiedOnlyHasName extends BaseEntitySimple implements Serializable {
+public class SysDeviceSimplifiedOnlyHasName implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

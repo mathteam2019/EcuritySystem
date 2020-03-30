@@ -39,7 +39,7 @@ import java.io.Serializable;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SER_CHECK_RESULT)
 @Table(name = "ser_check_result")
-public class SerCheckResultSimplifiedForProcessTaskManagement extends BaseEntitySimple implements Serializable {
+public class SerCheckResultSimplifiedForProcessTaskManagement implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

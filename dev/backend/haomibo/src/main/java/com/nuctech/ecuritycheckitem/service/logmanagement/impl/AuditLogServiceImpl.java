@@ -117,6 +117,10 @@ public class AuditLogServiceImpl implements AuditLogService {
             SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
             max_size = serPlatformOtherParams.getLogMaxNumber();
         } catch(Exception ex) {}
+
+        if(max_size == 0) {
+            max_size = Long.MAX_VALUE;
+        }
         if(isAll == false) {
             String[] splits = idList.split(",");
             for(int i = 0; i < logList.size(); i ++) {
@@ -197,6 +201,10 @@ public class AuditLogServiceImpl implements AuditLogService {
             SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
             max_size = serPlatformOtherParams.getLogMaxNumber();
         } catch(Exception ex) {}
+
+        if(max_size == 0) {
+            max_size = Long.MAX_VALUE;
+        }
         List<Long> logIdList = new ArrayList<>();
         for(String idStr: splits) {
             logIdList.add(Long.valueOf(idStr));

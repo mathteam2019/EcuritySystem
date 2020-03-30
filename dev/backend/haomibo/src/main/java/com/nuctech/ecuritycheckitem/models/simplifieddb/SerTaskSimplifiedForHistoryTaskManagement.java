@@ -45,7 +45,7 @@ import java.io.Serializable;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SER_TASK)
 @Table(name = "ser_task")
-public class SerTaskSimplifiedForHistoryTaskManagement extends BaseEntitySimple implements Serializable {
+public class SerTaskSimplifiedForHistoryTaskManagement implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,8 +57,8 @@ public class SerTaskSimplifiedForHistoryTaskManagement extends BaseEntitySimple 
     private String taskNumber;
 
 
-    @Column(name = "WORKFLOW_ID", length = 20)
-    private Long workflowId;
+//    @Column(name = "WORKFLOW_ID", length = 20)
+//    private Long workflowId;
 
     @OneToOne()
     @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)

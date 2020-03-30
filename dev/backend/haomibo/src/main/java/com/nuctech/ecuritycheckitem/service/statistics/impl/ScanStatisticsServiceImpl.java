@@ -113,7 +113,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
      * @return
      */
     private ScanStatistics getTotalStatistics(String query) {
-
+        query = query.replace("(s.SCAN_START_TIME)", "( 1 )");
         Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> resultTotal = jpaQuery.getResultList();
 
@@ -277,12 +277,12 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             String strDate = dateFormat.format(date);
             whereCause.add("s.SCAN_END_TIME <= '" + strDate + "'");
         }
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
-        }
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
+//        }
         return whereCause;
     }
 

@@ -38,7 +38,7 @@ import java.io.Serializable;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE)
 @Table(name = "sys_work_mode")
-public class SysWorkMode extends BaseEntity implements Serializable {
+public class SysWorkMode implements Serializable {
 
     public static class WorkModeValue {
 

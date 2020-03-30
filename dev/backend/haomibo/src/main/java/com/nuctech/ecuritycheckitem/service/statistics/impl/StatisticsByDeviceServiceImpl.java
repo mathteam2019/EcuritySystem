@@ -68,7 +68,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 
         //.... Get Total Statistics
-        categoryUser = authService.getDataCategoryUserList();
+        //categoryUser = authService.getDataCategoryUserList();
         String strQuery = makeQuery(deviceType, deviceName, startTime, endTime);
         TotalStatistics totalStatistics = getTotalStatistics(strQuery);
         response.setTotalStatistics(totalStatistics);
@@ -327,11 +327,11 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
         }
 
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
-        }
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
+//        }
 
         if (!whereCause.isEmpty()) {
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
@@ -373,11 +373,11 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
         }
 
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("j.CREATEDBY in (" + idListStr + ") ");
-        }
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("j.CREATEDBY in (" + idListStr + ") ");
+//        }
 
         if (!whereCause.isEmpty()) {
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
@@ -419,11 +419,11 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
         }
 
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-        }
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+//        }
 
         if (!whereCause.isEmpty()) {
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));

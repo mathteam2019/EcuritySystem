@@ -113,6 +113,9 @@ public class DeviceLogServiceImpl implements DeviceLogService {
             SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
             max_size = serPlatformOtherParams.getLogMaxNumber();
         } catch(Exception ex) {}
+        if(max_size == 0) {
+            max_size = Long.MAX_VALUE;
+        }
         if(isAll == false) {
             String[] splits = idList.split(",");
             for(int i = 0; i < logList.size(); i ++) {
@@ -204,6 +207,9 @@ public class DeviceLogServiceImpl implements DeviceLogService {
             SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
             max_size = serPlatformOtherParams.getLogMaxNumber();
         } catch(Exception ex) {}
+        if(max_size == 0) {
+            max_size = Long.MAX_VALUE;
+        }
         predicate.and(QSerDevLog.serDevLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {

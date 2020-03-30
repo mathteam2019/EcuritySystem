@@ -117,6 +117,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
      * @return
      */
     private HandExaminationResponseModel getTotalStatistics(String query) {
+        query = query.replace("(h.HAND_START_TIME)", "( 1 )");
         HandExaminationResponseModel record = new HandExaminationResponseModel();
         Query jpaQueryTotal = entityManager.createNativeQuery(query);
 
@@ -308,12 +309,12 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
         }
 
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-        }
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+//        }
         whereCause.add("s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "' ");
         return whereCause;
     }

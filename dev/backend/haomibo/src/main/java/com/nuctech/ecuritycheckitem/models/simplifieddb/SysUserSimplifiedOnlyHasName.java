@@ -38,7 +38,7 @@ import java.io.Serializable;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_USER)
 @Table(name = "sys_user")
-public class SysUserSimplifiedOnlyHasName extends BaseEntitySimple implements Serializable {
+public class SysUserSimplifiedOnlyHasName implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

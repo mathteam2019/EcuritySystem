@@ -37,7 +37,7 @@ import java.io.Serializable;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_FIELD)
 @Table(name = "sys_field")
-public class SysFieldSimplifiedForProcessTaskManagement extends BaseEntitySimple implements Serializable {
+public class SysFieldSimplifiedForProcessTaskManagement implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

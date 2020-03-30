@@ -76,7 +76,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     public TotalStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
-        categoryUser = authService.getDataCategoryUserList();
+        //categoryUser = authService.getDataCategoryUserList();
 
         if(userCategory != null) {
             List<Long> relateUserIdList = userService.getUserListByResource(Constants.userCategory.get(userCategory));
@@ -288,11 +288,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
-        }
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
+//        }
 
         if (userCategory != null && !userCategory.isEmpty()) {
             whereCause.add(" u.user_id in (" + relateUserIdListStr + ") ");
@@ -357,11 +357,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("j.CREATEDBY in (" + idListStr + ") ");
-        }
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("j.CREATEDBY in (" + idListStr + ") ");
+//        }
 
         if (userCategory != null && !userCategory.isEmpty()) {
             whereCause.add(" u.user_id in (" + relateUserIdListStr + ") ");
@@ -425,11 +425,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-        }
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+//        }
 
         if (userCategory != null && !userCategory.isEmpty()) {
             whereCause.add(" u.user_id in (" + relateUserIdListStr + ") ");
