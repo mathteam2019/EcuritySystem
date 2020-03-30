@@ -23,14 +23,14 @@
                   </b-col>
 
                   <b-col>
-                    <b-form-group :label="$t('system-setting.status-active')">
+                    <b-form-group :label="$t('permission-management.status')">
                       <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('system-setting.super-site')">
-                      <b-form-input v-model="filterOption.parentFieldDesignation"/>
+                      <b-form-select v-model="filterOption.parentFieldDesignation" :options="superSiteOption" plain/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -176,7 +176,7 @@
                         {{$t('system-setting.super-site')}}&nbsp;
                         <span class="text-danger">*</span>
                       </template>
-                      <b-form-select :disabled="pageStatus==='edit'" :options="superSiteOptions"
+                      <b-form-select :disabled="pageStatus==='edit' && siteForm.status === '1000000701'" :options="superSiteOption"
                                      :state="!$v.siteForm.parentFieldId.$invalid"
                                      v-model="siteForm.parentFieldId" plain/>
                       <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}
@@ -240,10 +240,12 @@
             </b-row>
             <div class="position-absolute" style="bottom: 4%;left: 28%">
               <div v-if="getLocale()==='zh'"  class="position-absolute" style="bottom: 4%;left: 28%">
+                <img v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp.png">
                 <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
                 <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
               </div>
               <div v-if="getLocale()==='en'" class="position-absolute" style="lbottom: 4%;left: 28%">
+                <img v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp_en.png">
                 <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
                 <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
               </div>
@@ -293,7 +295,7 @@
                         {{$t('system-setting.super-site')}}&nbsp;
                         <span class="text-danger">*</span>
                       </template>
-                      <b-form-select v-if="siteForm.parentFieldId !=0" :options="superSiteOptions"
+                      <b-form-select v-if="siteForm.parentFieldId !=0" :options="superSiteOption"
                                      v-model="siteForm.parentFieldId" disabled plain/>
                       <b-form-input v-else-if="siteForm.parentFieldId == 0" v-model="selectedParentSerial" type="text"
                                     disabled/>
@@ -533,6 +535,13 @@
               id: id++,
               label: `<div class="org-content-top"><span>${depth}</span>${item.fieldSerial}</div><div class="org-content-bottom">${item.fieldDesignation}</div>`
             }));
+        this.treeData = nest(newVal)[0];
+        this.changeOrgTree(this.treeData.children, 1);
+        this.superSiteOption.unshift({
+          text: this.treeData.fieldDesignation,
+          value: this.treeData.fieldId
+        });
+        this.superSiteOption.unshift({value: null, text: this.$t('permission-management.all')});
         let getLevel = (org) => {
 
           let getParent = (org) => {
@@ -568,7 +577,7 @@
             text: this.$t('system-setting.none'),
             value: 0
           });
-        this.treeData = nest(newVal)[0];
+
       }
     },
     data() {
@@ -592,7 +601,7 @@
         filterOption: {
           fieldDesignation: '',
           status: null,
-          parentFieldDesignation: ''
+          parentFieldDesignation: null
         },
 
         vuetableItems: {
@@ -625,7 +634,7 @@
             },
             {
               name: 'status',
-              title: this.$t('system-setting.status-active'),
+              title: this.$t('permission-management.th-status'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
@@ -699,6 +708,7 @@
         pageStatus: 'table', // table, create, edit, show
         selectedSite: '0000',
         superSiteOptions: [],
+        superSiteOption: [],
         treeData: {},
         siteForm: {
           status:'',
@@ -733,6 +743,7 @@
       }
     },
     methods: {
+
       getLocale() {
         return getLocale();
       },
@@ -791,8 +802,11 @@
         // this.$refs['model-export'].show();
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -804,6 +818,7 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filterOption,
           'idList': checkedIds.join()
@@ -817,8 +832,11 @@
       onPrintButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -836,6 +854,32 @@
               break;
           }
         });
+      },
+      generatSpace(count) {
+        let string = '';
+        while (count--) {
+          string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+        }
+        return string;
+      },
+
+      changeOrgTree(treeData, index) {
+
+
+        if (!treeData || treeData.length === 0) {
+          return;
+        }
+
+        let tmp = treeData;
+
+        for (let i = 0; i < tmp.length; i++) {
+          this.changeOrgTree(tmp[i].children, index + 1);
+
+          this.superSiteOption.unshift({
+            value: tmp[i].fieldId,
+            html: `${this.generatSpace(index)}${tmp[i].fieldDesignation}`
+          });
+        }
       },
       onAction(value, data = null) {
         switch (value) {
@@ -911,7 +955,7 @@
         this.filterOption = {
           fieldDesignation: '',
           status: null,
-          parentFieldDesignation: ''
+          parentFieldDesignation: null
         };
       },
       /**
@@ -959,11 +1003,20 @@
             let message = response.data.message;
             let data = response.data.data;
             switch (message) {
+
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`site-management.site-added-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
+                if(finalLink === 'create') {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`site-management.site-added-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                }
+                else {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`site-management.site-updated-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                }
                 this.pageStatus = 'table';
                 this.getSiteData();
                 this.$refs.vuetable.reload();

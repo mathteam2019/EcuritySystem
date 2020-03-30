@@ -39,7 +39,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.affiliated-org')">
-                      <b-form-select :options="orgNameSelectData" v-model="userFilter.orgId" @change="removeSpace" plain/>
+                      <b-form-select :options="orgNameSelectData" v-model="userFilter.orgId" plain/>
                     </b-form-group>
                   </b-col>
 
@@ -246,10 +246,6 @@
                                            :state="userForm.dataRangeCategory !== '1000000505' ? null : (!$v.userForm.selectedDataGroupId.$dirty ? null : !$v.userForm.selectedDataGroupId.$invalid)"
                                            :disabled="userForm.dataRangeCategory !== '1000000505'"
                             />
-<!--                            <div-->
-<!--                              v-if="userForm.dataRangeCategory !== '1000000505' || !$v.userForm.selectedDataGroupId.$invalid">-->
-<!--                              &nbsp;-->
-<!--                            </div>-->
                             <b-form-invalid-feedback>
                               {{ $t('permission-management.user.orgId-field-is-mandatory') }}
                             </b-form-invalid-feedback>
@@ -561,7 +557,7 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
-  import {checkPermissionItem, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import {validationMixin} from 'vuelidate';
   import {downLoadFileFromServer, getApiManager, getApiManagerError, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
@@ -643,6 +639,7 @@
           });
           result.push(...indentData(org.children, level + 1));
         });
+
         return result;
       };
 
@@ -656,6 +653,7 @@
             this.orgData = data;
             this.orgTreeData = nest(this.orgData, rootOrgId);
             this.orgNameSelectData = indentData(this.orgTreeData, 0);
+            this.orgNameSelectData.push({value: null, text: this.$t('permission-management.all')});
             break;
         }
       });
@@ -1079,7 +1077,7 @@
     },
     methods: {
       removeSpace(e){
-        //console.log(e.target);
+
       },
       selectAll(value){
         this.$refs.userVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
@@ -1176,8 +1174,6 @@
         return checkPermissionItem(value);
       },
       onExportButton() {
-        // this.fileSelection = [];
-        // this.$refs['model-export'].show();
         if (this.tabStatus === 'user') {
           this.onExportUser();
         }
@@ -1197,8 +1193,11 @@
       onExportUser() {
         let checkedAll = this.$refs.userVuetable.checkedAllStatus;
         let checkedIds = this.$refs.userVuetable.selectedTo;
+        let httpOption = this.$refs.userVuetable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.userFilter,
           'idList': checkedIds.join()
         };
@@ -1212,8 +1211,11 @@
       onPrintUserButton() {
         let checkedAll = this.$refs.userVuetable.checkedAllStatus;
         let checkedIds = this.$refs.userVuetable.selectedTo;
+        let httpOption = this.$refs.userVuetable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.userFilter,
           'idList': checkedIds.join()
         };
@@ -1223,8 +1225,11 @@
       onExportGroup() {
         let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
         let checkedIds = this.$refs.userGroupTable.selectedTo;
+        let httpOption = this.$refs.userGroupTable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
@@ -1238,8 +1243,11 @@
       onPrintGroupButton() {
         let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
         let checkedIds = this.$refs.userGroupTable.selectedTo;
+        let httpOption = this.$refs.userGroupTable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
@@ -1768,7 +1776,7 @@
           userName: '',
           orgId: null,
           roleName: '',
-          dataRange: ''
+          dataRange: null
         };
       },
       initializeUserForm() {

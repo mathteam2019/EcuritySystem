@@ -37,12 +37,12 @@
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.operating')">
-                      <b-form-input v-model="accessFilter.action"/>
+                      <b-form-select v-model="accessFilter.action" :options="actionSelectData" plain/>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.operating-result')">
-                      <b-form-select v-model="accessFilter.operateResult" :options="statusSelectData" plain/>
+                      <b-form-select v-model="accessFilter.operateResult" :options="statusSelect" plain/>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -122,7 +122,7 @@
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.operating')">
-                      <b-form-input v-model="operatingFilter.action"/>
+                      <b-form-select v-model="operatingFilter.action" :options="actionSelectDatas" plain/>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -263,7 +263,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
-  import {checkPermissionItem, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
@@ -330,6 +330,23 @@
           {value: null, text: this.$t('log-management.operating-log.status-all')},
           {value: '1', text: this.$t('log-management.operating-log.status-success')},
           {value: '0', text: this.$t('log-management.operating-log.status-failure')},
+        ],
+        statusSelect: [
+          {value: null, text: this.$t('log-management.operating-log.status-all')},
+          {value: '成功', text: '成功'},
+          {value: '失败', text: '失败'},
+        ],
+        actionSelectData: [
+          {value: null, text: this.$t('log-management.operating-log.status-all')},
+          {value: '登录', text: '登录'},
+          {value: '登出', text: '登出'},
+        ],
+        actionSelectDatas: [
+          {value: null, text: this.$t('log-management.operating-log.status-all')},
+          {value: '创建', text: '创建'},
+          {value: '修改', text: '修改'},
+          {value: '删除', text: '删除'},
+          {value: '更新状态', text: '更新状态'},
         ],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/log-management/operating-log/access/get-by-filter-and-page`,
@@ -601,6 +618,7 @@
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'sort' : httpOption.params.sort,
           'filter': this.accessFilter,
@@ -618,6 +636,7 @@
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'sort' : httpOption.params.sort,
           'filter': this.accessFilter,
@@ -631,6 +650,7 @@
         let checkedIds = this.$refs.operatingLogTable.selectedTo;
         let httpOption = this.$refs.operatingLogTable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'sort' : httpOption.params.sort,
           'filter': this.operatingFilter,
@@ -648,6 +668,7 @@
         let checkedIds = this.$refs.operatingLogTable.selectedTo;
         let httpOption = this.$refs.operatingLogTable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'sort' : httpOption.params.sort,
           'filter': this.operatingFilter,
@@ -661,6 +682,18 @@
         this.$refs[modal].hide();
       },
       onAccessSearchButton() {
+        console.log("d");
+        if(this.accessFilter.operateStartTime !== null && this.accessFilter.operateEndTime !== null) {
+
+          if (this.accessFilter.operateStartTime >= this.accessFilter.operateEndTime) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`maintenance-management.process-task.time-select`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+
+        }
         this.$refs.vuetable.refresh();
       },
       onAccessResetButton() {
@@ -743,6 +776,17 @@
         });
       },
       onOperatingSearchButton() {
+        if(this.operatingFilter.operateStartTime !== null && this.operatingFilter.operateEndTime !== null) {
+
+          if (this.operatingFilter.operateStartTime >= this.operatingFilter.operateEndTime) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`maintenance-management.process-task.time-select`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+
+        }
         this.$refs.operatingLogTable.refresh();
       },
       onOperatingResetButton() {

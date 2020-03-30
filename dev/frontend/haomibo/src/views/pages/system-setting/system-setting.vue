@@ -28,7 +28,7 @@
 
         <div class="section pt-0 mx-3">
           <b-tabs class="sub-tabs" v-model="tabIndex" card>
-            <b-tab :title="$t('menu.personal-inspection')">
+            <b-tab :title="$t('menu.personal-inspection')" style="height: auto;">
               <div>
                 <b-row>
                   <b-col cols="1">
@@ -36,8 +36,8 @@
                   </b-col>
                   <b-col cols="2">
                     <b-form-group :label="$t('system-setting.parameter-setting.atr-suspect-box-color')" class="pointer">
-                      <colorpicker type="colorpicker" :color="platFormData.scanRecogniseColour"
-                                   v-model="platFormData.scanRecogniseColour"
+                      <colorpicker :color="platFormData.scanRecogniseColour"
+                                   v-model="platFormData.scanRecogniseColour" :change="onChange()"
                                    style="margin-bottom: 0 !important;"/>
                     </b-form-group>
                   </b-col>
@@ -74,9 +74,7 @@
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.judgement-frame-color')">
-                      <colorpicker :color="platFormData.judgeRecogniseColour"
-                                   v-model="platFormData.judgeRecogniseColour"
-                                   :state="!$v.platFormData.judgeRecogniseColour.$dirty ? null : !$v.platFormData.judgeRecogniseColour.$invalid"
+                      <colorpicker :color="platFormData.judgeRecogniseColour" :change="onChange()"
                                    style="margin-bottom: 0rem !important;"/>
                     </b-form-group>
                   </b-col>
@@ -130,17 +128,23 @@
                   <b-col cols="2" offset="1">
                     <b-form-group class="mb-0"
                                   :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
-                      <colorpicker :searchable="false" :color="platFormData.displayDeleteSuspicionColour"
-                                   v-model="platFormData.displayDeleteSuspicionColour"
-                                   :disablePicker="platFormData.displayDeleteSuspicion==='1000000602'"
-                                   :state="!$v.platFormData.displayDeleteSuspicionColour.$dirty ? null : !$v.platFormData.displayDeleteSuspicionColour.$invalid"/>
+                      <colorpicker :color="platFormData.displayDeleteSuspicionColour" :change="onChange()"
+                                   v-model="platFormData.displayDeleteSuspicionColour"/>
                     </b-form-group>
+                  </b-col>
+
+                  <b-col cols="12" class="d-flex justify-content-end align-self-end">
+                    <b-button v-if="tabIndex === 0" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()"
+                              :disabled="checkPermItem('platform_check_modify')">
+                      <i class="icofont-save"/>
+                      {{$t('permission-management.permission-control.save')}}
+                    </b-button>
                   </b-col>
                 </b-row>
               </div>
             </b-tab>
-            <b-tab :title="$t('permission-management.other')">
-              <div>.
+            <b-tab :title="$t('permission-management.other')" style="height: auto;">
+              <div>
                 <b-row class="mb-3">
                   <b-col cols="7">
                     <b-row>
@@ -295,6 +299,14 @@
                                     :state="!$v.platFormOtherData.historyDataCycle.$dirty ? null : !$v.platFormOtherData.historyDataCycle.$invalid"/>
                     </b-form-group>
                   </b-col>
+
+                  <b-col cols="12" class="d-flex justify-content-end align-self-end">
+                    <b-button v-if="tabIndex === 1" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()"
+                              :disabled="checkPermItem('platform_other_modify')">
+                      <i class="icofont-save"/>
+                      {{$t('permission-management.permission-control.save')}}
+                    </b-button>
+                  </b-col>
                 </b-row>
 
               </div>
@@ -302,18 +314,18 @@
           </b-tabs>
         </div>
 
-        <div class="text-right mr-3 mt-3" style="margin-top: 0.5rem;">
-          <b-button v-if="tabIndex === 0" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()"
-                    :disabled="checkPermItem('platform_check_modify')">
-            <i class="icofont-save"/>
-            {{$t('permission-management.permission-control.save')}}
-          </b-button>
-          <b-button v-if="tabIndex === 1" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()"
-                    :disabled="checkPermItem('platform_other_modify')">
-            <i class="icofont-save"/>
-            {{$t('permission-management.permission-control.save')}}
-          </b-button>
-        </div>
+<!--        <div class="text-right mr-3 mt-3" style="margin-top: 0.5rem;">-->
+<!--          <b-button v-if="tabIndex === 0" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()"-->
+<!--                    :disabled="checkPermItem('platform_check_modify')">-->
+<!--            <i class="icofont-save"/>-->
+<!--            {{$t('permission-management.permission-control.save')}}-->
+<!--          </b-button>-->
+<!--          <b-button v-if="tabIndex === 1" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()"-->
+<!--                    :disabled="checkPermItem('platform_other_modify')">-->
+<!--            <i class="icofont-save"/>-->
+<!--            {{$t('permission-management.permission-control.save')}}-->
+<!--          </b-button>-->
+<!--        </div>-->
 
       </b-tab>
 
@@ -605,12 +617,12 @@
             <b-row class="mb-2">
               <b-col cols="3">
                 <b-form-group :label="$t('system-setting.parameter-setting.storage-alarm')">
-                  <b-form-input type="number" v-model="scanForm.storageAlarm" :state="!$v.scanForm.storageAlarm.$dirty ? null : !$v.scanForm.storageAlarm.$invalid"/>
+                  <b-form-input type="number" v-model="scanForm.deviceStorageAlarm" :state="!$v.scanForm.deviceStorageAlarm.$dirty ? null : !$v.scanForm.deviceStorageAlarm.$invalid"/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
                 <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
-                  <b-form-input type="number" v-model="scanForm.storageAlarmPercent" :state="!$v.scanForm.storageAlarmPercent.$dirty ? null : !$v.scanForm.storageAlarmPercent.$invalid"/>
+                  <b-form-input type="number" v-model="scanForm.deviceStorageAlarmPercent" :state="!$v.scanForm.deviceStorageAlarmPercent.$dirty ? null : !$v.scanForm.deviceStorageAlarmPercent.$invalid"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -748,13 +760,14 @@
           required,
           minValue: minValue(0), maxValue: maxValue(60)
         },
-        storageAlarm:{
+        deviceStorageAlarm:{
           required,
           minValue: minValue(0), maxValue: maxValue(1000)
         },
-        storageAlarmPercent:{
+        deviceStorageAlarmPercent:{
           required,
-          minValue: minValue(0), maxValue: maxValue(100)        }
+          minValue: minValue(0), maxValue: maxValue(100)
+        }
       },
       platFormData: {
         scanRecogniseColour: {
@@ -803,7 +816,7 @@
         initialPassword: {
           required,
           isAccountValid,isSpaceContain,
-          minLength: minLength(6), maxLength: maxLength(50)
+          minLength: minLength(6), maxLength: maxLength(20)
         },
         loginNumber: {
           required,
@@ -984,7 +997,7 @@
           logMaxNumber: null,
           deviceTrafficSettings: 10,
           storageDetectionCycle: null,
-          storageAlarm: 400,
+          storageAlarm: null,
           historyDataCycle: null,
           deviceTrafficHigh: 0,
           deviceTrafficMiddle: 0,
@@ -1001,6 +1014,9 @@
           {value: 60, text: '60'}
         ],
         selectedDeviceName:'',
+        isEmptyScan : false,
+        isEmptyJudge : false,
+        isEmptyDelete :false,
         scanForm: {
           fieldDesignation:null,
           category:null,
@@ -1026,12 +1042,21 @@
           deviceId: null,
           fromDeviceId: [],
           fromDeviceIdList: [],
-          storageAlarmPercent: 80,
-          storageAlarm: 400
+          deviceStorageAlarmPercent: null,
+          deviceStorageAlarm: null
         },
       }
     },
     methods: {
+      getEvent(e){
+        console.log("d");
+      },
+      onChange() {
+        this.isEmptyScan = this.platFormData.scanRecogniseColour === '#';
+        this.isEmptyJudge = this.platFormData.judgeRecogniseColour === '#';
+        this.isEmptyDelete = this.platFormData.displayDeleteSuspicionColour === '#';
+        // console.log(this.platFormData.scanRecogniseColour);
+      },
       getLocale() {
         return getLocale();
       },
@@ -1217,6 +1242,70 @@
       onSaveScanFormData() {
         this.$v.scanForm.$touch();
         if (this.$v.scanForm.$invalid) {
+          if(this.$v.scanForm.airCaliWarnTime.$invalid){
+            if(this.scanForm.airCaliWarnTime === '') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.air-cali-time`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.air-cali-time-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+          }
+          if (this.$v.scanForm.standByTime.$invalid) {
+            if(this.scanForm.standByTime==='') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.standby-time`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.standby-time-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+          }
+          if (this.$v.scanForm.deviceStorageAlarm.$invalid) {
+            if(this.scanForm.deviceStorageAlarm==='') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.device-storage-alarm`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.device-storage-alarm-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+          }
+          if (this.$v.scanForm.deviceStorageAlarmPercent.$invalid) {
+            if(this.scanForm.deviceStorageAlarmPercent==='') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.device-storage-alarm-percent`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.device-storage-alarm-percent-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+          }
           return;
         }
         if (this.scanForm.fromDeviceId.length === 0) {
@@ -1315,7 +1404,7 @@
       savePlatFormData() {
         //save platform main data
         if (this.tabIndex === 0) {
-          console.log(this.platFormData.scanRecogniseColour);
+          console.log(this.isEmptyScan, this.isEmptyJudge, this.isEmptyDelete);
 
           this.$v.platFormData.$touch();
           if (this.$v.platFormData.$invalid) {
@@ -1436,6 +1525,8 @@
             }
             return;
           }
+
+          console.log(this.platFormData.scanRecogniseColour, this.platFormData.judgeRecogniseColour, this.platFormData.displayDeleteSuspicionColour);
           this.platFormData.historyDataStorageList = [];
           this.platFormData.historyDataExportList = [];
           this.platFormData.historyDataStorageSelect.forEach(item => {
@@ -1475,6 +1566,13 @@
             if (this.$v.platFormOtherData.initialPassword.$invalid) {
               if(this.platFormOtherData.initialPassword==='') {
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-password`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
+              else if(this.platFormOtherData.initialPassword.length <6 || this.platFormOtherData.initialPassword.length>20) {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.password-length`), {
                   duration: 3000,
                   permanent: false
                 });

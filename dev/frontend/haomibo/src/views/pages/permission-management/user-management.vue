@@ -2,6 +2,7 @@
   /*.section {*/
   /*  padding: 1rem 0 8px 0 !important;*/
   /*}*/
+
   .user-management {
     .img-wrapper {
       padding: 5px;
@@ -14,6 +15,262 @@
         width: 100%;
         height: auto;
         object-fit: contain;
+      }
+    }
+
+    $item-height: calc(50% - 0.3rem);
+    $item-width: 25% ;
+    $item-padding: calculateRem(20px);
+    $item-extra-add-height: calculateRem(50px);
+    .main-without-tab {
+      overflow-x: hidden !important;
+    }
+
+    .item-wrapper {
+      position: relative;
+      height: fit-content !important;
+      padding-left: $item-padding;
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+      & > .item {
+        z-index: 1;
+        position: relative;
+        height: 100%;
+        width: 100%;
+        display: inline-block;
+        cursor: pointer;
+        &:hover {
+          box-shadow: 1px 2px 0 #c6c6c6;
+        }
+        &.active {
+          .item-header {
+            border-bottom-color: #009900;
+          }
+        }
+        .item-header {
+          background: #f3f3f3;
+          border-bottom: solid 2px #c6c6c6;
+          height: calculateRem(50px);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 calculateRem(20px) 0 calculateRem(20px);
+          .label {
+            white-space: pre;
+            font-size: calculateRem(15px);
+            color: #666666;
+            max-width: 100%;
+            flex-grow: 1;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+          .action-list {
+            white-space: pre;
+            img {
+              width: calculateRem(20px);
+              margin-left: 0.5rem;
+              &.disabled {
+                filter: grayscale(1);
+              }
+              img:first-child {
+                margin-left: 0;
+              }
+            }
+
+          }
+        }
+        .item-body {
+          padding: calculateRem(10px);
+          .left-side {
+            .action {
+              button.btn {
+                margin-bottom: calculateRem(10px);
+                white-space: pre;
+                font-size: calculateRem(11px);
+                &.btn-success {
+                  background-color: #49cf6f;
+                  border-color: #49cf6f;
+                  &:hover {
+                    background-color: darken(#49cf6f, 8%);
+                    border-color: darken(#49cf6f, 8%);
+                  }
+                }
+                &.btn-info {
+                  background-color: #1782d4;
+                  &:hover {
+                    background-color: darken(#1782d4, 8%);
+                    border-color: darken(#1782d4, 8%);
+                  }
+                }
+              }
+            }
+            .img {
+              flex-grow: 1;
+              width: 65px;
+              height: 94px;
+              display: flex;
+              align-items: center;
+              img {
+                width: 90%;
+                object-fit: contain;
+              }
+            }
+          }
+          .right-side {
+            .text-top {
+              color: #1782d4;
+              font-weight: bold;
+              margin-bottom: calculateRem(15px);
+            }
+            .content {
+              & > div {
+                display: flex;
+                label {
+                  white-space: pre;
+                  overflow: visible;
+                  text-overflow: ellipsis;
+                  max-width: 100%;
+                  color: #606266;
+                  font-size: calculateRem(12px);
+                  line-height: calculateRem(12px);
+                  &:first-child {
+                    width: 37%;
+                    min-width: 37%;
+                  }
+                  &:last-child {
+                    flex-grow: 1;
+                  }
+                  &.disabled {
+                    color: #c0c0c0;
+                  }
+                }
+              }
+
+            }
+
+            .caption {
+              width: 37%;
+            }
+          }
+        }
+      }
+      & > .item-extra-info {
+        padding: calculateRem(18px);
+        opacity: 0;
+        transition: 0ms;
+        border-radius: 0.3rem;
+        position: absolute;
+        top: 0;
+        width: 80%;
+        left: calculateRem(30px);
+        background: wheat;
+        z-index: 0;
+        & > div {
+          & > div {
+            margin-bottom: calculateRem(4px);
+            align-items: center;
+            &:first-child {
+              width: calculateRem(75px);
+              margin-bottom: 0;
+              font-size: 0.7rem;
+              color: white;
+              white-space: pre;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            &:last-child {
+              display: flex;
+              align-items: center;
+              flex-grow: 1;
+              color: white;
+              white-space: pre;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              img {
+                width: calculateRem(12px);
+              }
+              span {
+                font-size: 0.7rem;
+                &.success {
+                  color: #42b662;
+                }
+                &.pending {
+                  color: #bbbbbb;
+                }
+                &.danger {
+                  color: #e12c48;
+                }
+                margin-left: calculateRem(5px);
+                &.without {
+                  margin-left: calculateRem(18px);
+                }
+              }
+              .chart-container {
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+        }
+      }
+      &.slide-left {
+        & > .item-extra-info {
+          left: 0;
+        }
+        &:hover {
+          & > .item-extra-info {
+            left: calc(1.25rem - 100%);
+          }
+
+        }
+      }
+      &:hover {
+        & > .item {
+          z-index: 4;
+        }
+        & > .item-extra-info {
+          top: -0.5rem;
+          padding: 0.5rem;
+          opacity: 0.9;
+          transition: 10ms;
+          left: 100%;
+          z-index: 0;
+        }
+
+      }
+    }
+    .footer-pager {
+      label {
+        color: #666666;
+      }
+      .pagination {
+        span {
+          border: solid 1px #eeeeee;
+          width: calculateRem(25px);
+          height: calculateRem(25px);
+          line-height: calculateRem(23px);
+          text-align: center;
+          font-size: calculateRem(12px);
+          cursor: pointer;
+          &.active {
+            border: solid 1px #1782d4;
+            background: #1782d4;
+            color: white;
+          }
+          &:hover:not(.disabled) {
+            border: solid 1px lighten(#1782d4, 20%);
+            background: lighten(#1782d4, 20%);
+            color: white;
+          }
+          &.disabled {
+            cursor: not-allowed;
+            border: solid 1px #eeeeee;
+            background: #eeeeee;
+            color: #939394;
+          }
+        }
+
       }
     }
   }
@@ -387,10 +644,24 @@
                 <img :src="profileForm.avatar" onerror="src=''" class="card-img-top"/>
               </div>
               <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -50%">
-                <img src="../../../assets/img/no_active_stamp.png">
+                <img v-if="modifyPage === false" src="../../../assets/img/no_active_stamp.png">
+                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp.png">
+                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp.png">
+                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png"
+                     class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png"
+                     class="img-rotate">
               </div>
               <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -50%">
-                <img src="../../../assets/img/no_active_stamp_en.png"
+                <img v-if="modifyPage === false" src="../../../assets/img/no_active_stamp_en.png"
+                     class="img-rotate">
+                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp_en.png"
+                     class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp_en.png"
+                     class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block_en.png"
+                     class="img-rotate">
+                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending_en.png"
                      class="img-rotate">
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
@@ -721,9 +992,9 @@
                     {{$t('permission-management.user.group-number')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input
-                    v-model="groupForm.groupNumber"
-                    :state="!$v.groupForm.groupNumber.$invalid"/>
+                  <label>
+                    {{groupForm.groupNumber}}
+                  </label>
                 </b-form-group>
                 <b-form-group>
                   <template slot="label">
@@ -958,11 +1229,11 @@
       },
       passwordForm: {
         password: {
-          required, minLength: minLength(6), maxLength: maxLength(16),
+          required, minLength: minLength(6), maxLength: maxLength(20),
           isAccountValid
         },
         confirmPassword: {
-          required, sameAs: sameAs('password'), maxLength: maxLength(16),
+          required, sameAs: sameAs('password'), maxLength: maxLength(20),
         },
       },
       profileForm: {
@@ -1241,6 +1512,7 @@
               title: this.$t('permission-management.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width : '6%'
             },
             {
               name: '__slot:userGroupNumber',
@@ -1248,30 +1520,41 @@
               sortField: 'groupNumber',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width : '15%'
             },
             {
               name: 'groupName',
               title: this.$t('permission-management.user.user-group-name'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width : '20%'
             },
             {
               name: 'groupMember',
               title: this.$t('permission-management.user.user-group-member'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width : '30%',
+              callback: (value) => {
+                if(value === null) return '';
+                if(value.isLong === false) return value.groupMember;
+                else{
+                  return this.hoverContent(value);
+                }
+              },
+
             },
             {
               name: '__slot:operating',
               title: this.$t('permission-management.user.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '60px'
             }
           ],
         },
 
         isSelectedAllUsersForDataGroup: false,
+        isSelectedId : null,
       }
     },
     watch: {
@@ -1379,6 +1662,15 @@
       }
     },
     methods: {
+      hoverContent(value) {
+        let content = '<div class="item-wrapper slide-right">\n' +
+          '      <span class="item d-flex flex-column">\n' + value.label +
+          '      </span>\n' +
+          '      <div class="item-extra-info flex-column d-flex">\n' + value.groupMember +
+          '      </div>\n' +
+          '    </div>';
+        return content;
+      },
       changeOrgTree(treeData, index) {
 
 
@@ -1525,8 +1817,11 @@
       onExportUser() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
@@ -1536,8 +1831,11 @@
       onPrintUserButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
@@ -1548,8 +1846,11 @@
       onExportGroup() {
         let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
         let checkedIds = this.$refs.userGroupTable.selectedTo;
+        let httpOption = this.$refs.userGroupTable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
@@ -1563,8 +1864,11 @@
       onPrintGroupButton() {
         let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
         let checkedIds = this.$refs.userGroupTable.selectedTo;
+        let httpOption = this.$refs.userGroupTable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
@@ -1701,6 +2005,12 @@
                 permanent: false
               });
             }
+            else if(this.profileForm.passwordValue.length<6 || this.profileForm.passwordValue.length>20) {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.password-length`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
             else {
               this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.password-valid`), {
                 duration: 3000,
@@ -1716,11 +2026,10 @@
         const formData = new FormData();
         for (let key in this.profileForm) {
 
-          console.log(this.profileForm['portrait']);
+
           if (key !== 'portrait' && key !== 'avatar')
             formData.append(key, this.profileForm[key]);
           else if (key === 'portrait' && this.profileForm['portrait'] !== null) {
-            console.log(this.profileForm[key], this.profileForm[key].name);
             formData.append(key, this.profileForm[key], this.profileForm[key].name);
           }
         }
@@ -1832,7 +2141,13 @@
                 duration: 3000,
                 permanent: false
               });
-            } else if (this.$v.passwordForm.confirmPassword.$invalid) {
+            } else if(this.passwordForm.password.length<6 || this.passwordForm.password.length>20){
+              this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.password-length`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else if (this.$v.passwordForm.confirmPassword.$invalid) {
               this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.confirm-invalid`), {
                 duration: 3000,
                 permanent: false
@@ -1919,7 +2234,7 @@
             else if (key === 'portrait')
               this.profileForm.avatar = data['portrait'];
         }
-        console.log(data['portrait']);
+
         this.profileForm.portrait = null;
 
         if (data.password === 'default') {
@@ -2069,15 +2384,15 @@
       },
       //second tab content
       fnShowUserGroupConfDiaglog(userGroupItem) {
-        this.selectedUserGroupItem = userGroupItem;
+        this.selectedId = userGroupItem.userGroupId;
         this.$refs['modal-prompt-group'].show();
       },
       fnDeleteUserGroupItem() {
-        if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
+        if (this.selectedId > 0) {
           this.$refs['modal-prompt-group'].hide();
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
-              userGroupId: this.selectedUserGroupItem.userGroupId
+              userGroupId: this.selectedId
             })
             .then((response) => {
               let message = response.data.message;
@@ -2140,10 +2455,25 @@
             usersName.push(users.userName);
           });
           let groupMember = usersName.join(',');
-          if(groupMember.length>30){
-            groupMember = groupMember.substr(0, 30) + "···"; // Gets the first part
+          let isLong = false;
+          if(groupMember.length>20){
+            isLong = true;
+            temp.groupMember = {
+              groupMember : groupMember,
+              label : groupMember.substr(0, 19) + '...',
+              isLong : isLong
+            };
           }
-          temp.groupMember = groupMember;
+          else {
+            temp.groupMember = {
+              groupMember : groupMember,
+              isLong : isLong
+            };
+          }
+          // if(groupMember.length>30){
+          //   groupMember = groupMember.substr(0, 30) + "···"; // Gets the first part
+          // }
+          //temp.groupMember = groupMember;
 
           this.renderedCheckListGroup.push(data.data[i].userGroupId);
         }
@@ -2365,6 +2695,16 @@
                     duration: 3000,
                     permanent: false
                   });
+                  let groupNumberStr = "PG";
+                  for (let i = 0; i < 8; i++) {
+                    let index = Math.floor(Math.random() * 10);
+                    groupNumberStr = groupNumberStr + index.toString();
+                  }
+                  this.groupForm = {
+                    groupNumber: groupNumberStr,
+                    groupName: null,
+                    status: 'create'
+                  }
                   break;
                 default:
 

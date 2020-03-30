@@ -186,9 +186,9 @@ main {
       & > div.tab-content {
         //margin-bottom: 1rem !important;
         padding: $tab-padding-1 0 $tab-padding-2 0;
-        min-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
-        max-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
-        height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
+        //min-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
+        //max-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
+        //height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
         border-top: 1px #eaeaea solid;
         & > div.tab-pane.active {
           height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height + $tab-padding-1 + $tab-padding-2});
@@ -267,7 +267,7 @@ main {
           border-top-left-radius: 0px!important;
           border-top-right-radius: 0px!important;
           padding-top: 0px!important;
-          height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + 10rem});
+          //height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + 10rem});
           overflow: auto;
 
           .font-weight-bold {

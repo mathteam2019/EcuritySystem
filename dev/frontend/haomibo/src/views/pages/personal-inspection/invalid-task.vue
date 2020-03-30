@@ -177,11 +177,10 @@
                 </div>
               </b-col>
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
-                <span v-if="showPage.serKnowledgeCase==null || showPage.serKnowledgeCase.caseId==null"><i
+                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
                   class="icofont-star"/></span>
-                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='TRUE'"><i
-                  class="icofont-search-user"/></span>
-                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='FALSE'">
+
+                <span>
                   <b-img src="/assets/img/system_scan.svg" style="width: 20px; height: 22px;"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
@@ -206,7 +205,7 @@
             </b-row>
             <b-row style="float: right;">
               <b-col class="control-group">
-                <div class="control-btn-wrapper">
+                <div v-if="power===true" class="control-btn-wrapper">
                   <div class="control-btn">
                     <b-img src="/assets/img/contrast_btn.png" @click="onlyOneSlide(1)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
@@ -266,8 +265,69 @@
                     <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                   </div>
                 </div>
+                <div v-else style="opacity: 0.5" class="control-btn-wrapper">
+                  <div class="control-btn">
+                    <b-img src="/assets/img/contrast_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/brightness_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/color_inverse_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color1_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color2_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color3_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color4_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/edge_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
+                  </div>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/reduction_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
+                  </div>
+                </div>
                 <div class="switch-wrapper">
-                  <div class="separator"></div>
+                  <div v-if="power===true" class="separator"></div>
+                  <div v-else style="opacity: 0.5" class="separator"></div>
                   <div class="switch">
                     <switches v-model="power" theme="custom" :disabled="checkPermItem('invalid_task_toggle')"
                               color="info"/>
@@ -339,13 +399,7 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
-                      <div v-if="showPage.serJudgeGraph == null">
                         {{$t('maintenance-management.process-task.default-user')}}
-                      </div>
-                      <div v-else-if="showPage.serJudgeGraph.judgeUser == null">
-                        {{$t('maintenance-management.process-task.default-user')}}
-                      </div>
-                      <div v-else>{{showPage.serJudgeGraph.judgeUser.userName}}</div>
                     </div>
                   </div>
 
@@ -478,10 +532,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="conclusionType == null"
                                 :value="$t('maintenance-management.process-task.system')"/>
-                  <b-form-input disabled class="form-input-border" v-else
-                                :value="getOptionValue(conclusionType)"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -493,7 +544,7 @@
                   <b-form-input disabled class="form-input-border"
                                 v-if="showPage.history == null"/>
                   <b-form-input disabled class="form-input-border" v-else
-                                :value="getOptionValue(showPage.history.handAppraise)"/>
+                                :value="getOptionValue(showPage.history.handAppraise) + ' ' + getOptionValue(showPage.history.handAppraiseSecond)"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -858,7 +909,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
-  import {loadImageCanvas, imageFilterById, getDirection} from '../../../utils'
+  import {loadImageCanvas, imageFilterById, getDirection, getLocale} from '../../../utils'
   import VueSlideBar from 'vue-slide-bar'
   import {checkPermissionItem} from "../../../utils";
   import Videoplayer from '../../../components/Common/VideoPlayer';
@@ -1125,7 +1176,7 @@
 
     created() {
       //this.onSearchButton();
-      this.timer = setInterval(this.autoUpdate, 15000)
+      this.timer = setInterval(this.autoUpdate, 20000)
 
       //this.timer = setInterval(() => this.onTaskVuetableChangePage(this.httpOption.params.page), 15000);
       //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
@@ -1145,7 +1196,7 @@
         if (newval === 'show') {
           clearInterval(this.timer);
         } else {
-          this.timer = setInterval(() => this.autoUpdate(), 15000);
+          this.timer = setInterval(() => this.autoUpdate(), 20000);
         }
       },
 
@@ -1332,32 +1383,6 @@
                 });
               }
             }
-            if (this.cartoonsInfo[k].rectsAdd != null) {
-              for (let i = 0; i < this.cartoonsInfo[k].rectsAdd.length; i++) {
-
-                this.cartoonRectL.push({
-                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
-                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].y,
-                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].width,
-                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsAdd[i].height,
-                  colour: this.cartoonsInfo[k].colorAdd,
-                });
-              }
-            }
-
-            if (this.cartoonsInfo[k].displayDel === '1000000601') {
-              if (this.cartoonsInfo[k].rectsDel != null) {
-                for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
-                  this.cartoonRectL.push({
-                    x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].x,
-                    y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].y,
-                    width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsDel[i].width,
-                    height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].rectsDel[i].height,
-                    colour: this.cartoonsInfo[k].colorDel,
-                  });
-                }
-              }
-            }
           }
 
           if (this.cartoonsInfo[k + 1] !== undefined) {
@@ -1370,30 +1395,6 @@
                   width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
                   height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
                   colour: this.cartoonsInfo[k + 1].colorRect,
-                });
-              }
-            }
-
-            if (this.cartoonsInfo[k + 1].rectsAdd != null) {
-              for (let i = 0; i < this.cartoonsInfo[k + 1].rectsAdd.length; i++) {
-                this.cartoonRectR.push({
-                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].x,
-                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].y,
-                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsAdd[i].width,
-                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsAdd[i].height,
-                  colour: this.cartoonsInfo[k + 1].colorAdd,
-                });
-              }
-            }
-
-            if (this.cartoonsInfo[k + 1].displayDel === '1000000601' && this.cartoonsInfo[k + 1].rectsDel != null) {
-              for (let i = 0; i < this.cartoonsInfo[k + 1].rectsDel.length; i++) {
-                this.cartoonRectR.push({
-                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsDel[i].x,
-                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsDel[i].y,
-                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].rectsDel[i].width,
-                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].rectsDel[i].height,
-                  colour: this.cartoonsInfo[k + 1].colorDel,
                 });
               }
             }
@@ -1478,8 +1479,11 @@
         // this.$refs['model-export'].show();
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let httpOption = this.$refs.taskVuetable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
@@ -1494,6 +1498,7 @@
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1512,8 +1517,11 @@
       onPrintButton() {
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let httpOption = this.$refs.taskVuetable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
@@ -1606,26 +1614,20 @@
                 this.handGoodExpanded = [];
                 this.handGoodDataCodeExpanded = [];
 
-                this.conclusionType = null;
-                if (this.showPage.serCheckResultList.length !== 0) {
-                  this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
-                }
+                // this.conclusionType = null;
+                // if(this.judgeUserId===this.defaultUserId) {
+                //   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
+                // }
 
                 deviceImage = [];
                 submitRects = [];
-                colourInfo = this.showPage.platFormCheckParams;
+                //colourInfo = this.showPage.platFormCheckParams;
+
 
                 if (this.showPage.serScan !== undefined && this.showPage.serScan !== null) {
                   if (this.showPage.serScan.scanDeviceImages !== null) {
                     deviceImage = this.showPage.serScan.scanDeviceImages;
                     deviceImage = JSON.parse(deviceImage);
-                  }
-                }
-
-                if (this.showPage.serJudgeGraph !== undefined && this.showPage.serJudgeGraph !== null) {
-                  if (this.showPage.serJudgeGraph.judgeSubmitrects !== null) {
-                    submitRects = this.showPage.serJudgeGraph.judgeSubmitrects;
-                    submitRects = JSON.parse(submitRects);
                   }
                 }
 
@@ -1639,7 +1641,6 @@
                         rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 521 / deviceImage[i].height : 0,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
-                        colorRect: colourInfo.scanRecogniseColour
                       });
                     }
 
@@ -1649,16 +1650,11 @@
                       rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 426 / deviceImage[i].height : 0,
                       imageUrl: deviceImage[i].image,
                       imageRect: deviceImage[i].imageRects,
-                      colorRect: colourInfo.scanRecogniseColour,
-                      colorAdd: colourInfo.judgeRecogniseColour,
-                      colorDel: colourInfo.displayDeleteSuspicionColour,
-                      displayDel: colourInfo.displayDeleteSuspicion,
-                      rectsAdd: submitRects != null && submitRects[i] != undefined ? submitRects[i].rectsAdded : null,
-                      rectsDel: submitRects != null && submitRects[i] != undefined ? submitRects[i].rectsDeleted : null
                     });
 
                   }
                 }
+
 
                 if (this.imagesInfo[0] !== undefined) {
                   if (this.imagesInfo[0].imageRect != null) {
@@ -1673,6 +1669,7 @@
                     }
                   }
                   url1 = this.imagesInfo[0].imageUrl;
+
                 }
 
                 if (this.imagesInfo[1] !== undefined) {
@@ -1763,9 +1760,27 @@
       },
 
       onSearchButton() {
+        if(this.filter.startTime !== null && this.filter.endTime !== null) {
+
+          if (this.filter.startTime >= this.filter.endTime) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`maintenance-management.process-task.time-select`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+
+        }
         this.$refs.taskVuetable.refresh();
       },
       autoUpdate() {
+        if(this.filter.startTime !== null && this.filter.endTime !== null) {
+
+          if (this.filter.startTime >= this.filter.endTime) {
+            return;
+          }
+
+        }
         this.$refs.taskVuetable.reload();
       },
 

@@ -226,7 +226,7 @@
   import 'vue-select/dist/vue-select.css'
   import VTree from 'vue-tree-halower';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
-  import {checkPermissionItem, getDirection, savePermissionInfo} from "../../../utils";
+  import {checkPermissionItem, getDirection, savePermissionInfo, getLocale} from "../../../utils";
   import _ from "lodash";
   import {validationMixin} from 'vuelidate';
 

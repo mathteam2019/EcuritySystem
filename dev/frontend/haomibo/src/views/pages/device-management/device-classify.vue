@@ -500,8 +500,10 @@
       onPrintButton(){
         let checkedAll = this.$refs.deviceClassifyTable.checkedAllStatus;
         let checkedIds = this.$refs.deviceClassifyTable.selectedTo;
+        let httpOption = this.$refs.deviceClassifyTable.httpOptions;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };

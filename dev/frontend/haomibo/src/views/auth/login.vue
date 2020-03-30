@@ -257,7 +257,7 @@
                   </div>
                 </b-col>
                 <b-col cols="5" style="float: left;">
-                  <input type="text" :placeholder="$t('user.captcha-code')" id="cpatchaTextBox" v-model="captchaCode" />
+                  <input type="text" style="" :placeholder="$t('user.captcha-code')" id="cpatchaTextBox" v-model="captchaCode" />
                 </b-col>
                 <b-col cols="1" class="refresh-icon" style="margin-left: 0rem">
                   <img src="../../assets/img/ic_refresh.png" style="width: 15px;" @click="createCaptcha"/>
@@ -335,6 +335,7 @@
         });
         return langName;
       },
+
       createCaptcha() {
         this.captchaCode = '';
 
@@ -410,8 +411,6 @@
           }
           else i--;
         }
-
-
         //storing captcha so that can validate you can save it somewhere else according to your specific requirements
         this.code = captcha.join("");
         document.getElementById("captcha").appendChild(canv); // adds the canvas to the body element
@@ -426,6 +425,7 @@
           this.changeLocale(this.currentLanguage);
         }
       },
+
       getLocaleIcon() {
         const locale = this.$i18n.locale;
         for (let l of localeOptions) {
@@ -433,6 +433,7 @@
         }
         return localeOptions[1].icon;
       },
+
       formSubmit() {
         this.count = getInvalidCount(this.account);
 
@@ -443,8 +444,15 @@
           });
           return;
         }
-        if (this.password.length < 6) {
+        if (this.password === '') {
           this.$notify('warning', this.$t('user.warning'), this.$t(`user.enter-valid-password`), {
+            duration: 3000,
+            permanent: false
+          });
+          return;
+        }
+        else if(this.password.length<6 || this.password.length>20) {
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.password-length`), {
             duration: 3000,
             permanent: false
           });
@@ -548,6 +556,13 @@
                 removeCount(this.account);
                 break;
 
+              case responseMessages['user-block-status']:
+                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.block`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                removeCount(this.account);
+                break;
               case responseMessages['user-non-active-status']:
                 this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.inactive`), {
                   duration: 3000,
@@ -569,13 +584,13 @@
           this.$router.go(this.$route.path)
         }
       },
-      'account'(to, from) {
-        if (from !== null && from !== "") {
-          if (from !== to) {
-            this.getLocaleInfo();
-          }
-        }
-      },
+      // 'account'(to, from) {
+      //   if (from !== null && from !== "") {
+      //     if (from !== to) {
+      //       this.getLocaleInfo();
+      //     }
+      //   }
+      // },
     }
   }
 </script>

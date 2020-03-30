@@ -63,7 +63,7 @@
       exportFile() {
         //this.exported = true;
         let url="/assets/img/profile.png";
-        //console.log(this.url);
+        // console.log(this.url);
         // if(this.url!==undefined){
         //   if(this.url!==null) {
         //     for (let i = 0; i < this.url.length; i++) {
@@ -104,7 +104,7 @@
                       this.imgUrl.push(item);
                     });
                   }
-                  //this.downLoadImage();
+                  this.downLoadImage();
                   break;
               }
               })

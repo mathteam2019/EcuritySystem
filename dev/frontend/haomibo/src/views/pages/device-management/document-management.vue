@@ -50,26 +50,31 @@
     <b-card v-show="!isLoading" class="main-without-tab">
       <div v-show="pageStatus==='list'" class="h-100 flex-column" :class="pageStatus === 'list'?'d-flex':''">
         <b-row class="pt-2">
-          <b-col cols="6">
+          <b-col cols="8">
             <b-row>
-              <b-col cols="4">
+              <b-col cols="3">
                 <b-form-group :label="$t('device-management.device-list.archive')">
                   <b-form-input v-model="filterOption.archivesName"/>
                 </b-form-group>
               </b-col>
-              <b-col cols="4">
+              <b-col cols="3">
                 <b-form-group :label="$t('device-management.active')">
                   <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
-              <b-col cols="4">
+              <b-col cols="3">
+                <b-form-group :label="$t('device-management.template')">
+                  <b-form-input v-model="filterOption.templateName"/>
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
                 <b-form-group :label="$t('device-management.device-classify')">
                   <b-form-select v-model="filterOption.categoryId" :options="categoryFilterData" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="6" class="d-flex justify-content-end align-items-center">
+          <b-col cols="4" class="d-flex justify-content-end align-items-center">
             <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
               <i class="icofont-search-1"/>&nbsp;{{ $t('permission-management.search') }}
             </b-button>
@@ -430,6 +435,7 @@
         filterOption: {
           archivesName: '',
           status: null,
+          templateName : '',
           categoryId: null
         },
         templateForm: {
@@ -493,6 +499,16 @@
                 return dictionary[value];
               }
 
+            },
+            {
+              name: 'archiveTemplate',
+              title: this.$t('device-management.template'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback:(archiveTemplate) =>{
+                if(archiveTemplate===null) return null
+                return archiveTemplate.templateName;
+              }
             },
             {
               name: 'categoryName',
@@ -591,8 +607,11 @@
         // this.$refs['model-export'].show();
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'locale' : getLocale(),
+          'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -605,6 +624,7 @@
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'locale' : getLocale(),
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -617,8 +637,11 @@
       onPrintButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'locale' : getLocale(),
+          'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -664,6 +687,7 @@
       onResetButton() {
         this.filterOption = {
           templateName: '',
+          archivesName: '',
           status: null,
           categoryId: null
         };

@@ -371,7 +371,7 @@
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.userCategory === null">扫描, 判图, 手检</span>
+                  <span v-if="filter.userCategory === null">{{$t('personal-inspection.all')}}</span>
                   <span v-else>{{getCategoryLabel(filter.userCategory)}}</span>
                 </b-col>
               </b-row>
@@ -646,7 +646,7 @@
               show: false
             }
           },
-          color: ['#ff6600', '#009900', '#cccccc'],
+          color: ['#009900', '#ff6600', '#cccccc'],
           series: [
             {
               name: this.$t('permission-management.permission-control.pending-success'),
@@ -708,6 +708,7 @@
         xYear: [],
         xQuarter: ['1', '2', '3', '4'],
         xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        monthLabel: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
         xWeek: ['1', '2', '3', '4', '5'],
         xDay: [],
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
@@ -906,26 +907,27 @@
     methods: {
       setPeriodLabel (newVal) {
         if(getLocale() === 'zh') {
-          switch (newVal) {
-            case 'hour':
-              this.periodLabel = '期间(時)';
-              break;
-            case 'day':
-              this.periodLabel = '期间(天)';
-              break;
-            case 'week':
-              this.periodLabel = '期间(周)';
-              break;
-            case 'month':
-              this.periodLabel = '期间(月)';
-              break;
-            case 'quarter':
-              this.periodLabel = '期间(季度)';
-              break;
-            case 'year':
-              this.periodLabel = '期间(年)';
-              break;
-          }
+          this.periodLabel = '时间段';
+          // switch (newVal) {
+          //   case 'hour':
+          //     this.periodLabel = '期间(時)';
+          //     break;
+          //   case 'day':
+          //     this.periodLabel = '期间(天)';
+          //     break;
+          //   case 'week':
+          //     this.periodLabel = '期间(周)';
+          //     break;
+          //   case 'month':
+          //     this.periodLabel = '期间(月)';
+          //     break;
+          //   case 'quarter':
+          //     this.periodLabel = '期间(季度)';
+          //     break;
+          //   case 'year':
+          //     this.periodLabel = '期间(年)';
+          //     break;
+          // }
         }else{
           switch (newVal) {
             case 'hour':
@@ -1032,9 +1034,7 @@
         return checkPermissionItem(value);
       },
       getManualDeviceData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-table/device/get-by-field`,{
-          fieldId: null, categoryId: 3
-        }).then((response) => {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-table/device/get-active-security`).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
           switch (message) {
@@ -1085,6 +1085,7 @@
         }
 
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
@@ -1104,6 +1105,7 @@
         }
 
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
@@ -1132,6 +1134,7 @@
         }
 
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
@@ -1202,8 +1205,8 @@
             let key = this.xDay[i];
 
             if (this.preViewData.detailedStatistics[key] != null && this.preViewData.detailedStatistics[key].scanStatistics != null) {
-              this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.alarmScan;
-              this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.passedScan;
+              this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.passedScan;
+              this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.alarmScan;
               this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.invalidScan;
             } else {
               this.bar3ChartOptions.series[0].data[i] = 0;
@@ -1218,6 +1221,17 @@
       },
 
       onSearchButton() {
+        if(this.filter.startTime !== null && this.filter.endTime !== null) {
+
+          if (this.filter.startTime >= this.filter.endTime) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`maintenance-management.process-task.time-select`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+
+        }
         this.getPreviewData();
         this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
@@ -1267,6 +1281,37 @@
           let j = transformed.tKey[i];
           temp = data.detailedStatistics[j];
           this.renderedCheckList.push(data.detailedStatistics[j].time);
+         
+          if(this.filter.statWidth === 'hour') {
+            if (temp.time < 9) {
+              temp.time = '0' + temp.time + ' : 00 ~ 0' + (temp.time + 1) + ': 00';
+            }
+            else if(temp.time === 9){
+              temp.time = '09 :00 ~ 10 : 00';
+            }
+            else {
+              temp.time = temp.time + ' : 00 ~ ' + (temp.time + 1) + ': 00';
+            }
+          }
+          if(this.filter.statWidth === 'day' && getLocale() === 'zh') {
+            temp.time = temp.time + '日';
+          }
+          if(this.filter.statWidth === 'week' && getLocale() === 'zh') {
+            temp.time = temp.time + '周';
+          }
+          if(this.filter.statWidth === 'month') {
+            if(getLocale() === 'zh') {
+              temp.time = temp.time + '月';
+            }else {
+              temp.time = this.monthLabel[temp.time-1];
+            }
+          }
+          if(this.filter.statWidth === 'quarter') {
+            temp.time = temp.time + this.$t('statistics.quarter');
+          }
+          if(this.filter.statWidth === 'year') {
+            temp.time = temp.time +  this.$t('statistics.year');
+          }
           transformed.data.push(temp);
         }
         return transformed

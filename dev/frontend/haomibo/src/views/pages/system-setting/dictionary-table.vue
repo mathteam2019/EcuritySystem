@@ -247,7 +247,7 @@
 
                 <div class="d-flex align-items-end justify-content-end pt-3">
                   <div>
-                    <b-button @click="onClickSaveDicData" size="sm" variant="info default" class="mr-3">
+                    <b-button @click="onClickSaveDicData" :disabled="dicIdType === 1" size="sm" variant="info default" class="mr-3">
                       <i class="icofont-save"/>
                       {{$t('permission-management.permission-control.save')}}
                     </b-button>
@@ -352,7 +352,7 @@
   import 'vue-select/dist/vue-select.css'
   import VTree from 'vue-tree-halower';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
-  import {checkPermissionItem, getDirection, savePermissionInfo} from "../../../utils";
+  import {checkPermissionItem, getDirection, savePermissionInfo, getLocale} from "../../../utils";
   import _ from "lodash";
   import {validationMixin} from 'vuelidate';
 

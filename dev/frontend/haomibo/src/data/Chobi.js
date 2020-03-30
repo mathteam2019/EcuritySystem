@@ -33,6 +33,7 @@ var Chobi = function(elem, isToggled, left){
             }
           }
         }
+
 				img.src = elem;
 
         img.onerror = function (evt){

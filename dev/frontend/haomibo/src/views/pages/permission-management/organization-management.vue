@@ -562,6 +562,7 @@
 
   </div>
 </template>
+
 <script>
 
   import {apiBaseUrl} from '../../../constants/config';
@@ -961,8 +962,11 @@
 
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
@@ -974,8 +978,11 @@
       onPrintButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };

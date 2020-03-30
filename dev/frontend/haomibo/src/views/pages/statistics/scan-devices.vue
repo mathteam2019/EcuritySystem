@@ -703,6 +703,7 @@
         xYear: [],
         xQuarter: ['1', '2', '3', '4'],
         xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        monthLabel: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
         xWeek: ['1', '2', '3', '4', '5'],
         xDay: [],
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
@@ -870,26 +871,27 @@
     methods: {
       setPeriodLabel (newVal) {
         if(getLocale() === 'zh') {
-          switch (newVal) {
-            case 'hour':
-              this.periodLabel = '期间(時)';
-              break;
-            case 'day':
-              this.periodLabel = '期间(天)';
-              break;
-            case 'week':
-              this.periodLabel = '期间(周)';
-              break;
-            case 'month':
-              this.periodLabel = '期间(月)';
-              break;
-            case 'quarter':
-              this.periodLabel = '期间(季度)';
-              break;
-            case 'year':
-              this.periodLabel = '期间(年)';
-              break;
-          }
+          this.periodLabel = '时间段';
+          // switch (newVal) {
+          //   case 'hour':
+          //     this.periodLabel = '期间(時)';
+          //     break;
+          //   case 'day':
+          //     this.periodLabel = '期间(天)';
+          //     break;
+          //   case 'week':
+          //     this.periodLabel = '期间(周)';
+          //     break;
+          //   case 'month':
+          //     this.periodLabel = '期间(月)';
+          //     break;
+          //   case 'quarter':
+          //     this.periodLabel = '期间(季度)';
+          //     break;
+          //   case 'year':
+          //     this.periodLabel = '期间(年)';
+          //     break;
+          // }
         }else{
           switch (newVal) {
             case 'hour':
@@ -992,25 +994,25 @@
         return checkPermissionItem(value);
       },
       getManualDeviceData() {
-        getApiManager().post(`${apiBaseUrl}/device-management/device-config/manual-device/get-all`).then((response) => {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-table/device/get-active-security`).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
           switch (message) {
             case responseMessages['ok']:
               let options = [];
               options = data.map(opt => ({
-                text: opt.device ? opt.device.deviceName : "Unknown",
-                value: opt.manualDeviceId
+                text: opt.deviceName ? opt.deviceName : "Unknown",
+                value: opt.deviceId
               }));
 
               let allFieldStr = "";
               let cnt = data.length;
 
-              allFieldStr = allFieldStr + data[0].device.deviceName;
+              allFieldStr = allFieldStr + data[0].deviceName;
               //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
               for (let i = 1; i < cnt; i++) {
 
-                allFieldStr = allFieldStr + ", " + data[i].device.deviceName;
+                allFieldStr = allFieldStr + ", " + data[i].deviceName;
 
               }
               this.allDevice = allFieldStr;
@@ -1044,6 +1046,7 @@
         }
 
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0  || this.pageStatus==='charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
@@ -1064,6 +1067,7 @@
         }
 
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
@@ -1093,6 +1097,7 @@
         }
 
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
@@ -1175,6 +1180,17 @@
       },
 
       onSearchButton() {
+        if(this.filter.startTime !== null && this.filter.endTime !== null) {
+
+          if (this.filter.startTime >= this.filter.endTime) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`maintenance-management.process-task.time-select`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+
+        }
 
         this.getPreviewData();
         this.setPeriodLabel(this.filter.statWidth);
@@ -1232,6 +1248,37 @@
           let j = transformed.tKey[i - 1];
           temp = data.detailedStatistics[j];
           this.renderedCheckList.push(data.detailedStatistics[j].time);
+          console.log(this.filter.statWidth);
+          if(this.filter.statWidth === 'hour') {
+            if (temp.time < 9) {
+              temp.time = '0' + temp.time + ' : 00 ~ 0' + (temp.time + 1) + ': 00';
+            }
+            else if(temp.time === 9){
+              temp.time = '09 :00 ~ 10 : 00';
+            }
+            else {
+              temp.time = temp.time + ' : 00 ~ ' + (temp.time + 1) + ': 00';
+            }
+          }
+          if(this.filter.statWidth === 'day' && getLocale() === 'zh') {
+            temp.time = temp.time + '日';
+          }
+          if(this.filter.statWidth === 'week' && getLocale() === 'zh') {
+            temp.time = temp.time + '周';
+          }
+          if(this.filter.statWidth === 'month') {
+            if(getLocale() === 'zh') {
+              temp.time = temp.time + '月';
+            }else {
+              temp.time = this.monthLabel[temp.time-1];
+            }
+          }
+          if(this.filter.statWidth === 'quarter') {
+            temp.time = temp.time + this.$t('statistics.quarter');
+          }
+          if(this.filter.statWidth === 'year') {
+            temp.time = temp.time +  this.$t('statistics.year');
+          }
           transformed.data.push(temp);
         }
 

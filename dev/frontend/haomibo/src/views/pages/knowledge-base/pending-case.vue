@@ -171,11 +171,11 @@
                 </div>
               </b-col>
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
-<!--                <span><i class="icofont-star"/></span>-->
-                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='TRUE'"><i
-                  class="icofont-search-user"/></span>
-                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='FALSE'">
+                <span><i class="icofont-star"/></span>
+                <span v-if="judgeUserId===null || judgeUserId === defaultUserId">
                   <b-img src="/assets/img/system_scan.svg" style="width: 20px; height: 22px;"/></span>
+                <span v-else><i
+                    class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000001'"><i
@@ -199,7 +199,7 @@
             </b-row>
             <b-row style="float: right;">
               <b-col class="control-group">
-                <div class="control-btn-wrapper">
+                <div v-if="power===true" class="control-btn-wrapper">
                   <div class="control-btn">
                     <b-img src="/assets/img/contrast_btn.png" @click="onlyOneSlide(1)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
@@ -259,8 +259,69 @@
                     <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                   </div>
                 </div>
+                <div v-else style="opacity: 0.5" class="control-btn-wrapper">
+                  <div class="control-btn">
+                    <b-img src="/assets/img/contrast_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/brightness_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/color_inverse_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color1_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color2_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color3_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color4_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
+                  </div>
+
+                  <div class="control-btn">
+                    <b-img src="/assets/img/edge_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
+                  </div>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/reduction_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
+                  </div>
+                </div>
                 <div class="switch-wrapper">
-                  <div class="separator"></div>
+                  <div v-if="power===true" class="separator"></div>
+                  <div v-else style="opacity: 0.5" class="separator"></div>
                   <div class="switch">
                     <switches v-model="power" theme="custom" :disabled="checkPermItem('pending_knowledge_toggle')"
                               color="info"/>
@@ -360,12 +421,12 @@
                   </div>
 
                   <div class="top-date">
-                    <label v-if="handStartTime == null"/>
+                    <label v-if="handStartTime == null || showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('scan')"/>
                     <label
                       v-else>{{this.getDateTimeFormat2(handStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.serHandExamination == null"/>
+                    <label v-if="showPage.serHandExamination == null || showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('scan')"/>
                     <label
                       v-else>{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>
                   </div>
@@ -476,10 +537,10 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="conclusionType == null"
+                                v-if="judgeUserId===null || judgeUserId === defaultUserId"
                                 :value="$t('maintenance-management.process-task.system')"/>
                   <b-form-input disabled class="form-input-border" v-else
-                                :value="getOptionValue(conclusionType)"/>
+                                :value="$t('maintenance-management.process-task.artificial')"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -493,7 +554,7 @@
                   <b-form-input disabled class="form-input-border"
                                 v-if="showPage.history == null"/>
                   <b-form-input disabled class="form-input-border" v-else
-                                :value="getOptionValue(showPage.history.handAppraise)"/>
+                                :value="getOptionValue(showPage.history.handAppraise) + ' ' + getOptionValue(showPage.history.handAppraiseSecond)"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -900,7 +961,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
-  import {loadImageCanvas, imageFilterById, getDirection} from '../../../utils'
+  import {loadImageCanvas, imageFilterById, getDirection, getLocale} from '../../../utils'
   import VueSlideBar from 'vue-slide-bar'
   import {checkPermissionItem} from "../../../utils";
   import Videoplayer from '../../../components/Common/VideoPlayer';
@@ -1100,14 +1161,14 @@
               }
             },
             {
-              name: 'task',
+              name: 'scanDevice',
               title: this.$t('knowledge-base.security-instrument'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (task) => {
-                if (task == null) return '';
-                if (task.field == null) return '';
-                return task.field.fieldDesignation;
+              callback: (scanDevice) => {
+                if (scanDevice == null) return '';
+                if (scanDevice.deviceName == null) return '';
+                return scanDevice.deviceName;
               }
             },
             {
@@ -1174,6 +1235,7 @@
         orderCartoon: 0,
         mode: null,
         conclusionType: null,
+        defaultUserId: 10000,
         modal_video_url: "",
         detailForm: {},
         judgeStartTime: null,
@@ -1362,14 +1424,36 @@
           if (this.cartoonsInfo[k] !== undefined) {
             url1 = this.cartoonsInfo[k].imageUrl;
             if(this.cartoonsInfo[k].imageRect!=null) {
-              for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
-                this.cartoonRectL.push({
-                  x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
-                  y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
-                  width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
-                  height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
-                  colour: this.cartoonsInfo[k].colorRect,
-                });
+              if(this.cartoonsInfo[k].displayDel === '1000000602' && this.cartoonsInfo[k].rectsDel != null){
+                for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
+                  let isDeleted = false;
+                  for (let j = 0; j < this.cartoonsInfo[k].rectsDel.length; j++) {
+                    if(this.cartoonsInfo[k].imageRect[i].x === this.cartoonsInfo[k].rectsDel[j].x && this.cartoonsInfo[k].imageRect[i].y === this.cartoonsInfo[k].rectsDel[j].y && this.cartoonsInfo[k].imageRect[i].width === this.cartoonsInfo[k].rectsDel[j].width && this.cartoonsInfo[k].imageRect[i].height === this.cartoonsInfo[k].rectsDel[j].height) {
+                      isDeleted = true;
+                      break;
+                    }
+                  }
+                  if(!isDeleted) {
+                    this.cartoonRectL.push({
+                      x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
+                      y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
+                      width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
+                      height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
+                      colour: this.cartoonsInfo[k].colorRect,
+                    });
+                  }
+                }
+              }
+              else {
+                for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
+                  this.cartoonRectL.push({
+                    x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
+                    y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
+                    width: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].width,
+                    height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
+                    colour: this.cartoonsInfo[k].colorRect,
+                  });
+                }
               }
             }
             if (this.cartoonsInfo[k].rectsAdd != null) {
@@ -1403,14 +1487,36 @@
           if (this.cartoonsInfo[k + 1] !== undefined) {
             url2 = this.cartoonsInfo[k + 1].imageUrl;
             if (this.cartoonsInfo[k + 1].imageRect != null) {
-              for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
-                this.cartoonRectR.push({
-                  x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
-                  y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
-                  width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
-                  height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
-                  colour: this.cartoonsInfo[k + 1].colorRect,
-                });
+              if(this.cartoonsInfo[k + 1].displayDel === '1000000602' && this.cartoonsInfo[k + 1].rectsDel != null){
+                for (let i = 0; i < this.cartoonsInfo[k+ 1].imageRect.length; i++) {
+                  let isDeleted = false;
+                  for (let j = 0; j < this.cartoonsInfo[k+ 1].rectsDel.length; j++) {
+                    if(this.cartoonsInfo[k+ 1].imageRect[i].x === this.cartoonsInfo[k+ 1].rectsDel[j].x && this.cartoonsInfo[k+ 1].imageRect[i].y === this.cartoonsInfo[k+ 1].rectsDel[j].y && this.cartoonsInfo[k+ 1].imageRect[i].width === this.cartoonsInfo[k+ 1].rectsDel[j].width && this.cartoonsInfo[k+ 1].imageRect[i].height === this.cartoonsInfo[k+ 1].rectsDel[j].height) {
+                      isDeleted = true;
+                      break;
+                    }
+                  }
+                  if(!isDeleted) {
+                    this.cartoonRectR.push({
+                      x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
+                      y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
+                      width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
+                      height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
+                      colour: this.cartoonsInfo[k + 1].colorRect,
+                    });
+                  }
+                }
+              }
+              else {
+                for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
+                  this.cartoonRectR.push({
+                    x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
+                    y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
+                    width: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].width,
+                    height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
+                    colour: this.cartoonsInfo[k + 1].colorRect,
+                  });
+                }
               }
             }
 
@@ -1557,11 +1663,11 @@
         this.isSlidebar2Expended = false;
         this.cntCartoon = 0;
         this.orderCartoon = 0;
-        this.caseId = data.caseId;
+        this.judgeUserId = null;
         this.caseDealId = data.caseDealId;
         let url1 = '';
         let url2 = '';
-        let deviceImage, submitRects;
+        let deviceImage, submitRects, cartoonRects;
         let colourInfo = null;
         let handGood = null, handAttached = null;
 
@@ -1582,11 +1688,18 @@
                 let modeName;
                 this.judgeStartTime = null;
                 this.judgeDeviceName = null;
-                this.judgeUserId = null;
+
                 this.judgeUserName = null;
                 this.handStartTime = null;
                 this.handDeviceName = null;
                 this.handUserName = null;
+
+		if (this.showPage.serJudgeGraph !== null) {
+                  // this.judgeStartTime = this.showPage.serJudgeGraph.judgeStartTime;
+                  // this.judgeDeviceName = this.showPage.serJudgeGraph.judgeDevice.deviceName;
+                  this.judgeUserId = this.showPage.serJudgeGraph.judgeUserId;
+                  this.judgeUserName = this.showPage.serJudgeGraph.judgeUser.userName;
+                }
 
                 for (let i = 0; i < this.showPage.serAssignList.length; i++) {
                   if (this.showPage.serAssignList[i].handDevice !== null) {
@@ -1620,11 +1733,10 @@
                 this.handGoodExpanded = [];
                 this.handGoodDataCodeExpanded = [];
 
-                this.conclusionType = null;
-                if (this.showPage.serCheckResultList.length !== 0) {
-                  this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
-                }
-
+                // this.conclusionType = null;
+                // if(this.judgeUserId===this.defaultUserId) {
+                //   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
+                // }
 
                 deviceImage = [];
                 submitRects = [];
@@ -1638,7 +1750,11 @@
                 }
 
                 if (this.showPage.serJudgeGraph !== undefined && this.showPage.serJudgeGraph !== null) {
-                  if (this.showPage.serJudgeGraph.judgeSubmitrects !== null) {
+                  if(this.showPage.serJudgeGraph.judgeCartoonRects !== undefined && this.showPage.serJudgeGraph.judgeCartoonRects !== null) {
+                    cartoonRects = this.showPage.serJudgeGraph.judgeCartoonRects;
+                    cartoonRects = JSON.parse(cartoonRects);
+                  }
+                  if (this.showPage.serJudgeGraph.judgeSubmitrects !== undefined &&  this.showPage.serJudgeGraph.judgeSubmitrects !== null) {
                     submitRects = this.showPage.serJudgeGraph.judgeSubmitrects;
                     submitRects = JSON.parse(submitRects);
                   }
@@ -1654,7 +1770,12 @@
                         rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 521 / deviceImage[i].height :0,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
-                        colorRect: colourInfo.scanRecogniseColour
+                        colorRect: colourInfo.scanRecogniseColour,
+                        colorAdd: colourInfo.judgeRecogniseColour,
+                        colorDel: colourInfo.displayDeleteSuspicionColour,
+                        displayDel: colourInfo.displayDeleteSuspicion,
+                        rectsAdd: cartoonRects !=null && cartoonRects[i] != undefined? cartoonRects[i].rectsAdded : null,
+                        rectsDel: cartoonRects !=null && cartoonRects[i] != undefined?  cartoonRects[i].rectsDeleted : null
                       });
                     }
 
@@ -1677,32 +1798,125 @@
 
                 if (this.imagesInfo[0] !== undefined) {
                   if (this.imagesInfo[0].imageRect != null) {
-                    for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
-                      this.imageRectL.push({
-                        x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
-                        y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
-                        width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
-                        height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
-                        colour: this.imagesInfo[0].colorRect,
-                      });
+                    if(this.imagesInfo[0].displayDel === '1000000602' && this.imagesInfo[0].rectsDel != null){
+                      for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
+                        let isDeleted = false;
+                        for (let j = 0; j < this.imagesInfo[0].rectsDel.length; j++) {
+                          if(this.imagesInfo[0].imageRect[i].x === this.imagesInfo[0].rectsDel[j].x && this.imagesInfo[0].imageRect[i].y === this.imagesInfo[0].rectsDel[j].y && this.imagesInfo[0].imageRect[i].width === this.imagesInfo[0].rectsDel[j].width && this.imagesInfo[0].imageRect[i].height === this.imagesInfo[0].rectsDel[j].height) {
+                            isDeleted = true;
+                            break;
+                          }
+                        }
+                        if(!isDeleted) {
+                          this.imageRectL.push({
+                            x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
+                            y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
+                            width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
+                            height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
+                            colour: this.imagesInfo[0].colorRect,
+                          });
+                        }
+                      }
+                    }
+                    else {
+                      for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
+                        this.imageRectL.push({
+                          x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
+                          y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
+                          width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].width,
+                          height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
+                          colour: this.imagesInfo[0].colorRect,
+                        });
+                      }
                     }
                   }
                   url1 = this.imagesInfo[0].imageUrl;
+                  if (this.imagesInfo[0].rectsAdd != null) {
+                    for (let i = 0; i < this.imagesInfo[0].rectsAdd.length; i++) {
+
+                      this.imageRectL.push({
+                        x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].rectsAdd[i].x,
+                        y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].rectsAdd[i].y,
+                        width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].rectsAdd[i].width,
+                        height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].rectsAdd[i].height,
+                        colour: this.imagesInfo[0].colorAdd,
+                      });
+                    }
+                  }
+
+                  if (this.imagesInfo[0].displayDel === '1000000601') {
+                    if (this.imagesInfo[0].rectsDel != null) {
+                      for (let i = 0; i < this.imagesInfo[0].rectsDel.length; i++) {
+                        this.imageRectL.push({
+                          x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].rectsDel[i].x,
+                          y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].rectsDel[i].y,
+                          width: this.imagesInfo[0].rateWidth * this.imagesInfo[0].rectsDel[i].width,
+                          height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].rectsDel[i].height,
+                          colour: this.imagesInfo[0].colorDel,
+                        });
+                      }
+                    }
+                  }
                 }
 
                 if (this.imagesInfo[1] !== undefined) {
                   if (this.imagesInfo[1].imageRect != null) {
-                    for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
-                      this.imageRectR.push({
-                        x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
-                        y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
-                        width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
-                        height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
-                        colour: this.imagesInfo[1].colorRect,
-                      });
+                    if(this.imagesInfo[1].displayDel === '1000000602' && this.imagesInfo[1].rectsDel != null){
+                      for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
+                        let isDeleted = false;
+                        for (let j = 0; j < this.imagesInfo[1].rectsDel.length; j++) {
+                          if(this.imagesInfo[1].imageRect[i].x === this.imagesInfo[1].rectsDel[j].x && this.imagesInfo[1].imageRect[i].y === this.imagesInfo[1].rectsDel[j].y && this.imagesInfo[1].imageRect[i].width === this.imagesInfo[1].rectsDel[j].width && this.imagesInfo[1].imageRect[i].height === this.imagesInfo[1].rectsDel[j].height) {
+                            isDeleted = true;
+                            break;
+                          }
+                        }
+                        if(!isDeleted) {
+                          this.imageRectR.push({
+                            x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
+                            y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
+                            width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
+                            height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
+                            colour: this.imagesInfo[1].colorRect,
+                          });
+                        }
+                      }
+                    }
+                    else {
+                      for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
+                        this.imageRectR.push({
+                          x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
+                          y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
+                          width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].width,
+                          height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
+                          colour: this.imagesInfo[1].colorRect,
+                        });
+                      }
                     }
                   }
                   url2 = this.imagesInfo[1].imageUrl;
+                  if (this.imagesInfo[1].rectsAdd != null) {
+                    for (let i = 0; i < this.imagesInfo[1].rectsAdd.length; i++) {
+                      this.imageRectR.push({
+                        x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].rectsAdd[i].x,
+                        y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].rectsAdd[i].y,
+                        width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].rectsAdd[i].width,
+                        height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].rectsAdd[i].height,
+                        colour: this.imagesInfo[1].colorAdd,
+                      });
+                    }
+                  }
+
+                  if (this.imagesInfo[1].displayDel === '1000000601' && this.imagesInfo[1].rectsDel != null) {
+                    for (let i = 0; i < this.imagesInfo[1].rectsDel.length; i++) {
+                      this.imageRectR.push({
+                        x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].rectsDel[i].x,
+                        y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].rectsDel[i].y,
+                        width: this.imagesInfo[1].rateWidth * this.imagesInfo[1].rectsDel[i].width,
+                        height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].rectsDel[i].height,
+                        colour: this.imagesInfo[1].colorDel,
+                      });
+                    }
+                  }
                 }
 
                 loadImageCanvas(url1, url2, this.imageRectL, this.imageRectR, this.power);
@@ -1789,8 +2003,11 @@
 
         let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
         let checkedIds = this.$refs.pendingListTable.selectedTo;
+        let httpOption = this.$refs.pendingListTable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
@@ -1804,6 +2021,7 @@
         let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
         let checkedIds = this.$refs.pendingListTable.selectedTo;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1823,8 +2041,11 @@
       onPrintButton() {
         let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
         let checkedIds = this.$refs.pendingListTable.selectedTo;
+        let httpOption = this.$refs.pendingListTable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };

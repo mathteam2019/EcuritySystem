@@ -11,7 +11,10 @@
           border-radius: 0.3rem !important;
         }
       }
+    }
 
+    .disable {
+      background: black !important;
     }
     .p-left-0 {
       padding-left: 0;
@@ -368,7 +371,7 @@
                     </div>
                     <div slot="operating" slot-scope="props">
                       <b-button size="sm" variant="info default btn-square"
-                                :disabled="checkPermItem('device_config_modify') || props.rowData.deviceId === 7749"
+                                :disabled="checkPermItem('device_config_modify')"
                                 @click="onAction('edit',props.rowData)">
                         <i class="icofont-edit"/>
                       </b-button>
@@ -446,7 +449,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.operate-mode')}}
                   </template>
-                  <b-form-select v-model="configForm.modeId" :options="modeSelectData" @change="changeDefault" plain/>
+                  <b-form-select v-model="configForm.modeId" :options="modeSelectData" @input="changeDefault" @change="changeDefault" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -465,7 +468,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.safety-hand-check')}}
                   </template>
-                  <b-form-select v-model="configForm.manualSwitch" :options="yesNoOptions" :disabled="getModeValueFromId(configForm.modeId) === '1000001301'" @change="changeManualSwitch" plain/>
+                  <b-form-select v-model="configForm.manualSwitch" :options="yesNoOptions" :disabled="getModeValueFromId(configForm.modeId) === '1000001301' || getModeValueFromId(configForm.modeId) === '1000001303'" @change="changeManualSwitch" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -473,7 +476,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.male-guide-object')}}
                   </template>
-                  <b-form-select v-model="configForm.manDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301' || configForm.manualSwitch ==='1000000602'" :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.manDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301' || configForm.manualSwitch !=='1000000601'" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -481,7 +484,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.female-guide-object')}}
                   </template>
-                  <b-form-select v-model="configForm.womanDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301' || configForm.manualSwitch ==='1000000602'" :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.womanDeviceGender" :disabled="getModeValueFromId(configForm.modeId) === '1000001301' || configForm.manualSwitch !=='1000000601'" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -889,6 +892,9 @@
           this.configForm.manualSwitch = null;
           this.configForm.manDeviceGender = null;
           this.configForm.womanDeviceGender = null;
+          this.configForm.manualDeviceId = [];
+          this.configForm.judgeDeviceId= [];
+          this.disableMultipleSelect(value);
         }
         if(value===3){
           this.configForm.manRemoteGender = this.genderFilterOptions[1].value;
@@ -896,7 +902,10 @@
           this.configForm.manManualGender = null;
           this.configForm.womanManualGender = null;
           this.configForm.atrSwitch = null;
-          this.configForm.manualSwitch = '1000000602';
+          this.configForm.manualSwitch = null;
+          this.configForm.manualDeviceId = [];
+          this.disableMultipleSelect(2);
+          this.enableMultipleSelect(value);
         }
         if(value===2){
           this.configForm.manManualGender = this.genderFilterOptions[1].value;
@@ -905,6 +914,9 @@
           this.configForm.womanRemoteGender = null;
           this.configForm.atrSwitch = this.atrOptions[0].value;
           this.configForm.manualSwitch = '1000000602';
+          this.configForm.judgeDeviceId= [];
+          this.disableMultipleSelect(3);
+          this.enableMultipleSelect(value);
         }
         if(value===4){
           this.configForm.manRemoteGender = this.genderFilterOptions[1].value;
@@ -913,6 +925,7 @@
           this.configForm.womanManualGender = this.genderFilterOptions[2].value;
           this.configForm.atrSwitch = null;
           this.configForm.manualSwitch = '1000000602';
+          this.enableMultipleSelect(1);
         }
       },
 
@@ -1029,6 +1042,59 @@
         }
       },
 
+      enableMultipleSelect(val) {
+        let context = document.getElementsByClassName("vs__dropdown-toggle");
+        console.log(context);
+        if(val === context.length) {
+          context[1].style.cssText = 'background:white !important';
+          let input = context[1].getElementsByTagName("input")[0];
+          input.style.background = 'none';
+          //context[i].addClass('disable');
+          //console.log(context[i].style);
+          let box = context[1].getElementsByClassName("vs__selected-options")[0];
+          //box.addClass('disable');
+          box.style.cssText = 'background:white !important';
+        }else {
+          for (let i = val; i < context.length; i++) {
+            context[i].style.cssText = 'background:white !important';
+            let input = context[i].getElementsByTagName("input")[0];
+            input.style.background = 'none';
+            //context[i].addClass('disable');
+            console.log(context[i].style);
+            let box = context[i].getElementsByClassName("vs__selected-options")[0];
+            //box.addClass('disable');
+            box.style.cssText = 'background:white !important';
+          }
+        }
+      },
+
+      disableMultipleSelect(val){
+
+        let context = document.getElementsByClassName("vs__dropdown-toggle");
+        //console.log(context);
+        if(val === context.length) {
+          context[1].style.cssText = 'background:#e9ecef !important';
+          let input = context[1].getElementsByTagName("input")[0];
+          input.style.background = 'none';
+          //context[i].addClass('disable');
+          //console.log(context[i].style);
+          let box = context[1].getElementsByClassName("vs__selected-options")[0];
+          //box.addClass('disable');
+          box.style.cssText = 'background:#e9ecef !important';
+        }else {
+          for (let i = val; i < context.length; i++) {
+            context[i].style.cssText = 'background:#e9ecef !important';
+            let input = context[i].getElementsByTagName("input")[0];
+            input.style.background = 'none';
+            //context[i].addClass('disable');
+            //console.log(context[i].style);
+            let box = context[i].getElementsByClassName("vs__selected-options")[0];
+            //box.addClass('disable');
+            box.style.cssText = 'background:#e9ecef !important';
+          }
+        }
+      },
+
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1141,8 +1207,11 @@
         // this.$refs['model-export'].show();
         let checkedAll = this.$refs.configListTable.checkedAllStatus;
         let checkedIds = this.$refs.configListTable.selectedTo;
+        let httpOption = this.$refs.configListTable.httpOptions;
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.configFilter,
           'idList': checkedIds.join()
         };
@@ -1162,6 +1231,7 @@
         let checkedAll = this.$refs.configListTable.checkedAllStatus;
         let checkedIds = this.$refs.configListTable.selectedTo;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.configFilter,
           'idList': checkedIds.join()
@@ -1175,8 +1245,11 @@
       onPrintButton() {
         let checkedAll = this.$refs.configListTable.checkedAllStatus;
         let checkedIds = this.$refs.configListTable.selectedTo;
+        let httpOption = this.$refs.configListTable.httpOptions;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'locale' : getLocale(),
+          'sort' : httpOption.params.sort,
           'filter': this.configFilter,
           'idList': checkedIds.join()
         };
@@ -1311,6 +1384,25 @@
               });
               this.$refs.fieldSelectList.resetFilterOption();
               break;
+            case responseMessages['device-online']: // okay
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.device-online`), {
+                duration: 3000,
+                permanent: false
+              });
+              break;
+            case responseMessages['has-devices']: // okay
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-devices`), {
+                duration: 3000,
+                permanent: false
+              });
+              break;
+            case responseMessages['device-not-field']: // okay
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.device-not-field`), {
+                duration: 3000,
+                permanent: false
+              });
+              break;
+
           }
         });
 
@@ -1449,8 +1541,6 @@
                     category: data.device.category.categoryName
                   };
                   this.getConfigDeviceData(data.deviceId);
-                  //console.log(this.configForm.modeId);
-
 
                   rowData.fromConfigIdList.forEach(item => {
                     if (item.device != null) {
@@ -1556,6 +1646,26 @@
               this.pageStatus = 'list';
 
               break;
+            case responseMessages['device-online']: // okay
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.device-online`), {
+                duration: 3000,
+                permanent: false
+              });
+              break;
+            case responseMessages['has-devices']: // okay
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-devices`), {
+                duration: 3000,
+                permanent: false
+              });
+              break;
+            case responseMessages['device-not-field']: // okay
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.device-not-field`), {
+                duration: 3000,
+                permanent: false
+              });
+              break;
+
+
           }
           this.isLoading = false;
         })
@@ -1630,14 +1740,12 @@
       },
 
       'configForm.fromDeviceId': function (newVal) {
-        console.log(newVal);
         let that = this;
         setTimeout(function(){
           that.disableSelect();
         },300);
       },
       'configForm.manualSwitch': function (newVal) {
-        console.log(newVal);
        if(newVal === '1000000602'){
          this.configForm.manDeviceGender = null;
          this.configForm.womanDeviceGender = null;
@@ -1645,9 +1753,6 @@
        }
       },
 
-      // 'configForm.modeId': function (newVal) {
-      //
-      // },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         let options = [];
@@ -1664,7 +1769,7 @@
           }));
         }
         this.deviceCategoryOptions = JSON.parse(JSON.stringify(options));
-        this.deviceCategoryOptions.push({value: null, text: `全部`});
+        this.deviceCategoryOptions.push({value: null, text: this.$t('permission-management.all')});
         this.$refs.fieldSelectList.setFilterOptions(this.deviceCategoryOptions);
       },
       siteData(newVal, oldVal) { // maybe called when the org data is loaded from server

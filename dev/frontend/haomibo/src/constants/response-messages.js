@@ -53,6 +53,7 @@ export const responseMessages = {
   'has-fields':'has_fields',
   'pre-user-pending-status' :'pre_user_pending_status',
   'user-pending-status':'user_pending_status',
+  'user-block-status':'user_block_status',
   'used-seized-good' : 'used_seized_good',
   'used-dictionary-name' : 'used_dictionary_name',
   'used-dictionary-code' : 'used_dictionary_code',

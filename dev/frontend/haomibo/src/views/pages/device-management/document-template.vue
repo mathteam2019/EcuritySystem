@@ -18,7 +18,7 @@
                 </b-form-group>
               </b-col>
               <b-col cols="4">
-                <b-form-group :label="$t('device-management.active')">
+                <b-form-group :label="$t('permission-management.status')">
                   <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -161,17 +161,19 @@
                               :placeholder="$t('device-management.origin-model-placeholder')"/>
               </b-form-group>
               <div v-if="getLocale()==='zh'" style="left: 3%;top: 10px">
+                <img v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp.png">
                 <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
                 <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
               </div>
               <div v-if="getLocale()==='en'" style="left: 3%;top: 10px">
+                <img v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp_en.png">
                 <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
                 <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
               </div>
             </b-col>
             <b-col xxs="12" md="8" lg="9">
               <b-row class="h-100">
-                <b-col v-if="pageStatus!=='show'" cols="12" class="d-flex justify-content-between mb-2">
+                <b-col cols="12" class="d-flex justify-content-between mb-2">
                   <label class="font-weight-bold" style="line-height: 28px">{{$t('device-management.document-template.device-show-list')}}</label>
                 </b-col>
                 <b-col v-if="pageStatus!=='show'" cols="12">
@@ -221,13 +223,13 @@
                                   :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
                                   size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
                                   variant="success default">
-                          <i class="icofont-check-alt"/>&nbsp;{{$t('device-management.document-template.yes')}}
+                         &nbsp;{{$t('device-management.document-template.yes')}}
                         </b-button>
                         <b-button v-if="props.rowData.isNull === '1000000602'"
                                   :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
                                   size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
                                   variant="light default">
-                          <i class="icofont-close-line"/>&nbsp;{{$t('device-management.document-template.no')}}
+                          {{$t('device-management.document-template.no')}}
                         </b-button>
                       </div>
                       <div slot="action" slot-scope="props">
@@ -268,13 +270,13 @@
                                 :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
                                 size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
                                 variant="success default">
-                        <i class="icofont-check-alt"/>&nbsp;{{$t('device-management.document-template.yes')}}
+                        &nbsp;{{$t('device-management.document-template.yes')}}
                       </b-button>
                       <b-button v-if="props.rowData.isNull === '1000000602'"
                                 :disabled="checkPermItem('device_indicator_update_is_null') || pageStatus==='show'"
                                 size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
                                 variant="light default">
-                        <i class="icofont-close-line"/>&nbsp;{{$t('device-management.document-template.no')}}
+                        {{$t('device-management.document-template.no')}}
                       </b-button>
                     </div>
                     <div slot="action" slot-scope="props">
@@ -535,7 +537,7 @@
             },
             {
               name: 'status',
-              title: this.$t('device-management.active'),
+              title: this.$t('permission-management.th-status'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
@@ -698,8 +700,11 @@
         // this.$refs['model-export'].show();
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'locale' : getLocale(),
+          'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -711,6 +716,7 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filterOption,
           'idList': checkedIds.join()
@@ -724,8 +730,10 @@
       onPrintButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -1142,7 +1150,6 @@
                   duration: 3000,
                   permanent: false
                 });
-                //console.log(this.indicatorData[index], value);
                 this.indicatorData[index].isNull = value;
                 item.isNull = value;
                 break;
@@ -1210,7 +1217,7 @@
           }));
         }
         this.categoryFilterData = JSON.parse(JSON.stringify(this.categorySelectOptions));
-        this.categoryFilterData.push({value: null, text: `全部`})
+        this.categoryFilterData.push({value: null, text: this.$t('permission-management.all')})
       },
       indicatorData(newVal, oldVal) {
         if (this.$refs.indicatorTable !== undefined)

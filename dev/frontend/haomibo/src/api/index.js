@@ -174,7 +174,6 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
 
       //D[${type}]
       //console.log((moment.utc(moment().diff(moment(String(datetime))))/(360000*24)));
-      console.log(diffString);
       //console.log(moment.utc(moment().diff(moment(String(datetime)))));
       // return moment.utc(moment().diff(moment(String(datetime)))).format(`MM/DD/YYYY HH:mm:ss`);
       return diffString;
@@ -271,17 +270,21 @@ const downLoadImageFromUrl = (url) => {
   let urlSplit = url.toString().split("/");
   let splitLength = urlSplit.length;
   let img = urlSplit[splitLength-1];
-  //url = apiImageUrl + url;
+  let imgExt = img.toString().split('.');
+  //console.log(imgExt);
+  if(imgExt.length === 2) {
+    //url = apiImageUrl + url;
 
-  //let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-  let fileLink = document.createElement('a');
-  fileLink.href = url;
-  //fileLink.download=img;
-  fileLink.setAttribute('download',  img);
-  document.body.appendChild(fileLink);
-  fileLink.click();
-  //document.body.removeChild(fileLink);
-  fileLink.parentNode.removeChild(fileLink);
+    //let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+    let fileLink = document.createElement('a');
+    fileLink.href = url;
+    //fileLink.download=img;
+    fileLink.setAttribute('download', img);
+    document.body.appendChild(fileLink);
+    fileLink.click();
+    //document.body.removeChild(fileLink);
+    fileLink.parentNode.removeChild(fileLink);
+  }
 
   // var a = $("<a>")
   //   .attr("href", url)

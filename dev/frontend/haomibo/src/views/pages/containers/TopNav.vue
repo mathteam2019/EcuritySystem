@@ -164,9 +164,8 @@
   import {getApiManager, isAccountValid} from "../../../api";
   import {responseMessages} from "../../../constants/response-messages";
   import {validationMixin} from 'vuelidate';
-  import VuejsDialog from 'vuejs-dialog';
 
-  const {required, minLength, sameAs} = require('vuelidate/lib/validators');
+  const {required, minLength, maxLength, sameAs} = require('vuelidate/lib/validators');
   export default {
     components: {
       'menu-icon': MenuIcon,
@@ -180,7 +179,7 @@
           required, minLength: minLength(6)
         },
         password: {
-          required, minLength: minLength(6),
+          required, minLength: minLength(6), maxLength: maxLength(20),
           isAccountValid
         },
         confirmPassword: {
@@ -206,7 +205,6 @@
     mounted() {
       this.portrait = `${this.currentUser.portrait}`;
       this.setLanguageInfo();
-      //this.passwordForm.userAccount = `${this.currentUser.name}`;
     },
     methods: {
       ...mapMutations(['changeSideMenuStatus', 'changeSideMenuForMobile']),
@@ -228,20 +226,26 @@
         if (this.$v.passwordForm.$invalid) {
 
           if(this.passwordForm.password === null||this.passwordForm.password===''){
-            this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.input-none`), {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.input-none`), {
+              duration: 3000,
+              permanent: false
+            });
+          }
+          else if(this.passwordForm.password.length<6 || this.passwordForm.password.length>20) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.password-length`), {
               duration: 3000,
               permanent: false
             });
           }
           else {
             if(!isAccountValid(this.passwordForm.password)){
-              this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.format-invalid`), {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.format-invalid`), {
                 duration: 3000,
                 permanent: false
               });
             }
             else if(this.$v.passwordForm.confirmPassword.$invalid){
-              this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.confirm-invalid`), {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.confirm-invalid`), {
                 duration: 3000,
                 permanent: false
               });
@@ -249,7 +253,6 @@
           }
           return;
         }
-        // this.passwordForm.password
         getApiManager()
           .post(`${apiBaseUrl}/auth/change-password`, {
             oldPassword: this.passwordForm.oldPassword,
@@ -290,7 +293,6 @@
       },
       setLanguageInfo(){
         setLocale(this.$i18n.locale);
-
       },
       changeLocale(l) {
         let locale = l.id;
@@ -299,10 +301,7 @@
         if (direction !== currentDirection) {
           setDirection(direction)
         }
-        //saveLanguageInfo();
-
-        this.setLang(locale)
-
+        this.setLang(locale);
       },
 
       getLocaleIcon() {
@@ -332,7 +331,6 @@
                 this.$router.push('/auth/login');
 
                 break;
-
             }
           })
           .catch((error) => {

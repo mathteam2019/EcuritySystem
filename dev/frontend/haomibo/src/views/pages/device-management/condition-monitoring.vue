@@ -107,6 +107,8 @@
             }
             .img {
               flex-grow: 1;
+              width: 65px;
+              height: 94px;
               display: flex;
               align-items: center;
               img {
@@ -161,7 +163,6 @@
         position: absolute;
         top: 0;
         width: 100%;
-        height: 100%;
         left: calculateRem(30px);
         background: black;
         z-index: 0;
@@ -412,19 +413,19 @@
           <div class="item-wrapper" v-for="(item, index) in items"
                :class="index%4===0?(index===0?'pl-0':'pl-0'):index%4===3?(index>4?'slide-left':'slide-left'):(index>4?'':'')">
             <div class="item d-flex flex-column" @click="onDetailClick(item.statusId, index)">
-              <div class="item-header">
+              <div :style="item.deviceOnline === 0 && item.device.currentStatus !=='1000002002'?'border-bottom: solid 2px #74dc21;':'border-bottom: solid 2px #c6c6c6;'" class="item-header">
                 <div class="label">{{item.deviceNumber}}</div>
                 <div class="action-list">
-                  <img v-if="item.device.deviceType === '1000001901' && item.maxScanCount > item.deviceTrafficHigh"
+                  <img v-if="item.device.deviceType === '1000001901' && item.maxScanCount > item.deviceTrafficHigh && item.device.currentStatus !=='1000002002'"
                        src="../../../assets/img/icon_user_graphic.png">
                   <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_user_graphic_disabled.png">
-                  <img v-if="item.device.deviceType === '1000001901' && item.deviceStorageAlarm === 0" src="../../../assets/img/icon_layout.png">
+                  <img v-if="item.device.deviceType === '1000001901' && item.deviceStorageAlarm === 0 && item.device.currentStatus !=='1000002002'" src="../../../assets/img/icon_layout.png">
                   <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_layout_disabled.png">
                   <img
-                    v-if="item.device.deviceType === '1000001901' && item.plcStatus === '0' && item.slaveCardStatus === '0' && item.masterCardStatus === '0' && item.footWarning === '0' && item.footWarning === '0'"
-                    src="../../../assets/img/icon_bell.png">
-                  <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_bell_disabled.png">
-                  <img v-if="item.deviceOnline === 0" src="../../../assets/img/icon_link.png">
+                    v-if="(item.device.deviceType === '1000001901' && item.plcStatus === '0' && item.slaveCardStatus === '0' && item.masterCardStatus === '0' && item.footWarning === '0' && item.footWarning === '0') || (item.device.deviceType === '1000001901' && item.device.currentStatus ==='1000002002')"
+                    src="../../../assets/img/icon_bell_disabled.png">
+                  <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_bell.png">
+                  <img v-if="item.deviceOnline === 0 && item.device.currentStatus !=='1000002002'" src="../../../assets/img/icon_link.png">
                   <img v-else src="../../../assets/img/icon_link_disabled.png">
                 </div>
               </div>
@@ -432,8 +433,12 @@
                 <b-row class="h-100">
                   <b-col cols="4" class="left-side d-flex flex-column align-items-center justify-content-between">
                     <div class="action d-flex flex-column">
-                      <b-button v-if="item.device.deviceType === '1000001901'" variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
-                      <b-button v-if="item.device.deviceType === '1000001901'" class="default" size="xs" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
+                      <b-button v-if="item.device.deviceType === '1000001901' && item.deviceLoginTime !== null && item.device.currentStatus !=='1000002002'" variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
+                      <b-button v-else variant="info skyblue default" size="xs" style="opacity: 0"> {{item.currentWorkFlowName}}</b-button>
+                      <b-button v-if="item.device.deviceType === '1000001901' && item.deviceLoginTime !== null && item.device.currentStatus !=='1000002002'" class="default" size="xs" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
+                      ['2','3','4'].includes(item.currentStatus)?'success':
+                      ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
+                      <b-button v-else class="default" size="xs" style="opacity: 0" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
                       ['2','3','4'].includes(item.currentStatus)?'success':
                       ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
                     </div>
@@ -444,7 +449,7 @@
                     </div>
                   </b-col>
                   <b-col cols="8" class="right-side d-flex flex-column">
-                    <label v-if="(item.device.currentStatus==='1000002003' || item.device.currentStatus==='1000002005') && (item.deviceOnline === 1 && item.device.status === '1000000701')" class="text-top">{{$t('device-management.device-monitoring.running-time')}}
+                    <label v-if="(item.deviceOnline === 0 && item.device.status === '1000000701' && item.device.currentStatus !=='1000002002')" class="text-top">{{$t('device-management.device-monitoring.running-time')}}
                       {{item.runningTimeValue}}</label>
                     <label v-else class="text-top" style="opacity: 0">{{$t('device-management.device-monitoring.running-time')}}</label>
                     <div class="flex-grow-1 d-flex content flex-column justify-content-end">
@@ -453,31 +458,31 @@
                         <label>{{item.fieldName}}</label>
                       </div>
                       <div class="w-100">
-                        <label>IP:</label>
-                        <label v-if="item.deviceOnline === 1 && item.device.status === '1000000701'">{{item.ipAddress}}</label>
+                        <label> IP:</label>
+                        <label v-if="item.deviceOnline === 0 && item.device.status === '1000000701' && item.device.currentStatus !=='1000002002'">{{item.ipAddress}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.number')}}:</label>
-                        <label v-if="item.deviceOnline === 1 && item.device.status === '1000000701'">{{item.account}}</label>
+                        <label v-if="item.deviceOnline === 0 && item.device.status === '1000000701' && item.device.currentStatus !=='1000002002'">{{item.account}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.device-monitoring.landing-time')}}:</label>
-                        <label v-if="item.deviceOnline === 1 && item.device.status === '1000000701'">{{item.landTime}}</label>
+                        <label v-if="item.deviceOnline === 0 && item.device.status === '1000000701' && (item.device.currentStatus ==='1000002003' || item.device.currentStatus ==='1000002005')">{{item.landTime}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.classify')}}:</label>
                         <label>{{item.category}}</label>
                       </div>
                       <div class="w-100">
-                        <label>{{$t('device-management.manufacture')}}:</label>
+                        <label style="width: fit-content">{{$t('device-management.manufacture')}}:</label>
                         <label>{{item.manufacturerName}}</label>
                       </div>
                       <div class="w-100">
-                        <label>{{$t('device-management.device-model')}}:</label>
+                        <label style="width: fit-content">{{$t('device-management.device-model')}}:</label>
                         <label>{{item.device.archive.archiveTemplate.originalModel}}</label></div>
                       <div class="w-100" :style="{opacity:item.device.deviceType === '1000001901'?1:0}">
                         <label>{{$t('device-management.device-monitoring.disk-space')}}:</label>
-                        <label v-if="item.deviceOnline === 1 && item.device.status === '1000000701'">{{item.diskSpace}}(GB)</label>
+                        <label v-if="item.deviceOnline === 0 && item.device.status === '1000000701'">{{item.diskSpace}}(GB)</label>
                       </div>
                     </div>
                   </b-col>
@@ -485,71 +490,89 @@
               </div>
 
             </div>
-            <div  v-if="item.device.deviceType === '1000001901' && item.detailStatus===true" class="item-extra-info flex-column d-flex">
+            <div  v-if="item.device.deviceType === '1000001901' && item.statusId===selectedId" class="item-extra-info flex-column d-flex">
               <div class="w-100 d-flex">
                 <div>PLC:</div>
-                <div v-if="item.plcStatus === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.device.currentStatus !=='1000002002'">
+                <div v-if="item.plcStatus === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.plcStatusName}}</span></div>
-                <div v-else-if="item.plcStatus === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.plcStatus === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.plcStatusName}}</span></div>
                 <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.plcStatusName}}</span>
+                </div>
                 </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.main-acquire-card')}}:</div>
-                <div v-if="item.masterCardStatus === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.device.currentStatus !=='1000002002'">
+                <div v-if="item.masterCardStatus === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.masterCardStatusName}}</span></div>
-                <div v-else-if="item.masterCardStatus === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.masterCardStatus === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.masterCardStatusName}}</span></div>
                 <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.masterCardStatusName}}</span>
+                </div>
                 </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.from-acquire-card')}}:</div>
-                <div v-if="item.slaveCardStatus === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.device.currentStatus !=='1000002002'">
+                <div v-if="item.slaveCardStatus === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.slaveCardStatusName}}</span></div>
-                <div v-else-if="item.slaveCardStatus === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.slaveCardStatus === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.slaveCardStatusName}}</span></div>
                 <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.slaveCardStatusName}}</span>
+                </div>
                 </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.servo')}}：</div>
-                <div v-if="item.servo === '1'"><img src="../../../assets/img/radio_succss.png"/> <span class="success">{{item.servoName}}</span>
+                <div v-if="item.device.currentStatus !=='1000002002'">
+                <div v-if="item.servo === '0'"><img src="../../../assets/img/radio_succss.png"/> <span class="success">{{item.servoName}}</span>
                 </div>
-                <div v-else-if="item.servo === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.servo === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.servoName}}</span></div>
                 <div v-else><img src="../../../assets/img/radio_pending.png"/> <span
                   class="pending">{{item.servoName}}</span></div>
-
+                </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.slider-position')}}:</div>
+                <div v-if="item.device.currentStatus !=='1000002002'">
                 <div><span class="without">{{item.slidePosition}}(mm)</span></div>
+                </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.emergency-stop')}}:</div>
-                <div v-if="item.emergencyStop === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.device.currentStatus!=='1000002002'">
+                <div v-if="item.emergencyStop === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.emergencyStopName}}</span></div>
-                <div v-else-if="item.emergencyStop === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.emergencyStop === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.emergencyStopName}}</span></div>
                 <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.emergencyStopName}}</span>
+                </div>
                 </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.footstep-alarm')}}:</div>
-                <div v-if="item.footWarning === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.device.currentStatus !=='1000002002'">
+                <div v-if="item.footWarning === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.footWarningName}}</span></div>
-                <div v-else-if="item.footWarning === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.footWarning === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.footWarningName}}</span></div>
                 <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.footWarningName}}</span>
+                </div>
                 </div>
               </div>
               <div v-if="item.device.deviceType === '1000001901'" class="w-100 d-flex flex-grow-1">
                 <div>{{$t('device-management.device-monitoring.data-monitor')}}:</div>
-                <div>
+                <div v-if="item.device.currentStatus !=='1000002002'">
                   <div class="chart-container">
-                    <v-chart :options="item.lineChartOptions" style="height: 5rem; width: 100%" :autoresize="true"/>
+                    <v-chart :options="lineChartOption" style="height: 80px; width: 100%" :autoresize="true"/>
+                  </div>
+                </div>
+                <div v-else>
+                  <div class="chart-container">
+                    <v-chart :options="lineChartOption" style="height: 80px; width: 100%; opacity: 0" :autoresize="true"/>
                   </div>
                 </div>
               </div>
@@ -562,7 +585,7 @@
           <div class="text-center no-item-data">{{$t('vuetable.no-data')}}</div>
         </div>
         <div class="d-flex align-items-center justify-content-between footer-pager">
-          <label>{{$t('vuetable.total')}} {{pagination.total}} {{$t('vuetable.record')}}</label>
+<!--          <label>{{$t('vuetable.total')}} {{pagination.total}} {{$t('vuetable.record')}}</label>-->
           <div class="pagination">
             <span @click="onFirstPage()" :class="pagination.currentPage === 1?`disabled`:``"><i
               :class="direction === 'ltr'?'icofont-double-left':'icofont-double-right'"/> </span>
@@ -581,7 +604,16 @@
               :class="direction === 'rtl'?'icofont-simple-left':'icofont-simple-right'"/></span>
             <span @click="onLastPage()" :class="pagination.currentPage === pagination.lastPage?`disabled`:``"><i
               :class="direction === 'ltr'?'icofont-double-right':'icofont-double-left'"/> </span>
+
           </div>
+                      <div style="display: flex; justify-content: flex-end;align-items: center;">
+
+                        <div>
+                          <span class="mr-3">{{$t('vuetable.total')}}</span>
+                          <span class="mr-3 font-weight-bold">{{pagination.total}}</span>
+                          <span class="mr-3">{{$t('vuetable.record')}}</span>
+                        </div>
+                      </div>
         </div>
       </div>
     </b-card>
@@ -632,7 +664,7 @@
     },
     created() {
       //this.onSearchButton();
-      this.timer = setInterval(this.autoUpdate, 20000)
+      this.timer = setInterval(this.autoUpdate, 8000);
 
       //this.timer = setInterval(() => this.onTaskVuetableChangePage(this.httpOption.params.page), 15000);
       //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
@@ -650,19 +682,21 @@
     data() {
       return {
         isLoading: false,
+        selectedId : null,
+        selectedIndex : null,
         isExist:true,
         detailDevice:false,
         manufacturerDicData: [],
         currentFlowDicData: [],
         currentStatusDicData: [],
         deviceStatusDicData: [
-          {text: "急停按下", value: "0"},
-          {text: "急停弹起", value: "1"},
+          {text: "连接", value: "0"},
+          {text: "未连接", value: "1"},
           {text: "未知", value: "-1"},
         ],
         servoStatusDicData: [
-          {text: "就绪", value: "0"},
-          {text: "未就绪", value: "1"},
+          {text: "连接", value: "0"},
+          {text: "未连接", value: "1"},
           {text: "未知", value: "-1"},
         ],
         footStatusDicData: [
@@ -689,6 +723,7 @@
         },
         direction: getDirection().direction,
         items: [],
+        lineChartOption :[],
         chartOption: {
           tooltip: {
             trigger: 'axis'
@@ -704,7 +739,7 @@
               fontSize: 8,
               color: 'white'
             },
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+            data: []
           },
           yAxis: {
             type: 'value',
@@ -724,7 +759,7 @@
             {
               name: this.$t('device-management.device-monitoring.data-monitor'),
               type: 'line',
-              data: [11, 11, 15, 13, 12, 13, 10]
+              data: []
             },
             {
               name: this.$t('system-setting.parameter-setting.security-instrument-flow-high'),
@@ -733,7 +768,7 @@
                 color: 'red',
                 type: 'dotted'
               },
-              data: [],
+              data: []
             },
             {
               name: this.$t('system-setting.parameter-setting.security-instrument-flow-middle'),
@@ -742,7 +777,7 @@
                 color: 'yellow',
                 type: 'dotted'
               },
-              data: [],
+              data: []
             }
           ]
         }
@@ -751,10 +786,17 @@
     methods: {
       autoUpdate() {
         this.getDataFetchRefresh();
+        if(this.selectedId!== null){
+          this.onDetailClick(this.selectedId, this.selectdeIndex);
+        }
       },
       onDetailClick(statusId, index){
 
-        this.items[index].detailStatus = true;
+        this.selectedId = statusId;
+        this.selectdeIndex = index;
+
+        //this.items[index].detailStatus = true;
+
         getApiManagerError().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-id`, {
           statusId: statusId
         }).then((response) => {
@@ -762,14 +804,16 @@
           let data = response.data.data;
           switch (message) {
             case responseMessages['ok']:
-              this.items[index].lineChartOptions = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
+              this.lineChartOption = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
+              //this.items[index].lineChartOptions = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
+              //this.items[index].lineChartOptions = this.chartOption;
               this.items[index].maxScanCount = Math.max.apply(Math, data.record.countList);
               this.items[index].deviceNumber = data.device.deviceName;
               this.items[index].device = data.device;
               this.items[index].fieldName = data.device && data.device.field ? data.device.field.fieldDesignation : '';
               this.items[index].landTime = getDateTimeWithFormat(data.loginTime, 'monitor');
-              this.items[index].category = data.device ? data.device.category.categoryName : '';
-              this.items[index].manufacturerName = findDicTextData(this.manufacturerDicData, data.device.archive.archiveTemplate.manufacturer);
+              this.items[index].category = data.device.category ? data.device.category.categoryName : '';
+              this.items[index].manufacturerName = data.device.archive && data.device.archive.archiveTemplate ? findDicTextData(this.manufacturerDicData, data.device.archive.archiveTemplate.manufacturer):'';
               this.items[index].currentWorkFlowName = findDicTextData(this.currentFlowDicData, data.currentWorkFlow);
               this.items[index].currentStatusName = findDicTextData(this.currentStatusDicData, data.currentStatus);
               this.items[index].imageUrl = data.device && data.device.imageUrl ? data.device.imageUrl : null;
@@ -807,6 +851,8 @@
         return checkPermissionItem(value);
       },
       generateChartData(data, hValue, mValue) {
+        //console.log(data, hValue, mValue);
+
         let xValues = data.timeList;
         let yValues = data.countList;
         let hValues = [];
@@ -820,6 +866,9 @@
         option.series[0].data = yValues;
         option.series[1].data = hValues;
         option.series[2].data = mValues;
+
+        //console.log("generatedOption", option);
+
         return option;
       },
       //getting all device category options
@@ -878,7 +927,7 @@
             temp.fieldName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
             temp.landTime = getDateTimeWithFormat(temp.loginTime, 'monitor');
             temp.category = temp.device ? temp.device.category.categoryName : '';
-            temp.manufacturerName = findDicTextData(this.manufacturerDicData, temp.device.archive.archiveTemplate.manufacturer);
+            temp.manufacturerName = temp.device && temp.device.archive ? findDicTextData(this.manufacturerDicData, temp.device.archive.archiveTemplate.manufacturer) : '';
             temp.currentWorkFlowName = findDicTextData(this.currentFlowDicData, temp.currentWorkFlow);
             temp.currentStatusName = findDicTextData(this.currentStatusDicData, temp.currentStatus);
             temp.imageUrl = temp.device && temp.device.imageUrl ? temp.device.imageUrl : null;
@@ -893,7 +942,7 @@
             //temp.maxScanCount = Math.max.apply(Math, temp.record.countList);
             temp.lineChartOptions = [];
             temp.maxScanCount = [];
-            temp.runningTimeValue = getDateTimeWithFormat(temp.loginTime, 'monitor-diff', this.$i18n.locale);
+            temp.runningTimeValue = getDateTimeWithFormat(temp.deviceLoginTime, 'monitor-diff', this.$i18n.locale);
             temp.detailStatus = false;
             result.push(temp);
           }
@@ -918,6 +967,7 @@
           }
           this.isLoading = false;
         });
+        //this.isLoading = false;
       },
       getDataFetchRefresh() { // customize data loading for table from server
         getApiManager().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-filter-and-page`,
@@ -931,6 +981,7 @@
           switch (message) {
             case responseMessages['ok']:
               this.transformData(data);
+              //this.getDataFetchRefresh();
               this.isLoading = false;
               break;
           }
@@ -991,7 +1042,7 @@
           }));
         }
         this.deviceCategoryOptions = JSON.parse(JSON.stringify(options));
-        this.deviceCategoryOptions.push({value: null, text: `全部`});
+        this.deviceCategoryOptions.push({value: null, text: this.$t('permission-management.all')});
       },
       siteData(newVal, oldVal) { // maybe called when the org data is loaded from server
         let getLevel = (org) => {

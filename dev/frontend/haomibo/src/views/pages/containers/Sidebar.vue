@@ -160,64 +160,81 @@ export default {
         },
 
         openSubMenu(e, menuItem,index) {
-          this.subMenuIndex = index;
+          // if(this.subMenuIndex === index){
+          //   //this.sameMenuClickCount
+          //   // //this.viewingParentMenu = '';
+          //   // this.isMenuOver = false;
+          //   // path.map(p => {
+          //   //   if (p.nodeName !== 'svg' && p.nodeName !== 'rect' && p.className !== undefined && p.className.indexOf('menu-button') > -1) {
+          //   //     cont = false
+          //   //   }
+          //   // });
+          //   this.subMenuIndex = 0;
+          // }
+          //else {
+            //this.isMenuOver = true;
+            this.subMenuIndex = index;
+
+            console.log(this.subMenuIndex);
             const selectedParent = menuItem.id;
             const hasSubMenu = menuItem.subs && menuItem.subs.length > 0;
             this.changeSelectedMenuHasSubItems(hasSubMenu);
             if (!hasSubMenu) {
-                this.viewingParentMenu = selectedParent;
-                this.selectedParentMenu = selectedParent;
-                this.toggle();
+              this.viewingParentMenu = selectedParent;
+              this.selectedParentMenu = selectedParent;
+              this.toggle();
             } else {
-                const currentClasses = this.menuType ?
-                    this.menuType.split(' ').filter(x => x !== '') :
-                    '';
+              const currentClasses = this.menuType ?
+                this.menuType.split(' ').filter(x => x !== '') :
+                '';
 
-                if (!currentClasses.includes('menu-mobile')) {
-                    if (
-                        currentClasses.includes('menu-sub-hidden') &&
-                        (this.menuClickCount === 2 || this.menuClickCount === 0)
-                    ) {
-                        this.changeSideMenuStatus({
-                            step: 3,
-                            classNames: this.menuType,
-                            selectedMenuHasSubItems: hasSubMenu
-                        });
-                    } else if (
-                        currentClasses.includes('menu-hidden') &&
-                        (this.menuClickCount === 1 || this.menuClickCount === 3)
-                    ) {
-                        this.changeSideMenuStatus({
-                            step: 2,
-                            classNames: this.menuType,
-                            selectedMenuHasSubItems: hasSubMenu
-                        });
-                    } else if (
-                        currentClasses.includes('menu-default') &&
-                        !currentClasses.includes('menu-sub-hidden') &&
-                        (this.menuClickCount === 1 || this.menuClickCount === 3)
-                    ) {
-                        this.changeSideMenuStatus({
-                            step: 0,
-                            classNames: this.menuType,
-                            selectedMenuHasSubItems: hasSubMenu
-                        });
-                    }
-                } else {
-
-                    this.addMenuClassname({
-                        classname: 'sub-show-temporary',
-                        currentClasses: this.menuType
-                    });
+              if (!currentClasses.includes('menu-mobile')) {
+                if (
+                  currentClasses.includes('menu-sub-hidden') &&
+                  (this.menuClickCount === 2 || this.menuClickCount === 0)
+                ) {
+                  this.changeSideMenuStatus({
+                    step: 3,
+                    classNames: this.menuType,
+                    selectedMenuHasSubItems: hasSubMenu
+                  });
+                } else if (
+                  currentClasses.includes('menu-hidden') &&
+                  (this.menuClickCount === 1 || this.menuClickCount === 3)
+                ) {
+                  this.changeSideMenuStatus({
+                    step: 2,
+                    classNames: this.menuType,
+                    selectedMenuHasSubItems: hasSubMenu
+                  });
+                } else if (
+                  currentClasses.includes('menu-default') &&
+                  !currentClasses.includes('menu-sub-hidden') &&
+                  (this.menuClickCount === 1 || this.menuClickCount === 3)
+                ) {
+                  this.changeSideMenuStatus({
+                    step: 0,
+                    classNames: this.menuType,
+                    selectedMenuHasSubItems: hasSubMenu
+                  });
                 }
-                this.viewingParentMenu = selectedParent;
+              } else {
+
+                this.addMenuClassname({
+                  classname: 'sub-show-temporary',
+                  currentClasses: this.menuType
+                });
+              }
+              this.viewingParentMenu = selectedParent;
             }
+          //}
         },
         handleDocumentClick(e) {
-
+          //console.log(e.path, e.composedPath, e.composedPath(), this.isMenuOver);
             if (!this.isMenuOver) {
                 let cont = true
                 var path = e.path || (e.composedPath && e.composedPath())
+              console.log(path);
 
                 path.map(p => {
                     if (p.nodeName !== 'svg' && p.nodeName !== 'rect' && p.className !== undefined && p.className.indexOf('menu-button') > -1) {
@@ -233,6 +250,7 @@ export default {
             }
         },
         toggle() {
+          console.log("toggle")
             const currentClasses = this.menuType.split(' ').filter(x => x !== '')
             if (currentClasses.includes('menu-sub-hidden') && this.menuClickCount === 3) {
                 this.changeSideMenuStatus({

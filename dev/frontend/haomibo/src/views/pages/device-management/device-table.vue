@@ -104,7 +104,7 @@
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.deviceSerial }}</span>
                 </div>
                 <div slot="operating" slot-scope="props">
-                  <b-button :disabled="checkPermItem('device_modify')  || props.rowData.deviceId === 7749"
+                  <b-button :disabled="checkPermItem('device_modify')"
                             @click="onAction('edit',props.rowData)"
                             size="sm"
                             variant="primary default btn-square"
@@ -445,7 +445,7 @@
                   $t('permission-management.upload-image')}}
                 </b-button>
 
-                  <div style="margin-top: 50px; margin-left: 60px;">
+                  <div class="d-flex flex-column align-items-center" style="margin-top: 50px; margin-left: 60px;">
                     <div>
                       <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
                         class="icofont-save"/>
@@ -984,13 +984,17 @@
       getManufacturerOptions() {
         this.manufacturerOptions = getDicDataByDicIdForOptions(9);
       },
+
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'locale' : getLocale(),
+          'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -1002,6 +1006,7 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filterOption,
           'idList': checkedIds.join()
@@ -1015,8 +1020,10 @@
       onPrintButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
+        let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };

@@ -212,12 +212,12 @@
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
-            <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
+            <b-col cols="11"><span>{{$t('personal-inspection.all')}}</span></b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
             <b-col cols="11">
-              <span v-if="filter.userName===null">张三, 李四, 王五</span>
+              <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
               <span v-else>{{filter.userName}}</span>
             </b-col>
           </b-row>
@@ -323,7 +323,7 @@
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
 
-  import {checkPermissionItem, getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import {validationMixin} from "vuelidate";
   import Modal from '../../../components/Modal/modal'
 
@@ -448,6 +448,7 @@
               show: true
             },
             axisLabel: {
+              rotate:0,
               interval: 0
             },
             axisTick: {
@@ -865,6 +866,7 @@
         }
 
         this.params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
@@ -884,6 +886,7 @@
         }
 
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
@@ -912,6 +915,7 @@
         }
 
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
@@ -961,6 +965,13 @@
           let keyData = Object.keys(this.graphData.detailedStatistics);
           let xAxisChart = [];
           let allUserStr = "";
+
+          if(keyData.length>15){
+            this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
+          }
+          else{
+            this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
+          }
 
           for (let i = 0; i < keyData.length; i++) {
 
@@ -1036,6 +1047,17 @@
       },
 
       onSearchButton() {
+        if(this.filter.startTime !== null && this.filter.endTime !== null) {
+
+          if (this.filter.startTime >= this.filter.endTime) {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`maintenance-management.process-task.time-select`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+
+        }
 
         this.getGraphData();
         this.getPreviewData();
