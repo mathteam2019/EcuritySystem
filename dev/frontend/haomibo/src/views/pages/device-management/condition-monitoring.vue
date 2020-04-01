@@ -694,9 +694,14 @@
           {text: "未连接", value: "1"},
           {text: "未知", value: "-1"},
         ],
+        stopStatusDicData: [
+          {text: "急停按下", value: "0"},
+          {text: "急停弹起", value: "1"},
+          {text: "未知", value: "-1"},
+        ],
         servoStatusDicData: [
-          {text: "连接", value: "0"},
-          {text: "未连接", value: "1"},
+          {text: "就绪", value: "0"},
+          {text: "不就绪", value: "1"},
           {text: "未知", value: "-1"},
         ],
         footStatusDicData: [
@@ -821,7 +826,7 @@
               this.items[index].masterCardStatusName = findDicTextData(this.deviceStatusDicData, data.masterCardStatus);
               this.items[index].slaveCardStatusName = findDicTextData(this.deviceStatusDicData, data.slaveCardStatus);
               this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
-              this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
+              //this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
               this.items[index].emergencyStopName = findDicTextData(this.deviceStatusDicData, data.emergencyStop);
               this.items[index].footWarningName = findDicTextData(this.footStatusDicData, data.footWarning);
 
@@ -933,8 +938,8 @@
             temp.masterCardStatusName = findDicTextData(this.deviceStatusDicData, temp.masterCardStatus);
             temp.slaveCardStatusName = findDicTextData(this.deviceStatusDicData, temp.slaveCardStatus);
             temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
-            temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
-            temp.emergencyStopName = findDicTextData(this.deviceStatusDicData, temp.emergencyStop);
+            //temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
+            temp.emergencyStopName = findDicTextData(this.stopStatusDicData, temp.emergencyStop);
             temp.footWarningName = findDicTextData(this.footStatusDicData, temp.footWarning);
             //temp.lineChartOptions = this.generateChartData(temp.record, temp.deviceTrafficHigh, temp.deviceTrafficMiddle);
             //temp.maxScanCount = Math.max.apply(Math, temp.record.countList);

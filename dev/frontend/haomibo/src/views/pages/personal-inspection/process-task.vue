@@ -1642,7 +1642,7 @@
         let httpOption = this.$refs.taskVuetable.httpOptions;
         this.imgUrl = [];
         this.params = {
-          'locale' : getlocale(),
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'sort' : httpOption.params.sort,
           'filter': this.filter,
@@ -1657,7 +1657,7 @@
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let params = {
-          'locale' : getlocale(),
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1678,7 +1678,7 @@
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let httpOption = this.$refs.taskVuetable.httpOptions;
         let params = {
-          'locale' : getlocale(),
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'sort' : httpOption.params.sort,
           'filter': this.filter,

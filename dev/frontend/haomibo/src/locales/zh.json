@@ -1167,6 +1167,13 @@
     },
     "view": {
       "on-site": "现场",
+      "total-statistics" : "累计",
+      "scan-statistics" : "安检仪累计",
+      "judge-statistics" : "判图站累计",
+      "hand-statistics" : "手检站累计",
+      "scan-hour" : "扫描",
+      "judge-hour" : "判图",
+      "hand-hour" : "手检",
       "security-device": "安检仪",
       "operator-type": "操作员类型",
       "operator": "操作员",

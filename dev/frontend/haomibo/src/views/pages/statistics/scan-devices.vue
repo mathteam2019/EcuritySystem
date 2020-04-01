@@ -871,50 +871,51 @@
     methods: {
       setPeriodLabel (newVal) {
         if(getLocale() === 'zh') {
-          this.periodLabel = '时间段';
-          // switch (newVal) {
-          //   case 'hour':
-          //     this.periodLabel = '期间(時)';
-          //     break;
-          //   case 'day':
-          //     this.periodLabel = '期间(天)';
-          //     break;
-          //   case 'week':
-          //     this.periodLabel = '期间(周)';
-          //     break;
-          //   case 'month':
-          //     this.periodLabel = '期间(月)';
-          //     break;
-          //   case 'quarter':
-          //     this.periodLabel = '期间(季度)';
-          //     break;
-          //   case 'year':
-          //     this.periodLabel = '期间(年)';
-          //     break;
-          // }
+          //this.periodLabel = '时间段';
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = '时间段';
+              break;
+            case 'day':
+              this.periodLabel = '日';
+              break;
+            case 'week':
+              this.periodLabel = '周';
+              break;
+            case 'month':
+              this.periodLabel = '月';
+              break;
+            case 'quarter':
+              this.periodLabel = '季度';
+              break;
+            case 'year':
+              this.periodLabel = '年';
+              break;
+          }
         }else{
           switch (newVal) {
             case 'hour':
-              this.periodLabel = 'periods(hour)';
+              this.periodLabel = 'Periods(hour)';
               break;
             case 'day':
-              this.periodLabel = 'periods(day)';
+              this.periodLabel = 'Day';
               break;
             case 'week':
-              this.periodLabel = 'periods(week)';
+              this.periodLabel = 'Week';
               break;
             case 'month':
-              this.periodLabel = 'periods(month)';
+              this.periodLabel = 'Month';
               break;
             case 'quarter':
-              this.periodLabel = 'periods(quarter)';
+              this.periodLabel = 'Quarter';
               break;
             case 'year':
-              this.periodLabel = 'periods(year)';
+              this.periodLabel = 'Year';
               break;
           }
         }
         return this.periodLabel;
+
       },
       selectAll(value){
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});

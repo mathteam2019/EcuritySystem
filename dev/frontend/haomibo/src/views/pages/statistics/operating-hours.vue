@@ -326,6 +326,7 @@
   import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import {validationMixin} from "vuelidate";
   import Modal from '../../../components/Modal/modal'
+  import {toInt} from "@glidejs/glide/src/utils/unit";
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -351,6 +352,7 @@
       this.getSiteOption();
       this.getPreviewData();
       this.getGraphData();
+      this.setPeriodLabel('hour');
     },
     data() {
 
@@ -430,11 +432,11 @@
               type: 'shadow'
             }
           },
-          legend: {
-            data: [this.$t('statistics.operating-hours.security') , this.$t('statistics.operating-hours.judge') , this.$t('statistics.operating-hours.hand') ],
-            icon: 'rect',
-            right: 25,
-          },
+          // legend: {
+          //   data: [this.$t('statistics.operating-hours.security')],
+          //   icon: 'rect',
+          //   right: 25,
+          // },
           grid: {
             left: '3%',
             right: '4%',
@@ -473,7 +475,7 @@
               show: false
             }
           },
-          color: ['#1989fa', '#ff0000', '#ffd835'],
+          color: ['#1989fa'],
           series: [
             {
               name: this.$t('statistics.operating-hours.security') ,
@@ -481,19 +483,19 @@
               stack: this.$t('statistics.view.total'),
               data: [0]
             },
-            {
-              name: this.$t('statistics.operating-hours.judge') ,
-              type: 'bar',
-              stack: this.$t('statistics.view.total'),
-
-              data: [0]
-            },
-            {
-              name: this.$t('statistics.operating-hours.hand') ,
-              type: 'bar',
-              stack: this.$t('statistics.view.total'),
-              data: []
-            }
+            // {
+            //   name: this.$t('statistics.operating-hours.judge') ,
+            //   type: 'bar',
+            //   stack: this.$t('statistics.view.total'),
+            //
+            //   data: [0]
+            // },
+            // {
+            //   name: this.$t('statistics.operating-hours.hand') ,
+            //   type: 'bar',
+            //   stack: this.$t('statistics.view.total'),
+            //   data: []
+            // }
           ]
         },
 
@@ -617,137 +619,195 @@
           }
         },
 
+        // taskVuetableItems: {
+        //   apiUrl: `${apiBaseUrl}/task/statistics/get-statistics-filter-by-device`,
+        //   fields: [
+        //     {
+        //       name: '__checkbox',
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center'
+        //     },
+        //     {
+        //       name: '__sequence',
+        //       title: this.$t('knowledge-base.th-no'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //     },
+        //     {
+        //       name: 'name',
+        //       title:  this.$t('statistics.operating-hours.device-name'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //     },
+        //     {
+        //       name: 'scanStatistics',
+        //       title: this.$t('statistics.view.scan-total'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (scanStatistics) => {
+        //         if (scanStatistics == null) return '';
+        //         return scanStatistics.totalScan;
+        //       }
+        //     },
+        //     {
+        //       name: 'scanStatistics',
+        //       title: this.$t('statistics.view.invalid-scan-amount'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (scanStatistics) => {
+        //         if (scanStatistics == null) return '';
+        //         return scanStatistics.invalidScan;
+        //       }
+        //     },
+        //     {
+        //       name: 'scanStatistics',
+        //       title: this.$t('statistics.view.invalid-scan-rate-table'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (scanStatistics) => {
+        //         if (scanStatistics == null) return '';
+        //         return scanStatistics.invalidScanRate.toFixed(1);
+        //       }
+        //     },
+        //     {
+        //       name: 'judgeStatistics',
+        //       title: this.$t('statistics.view.judge-total'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (judgeStatistics) => {
+        //         if (judgeStatistics == null) return '';
+        //         return judgeStatistics.totalJudge;
+        //       }
+        //     },
+        //     {
+        //       name: 'handExaminationStatistics',
+        //       title: this.$t('statistics.view.hand-total'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (handExaminationStatistics) => {
+        //         if (handExaminationStatistics == null) return '';
+        //         return handExaminationStatistics.totalHandExamination;
+        //       }
+        //     },
+        //     {
+        //       name: 'judgeStatistics',
+        //       title: this.$t('statistics.view.no-suspiction-judge'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (judgeStatistics) => {
+        //         if (judgeStatistics == null) return '';
+        //         return judgeStatistics.noSuspictionJudge;
+        //       }
+        //     },
+        //     {
+        //       name: 'judgeStatistics',
+        //       title: this.$t('statistics.view.no-suspiction-judge-rate'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (judgeStatistics) => {
+        //         if (judgeStatistics == null) return '';
+        //         return judgeStatistics.noSuspictionJudgeRate.toFixed(1);
+        //       }
+        //     },
+        //     {
+        //       name: 'handExaminationStatistics',
+        //       title: this.$t('statistics.view.no-seizure'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (handExaminationStatistics) => {
+        //         if (handExaminationStatistics == null) return '';
+        //         return handExaminationStatistics.noSeizureHandExamination;
+        //       }
+        //     },
+        //     {
+        //       name: 'handExaminationStatistics',
+        //       title: this.$t('statistics.view.no-seizure-rate'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (handExaminationStatistics) => {
+        //         if (handExaminationStatistics == null) return '';
+        //         return handExaminationStatistics.noSeizureHandExaminationRate.toFixed(1);
+        //       }
+        //     },
+        //     {
+        //       name: 'handExaminationStatistics',
+        //       title: this.$t('statistics.view.seizure'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (handExaminationStatistics) => {
+        //         if (handExaminationStatistics == null) return '';
+        //         return handExaminationStatistics.seizureHandExamination;
+        //       }
+        //     },
+        //     {
+        //       name: 'handExaminationStatistics',
+        //       title: this.$t('statistics.view.seizure-rate'),
+        //       titleClass: 'text-center',
+        //       dataClass: 'text-center',
+        //       callback: (handExaminationStatistics) => {
+        //         if (handExaminationStatistics == null) return '';
+        //         return handExaminationStatistics.seizureHandExaminationRate.toFixed(1);
+        //       }
+        //     },
+        //   ],
+        //   perPage: 10,
+        // },
+
+        tableWidth : '',
+        initialFields: [
+          {
+            name: '__checkbox',
+            titleClass: 'text-center',
+            dataClass: 'text-center',
+            width : '5%'
+          },
+          {
+            name: '__sequence',
+            title: this.$t('knowledge-base.th-no'),
+            titleClass: 'text-center',
+            dataClass: 'text-center',
+            width : '5%'
+          },
+          {
+            name: 'time',
+            title:  this.setPeriodLabel,
+            titleClass: 'text-center',
+            dataClass: 'text-center',
+            width : '10%'
+          },
+          {
+            name: 'total',
+            title: this.$t('statistics.view.total-statistics'),
+            titleClass: 'text-center',
+            dataClass: 'text-center',
+            width : this.tableWidth
+          },
+          {
+            name: 'scan',
+            title: this.$t('statistics.view.scan-statistics'),
+            titleClass: 'text-center',
+            dataClass: 'text-center',
+            width : this.tableWidth
+          },
+          {
+            name: 'judge',
+            title: this.$t('statistics.view.judge-statistics'),
+            titleClass: 'text-center',
+            dataClass: 'text-center',
+            width : this.tableWidth
+          },
+          {
+            name: 'hand',
+            title: this.$t('statistics.view.hand-statistics'),
+            titleClass: 'text-center',
+            dataClass: 'text-center',
+            width : this.tableWidth
+          }
+        ],
+
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/statistics/get-statistics-filter-by-device`,
-          fields: [
-            {
-              name: '__checkbox',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: '__sequence',
-              title: this.$t('knowledge-base.th-no'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            },
-            {
-              name: 'name',
-              title:  this.$t('statistics.operating-hours.device-name'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            },
-            {
-              name: 'scanStatistics',
-              title: this.$t('statistics.view.scan-total'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (scanStatistics) => {
-                if (scanStatistics == null) return '';
-                return scanStatistics.totalScan;
-              }
-            },
-            {
-              name: 'scanStatistics',
-              title: this.$t('statistics.view.invalid-scan-amount'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (scanStatistics) => {
-                if (scanStatistics == null) return '';
-                return scanStatistics.invalidScan;
-              }
-            },
-            {
-              name: 'scanStatistics',
-              title: this.$t('statistics.view.invalid-scan-rate-table'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (scanStatistics) => {
-                if (scanStatistics == null) return '';
-                return scanStatistics.invalidScanRate.toFixed(1);
-              }
-            },
-            {
-              name: 'judgeStatistics',
-              title: this.$t('statistics.view.judge-total'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (judgeStatistics) => {
-                if (judgeStatistics == null) return '';
-                return judgeStatistics.totalJudge;
-              }
-            },
-            {
-              name: 'handExaminationStatistics',
-              title: this.$t('statistics.view.hand-total'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (handExaminationStatistics) => {
-                if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.totalHandExamination;
-              }
-            },
-            {
-              name: 'judgeStatistics',
-              title: this.$t('statistics.view.no-suspiction-judge'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (judgeStatistics) => {
-                if (judgeStatistics == null) return '';
-                return judgeStatistics.noSuspictionJudge;
-              }
-            },
-            {
-              name: 'judgeStatistics',
-              title: this.$t('statistics.view.no-suspiction-judge-rate'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (judgeStatistics) => {
-                if (judgeStatistics == null) return '';
-                return judgeStatistics.noSuspictionJudgeRate.toFixed(1);
-              }
-            },
-            {
-              name: 'handExaminationStatistics',
-              title: this.$t('statistics.view.no-seizure'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (handExaminationStatistics) => {
-                if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.noSeizureHandExamination;
-              }
-            },
-            {
-              name: 'handExaminationStatistics',
-              title: this.$t('statistics.view.no-seizure-rate'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (handExaminationStatistics) => {
-                if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.noSeizureHandExaminationRate.toFixed(1);
-              }
-            },
-            {
-              name: 'handExaminationStatistics',
-              title: this.$t('statistics.view.seizure'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (handExaminationStatistics) => {
-                if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.seizureHandExamination;
-              }
-            },
-            {
-              name: 'handExaminationStatistics',
-              title: this.$t('statistics.view.seizure-rate'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (handExaminationStatistics) => {
-                if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.seizureHandExaminationRate.toFixed(1);
-              }
-            },
-          ],
+          fields: [],
           perPage: 10,
         },
 
@@ -781,6 +841,54 @@
 
     },
     methods: {
+      setPeriodLabel (newVal) {
+        if(getLocale() === 'zh') {
+          //this.periodLabel = '时间段';
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = '时间段';
+              break;
+            case 'day':
+              this.periodLabel = '日';
+              break;
+            case 'week':
+              this.periodLabel = '周';
+              break;
+            case 'month':
+              this.periodLabel = '月';
+              break;
+            case 'quarter':
+              this.periodLabel = '季度';
+              break;
+            case 'year':
+              this.periodLabel = '年';
+              break;
+          }
+        }else{
+          switch (newVal) {
+            case 'hour':
+              this.periodLabel = 'Periods(hour)';
+              break;
+            case 'day':
+              this.periodLabel = 'Day';
+              break;
+            case 'week':
+              this.periodLabel = 'Week';
+              break;
+            case 'month':
+              this.periodLabel = 'Month';
+              break;
+            case 'quarter':
+              this.periodLabel = 'Quarter';
+              break;
+            case 'year':
+              this.periodLabel = 'Year';
+              break;
+          }
+        }
+        return this.periodLabel;
+
+      },
       selectAll(value) {
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
         this.$refs.taskVuetable.isCheckAllStatus = value;
@@ -962,41 +1070,48 @@
         }).then((response) => {
           this.graphData = response.data.data;
           this.bar3ChartOptions.xAxis.data = [];
-          let keyData = Object.keys(this.graphData.detailedStatistics);
+          this.bar3ChartOptions.series[0].data = [];
+          let keyData = Object.keys(this.graphData.totalStatistics.detailedStatistics);
           let xAxisChart = [];
           let allUserStr = "";
 
-          if(keyData.length>15){
+          if(keyData.length>18){
             this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
           }
           else{
             this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
           }
 
-          for (let i = 0; i < keyData.length; i++) {
+          // for(let i = 0; i < 3; i++) {
+          //   let key = keyData[i];
+          // }
 
-            let key = keyData[i];
-            if (i === 0) {
-              allUserStr = allUserStr + this.graphData.detailedStatistics[key].name;
-            } else {
-              allUserStr = allUserStr + ", " + this.graphData.detailedStatistics[key].name;
-            }
+          if(keyData.length > 3) {
+            for (let i = 3; i < keyData.length; i++) {
 
-            xAxisChart[i] = this.graphData.detailedStatistics[key].name;
-            if (this.graphData.detailedStatistics[key].scanStatistics != null) {
-              this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[key].scanStatistics.workingSeconds;
-            } else {
-              this.bar3ChartOptions.series[0].data[i] = 0;
-            }
-            if (this.graphData.detailedStatistics[key].judgeStatistics != null) {
-              this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[key].judgeStatistics.workingSeconds;
-            } else {
-              this.bar3ChartOptions.series[1].data[i] = 0;
-            }
-            if (this.graphData.detailedStatistics[key].handExaminationStatistics != null) {
-              this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[key].handExaminationStatistics.workingSeconds;
-            } else {
-              this.bar3ChartOptions.series[2].data[i] = 0;
+              let key = keyData[i];
+              if (i === 3) {
+                allUserStr = allUserStr + this.graphData.totalStatistics.detailedStatistics[i].userName;
+              } else {
+                allUserStr = allUserStr + ", " + this.graphData.totalStatistics.detailedStatistics[i].userName;
+              }
+
+              xAxisChart[i - 3] = this.graphData.totalStatistics.detailedStatistics[i].userName;
+              if (this.graphData.totalStatistics.detailedStatistics[i] != null) {
+                this.bar3ChartOptions.series[0].data[i - 3] = this.graphData.totalStatistics.detailedStatistics[i].workingTime;
+              } else {
+                this.bar3ChartOptions.series[0].data[i - 3] = 0;
+              }
+              // if (this.graphData.totalStatistics.detailedStatistics[i] != null) {
+              //   this.bar3ChartOptions.series[1].data[i-3] = this.graphData.totalStatistics.detailedStatistics[i].workingTime;
+              // } else {
+              //   this.bar3ChartOptions.series[1].data[i-3] = 0;
+              // }
+              // if (this.graphData.totalStatistics.detailedStatistics[i] != null) {
+              //   this.bar3ChartOptions.series[2].data[i-3] = this.graphData.totalStatistics.detailedStatistics[i].workingTime;
+              // } else {
+              //   this.bar3ChartOptions.series[2].data[i-3] = 0;
+              // }
             }
           }
           this.allDevice = allUserStr;
@@ -1011,10 +1126,10 @@
           let message = response.data.message;
           this.preViewData = response.data.data;
 
-          let totalSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds + this.preViewData.totalStatistics.judgeStatistics.workingSeconds + this.preViewData.totalStatistics.handExaminationStatistics.workingSeconds;
-          let scanSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds;
-          let judgeSeconds = this.preViewData.totalStatistics.judgeStatistics.workingSeconds;
-          let handSeconds = this.preViewData.totalStatistics.handExaminationStatistics.workingSeconds;
+          let totalSeconds = this.preViewData.totalStatistics.detailedStatistics[0].workingTime + this.preViewData.totalStatistics.detailedStatistics[1].workingTime + this.preViewData.totalStatistics.detailedStatistics[2].workingTime;
+          let scanSeconds = this.preViewData.totalStatistics.detailedStatistics[0].workingTime;
+          let judgeSeconds = this.preViewData.totalStatistics.detailedStatistics[1].workingTime;
+          let handSeconds = this.preViewData.totalStatistics.detailedStatistics[2].workingTime;
 
           this.totalData['second'].value = totalSeconds % 60;
           this.totalData['minute'].value = ((totalSeconds - totalSeconds % 60) / 60) % 60;
@@ -1041,6 +1156,25 @@
           this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
           this.doublePieChartOptions.series[0].data[2].value = this.handData['rate'].value;
 
+          let keyData = Object.keys(this.preViewData.totalStatistics.detailedStatistics);
+          this.tableWidth = 80/keyData.length + '%';
+          this.taskVuetableItems.fields = this.initialFields;
+          console.log(this.tableWidth);
+          if(keyData.length>3){
+            for (let i = 3; i < keyData.length; i++) {
+
+              let key = keyData[i];
+
+              this.taskVuetableItems.fields.push({
+                name: this.preViewData.totalStatistics.detailedStatistics[i].userName,
+                title: this.preViewData.totalStatistics.detailedStatistics[i].userName,
+                titleClass: 'text-center',
+                dataClass: 'text-center',
+                width: this.tableWidth
+              });
+            }
+            console.log(this.taskVuetableItems.fields);
+          }
 
         }).catch((error) => {
         });
@@ -1061,6 +1195,7 @@
 
         this.getGraphData();
         this.getPreviewData();
+        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
@@ -1108,13 +1243,61 @@
         };
 
         transformed.tKey = Object.keys(data.detailedStatistics);
+        transformed.fKey = Object.keys(data.totalStatistics.detailedStatistics);
         transformed.data = [];
         let temp;
-        for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
-          let j = transformed.tKey[i - 1];
+        for (let i = 0; i < Object.keys(data.detailedStatistics).length; i++) {
+          let j = transformed.tKey[i];
+          //temp = data.detailedStatistics[j];
+          temp = {};
 
-          temp = data.detailedStatistics[j];
-          this.renderedCheckList.push(data.detailedStatistics[j].id);
+          if(this.filter.statWidth === 'hour') {
+            if (j < 9) {
+              temp.time = '0' + j + ' : 00 ~ 0' + (toInt(j) + 1) + ': 00';
+            }
+            else if(j === 9){
+              temp.time = '09 :00 ~ 10 : 00';
+            }
+            else {
+              temp.time = j + ' : 00 ~ ' + (toInt(j) + 1) + ': 00';
+            }
+          }
+          if(this.filter.statWidth === 'day' && getLocale() === 'zh') {
+            temp.time = j + '日';
+          }
+          if(this.filter.statWidth === 'week' && getLocale() === 'zh') {
+            temp.time = j + '周';
+          }
+          if(this.filter.statWidth === 'month') {
+            if(getLocale() === 'zh') {
+              temp.time = j + '月';
+            }else {
+              temp.time = this.monthLabel[j-1];
+            }
+          }
+          if(this.filter.statWidth === 'quarter') {
+            temp.time = j + this.$t('statistics.quarter');
+          }
+          if(this.filter.statWidth === 'year') {
+            temp.time = j +  this.$t('statistics.year');
+          }
+
+          //console.log(temp);
+
+          temp.total = data.detailedStatistics[j].detailedStatistics[0].workingTime + data.detailedStatistics[j].detailedStatistics[1].workingTime + data.detailedStatistics[j].detailedStatistics[2].workingTime;
+          temp.scan = data.detailedStatistics[j].detailedStatistics[0].workingTime;
+          temp.judge = data.detailedStatistics[j].detailedStatistics[1].workingTime;
+          temp.hand = data.detailedStatistics[j].detailedStatistics[2].workingTime;
+          //console.log(temp);
+          for(let k=3; k<transformed.fKey.length; k++) {
+            let l = transformed.fKey[k];
+            let key = data.detailedStatistics[j].detailedStatistics[l].userName;
+            console.log(data.detailedStatistics[j].detailedStatistics[l].workingTime);
+            temp[key] = data.detailedStatistics[j].detailedStatistics[l].workingTime;
+          }
+          console.log(temp);
+          //temp = data.detailedStatistics[j];
+          //this.renderedCheckList.push(data.detailedStatistics[j].id);
           transformed.data.push(temp);
         }
 
@@ -1124,7 +1307,7 @@
 
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        this.renderedCheckList = [];
+        //this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.taskVuetableItems.perPage,
