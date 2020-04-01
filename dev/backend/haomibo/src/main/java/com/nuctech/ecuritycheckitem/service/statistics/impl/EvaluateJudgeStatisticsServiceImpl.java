@@ -86,8 +86,8 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
         TreeMap<Integer, EvaluateJudgeResponseModel> sorted = getDetailedStatistics(queryBuilder.toString(), statWidth, startTime, endTime);
         try {
             Map<String, Object> paginatedResult = getPaginatedList(sorted, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
             response.setDetailedStatistics((TreeMap<Integer, EvaluateJudgeResponseModel>) paginatedResult.get("list"));
         } catch (Exception e) {
             response.setDetailedStatistics(sorted);
@@ -339,22 +339,22 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
     private EvaluateJudgeResponseModel initModelFromObject(Object[] item) {
         EvaluateJudgeResponseModel record = new EvaluateJudgeResponseModel();
         try {
-            record.setTime(Integer.parseInt(item[0].toString()));
-            record.setTotal(Long.parseLong(item[1].toString()));
-            record.setSeizure(Long.parseLong(item[2].toString()));
-            record.setNoSeizure(Long.parseLong(item[3].toString()));
-            record.setTotalJudge(Long.parseLong(item[4].toString()));
-            record.setMissingReport(Long.parseLong(item[5].toString()));
-            record.setMistakeReport(Long.parseLong(item[6].toString()));
-            record.setArtificialJudge(Long.parseLong(item[7].toString()));
-            record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
-            record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
-            record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
-            record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
-            record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
-            record.setMaxDuration(Double.parseDouble(item[13].toString()));
-            record.setMinDuration(Double.parseDouble(item[14].toString()));
-            record.setAvgDuration(Double.parseDouble(item[15].toString()));
+            record.setTime(Utils.parseInt(item[0].toString()));
+            record.setTotal(Utils.parseLong(item[1].toString()));
+            record.setSeizure(Utils.parseLong(item[2].toString()));
+            record.setNoSeizure(Utils.parseLong(item[3].toString()));
+            record.setTotalJudge(Utils.parseLong(item[4].toString()));
+            record.setMissingReport(Utils.parseLong(item[5].toString()));
+            record.setMistakeReport(Utils.parseLong(item[6].toString()));
+            record.setArtificialJudge(Utils.parseLong(item[7].toString()));
+            record.setArtificialJudgeMissing(Utils.parseLong(item[8].toString()));
+            record.setArtificialJudgeMistake(Utils.parseLong(item[9].toString()));
+            record.setIntelligenceJudge(Utils.parseLong(item[10].toString()));
+            record.setIntelligenceJudgeMissing(Utils.parseLong(item[11].toString()));
+            record.setIntelligenceJudgeMistake(Utils.parseLong(item[12].toString()));
+            record.setMaxDuration(Utils.parseDouble(item[13].toString()));
+            record.setMinDuration(Utils.parseDouble(item[14].toString()));
+            record.setAvgDuration(Utils.parseDouble(item[15].toString()));
             record.setMissingReportRate(0);
             record.setMistakeReportRate(0);
             record.setArtificialJudgeMissingRate(0);

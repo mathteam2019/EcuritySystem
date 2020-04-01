@@ -87,8 +87,8 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
 
         try {
             Map<String, Object> paginatedResult = getPaginatedList(sorted, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
             response.setDetailedStatistics((TreeMap<Integer, HandExaminationResponseModel>)paginatedResult.get("list"));
         }
         catch (Exception e) {
@@ -117,7 +117,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
      * @return
      */
     private HandExaminationResponseModel getTotalStatistics(String query) {
-        query = query.replace("(h.HAND_START_TIME)", "( 1 )");
+        query = query.replace("(h.HAND_START_TIME)", "( '0000:01:01' )");
         HandExaminationResponseModel record = new HandExaminationResponseModel();
         Query jpaQueryTotal = entityManager.createNativeQuery(query);
 
@@ -268,7 +268,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
                 "\tLEFT JOIN ser_check_result c ON t.TASK_ID = c.task_id\n" +
                 "\tLEFT join ser_judge_graph j on t.TASK_ID = j.TASK_ID\n" +
                 "\tLEFT join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
-                "\tLEFT join ( SELECT task_id, assign_id, assign_judge_device_id, ASSIGN_TIMEOUT FROM ser_assign WHERE ASSIGN_HAND_DEVICE_ID IS NOT NULL ) a on t.task_id = a.task_id\n" +
+                "\tLEFT join ( SELECT task_id, assign_id, ASSIGN_TIMEOUT FROM ser_assign WHERE ASSIGN_HAND_DEVICE_ID IS NOT NULL ) a on t.task_id = a.task_id\n" +
                 "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n" +
                 "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n";
     }
@@ -327,22 +327,22 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
     private HandExaminationResponseModel initModelFromObject(Object[] item) {
         HandExaminationResponseModel record = new HandExaminationResponseModel();
         try {
-            record.setTime(Integer.parseInt(item[0].toString()));
-            record.setTotal(Long.parseLong(item[1].toString()));
-            record.setSeizure(Long.parseLong(item[2].toString()));
-            record.setNoSeizure(Long.parseLong(item[3].toString()));
-            record.setTotalJudge(Long.parseLong(item[4].toString()));
-            record.setMissingReport(Long.parseLong(item[5].toString()));
-            record.setMistakeReport(Long.parseLong(item[6].toString()));
-            record.setArtificialJudge(Long.parseLong(item[7].toString()));
-            record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
-            record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
-            record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
-            record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
-            record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
-            record.setMaxDuration(Double.parseDouble(item[13].toString()));
-            record.setMinDuration(Double.parseDouble(item[14].toString()));
-            record.setAvgDuration(Double.parseDouble(item[15].toString()));
+            record.setTime(Utils.parseInt(item[0]));
+            record.setTotal(Utils.parseLong(item[1]));
+            record.setSeizure(Utils.parseLong(item[2]));
+            record.setNoSeizure(Utils.parseLong(item[3]));
+            record.setTotalJudge(Utils.parseLong(item[4]));
+            record.setMissingReport(Utils.parseLong(item[5]));
+            record.setMistakeReport(Utils.parseLong(item[6]));
+            record.setArtificialJudge(Utils.parseLong(item[7]));
+            record.setArtificialJudgeMissing(Utils.parseLong(item[8]));
+            record.setArtificialJudgeMistake(Utils.parseLong(item[9]));
+            record.setIntelligenceJudge(Utils.parseLong(item[10]));
+            record.setIntelligenceJudgeMissing(Utils.parseLong(item[11]));
+            record.setIntelligenceJudgeMistake(Utils.parseLong(item[12]));
+            record.setMaxDuration(Utils.parseDouble(item[13]));
+            record.setMinDuration(Utils.parseDouble(item[14]));
+            record.setAvgDuration(Utils.parseDouble(item[15]));
             record.setMissingReportRate(0);
             record.setMistakeReportRate(0);
             record.setArtificialJudgeMissingRate(0);

@@ -14,7 +14,9 @@
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol;
 
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
+import com.nuctech.ecuritycheckitem.models.db.SysResource;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoleExcelView extends BaseExcelView {
@@ -46,6 +49,10 @@ public class RoleExcelView extends BaseExcelView {
 
         Cell headerCellName = header.createCell(2);
         headerCellName.setCellValue(messageSource.getMessage("Role.Name", null, currentLocale));
+
+        Cell headerCellResource = header.createCell(3);
+        headerCellResource.setCellValue(messageSource.getMessage("Role.Resource", null, currentLocale));
+
     }
 
     /**
@@ -81,6 +88,12 @@ public class RoleExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(role.getRoleNumber());
                 row.createCell(2).setCellValue(role.getRoleName());
+                List<String> resourceNames = new ArrayList<>();
+                for(SysResource resource: role.getResources()) {
+                    resourceNames.add(resource.getResourceCaption());
+                }
+                String resourceName = StringUtils.join(resourceNames, ",");
+                row.createCell(3).setCellValue(resourceName);
             }
 
             workbook.write(out);

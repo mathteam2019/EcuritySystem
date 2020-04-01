@@ -85,7 +85,7 @@ public class DeviceControlController extends BaseController {
         @NoArgsConstructor
         @AllArgsConstructor
         public static class Filter {
-            String archivesName;
+            Long archiveId;
             String status;
             Long categoryId;
             String deviceName;
@@ -372,13 +372,13 @@ public class DeviceControlController extends BaseController {
         int perPage = requestBody.getPerPage();
 
 
-        String archiveName = "";
         String deviceName = "";
         String status = "";
         Long fieldId = null;
         Long categoryId = null;
+        Long archiveId = null;
         if(filter != null) {
-            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            archiveId = filter.getArchiveId(); //get archive name from input parameter
             deviceName = filter.getDeviceName(); //get device name from input parameter
             status = filter.getStatus(); //get status from input parameter
             fieldId = filter.getFieldId(); //get field id from input parameter
@@ -395,7 +395,7 @@ public class DeviceControlController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        PageResult<SysDevice> result = deviceService.getFilterDeviceList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId, perPage, currentPage); //get list of devices from database through deviceService
+        PageResult<SysDevice> result = deviceService.getFilterDeviceList(sortBy, order, archiveId, deviceName, status, fieldId, categoryId, perPage, currentPage); //get list of devices from database through deviceService
         List<SysDevice> data = result.getDataList();
         long total = result.getTotal();
 
@@ -436,14 +436,14 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        String archiveName = "";
         String deviceName = "";
         String status = "";
         Long fieldId = null;
         Long categoryId = null;
+        Long archiveId = null;
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if(filter != null) {
-            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            archiveId = filter.getArchiveId(); //get archive name from input parameter
             deviceName = filter.getDeviceName(); //get device name from input parameter
             status = filter.getStatus(); //get status from input parameter
             fieldId = filter.getFieldId(); //get field id from input parameter
@@ -461,7 +461,7 @@ public class DeviceControlController extends BaseController {
             }
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveId, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceExcelView.setMessageSource(messageSource);
@@ -496,14 +496,14 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        String archiveName = "";
+        Long archiveId = null;
         String deviceName = "";
         String status = "";
         Long fieldId = null;
         Long categoryId = null;
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if(filter != null) {
-            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            archiveId = filter.getArchiveId(); //get archive name from input parameter
             deviceName = filter.getDeviceName(); //get device name from input parameter
             status = filter.getStatus(); //get status from input parameter
             fieldId = filter.getFieldId(); //get field id from input parameter
@@ -521,7 +521,7 @@ public class DeviceControlController extends BaseController {
             }
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveId, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceWordView.setMessageSource(messageSource);
@@ -557,14 +557,14 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        String archiveName = "";
+        Long archiveId = null;
         String deviceName = "";
         String status = "";
         Long fieldId = null;
         Long categoryId = null;
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if(filter != null) {
-            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            archiveId = filter.getArchiveId(); //get archive name from input parameter
             deviceName = filter.getDeviceName(); //get device name from input parameter
             status = filter.getStatus(); //get status from input parameter
             fieldId = filter.getFieldId(); //get field id from input parameter
@@ -582,7 +582,7 @@ public class DeviceControlController extends BaseController {
             }
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveId, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList());  //get list of device to be exported
         DevicePdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale()); //set dictionary data
@@ -619,14 +619,14 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        String archiveName = "";
+        Long archiveId = null;
         String deviceName = "";
         String status = "";
         Long fieldId = null;
         Long categoryId = null;
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if(filter != null) {
-            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            archiveId = filter.getArchiveId(); //get archive name from input parameter
             deviceName = filter.getDeviceName(); //get device name from input parameter
             status = filter.getStatus(); //get status from input parameter
             fieldId = filter.getFieldId(); //get field id from input parameter
@@ -644,7 +644,7 @@ public class DeviceControlController extends BaseController {
             }
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveId, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceFieldExcelView.setMessageSource(messageSource);
@@ -681,14 +681,14 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        String archiveName = "";
+        Long archiveId = null;
         String deviceName = "";
         String status = "";
         Long fieldId = null;
         Long categoryId = null;
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if(filter != null) {
-            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            archiveId = filter.getArchiveId(); //get archive name from input parameter
             deviceName = filter.getDeviceName(); //get device name from input parameter
             status = filter.getStatus(); //get status from input parameter
             fieldId = filter.getFieldId(); //get field id from input parameter
@@ -706,7 +706,7 @@ public class DeviceControlController extends BaseController {
             }
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveId, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceFieldWordView.setMessageSource(messageSource);
@@ -742,14 +742,14 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        String archiveName = "";
+        Long archiveId = null;
         String deviceName = "";
         String status = "";
         Long fieldId = null;
         Long categoryId = null;
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if(filter != null) {
-            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            archiveId = filter.getArchiveId(); //get archive name from input parameter
             deviceName = filter.getDeviceName(); //get device name from input parameter
             status = filter.getStatus(); //get status from input parameter
             fieldId = filter.getFieldId(); //get field id from input parameter
@@ -767,7 +767,7 @@ public class DeviceControlController extends BaseController {
             }
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveId, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         DeviceFieldPdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale()); //set dictionary data

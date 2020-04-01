@@ -92,12 +92,12 @@ public class HistoryServiceImpl implements HistoryService {
             predicate.and(builder.scanStartTime.before(endTime));
         }
 
-        //predicate.and(builder.serCheckResultList.isNotEmpty());
+        predicate.and(builder.serCheckResultList.isNotEmpty());
 //        CategoryUser categoryUser = authService.getDataCategoryUserList();
 //        if(categoryUser.isAll() == false) {
 //            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
 //        }
-        predicate.and(builder.serCheckResult.checkResultId.isNotNull());
+        //predicate.and(builder.serCheckResult.checkResultId.isNotNull());
         return predicate;
     }
 

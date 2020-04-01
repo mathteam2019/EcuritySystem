@@ -47,15 +47,14 @@ import java.util.Date;
 @Table(name = "ser_scan")
 public class SerScanSimplifiedForTaskManagement extends BaseEntitySimple implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name = "SCAN_ID", length = 20)
     private Long scanId;
 
 //    @Column(name = "SCAN_OFFLINE", length = 10)
 //    private int scanOffLine;
-
-    @Column(name = "TASK_ID", length = 20)
+    @Id
+    @Column(name = "TASK_ID", length = 20, unique = true)
     private Long taskId;
 
 //    @Column(name = "WORKFLOW_ID", length = 20)

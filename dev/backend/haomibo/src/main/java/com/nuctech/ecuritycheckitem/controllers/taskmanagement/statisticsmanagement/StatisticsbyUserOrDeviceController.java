@@ -69,6 +69,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             Date startTime; //start time
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime; //end time
+            String statWidth; //statistics width (possible values: hour, day, week, month, quarter, year)
 
         }
 
@@ -101,6 +102,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             Date startTime; //start time
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime; //end time
+            String statWidth; //statistics width (possible values: hour, day, week, month, quarter, year)
 
         }
         String sort;
@@ -174,11 +176,12 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             }
         }
         //get statistics from database through userStatisticsService
-        TotalStatisticsResponse response = userStatisticsService.getStatistics(sortBy, order,
+        TotalTimeStatisticsResponse response = userStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getModeId(), //get work mode id from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getEndTime(), //get end time from input parameter
+                requestBody.getFilter().getStatWidth(),//get statistics width from input parameter
                 requestBody.getCurrentPage(), //get current page no from input parameter
                 requestBody.getPerPage()); //get record count per page from input parameter
 
@@ -213,11 +216,12 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             }
         }
         //get statistics from database through deviceStatisticsService
-        TotalStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
+        TotalTimeStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getDeviceType(), //get device category id from input parameter
                 requestBody.getFilter().getDeviceName(), //get device id from input parameter
                 requestBody.getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getEndTime(), //get end time from input parameter
+                requestBody.getFilter().getStatWidth(),//get statistics width from input parameter
                 requestBody.getCurrentPage(), //get current page no from input parameter
                 requestBody.getPerPage()); //get record count per page from input parameter
 
@@ -247,17 +251,18 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             }
         }
         //get statistics from database through userStatisticsService
-        TotalStatisticsResponse response = userStatisticsService.getStatistics(sortBy, order,
+        TotalTimeStatisticsResponse response = userStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getModeId(), //get work mode id from input parameter
                 requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
+                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
                 null,
                 null);
 
-        TreeMap<Long, TotalStatistics> totalStatistics = response.getDetailedStatistics();
+        TreeMap<Long, TotalTimeStatistics> totalStatistics = response.getDetailedStatistics();
 
-        TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        TreeMap<Long, TotalTimeStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         UserOrDeviceStatisticsPdfView.setResource(getFontResource()); //get header font
         setDictionary(requestBody.getLocale());//set dictionary data key and values
         UserOrDeviceStatisticsPdfView.setMessageSource(messageSource);
@@ -300,17 +305,18 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             }
         }
         //get statistics from database through userStatisticsService
-        TotalStatisticsResponse response = userStatisticsService.getStatistics(sortBy, order,
+        TotalTimeStatisticsResponse response = userStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getModeId(), //get work mode id from input parameter
                 requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
+                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
                 null,
                 null);
 
-        TreeMap<Long, TotalStatistics> userStatistics = response.getDetailedStatistics();
+        TreeMap<Long, TotalTimeStatistics> userStatistics = response.getDetailedStatistics();
 
-        TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        TreeMap<Long, TotalTimeStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         UserOrDeviceStatisticsExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -352,17 +358,18 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             }
         }
         //get statistics from database through userStatisticsService
-        TotalStatisticsResponse response = userStatisticsService.getStatistics(sortBy, order,
+        TotalTimeStatisticsResponse response = userStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getModeId(), //get work mode id from input parameter
                 requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
+                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
                 null,
                 null);
 
-        TreeMap<Long, TotalStatistics> userStatistics = response.getDetailedStatistics();
+        TreeMap<Long, TotalTimeStatistics> userStatistics = response.getDetailedStatistics();
 
-        TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        TreeMap<Long, TotalTimeStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         UserOrDeviceStatisticsWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -403,15 +410,16 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        TotalStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
+        TotalTimeStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getDeviceType(), //get device category id from input parameter
                 requestBody.getFilter().getFilter().getDeviceName(), //get device id from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
-                null,
-                null);
+                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
+                null, //get current page no from input parameter
+                null); //get record count per page from input parameter
 
-        TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
+        TreeMap<Long, TotalTimeStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
         UserOrDeviceStatisticsPdfView.setResource(getFontResource()); //set header font
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, false); //make inputstream of data to be exported
@@ -448,15 +456,16 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             }
         }
         //get statistics from database through deviceStatisticsService
-        TotalStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
+        TotalTimeStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getDeviceType(), //get device category id from input parameter
                 requestBody.getFilter().getFilter().getDeviceName(), //get device id from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
-                null,
-                null);
+                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
+                null, //get current page no from input parameter
+                null); //get record count per page from input parameter
 
-        TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
+        TreeMap<Long, TotalTimeStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         InputStream inputStream = UserOrDeviceStatisticsExcelView.buildExcelDocument(exportList, false); //make input stream of data to be exported
 
@@ -493,15 +502,16 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             }
         }
         //get statistics from database through deviceStatisticsService
-        TotalStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
+        TotalTimeStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getDeviceType(), //get device category id from input parameter
                 requestBody.getFilter().getFilter().getDeviceName(), //get device id from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
-                null,
-                null);
+                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
+                null, //get current page no from input parameter
+                null); //get record count per page from input parameter
 
-        TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
+        TreeMap<Long, TotalTimeStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         InputStream inputStream = UserOrDeviceStatisticsWordView.buildWordDocument(exportList, false);
 
@@ -523,20 +533,21 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
      * @param idList             : idList to be extracted
      * @return
      */
-    private TreeMap<Long, TotalStatistics> getExportList(TreeMap<Long, TotalStatistics> detailedStatistics, boolean isAll, String idList) {
+    private TreeMap<Long, TotalTimeStatistics> getExportList(TreeMap<Long, TotalTimeStatistics> detailedStatistics, boolean isAll, String idList) {
 
-        TreeMap<Long, TotalStatistics> exportList = new TreeMap<>();
+        TreeMap<Long, TotalTimeStatistics> exportList = new TreeMap<>();
 
         if (isAll == false) {
             String[] splits = idList.split(","); //get ids from idList
 
-            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
+            for (Map.Entry<Long, TotalTimeStatistics> entry : detailedStatistics.entrySet()) {
 
-                TotalStatistics record = entry.getValue();
+                TotalTimeStatistics record = entry.getValue();
+                Long key = entry.getKey();
 
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(Long.toString(record.getId()))) { //if specified id is contained idList
+                    if (splits[j].equals(key)) { //if specified id is contained idList
                         isExist = true;
                         break;
                     }
@@ -551,8 +562,8 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             }
 
         } else {//if isAll is true
-            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
-                TotalStatistics record = entry.getValue();
+            for (Map.Entry<Long, TotalTimeStatistics> entry : detailedStatistics.entrySet()) {
+                TotalTimeStatistics record = entry.getValue();
                 exportList.put(entry.getKey(), record);
                 if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
                     break;

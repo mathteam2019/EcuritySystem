@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.Date;
 import java.util.ArrayList;
 
+import static com.nuctech.ecuritycheckitem.utils.Utils.*;
+
 @Service
 public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
 
@@ -89,7 +91,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         try {
             Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
             response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
             response.setDetailedStatistics((TreeMap<Integer, JudgeStatisticsResponseModel>)paginatedResult.get("list"));
         }
         catch (Exception e) {
@@ -127,7 +129,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         TreeMap<Integer, JudgeStatisticsResponseModel> data = new TreeMap<>();
 
         Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = Utils.getKeyValuesforStatistics(statWidth, startTime, endTime);
+        List<Integer> keyValues = getKeyValuesforStatistics(statWidth, startTime, endTime);
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
@@ -169,7 +171,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
      * @return
      */
     private JudgeStatisticsResponseModel getTotalStatistics(String query) {
-        query = query.replace("( judge_start_time )", "( 1 )");
+        query = query.replace("( judge_start_time )", "( '0000:01:01' )");
         Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> resultTotal = jpaQuery.getResultList();
 
@@ -210,7 +212,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = new TreeMap<>();
 
         Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = Utils.getKeyValuesforStatistics(statWidth, startTime, endTime);
+        List<Integer> keyValues = getKeyValuesforStatistics(statWidth, startTime, endTime);
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
@@ -281,7 +283,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 "\tINNER JOIN ser_task t ON g.TASK_ID = t.TASK_ID\n" +
                 "\tLEFT JOIN sys_workflow wf ON t.WORKFLOW_ID = wf.WORKFLOW_ID\n" +
                 "\tLEFT JOIN ser_scan s ON t.TASK_ID = s.TASK_ID\n" +
-                "\tLEFT JOIN ( SELECT task_id, assign_id, assign_judge_device_id, ASSIGN_TIMEOUT FROM ser_assign WHERE ASSIGN_JUDGE_DEVICE_ID IS NOT NULL ) a ON t.task_id = a.task_id \n";
+                "\tLEFT JOIN ( SELECT task_id, assign_id, assign_judge_device_id, ASSIGN_TIMEOUT FROM ser_assign WHERE ASSIGN_HAND_DEVICE_ID IS NULL) a ON t.task_id = a.task_id \n";
     }
 
     /**
@@ -339,20 +341,21 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
 
         try {
-            record.setTime(Integer.parseInt(item[0].toString()));
-            record.setArtificialJudge(Long.parseLong(item[1].toString()));
-            record.setAssignTimeout(Long.parseLong(item[2].toString()));
-            record.setJudgeTimeout(Long.parseLong(item[3].toString()));
-            record.setAtrResult(Long.parseLong(item[4].toString()));
-            record.setSuspiction(Long.parseLong(item[5].toString()));
-            record.setNoSuspiction(Long.parseLong(item[6].toString()));
-            record.setTotal(Long.parseLong(item[7].toString()));
-            record.setAvgDuration(Double.parseDouble(item[8].toString()));
-            record.setMaxDuration(Double.parseDouble(item[9].toString()));
-            record.setMinDuration(Double.parseDouble(item[10].toString()));
-            record.setAvgArtificialJudgeDuration(Double.parseDouble(item[11].toString()));
-            record.setMaxArtificialJudgeDuration(Double.parseDouble(item[12].toString()));
-            record.setMinArtificialJudgeDuration(Double.parseDouble(item[13].toString()));
+
+            record.setTime(Utils.parseInt(item[0]));
+            record.setArtificialJudge(Utils.parseLong(item[1]));
+            record.setAssignTimeout(Utils.parseLong(item[2]));
+            record.setJudgeTimeout(Utils.parseLong(item[3]));
+            record.setAtrResult(Utils.parseLong(item[4]));
+            record.setSuspiction(Utils.parseLong(item[5]));
+            record.setNoSuspiction(Utils.parseLong(item[6]));
+            record.setTotal(Utils.parseLong(item[7]));
+            record.setAvgDuration(Utils.parseDouble(item[8]));
+            record.setMaxDuration(Utils.parseDouble(item[9]));
+            record.setMinDuration(Utils.parseDouble(item[10]));
+            record.setAvgArtificialJudgeDuration(Utils.parseDouble(item[11]));
+            record.setMaxArtificialJudgeDuration(Utils.parseDouble(item[12]));
+            record.setMinArtificialJudgeDuration(Utils.parseDouble(item[13]));
             record.setArtificialResultRate(0);
             record.setAssignTimeoutResultRate(0);
             record.setJudgeTimeoutResultRate(0);
@@ -367,7 +370,9 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 record.setNoSuspictionRate(record.getNoSuspiction() * 100 / (double) record.getTotal());
                 record.setScanResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return record;
     }

@@ -79,10 +79,15 @@ public class HistorySimplifiedForHistoryTableManagement implements Serializable 
     @NotFound(action = NotFoundAction.IGNORE)
     private SerTaskSimplifiedForHistoryTaskManagement task;
 
-    @OneToOne(fetch = FetchType.LAZY)
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
+
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
+    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
 
 //    @OneToOne(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)

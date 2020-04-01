@@ -82,8 +82,8 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
 
         try {
             Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
             response.setDetailedStatistics((TreeMap<Integer, ScanStatistics>)paginatedResult.get("list"));
         }
         catch (Exception e) {
@@ -113,7 +113,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
      * @return
      */
     private ScanStatistics getTotalStatistics(String query) {
-        query = query.replace("(s.SCAN_START_TIME)", "( 1 )");
+        query = query.replace("(s.SCAN_START_TIME)", "( '0000:01:01' )");
         Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> resultTotal = jpaQuery.getResultList();
 
@@ -296,12 +296,12 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         ScanStatistics record = new ScanStatistics();
 
         try {
-            record.setTime(Integer.parseInt(item[0].toString()));
-            record.setTotalScan(Long.parseLong(item[1].toString()));
-            record.setValidScan(Long.parseLong(item[2].toString()));
-            record.setInvalidScan(Long.parseLong(item[3].toString()));
-            record.setPassedScan(Long.parseLong(item[4].toString()));
-            record.setAlarmScan(Long.parseLong(item[5].toString()));
+            record.setTime(Utils.parseInt(item[0].toString()));
+            record.setTotalScan(Utils.parseLong(item[1].toString()));
+            record.setValidScan(Utils.parseLong(item[2].toString()));
+            record.setInvalidScan(Utils.parseLong(item[3].toString()));
+            record.setPassedScan(Utils.parseLong(item[4].toString()));
+            record.setAlarmScan(Utils.parseLong(item[5].toString()));
             record.setValidScanRate(0);
             record.setInvalidScanRate(0);
             record.setPassedScanRate(0);

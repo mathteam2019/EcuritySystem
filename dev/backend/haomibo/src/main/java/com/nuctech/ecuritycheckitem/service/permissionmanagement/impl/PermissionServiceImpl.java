@@ -211,15 +211,19 @@ public class PermissionServiceImpl implements PermissionService {
     /**
      * get role predicate
      * @param roleName
+     * @param resourceName
      * @return
      */
-    private BooleanBuilder getRolePredicate(String roleName) {
+    private BooleanBuilder getRolePredicate(String roleName, String resourceName) {
         QSysRole builder = QSysRole.sysRole;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
         if (!StringUtils.isEmpty(roleName)) {
             predicate.and(builder.roleName.contains(roleName));
+        }
+        if (!StringUtils.isEmpty(resourceName)) {
+            predicate.and(builder.resources.any().resourceCaption.contains(resourceName));
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {
@@ -233,13 +237,14 @@ public class PermissionServiceImpl implements PermissionService {
     /**
      * get filtered and paginated role list
      * @param roleName
+     * @param resourceName
      * @param currentPage
      * @param perPage
      * @return
      */
     @Override
-    public PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, int currentPage, int perPage) {
-        BooleanBuilder predicate = getRolePredicate(roleName);
+    public PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, String resourceName, int currentPage, int perPage) {
+        BooleanBuilder predicate = getRolePredicate(roleName, resourceName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -295,13 +300,14 @@ public class PermissionServiceImpl implements PermissionService {
     /**
      * get export role list
      * @param roleName
+     * @param resourceName
      * @param isAll
      * @param idList
      * @return
      */
     @Override
-    public List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, boolean isAll, String idList) {
-        BooleanBuilder predicate = getRolePredicate(roleName);
+    public List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, String resourceName, boolean isAll, String idList) {
+        BooleanBuilder predicate = getRolePredicate(roleName, resourceName);
         String[] splits = idList.split(",");
         List<Long> roleIdList = new ArrayList<>();
         for(String idStr: splits) {
@@ -349,12 +355,13 @@ public class PermissionServiceImpl implements PermissionService {
     /**
      * edit role
      * @param roleId
+     * @param roleName
      * @param resourceIdList
      * @return
      */
     @Override
     @Transactional
-    public boolean modifyRole(long roleId, List<Long> resourceIdList) {
+    public boolean modifyRole(long roleId, String roleName, List<Long> resourceIdList) {
         SysRole sysRole = sysRoleRepository.findOne(QSysRole.sysRole.roleId.eq(roleId)).orElse(null);
         String valueBefore = getJsonFromRole(sysRole);
 
@@ -404,6 +411,7 @@ public class PermissionServiceImpl implements PermissionService {
         sysRoleResourceRepository.saveAll(relationList);
 
         // Add edited info.
+        sysRole.setRoleName(roleName);
         sysRole.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysRoleRepository.save(sysRole);
         String valueAfter = getJsonFromRole(sysRole);
@@ -469,11 +477,16 @@ public class PermissionServiceImpl implements PermissionService {
     /**
      * check if group name exists
      * @param groupName
+     * @param groupId
      * @return
      */
     @Override
-    public boolean checkGroupNameExist(String groupName) {
-        return sysDataGroupRepository.exists(QSysDataGroup.sysDataGroup.dataGroupName.eq(groupName));
+    public boolean checkGroupNameExist(String groupName, Long groupId) {
+        if (groupId == null) {
+            return sysDataGroupRepository.exists(QSysDataGroup.sysDataGroup.dataGroupName.eq(groupName));
+        }
+        return sysDataGroupRepository.exists(QSysDataGroup.sysDataGroup.dataGroupName.eq(groupName)
+                .and(QSysDataGroup.sysDataGroup.dataGroupId.ne(groupId)));
 
     }
 
@@ -706,12 +719,13 @@ public class PermissionServiceImpl implements PermissionService {
     /**
      * edit data group
      * @param dataGroupId
+     * @param dataGroupName
      * @param userIdList
      * @return
      */
     @Override
     @Transactional
-    public boolean modifyDataGroup(long dataGroupId, List<Long> userIdList) {
+    public boolean modifyDataGroup(long dataGroupId, String dataGroupName, List<Long> userIdList) {
         Optional<SysDataGroup> optionalSysDataGroup = sysDataGroupRepository.findOne(QSysDataGroup.sysDataGroup.dataGroupId.eq(dataGroupId));
 
         SysDataGroup sysDataGroup = optionalSysDataGroup.get();
@@ -738,6 +752,7 @@ public class PermissionServiceImpl implements PermissionService {
         sysDataGroupUserRepository.saveAll(relationList);
 
         // Add edited info.
+        sysDataGroup.setDataGroupName(dataGroupName);
         sysDataGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysDataGroupRepository.save(sysDataGroup);
         String valueAfter = getJsonFromDataGroup(sysDataGroup);

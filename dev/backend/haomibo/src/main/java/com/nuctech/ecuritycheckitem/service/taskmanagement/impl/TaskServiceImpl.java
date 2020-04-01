@@ -94,7 +94,7 @@ public class TaskServiceImpl implements TaskService {
             predicate.and(builder.serScan.scanStartTime.before(endTime));
         }
 
-        predicate.and(builder.serCheckResultList.isEmpty());
+
 //        CategoryUser categoryUser = authService.getDataCategoryUserList();
 //        if(categoryUser.isAll() == false) {
 //            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
@@ -123,7 +123,8 @@ public class TaskServiceImpl implements TaskService {
         QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
-//        predicate.and(builder.serCheckResult.checkResultId.isNull());
+        predicate.and(builder.serCheckResultList.isEmpty());
+        //predicate.and(builder.serCheckResult.checkResultId.isNull());
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -220,7 +221,8 @@ public class TaskServiceImpl implements TaskService {
         QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
-//        predicate.and(builder.serCheckResult.checkResultId.isNull());
+        predicate.and(builder.serCheckResultList.isEmpty());
+        //predicate.and(builder.serCheckResult.checkResultId.isNull());
         //predicate.and(builder.serCheckResultList.size().eq(0));
         String[] splits = idList.split(",");
         List<Long> fieldIdList = new ArrayList<>();
