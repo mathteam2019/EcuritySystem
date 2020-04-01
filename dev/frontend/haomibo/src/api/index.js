@@ -171,10 +171,6 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
       msec -= ss * 1000;
       let diffString = dd + type + h + ':' + mm + ':' + ss;
 
-
-      //D[${type}]
-      //console.log((moment.utc(moment().diff(moment(String(datetime))))/(360000*24)));
-      //console.log(moment.utc(moment().diff(moment(String(datetime)))));
       // return moment.utc(moment().diff(moment(String(datetime)))).format(`MM/DD/YYYY HH:mm:ss`);
       return diffString;
   }
@@ -271,7 +267,6 @@ const downLoadImageFromUrl = (url) => {
   let splitLength = urlSplit.length;
   let img = urlSplit[splitLength-1];
   let imgExt = img.toString().split('.');
-  //console.log(imgExt);
   if(imgExt.length === 2) {
     //url = apiImageUrl + url;
 

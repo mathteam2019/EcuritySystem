@@ -472,15 +472,11 @@ export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => 
 
   url1 = apiImageUrl + url1;
   url2 = apiImageUrl + url2;
-  //console.log("Before toDataUrl:", url1, url2);
-
   toDataUrl(url1, function (url) {
-    //console.log("64bit image string:", url);
     if(url != null){
-      //let urlspl = url.split(':');
+
       url1 = 'data:image/png;base64,' + url;
     }
-    //console.log("getResponse left:", url1);
     imgObj = new Chobi(url1, isToggled, true);
     imgObj.ready(function () {
       this.canvas = document.getElementById("firstcanvas");
@@ -489,12 +485,10 @@ export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => 
   });
 
   toDataUrl(url2, function (url) {
-    //console.log("64bit image string:", url);
     if(url != null){
       //let urlspl = url.split(':');
       url2 = 'data:image/png;base64,' + url;
     }
-    //console.log("getResponse right:", url2);
     imgObj2 = new Chobi(url2, isToggled);
     imgObj2.ready(function () {
       this.canvas = document.getElementById("secondcanvas");

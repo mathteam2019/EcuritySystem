@@ -160,14 +160,14 @@
                     <div class="value">{{handData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
-                      {{$t('statistics.operating-hours.judge-time') }}
+                      {{$t('statistics.operating-hours.hand-time') }}
                     </div>
                   </b-col>
                   <b-col class="legend-item">
                     <div class="value">{{judgeData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
-                      {{$t('statistics.operating-hours.hand-time') }}
+                      {{$t('statistics.operating-hours.judge-time') }}
                     </div>
                   </b-col>
                 </b-row>

@@ -63,7 +63,6 @@
       exportFile() {
         //this.exported = true;
         let url="/assets/img/profile.png";
-        // console.log(this.url);
         // if(this.url!==undefined){
         //   if(this.url!==null) {
         //     for (let i = 0; i < this.url.length; i++) {
@@ -118,9 +117,9 @@
 
       // readDirectory() {
       //   fs.readdir(this.dir, (err, dir) => {
-      //     console.log(dir);
+      //
       //     for(let filePath of dir)
-      //       console.log(filePath)
+      //
       //     this.files = dir
       //   })
       // },

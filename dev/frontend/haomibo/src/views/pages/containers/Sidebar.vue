@@ -175,7 +175,6 @@ export default {
             //this.isMenuOver = true;
             this.subMenuIndex = index;
 
-            console.log(this.subMenuIndex);
             const selectedParent = menuItem.id;
             const hasSubMenu = menuItem.subs && menuItem.subs.length > 0;
             this.changeSelectedMenuHasSubItems(hasSubMenu);
@@ -230,11 +229,9 @@ export default {
           //}
         },
         handleDocumentClick(e) {
-          //console.log(e.path, e.composedPath, e.composedPath(), this.isMenuOver);
             if (!this.isMenuOver) {
                 let cont = true
                 var path = e.path || (e.composedPath && e.composedPath())
-              console.log(path);
 
                 path.map(p => {
                     if (p.nodeName !== 'svg' && p.nodeName !== 'rect' && p.className !== undefined && p.className.indexOf('menu-button') > -1) {
@@ -250,7 +247,6 @@ export default {
             }
         },
         toggle() {
-          console.log("toggle")
             const currentClasses = this.menuType.split(' ').filter(x => x !== '')
             if (currentClasses.includes('menu-sub-hidden') && this.menuClickCount === 3) {
                 this.changeSideMenuStatus({

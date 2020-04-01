@@ -1044,13 +1044,11 @@
 
       enableMultipleSelect(val) {
         let context = document.getElementsByClassName("vs__dropdown-toggle");
-        console.log(context);
         if(val === context.length) {
           context[1].style.cssText = 'background:white !important';
           let input = context[1].getElementsByTagName("input")[0];
           input.style.background = 'none';
           //context[i].addClass('disable');
-          //console.log(context[i].style);
           let box = context[1].getElementsByClassName("vs__selected-options")[0];
           //box.addClass('disable');
           box.style.cssText = 'background:white !important';
@@ -1060,7 +1058,6 @@
             let input = context[i].getElementsByTagName("input")[0];
             input.style.background = 'none';
             //context[i].addClass('disable');
-            console.log(context[i].style);
             let box = context[i].getElementsByClassName("vs__selected-options")[0];
             //box.addClass('disable');
             box.style.cssText = 'background:white !important';
@@ -1071,13 +1068,11 @@
       disableMultipleSelect(val){
 
         let context = document.getElementsByClassName("vs__dropdown-toggle");
-        //console.log(context);
         if(val === context.length) {
           context[1].style.cssText = 'background:#e9ecef !important';
           let input = context[1].getElementsByTagName("input")[0];
           input.style.background = 'none';
           //context[i].addClass('disable');
-          //console.log(context[i].style);
           let box = context[1].getElementsByClassName("vs__selected-options")[0];
           //box.addClass('disable');
           box.style.cssText = 'background:#e9ecef !important';
@@ -1087,7 +1082,6 @@
             let input = context[i].getElementsByTagName("input")[0];
             input.style.background = 'none';
             //context[i].addClass('disable');
-            //console.log(context[i].style);
             let box = context[i].getElementsByClassName("vs__selected-options")[0];
             //box.addClass('disable');
             box.style.cssText = 'background:#e9ecef !important';

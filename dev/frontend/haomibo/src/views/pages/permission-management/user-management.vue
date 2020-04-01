@@ -1023,10 +1023,8 @@
                     {{$t('permission-management.user.group-name')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <label>
-                    {{selectedUserGroupItem.groupName}}
-                  </label>
-
+                  <b-form-input v-model="selectedUserGroupItem.groupName"
+                                />
                 </b-form-group>
               </div>
               <div>
@@ -1267,6 +1265,7 @@
           isPhoneValid,
         }
       },
+
       groupForm: {
         groupName: {
           required, maxLength: maxLength(20),
@@ -1662,6 +1661,19 @@
       }
     },
     methods: {
+      getAllUser(){
+        getApiManagerError().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
+          type: 'with_org_tree'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.userData = data;
+              break;
+          }
+        })
+      },
       hoverContent(value) {
         let content = '<div class="item-wrapper slide-right">\n' +
           '      <span class="item d-flex flex-column">\n' + value.label +
@@ -2274,6 +2286,7 @@
                 });
                 this.profileForm.status = status;
                 this.$refs.vuetable.reload();
+                this.getAllUser();
                 break;
 
               case responseMessages['has-roles']://duplicated user email
@@ -2530,6 +2543,7 @@
       },
       onUserGroupTableRowClick(dataItems) {
         this.selectedUserGroupItem = dataItems;
+        console.log(this.selectedUserGroupItem);
         this.groupForm.status = 'modify';
       },
       // user tree group
@@ -2720,11 +2734,19 @@
       },
       onClickModifyUserGroup() {
         if (this.selectedUserGroupItem) {
+          if (this.selectedUserGroupItem.groupName === '') {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.user-group-name-field-is-mandatory`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
           let userGroupUserIds = [];
           checkedNodes.forEach((node) => {
             if (node.isUser) userGroupUserIds.push(node.userId);
           });
+
           if (userGroupUserIds.length === 0) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.required-user`), {
               duration: 3000,
@@ -2734,6 +2756,7 @@
             getApiManager()
               .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
                 'userGroupId': this.selectedUserGroupItem.userGroupId,
+                'groupName': this.selectedUserGroupItem.groupName,
                 'userIdList': userGroupUserIds
               })
               .then((response) => {

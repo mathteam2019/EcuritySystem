@@ -30,7 +30,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('system-setting.super-site')">
-                      <b-form-select v-model="filterOption.parentFieldDesignation" :options="superSiteOption" plain/>
+                      <b-form-select v-model="filterOption.parentFieldId" :options="superSiteOption" plain/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -601,7 +601,7 @@
         filterOption: {
           fieldDesignation: '',
           status: null,
-          parentFieldDesignation: null
+          parentFieldId: null
         },
 
         vuetableItems: {
@@ -955,7 +955,7 @@
         this.filterOption = {
           fieldDesignation: '',
           status: null,
-          parentFieldDesignation: null
+          parentFieldId: null
         };
       },
       /**

@@ -851,7 +851,7 @@
         return checkPermissionItem(value);
       },
       generateChartData(data, hValue, mValue) {
-        //console.log(data, hValue, mValue);
+
 
         let xValues = data.timeList;
         let yValues = data.countList;
@@ -866,8 +866,6 @@
         option.series[0].data = yValues;
         option.series[1].data = hValues;
         option.series[2].data = mValues;
-
-        //console.log("generatedOption", option);
 
         return option;
       },

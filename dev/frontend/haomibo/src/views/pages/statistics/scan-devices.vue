@@ -1248,7 +1248,6 @@
           let j = transformed.tKey[i - 1];
           temp = data.detailedStatistics[j];
           this.renderedCheckList.push(data.detailedStatistics[j].time);
-          console.log(this.filter.statWidth);
           if(this.filter.statWidth === 'hour') {
             if (temp.time < 9) {
               temp.time = '0' + temp.time + ' : 00 ~ 0' + (temp.time + 1) + ': 00';

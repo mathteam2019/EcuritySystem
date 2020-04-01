@@ -15,13 +15,19 @@
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
               <b-row class="m-0">
-                <b-col cols="3" class="pr-3">
+                <b-col cols="2">
                   <b-form-group>
                     <template slot="label">{{$t('permission-management.permission-control.role')}}</template>
                     <b-form-input v-model="roleKeyword"/>
                   </b-form-group>
                 </b-col>
-                <b-col cols="9" class="d-flex justify-content-end align-items-center">
+                <b-col cols="2">
+                  <b-form-group>
+                    <template slot="label">{{$t('permission-management.permission-control.role-flag')}}</template>
+                    <b-form-input v-model="resourceName"/>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="8" class="d-flex justify-content-end align-items-center">
                   <div>
                     <b-button size="sm" class="ml-2" variant="info default" @click="searchRoles()">
                       <i class="icofont-search-1"/>&nbsp;{{ $t('permission-management.search') }}
@@ -171,9 +177,9 @@
                       {{$t('permission-management.permission-control.role')}}
                       <span class="text-danger">*</span>
                     </template>
-                    <label>
-                      {{selectedRole.roleName}}
-                    </label>
+                    <b-form-input
+                      v-model="selectedRole.roleName"
+                      :placeholder="$t('permission-management.permission-control.enter-role-name')"/>
                   </b-form-group>
                 </div>
 
@@ -347,9 +353,9 @@
                     {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <label>
-                    {{selectedDataGroup.dataGroupName}}
-                  </label>
+                  <b-form-input
+                    v-model="selectedDataGroup.dataGroupName"
+                  />
                 </b-form-group>
               </div>
 
@@ -838,6 +844,7 @@
         isSelectedAllResourcesForRoleForm: false,
         currentResourceTreeDataForRoleForm: [],
         roleKeyword: '',
+        resourceName :'',
         resourceList: [],
         resourceTreeData: [],
         renderedCheckList: [],
@@ -868,14 +875,28 @@
               sortField: 'roleNumber',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '29%'
+              width: '15%'
             },
             {
               name: 'roleName',
               title: this.$t('permission-management.permission-control.role-name'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '29%'
+              width: '21%'
+            },
+            {
+              name: 'resourcesLabel',
+              title: this.$t('permission-management.permission-control.role-flag'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              width: '25%',
+              callback: (value) => {
+                if (value === null) return '';
+                if (value.isLong === false) return value.groupMember;
+                else {
+                  return this.hoverContent(value);
+                }
+              }
             },
             {
               name: '__slot:operating',
@@ -1194,7 +1215,9 @@
           'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'sort' : httpOption.params.sort,
-          'filter': {roleName: this.roleKeyword},
+          'filter': {roleName: this.roleKeyword,
+            resourceName: this.resourceName
+          },
           'idList': checkedIds.join()
         };
         this.link = `permission-management/permission-control/role`;
@@ -1212,7 +1235,7 @@
           'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'sort' : httpOption.params.sort,
-          'filter': {roleName: this.roleKeyword},
+          'filter': {roleName: this.roleKeyword, resourceName: this.resourceName},
           'idList': checkedIds.join()
         };
         let link = `permission-management/permission-control/role`;
@@ -1341,6 +1364,7 @@
       },
       resetRoleSearchForm() {
         this.roleKeyword = '';
+        this.resourceName = '';
       },
       onClickCreateRole() {
         this.selectedRole = null;
@@ -1359,6 +1383,13 @@
       },
       onClickSaveRole() {
         if (this.selectedRole) {
+          if (this.selectedRole.roleName === '') {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.enter-role-name`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
 
           let checkedNodes = this.$refs.resourceTree.getCheckedNodes();
           let roleResourceIds = checkedNodes.map(node => node.resourceId);
@@ -1369,10 +1400,11 @@
             });
             return;
           }
-          this.isLoading = true;
+          //this.isLoading = true;
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/permission-control/role/modify`, {
               'roleId': this.selectedRole.roleId,
+              'roleName': this.selectedRole.roleName,
               'resourceIdList': roleResourceIds
             })
             .then((response) => {
@@ -1408,7 +1440,7 @@
               }
             })
             .catch((error) => {
-              this.isLoading = false;
+              //this.isLoading = false;
             });
         }
       },
@@ -1490,6 +1522,7 @@
           sort: httpOptions.params.sort,
           filter: {
             roleName: this.roleKeyword,
+            resourceName: this.resourceName
           }
         });
       },
@@ -1512,8 +1545,32 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          transformed.data.push(temp);
+
+          let resourceName =[];
+          temp.resources.forEach(resources => {
+            resourceName.push(resources.resourceCaption);
+          });
+
+          let resources = resourceName.join(',');
+
+          let isLong = false;
+          if(resources.length>20){
+            isLong = true;
+            temp.resourcesLabel = {
+              groupMember : resources,
+              label : resources.substr(0, 19) + '...',
+              isLong : isLong
+            };
+          }
+          else {
+            temp.resourcesLabel = {
+              groupMember : resources,
+              isLong : isLong
+            };
+          }
+          console.log(temp.resourcesLabel);
           this.renderedCheckList.push(data.data[i].roleId);
+          transformed.data.push(temp);
         }
 
         return transformed
@@ -1584,7 +1641,7 @@
               permanent: false
             });
           } else {
-            this.isLoading = true;
+
             getApiManager()
               .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
                 'dataGroupNumber': this.dataGroupForm.dataGroupNumber,
@@ -1592,7 +1649,7 @@
                 'userIdList': userIdList
               })
               .then((response) => {
-                this.isLoading = false;
+
                 let message = response.data.message;
                 let data = response.data.data;
                 switch (message) {
@@ -1624,14 +1681,20 @@
                 }
               })
               .catch((error) => {
-                this.isLoading = false;
+
               });
           }
         }
       },
       onClickSaveDataGroup() {
         if (this.selectedDataGroup) {
-          this.isLoading = true;
+          if (this.selectedDataGroup.dataGroupName === '') {
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.enter-data-group-name`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
           let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
           let dataGroupUserIds = [];
           checkedNodes.forEach((node) => {
@@ -1643,11 +1706,13 @@
               duration: 3000,
               permanent: false
             });
+            return;
           }
           if(dataGroupUserIds.length !== 0) {
             getApiManager()
               .post(`${apiBaseUrl}/permission-management/permission-control/data-group/modify`, {
                 'dataGroupId': this.selectedDataGroup.dataGroupId,
+                'dataGroupName': this.selectedDataGroup.dataGroupName,
                 'userIdList': dataGroupUserIds
               })
               .then((response) => {
@@ -1698,7 +1763,7 @@
                 }
               })
               .catch((error) => {
-                this.isLoading = false;
+
               });
           }
         }

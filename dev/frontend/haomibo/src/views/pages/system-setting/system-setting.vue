@@ -37,7 +37,7 @@
                   <b-col cols="2">
                     <b-form-group :label="$t('system-setting.parameter-setting.atr-suspect-box-color')" class="pointer">
                       <colorpicker :color="platFormData.scanRecogniseColour"
-                                   v-model="platFormData.scanRecogniseColour" :change="onChange()"
+                                   :change="onChange()"
                                    style="margin-bottom: 0 !important;"/>
                     </b-form-group>
                   </b-col>
@@ -128,8 +128,7 @@
                   <b-col cols="2" offset="1">
                     <b-form-group class="mb-0"
                                   :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
-                      <colorpicker :color="platFormData.displayDeleteSuspicionColour" :change="onChange()"
-                                   v-model="platFormData.displayDeleteSuspicionColour"/>
+                      <colorpicker :color="platFormData.displayDeleteSuspicionColour" :change="onChange()"/>
                     </b-form-group>
                   </b-col>
 
@@ -1049,13 +1048,13 @@
     },
     methods: {
       getEvent(e){
-        console.log("d");
+
       },
       onChange() {
         this.isEmptyScan = this.platFormData.scanRecogniseColour === '#';
         this.isEmptyJudge = this.platFormData.judgeRecogniseColour === '#';
         this.isEmptyDelete = this.platFormData.displayDeleteSuspicionColour === '#';
-        // console.log(this.platFormData.scanRecogniseColour);
+
       },
       getLocale() {
         return getLocale();
@@ -1404,8 +1403,6 @@
       savePlatFormData() {
         //save platform main data
         if (this.tabIndex === 0) {
-          console.log(this.isEmptyScan, this.isEmptyJudge, this.isEmptyDelete);
-
           this.$v.platFormData.$touch();
           if (this.$v.platFormData.$invalid) {
             if(this.$v.platFormData.scanRecogniseColour.$invalid){

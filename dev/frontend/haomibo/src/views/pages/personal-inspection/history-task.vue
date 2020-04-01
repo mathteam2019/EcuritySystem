@@ -1962,8 +1962,7 @@
                     cartoonRects = this.showPage.serJudgeGraph.judgeCartoonRects;
                     cartoonRects = JSON.parse(cartoonRects);
                   }
-                  console.log(this.showPage.serJudgeGraph.judgeCartoonRects);
-                  console.log(cartoonRects);
+
                   if (this.showPage.serJudgeGraph.judgeSubmitrects !== undefined &&  this.showPage.serJudgeGraph.judgeSubmitrects !== null) {
                     submitRects = this.showPage.serJudgeGraph.judgeSubmitrects;
                     submitRects = JSON.parse(submitRects);

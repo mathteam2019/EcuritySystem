@@ -53,7 +53,8 @@
               </b-col>
               <b-col>
                 <b-form-group :label="$t('device-management.filename')">
-                  <b-form-input v-model="filterOption.archivesName"/>
+                  <b-form-select v-model="filterOption.archiveId"
+                                 :options="archivesSelectOption" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -792,6 +793,7 @@
         manufacturerOptions: [],
         selectedStatus: 'all',
         archivesSelectOptions: [],
+        archivesSelectOption: [],
         archivesData: [],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/device-management/device-table/device/get-by-filter-and-page`,
@@ -876,7 +878,7 @@
         filterOption: {
           deviceName: null,
           status: null,
-          archiveName: null,
+          archiveId: null,
           categoryId: null
         },
         mainForm: {
@@ -1143,7 +1145,7 @@
         this.filterOption = {
           deviceName: '',
           status: null,
-          archiveName: null,
+          archiveId: null,
           categoryId: null
         };
       },
@@ -1457,8 +1459,13 @@
       },
       archivesData: function (newVal) {
         this.archivesSelectOptions = [];
+        this.archivesSelectOption = [];
         if (newVal.length === 0) {
           this.archivesSelectOptions.push({
+            value: null,
+            html: `${this.$t('system-setting.none')}`
+          });
+          this.archivesSelectOption.push({
             value: null,
             html: `${this.$t('system-setting.none')}`
           });
@@ -1467,6 +1474,11 @@
             text: item.archivesName,
             value: item.archiveId
           }));
+          this.archivesSelectOption = newVal.map(item => ({
+            text: item.archivesName,
+            value: item.archiveId
+          }));
+          this.archivesSelectOption.push({value: null, text: `${this.$t('permission-management.all')}`})
         }
       },
       'mainForm.archiveId': function (newVal) {

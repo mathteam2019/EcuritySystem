@@ -26,7 +26,7 @@
 
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-user')"
              @click="tabStatus = 'user'">
-        <b-row v-show="pageStatus==='table'" class="h-100 ">
+        <b-row v-show="pageStatus === 'table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
               <b-col cols="7">
@@ -136,7 +136,7 @@
             </b-row>
           </b-col>
         </b-row>
-        <b-row v-if="pageStatus!=='table'" class="h-100">
+        <b-row v-if="pageStatus === 'create'" class="h-100">
           <b-col cols="12" class="form-section">
             <b-row class="h-100">
               <b-col cols="5">
@@ -258,6 +258,134 @@
               </b-col>
               <b-col cols="12 " class="align-self-end text-right">
                 <b-button size="sm" variant="info default" @click="onUserActionGroup('save-item')"
+                          v-if="pageStatus !== 'show'"><i class="icofont-save"/> {{$t('permission-management.save')}}
+                </b-button>
+                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')"
+                          :disabled="checkPermItem('assign_user_delete')"
+                          v-if="pageStatus === 'modify'"><i class="icofont-bin"/>
+                  {{$t('permission-management.delete')}}
+                </b-button>
+                <b-button size="sm" variant="info default" @click="onUserActionGroup('show-list')"><i
+                  class="icofont-long-arrow-left"/> {{$t('permission-management.return')}}
+                </b-button>
+              </b-col>
+            </b-row>
+          </b-col>
+        </b-row>
+        <b-row v-if="pageStatus !== 'create' && pageStatus !== 'table'" class="h-100">
+          <b-col cols="12" class="form-section">
+            <b-row class="h-100">
+              <b-col cols="5">
+                <b-row>
+                  <b-col cols="6">
+                    <b-form-group class="mb-0">
+                      <template slot="label">{{$t('permission-management.affiliated-institution')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <b-form-select
+                        v-model="showForm.orgId"
+                        :options="orgNameSelectData" plain
+                        :disabled="true"
+                      />
+                      <div>&nbsp;</div>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="6">
+                    <b-form-group class="mb-0">
+                      <template slot="label">
+                        {{$t('permission-management.assign-permission-management.user')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <b-form-input
+                        v-model="showForm.userName"
+                        :options="userSelectData" plain
+                        :disabled="true"
+                      />
+                      <div>&nbsp;</div>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="6">
+                    <b-form-group class="mb-0">
+                      <template slot="label">{{$t('menu.account')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <label style="height: 15px;">{{showForm.userAccount}}</label>
+                      <div class="invalid-feedback d-block">&nbsp;</div>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="6">
+                    <b-form-group class="mb-0">
+                      <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <label class="">{{showForm.gender}}</label>
+                      <div class="invalid-feedback d-block">&nbsp;</div>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="9">
+                    <b-form-group class="mw-100 w-100">
+                      <template slot="label">{{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+
+                      <v-select
+                        class="v-select-custom-style"
+                        v-model="showForm.roles" multiple
+                        :options="roleSelectData" :dir="direction"
+                        :searchable="false"
+                        :disabled="pageStatus === 'show'"
+                      />
+                      <div class="invalid-feedback d-block"></div>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="9">
+                    <b-form-group class="mw-100 w-100">
+                      <template slot="label">
+                        {{$t('permission-management.assign-permission-management.group.data-range')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <div class="d-flex ">
+                        <div>
+                          <b-form-radio-group :disabled="pageStatus === 'show'" v-model="showForm.dataRangeCategory"
+                                              stacked>
+                            <b-form-radio class="pb-2" value="1000000501">
+                              {{$t('permission-management.assign-permission-management.user-form.one-user-data')}}
+                            </b-form-radio>
+                            <b-form-radio class="pb-2" value="1000000502">
+                              {{$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')}}
+                            </b-form-radio>
+                            <b-form-radio class="pb-2" value="1000000503">
+                              {{$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')}}
+                            </b-form-radio>
+                            <b-form-radio class="pb-2" value="1000000504">
+                              {{$t('permission-management.assign-permission-management.user-form.all-user-data')}}
+                            </b-form-radio>
+                            <b-form-radio class="pb-2" value="1000000505">
+                              {{$t('permission-management.assign-permission-management.user-form.select-data-group')}}
+                            </b-form-radio>
+                          </b-form-radio-group>
+                        </div>
+                        <div class="align-self-end flex-grow-1 pl-5" style="">
+
+                          <b-form-select class="mw-100"
+                                         v-model="showForm.selectedDataGroupId"
+                                         :options="dataGroupSelectData" plain
+                                         :state="showForm.dataRangeCategory !== '1000000505' ? null : (!$v.showForm.selectedDataGroupId.$dirty ? null : !$v.showForm.selectedDataGroupId.$invalid)"
+                                         :disabled="showForm.dataRangeCategory !== '1000000505' || pageStatus === 'show'"
+                          />
+                          <b-form-invalid-feedback>
+                            {{ $t('permission-management.user.orgId-field-is-mandatory') }}
+                          </b-form-invalid-feedback>
+
+                        </div>
+                      </div>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="12 " class="align-self-end text-right">
+                <b-button size="sm" variant="info default" @click="onUserActionGroup('modify-item')"
                           v-if="pageStatus !== 'show'"><i class="icofont-save"/> {{$t('permission-management.save')}}
                 </b-button>
                 <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')"
@@ -592,6 +720,14 @@
           required
         }
       },
+      showForm: {
+        roles: {
+          required
+        },
+        selectedDataGroupId: {
+          required
+        }
+      },
       groupForm: {
         userGroup: {
           required
@@ -879,6 +1015,19 @@
           selectedDataGroupId: null,
           nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
         },
+        showForm: {
+          orgName : null,
+          orgId: null,
+          userName : null,
+          userId: null,
+          userAccount : null,
+          gender: null,
+          nextUserId: null, // when edit or show user's role, userId should be stored here.
+          roles: [],
+          dataRangeCategory: "1000000501",
+          selectedDataGroupId: null,
+          nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
+        },
         selectedUser: {},
         selectedUserGender: '',
         userDataRangeOptions: [
@@ -1055,6 +1204,10 @@
         this.userForm.selectedDataGroupId = this.userForm.nextSelectedDataGroupId;
         this.userForm.nextSelectedDataGroupId = null;
       },
+      // 'showForm.dataRangeCategory': function (newVal) {
+      //   this.showForm.selectedDataGroupId = this.showForm.nextSelectedDataGroupId;
+      //   this.showForm.nextSelectedDataGroupId = null;
+      // },
       'groupForm.userGroup': function (newVal, oldVal) {
         this.groupForm.selectedUserGroupMembers = null;
         if (this.userGroupData.length === 0)
@@ -1283,6 +1436,39 @@
       },
       onUserActionGroup(value) {
         switch (value) {
+          case 'modify-item':
+            if (this.pageStatus === 'modify') {
+              getApiManager()
+                .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/modify/assign-role-and-data-range`, {
+                  userId: this.showForm.userId,
+                  roleIdList: this.showForm.roles.map(selectedRole => selectedRole.value),
+                  dataRangeCategory: this.showForm.dataRangeCategory,
+                  selectedDataGroupId: this.showForm.selectedDataGroupId
+                }).then((response) => {
+                let message = response.data.message;
+                let data = response.data.data;
+                switch (message) {
+                  case responseMessages['ok']:
+
+                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    this.pageStatus = 'table';
+                    this.$refs.userVuetable.reload();
+                    break;
+                  case responseMessages['exist-user']:
+                    this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.user-exist`), {
+                      duration: 3000,
+                      permanent: false
+                    });
+                    break;
+
+                  default:
+                }
+              });
+            }
+            break;
           case 'save-item':
 
             this.$v.userForm.$touch();
@@ -1385,24 +1571,55 @@
             this.pageStatus = 'table';
             break;
           case 'delete-item':
-            this.promptDeleteUserRoles(this.userForm.userId);
+            this.promptDeleteUserRoles(this.showForm.userId);
             break;
         }
       },
 
       onUserNameClicked(userWithRole) {
-        this.userForm.orgId = userWithRole.org.orgId;
-        this.userForm.nextUserId = userWithRole.userId;
-        this.userForm.roles = userWithRole.roles.map(role => ({
+        console.log(userWithRole);
+        this.showForm.orgId = userWithRole.org.orgId;
+        this.showForm.orgName = userWithRole.org.orgName;
+        this.showForm.userId = userWithRole.userId;
+        this.showForm.userName = userWithRole.userName;
+        this.showForm.userAccount = userWithRole.userAccount;
+        if (userWithRole.gender === '1000000001') {
+          this.showForm.gender = this.$t('permission-management.male');
+        } else if (userWithRole.gender === '1000000002') {
+          this.showForm.gender = this.$t('permission-management.female');
+        } else if (userWithRole.gender === '1000000003') {
+          this.showForm.gender = this.$t('permission-management.unknown');
+        } else {
+          this.showForm.gender = '';
+        }
+        this.showForm.roles = userWithRole.roles.map(role => ({
           label: role.roleName,
           value: role.roleId
         }));
-        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = '1000000501';
-        this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
-        if (this.userForm.dataRangeCategory === '1000000505' && userWithRole.dataGroups.length > 0) {
-          this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+        if (userWithRole.dataRangeCategory == null) {
+          this.showForm.dataRangeCategory = '1000000501';
         }
+        else {
+          this.showForm.dataRangeCategory = userWithRole.dataRangeCategory;
+          if (this.showForm.dataRangeCategory === '1000000505') {
+            if (userWithRole.dataGroups !== undefined && userWithRole.dataGroups !== null)
+              this.showForm.selectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+          }
+        }
+
         this.pageStatus = 'show';
+        // this.userForm.orgId = userWithRole.org.orgId;
+        // this.userForm.nextUserId = userWithRole.userId;
+        // this.userForm.roles = userWithRole.roles.map(role => ({
+        //   label: role.roleName,
+        //   value: role.roleId
+        // }));
+        // if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = '1000000501';
+        // this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
+        // if (this.userForm.dataRangeCategory === '1000000505' && userWithRole.dataGroups.length > 0) {
+        //   this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+        // }
+        // this.pageStatus = 'show';
       },
 
       promptDeleteUserRoles(userId) {
@@ -1442,18 +1659,52 @@
 
       editUserRoles(userWithRole) {
 
-        this.userForm.orgId = userWithRole.org.orgId;
-        this.userForm.nextUserId = userWithRole.userId;
-        this.userForm.roles = userWithRole.roles.map(role => ({
+        this.showForm.orgId = userWithRole.org.orgId;
+        this.showForm.orgName = userWithRole.org.orgName;
+        this.showForm.userId = userWithRole.userId;
+        this.showForm.userName = userWithRole.userName;
+        this.showForm.userAccount = userWithRole.userAccount;
+        if (userWithRole.gender === '1000000001') {
+          this.showForm.gender = this.$t('permission-management.male');
+        } else if (userWithRole.gender === '1000000002') {
+          this.showForm.gender = this.$t('permission-management.female');
+        } else if (userWithRole.gender === '1000000003') {
+          this.showForm.gender = this.$t('permission-management.unknown');
+        } else {
+          this.showForm.gender = '';
+        }
+        this.showForm.roles = userWithRole.roles.map(role => ({
           label: role.roleName,
           value: role.roleId
         }));
-        if (userWithRole.dataRangeCategory == null)
-          userWithRole.dataRangeCategory = '1000000501';
-        this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
-        if (this.userForm.dataRangeCategory === '1000000505' && userWithRole.dataGroups.length > 0) {
-          this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+        if (userWithRole.dataRangeCategory == null) {
+          this.showForm.dataRangeCategory = '1000000501';
         }
+        else {
+          this.showForm.dataRangeCategory = userWithRole.dataRangeCategory;
+          if (this.showForm.dataRangeCategory === '1000000505') {
+            if (userWithRole.dataGroups !== undefined && userWithRole.dataGroups !== null)
+              this.showForm.selectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+          }
+        }
+
+        // this.userForm.orgId = userWithRole.org.orgId;
+        // this.userForm.nextUserId = userWithRole.userId;
+        // this.userForm.roles = userWithRole.roles.map(role => ({
+        //   label: role.roleName,
+        //   value: role.roleId
+        // }));
+        // if (userWithRole.dataRangeCategory == null) {
+        //   userWithRole.dataRangeCategory = '1000000501';
+        // }
+        // else if (this.userForm.dataRangeCategory === '1000000505') {
+        //   if(userWithRole.dataGroups !== null) {
+        //     this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+        //   }
+        // }
+        // else {
+        //   this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
+        // }
         this.pageStatus = 'modify';
       },
 

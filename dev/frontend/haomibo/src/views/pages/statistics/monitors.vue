@@ -143,7 +143,7 @@
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeTimeout}}</span>
                     <span v-else>0</span>
                   </div>
-                  <div><span>{{$t('statistics.monitors.assign-timeout')}}</span></div>
+                  <div><span>{{$t('statistics.monitors.judge-timeout')}}</span></div>
                 </div>
               </div>
             </b-card>
@@ -1576,7 +1576,7 @@
 
           temp = data.detailedStatistics[j];
           this.renderedCheckList.push(data.detailedStatistics[j].time);
-        
+
           if(this.filter.statWidth === 'hour') {
             if (temp.time < 9) {
               temp.time = '0' + temp.time + ' : 00 ~ 0' + (temp.time + 1) + ': 00';

@@ -1150,14 +1150,14 @@
               }
             },
             {
-              name: 'scanDevice',
+              name: 'task',
               title: this.$t('knowledge-base.site'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (scanDevice) => {
-                if (scanDevice == null) return '';
-                if (scanDevice.field == null) return '';
-                return scanDevice.field.fieldDesignation;
+              callback: (task) => {
+                if (task == null) return '';
+                if (task.field == null) return '';
+                return task.field.fieldDesignation;
               }
             },
             {
