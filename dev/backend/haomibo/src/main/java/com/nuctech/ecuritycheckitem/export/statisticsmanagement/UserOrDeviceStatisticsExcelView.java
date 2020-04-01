@@ -13,8 +13,11 @@
 
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.DetailTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatistics;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -27,10 +30,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
+
+    private static List<String> nameList;
+    private static List<String> deviceCategoryList;
 
     /**
      * create table header row
@@ -41,50 +49,19 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
 
-        Cell headerCellNo = header.createCell(0);
+        int colNum = 0;
+        Cell headerCellNo = header.createCell(colNum ++);
         headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
-        if (type) {
-            Cell headerCellTime = header.createCell(1);
-            headerCellTime.setCellValue(messageSource.getMessage("UserName", null, currentLocale));
-        }
-        else {
-            Cell headerCellTime = header.createCell(1);
-            headerCellTime.setCellValue(messageSource.getMessage("DeviceName", null, currentLocale));
+        for(int i = 0; i < deviceCategoryList.size(); i ++) {
+            Cell headerCellTime = header.createCell(colNum ++);
+            headerCellTime.setCellValue(ConstantDictionary.getDataValue(deviceCategoryList.get(i)));
         }
 
-        Cell headerCellTotalHandExam = header.createCell(2);
-        headerCellTotalHandExam.setCellValue(messageSource.getMessage("TotalHandExam", null, currentLocale));
-
-        Cell headerCellMissing = header.createCell(3);
-        headerCellMissing.setCellValue(messageSource.getMessage("Missing", null, currentLocale));
-
-        Cell headerCellMissingRate = header.createCell(4);
-        headerCellMissingRate.setCellValue(messageSource.getMessage("MissingRate", null, currentLocale));
-
-        Cell headerCellMistake = header.createCell(5);
-        headerCellMistake.setCellValue(messageSource.getMessage("Mistake", null, currentLocale));
-
-        Cell headerCellMistakeRate = header.createCell(6);
-        headerCellMistakeRate.setCellValue(messageSource.getMessage("MistakeRate", null, currentLocale));
-
-        Cell headerCellArtificialJudge = header.createCell(7);
-        headerCellArtificialJudge.setCellValue(messageSource.getMessage("ArtificialJudge", null, currentLocale));
-
-        Cell headerCellArtificialJudgeMissing = header.createCell(8);
-        headerCellArtificialJudgeMissing.setCellValue(messageSource.getMessage("ArtificialJudgeMissing", null, currentLocale));
-
-        Cell headerCellArtificialJudgeMissingRate = header.createCell(9);
-        headerCellArtificialJudgeMissingRate.setCellValue(messageSource.getMessage("ArtificialJudgeMissingRate", null, currentLocale));
-
-        Cell headerCellArtificialJudgeMistake = header.createCell(10);
-        headerCellArtificialJudgeMistake.setCellValue(messageSource.getMessage("ArtificialJudgeMistake", null, currentLocale));
-
-        Cell headerCellArtificialJudgeMistakeRate = header.createCell(11);
-        headerCellArtificialJudgeMistakeRate.setCellValue(messageSource.getMessage("ArtificialJudgeMistakeRate", null, currentLocale));
-
-        Cell headerCellIntelligenceJudge = header.createCell(12);
-        headerCellIntelligenceJudge.setCellValue(messageSource.getMessage("IntelligenceJudge", null, currentLocale));
+        for(int i = 0; i < nameList.size(); i ++) {
+            Cell headerCellTime = header.createCell(colNum ++);
+            headerCellTime.setCellValue(nameList.get(i));
+        }
 
     }
 
@@ -94,9 +71,22 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
      * @param type : true -> by user, false -> by device
      * @return
      */
-    public static InputStream buildExcelDocument(TreeMap<Long, TotalStatistics> detailedStatistics, Boolean type) {
+    public static InputStream buildExcelDocument(TreeMap<Long, TotalTimeStatistics> detailedStatistics, Boolean type) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        TotalTimeStatistics firstRecord = detailedStatistics.firstEntry().getValue();
+        List<DetailTimeStatistics> firstDetail = firstRecord.getDetailedStatistics();
+        nameList = new ArrayList<>();
+        deviceCategoryList = new ArrayList<>();
+        for(int i = 0; i < firstDetail.size(); i ++) {
+            if(i < 3) {
+                deviceCategoryList.add(firstDetail.get(i).getUserName());
+            } else {
+                nameList.add(firstDetail.get(i).getUserName());
+            }
+        }
+
         try {
 
             Workbook workbook = new XSSFWorkbook();
@@ -124,64 +114,29 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
             style.setWrapText(true);
 
             long index = 1;
+            List<String> totalNameList = deviceCategoryList;
+            for(int i = 0; i < nameList.size(); i ++) {
+                totalNameList.add(nameList.get(i));
+            }
+            for (Map.Entry<Long, TotalTimeStatistics> entry : detailedStatistics.entrySet()) {
 
-            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
-
-                TotalStatistics record = entry.getValue();
+                TotalTimeStatistics record = entry.getValue();
 
                 Row row = sheet.createRow(counter++);
 
                 DecimalFormat df = new DecimalFormat("0.00");
+                int colNum = 0;
+                row.createCell(colNum ++).setCellValue(index++);
 
-                row.createCell(0).setCellValue(index++);
-                row.createCell(1).setCellValue(record.getName());
-                if (record.getScanStatistics() != null) {
-                    row.createCell(2).setCellValue(Long.toString(record.getScanStatistics().getTotalScan()));
-                    row.createCell(3).setCellValue(Long.toString(record.getScanStatistics().getInvalidScan()));
-                    row.createCell(4).setCellValue(df.format(record.getScanStatistics().getInvalidScanRate()));
+                List<DetailTimeStatistics> detailTimeStatistics = record.getDetailedStatistics();
+                for(int i = 0; i < totalNameList.size(); i ++) {
+                    String name = totalNameList.get(i);
+                    for(int j = 0; j < detailTimeStatistics.size(); j ++) {
+                        if(detailTimeStatistics.get(j).getUserName().equals(name)) {
+                            row.createCell(colNum ++).setCellValue(String.valueOf(detailTimeStatistics.get(j).getWorkingTime()));
+                        }
+                    }
                 }
-                else {
-                    row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                    row.createCell(3).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                    row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                }
-
-                if (record.getJudgeStatistics() != null) {
-                    row.createCell(5).setCellValue(Long.toString(record.getJudgeStatistics().getTotalJudge()));
-                }
-                else {
-                    row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                }
-
-                if (record.getHandExaminationStatistics() != null) {
-                    row.createCell(6).setCellValue(Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
-                }
-                else {
-                    row.createCell(6);
-                }
-
-                if (record.getJudgeStatistics() != null) {
-                    row.createCell(7).setCellValue(df.format(record.getJudgeStatistics().getNoSuspictionJudge()));
-                    row.createCell(8).setCellValue(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                }
-                else {
-                    row.createCell(7);
-                    row.createCell(8);
-                }
-
-                if (record.getHandExaminationStatistics() != null) {
-                    row.createCell(9).setCellValue(Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
-                    row.createCell(10).setCellValue(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
-                    row.createCell(11).setCellValue(Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
-                    row.createCell(12).setCellValue(df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
-                }
-                else {
-                    row.createCell(9);
-                    row.createCell(10);
-                    row.createCell(11);
-                    row.createCell(12);
-                }
-
             }
 
             workbook.write(out);

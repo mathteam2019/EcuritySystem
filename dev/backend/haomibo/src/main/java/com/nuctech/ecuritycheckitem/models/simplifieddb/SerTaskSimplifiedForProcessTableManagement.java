@@ -59,7 +59,7 @@ public class SerTaskSimplifiedForProcessTableManagement extends BaseEntity imple
     @NotFound(action = NotFoundAction.IGNORE)
     private SysFieldSimplifiedForProcessTaskManagement field;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SerScanSimplifiedForTaskManagement serScan;
@@ -69,7 +69,7 @@ public class SerTaskSimplifiedForProcessTableManagement extends BaseEntity imple
     @NotFound(action = NotFoundAction.IGNORE)
     private SysWorkflowSimplifiedForProcessTaskManagement workFlow;
 
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @OneToOne(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
 //    @NotFound(action = NotFoundAction.IGNORE)
 //    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;

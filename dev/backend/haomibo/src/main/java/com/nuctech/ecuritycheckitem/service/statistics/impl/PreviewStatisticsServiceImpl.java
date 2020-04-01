@@ -98,8 +98,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
         try {
             Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
             response.setDetailedStatistics((TreeMap<Long, TotalStatistics>) paginatedResult.get("list"));
         } catch (Exception e) {
             response.setDetailedStatistics(detailedStatistics);
@@ -577,22 +577,22 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
         TotalStatistics record = new TotalStatistics();
         try {
-            record.setTime(Integer.parseInt(item[0].toString()));
+            record.setTime(Utils.parseInt(item[0].toString()));
             ScanStatistics scanStat = new ScanStatistics();
             JudgeStatisticsModelForPreview judgeStat = new JudgeStatisticsModelForPreview();
             HandExaminationStatisticsForPreview handStat = new HandExaminationStatisticsForPreview();
 
-            scanStat.setTotalScan(Long.parseLong(item[1].toString()));
-            scanStat.setValidScan(Long.parseLong(item[2].toString()));
-            scanStat.setInvalidScan(Long.parseLong(item[3].toString()));
-            scanStat.setPassedScan(Long.parseLong(item[4].toString()));
-            scanStat.setAlarmScan(Long.parseLong(item[5].toString()));
-            judgeStat.setTotalJudge(Long.parseLong(item[6].toString()));
-            judgeStat.setSuspictionJudge(Long.parseLong(item[7].toString()));
-            judgeStat.setNoSuspictionJudge(Long.parseLong(item[8].toString()));
-            handStat.setTotalHandExamination(Long.parseLong(item[9].toString()));
-            handStat.setSeizureHandExamination(Long.parseLong(item[10].toString()));
-            handStat.setNoSeizureHandExamination(Long.parseLong(item[11].toString()));
+            scanStat.setTotalScan(Utils.parseLong(item[1].toString()));
+            scanStat.setValidScan(Utils.parseLong(item[2].toString()));
+            scanStat.setInvalidScan(Utils.parseLong(item[3].toString()));
+            scanStat.setPassedScan(Utils.parseLong(item[4].toString()));
+            scanStat.setAlarmScan(Utils.parseLong(item[5].toString()));
+            judgeStat.setTotalJudge(Utils.parseLong(item[6].toString()));
+            judgeStat.setSuspictionJudge(Utils.parseLong(item[7].toString()));
+            judgeStat.setNoSuspictionJudge(Utils.parseLong(item[8].toString()));
+            handStat.setTotalHandExamination(Utils.parseLong(item[9].toString()));
+            handStat.setSeizureHandExamination(Utils.parseLong(item[10].toString()));
+            handStat.setNoSeizureHandExamination(Utils.parseLong(item[11].toString()));
 
             if (scanStat.getTotalScan() > 0) {
                 scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double) scanStat.getTotalScan());

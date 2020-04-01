@@ -83,7 +83,7 @@ public interface DeviceService {
 
     /**
      * get filtered and paginated device list
-     * @param archiveName
+     * @param archiveId
      * @param deviceName
      * @param status
      * @param fieldId
@@ -92,12 +92,12 @@ public interface DeviceService {
      * @param currentPage
      * @return
      */
-    PageResult<SysDevice> getFilterDeviceList(String sortBy, String order, String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
+    PageResult<SysDevice> getFilterDeviceList(String sortBy, String order, Long archiveId, String deviceName, String status, Long fieldId, Long categoryId,
                                               int perPage, int currentPage);
 
     /**
      * get export device list
-     * @param archiveName
+     * @param archiveId
      * @param deviceName
      * @param status
      * @param fieldId
@@ -106,7 +106,7 @@ public interface DeviceService {
      * @param idList
      * @return
      */
-    List<SysDevice> getExportDataList(String sortBy, String order, String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
+    List<SysDevice> getExportDataList(String sortBy, String order, Long archiveId, String deviceName, String status, Long fieldId, Long categoryId,
                                       boolean isAll, String idList);
 
     /**

@@ -41,11 +41,11 @@ import java.io.Serializable;
 @Table(name = "ser_check_result")
 public class SerCheckResultSimplifiedForProcessTaskManagement implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name = "CHECK_RESULT_ID", length = 20)
     private Long checkResultId;
 
+    @Id
     @Column(name = "TASK_ID", length = 20)
     private Long taskId;
 

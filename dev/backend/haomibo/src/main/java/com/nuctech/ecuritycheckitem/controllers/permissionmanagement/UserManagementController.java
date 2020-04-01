@@ -353,6 +353,10 @@ public class UserManagementController extends BaseController {
 
         @NotNull
         long userGroupId;
+
+        @NotNull
+        String groupName;
+
         @NotNull
         List<Long> userIdList;
     }
@@ -1187,7 +1191,15 @@ public class UserManagementController extends BaseController {
                     messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        userService.modifyUserGroup(requestBody.getUserGroupId(), requestBody.getUserIdList());
+
+        if (userService.checkGroupNameExist(requestBody.getGroupName(), requestBody.getUserGroupId())) { //check group name existance
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("UserGroup", null, currentLocale),
+                    messageSource.getMessage("UsedGroupName", null, currentLocale), "", null, false, "", "");
+
+            return new CommonResponseBody(ResponseMessage.USED_USER_GROUP_NAME);
+        }
+        userService.modifyUserGroup(requestBody.getUserGroupId(), requestBody.getGroupName(), requestBody.getUserIdList());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

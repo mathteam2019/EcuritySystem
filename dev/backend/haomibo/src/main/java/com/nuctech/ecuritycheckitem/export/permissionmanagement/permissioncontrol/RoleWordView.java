@@ -15,7 +15,9 @@ package com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontr
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
+import com.nuctech.ecuritycheckitem.models.db.SysResource;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -27,6 +29,7 @@ import org.apache.poi.xwpf.usermodel.TableWidthType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoleWordView extends BaseWordView {
@@ -68,6 +71,7 @@ public class RoleWordView extends BaseWordView {
         tableRowHeader.getCell(0).setText(messageSource.getMessage("Role.No", null,currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Role.Number", null,currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Role.Name", null,currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Role.Resource", null,currentLocale));
 
     }
 
@@ -100,6 +104,12 @@ public class RoleWordView extends BaseWordView {
                 tableRow.getCell(0).setText(String.valueOf(++ number));
                 tableRow.getCell(1).setText(role.getRoleNumber());
                 tableRow.getCell(2).setText(role.getRoleName());
+                List<String> resourceNames = new ArrayList<>();
+                for(SysResource resource: role.getResources()) {
+                    resourceNames.add(resource.getResourceCaption());
+                }
+                String resourceName = StringUtils.join(resourceNames, ",");
+                tableRow.getCell(3).setText(resourceName);
 
             }
 

@@ -98,6 +98,30 @@ public class Utils {
         return objectMapper.writeValueAsString(object);
     }
 
+    public static Integer parseInt(Object obj) {
+        try {
+            return Integer.parseInt(obj.toString());
+        } catch(Exception ex) {
+            return null;
+        }
+    }
+
+    public static Long parseLong(Object obj) {
+        try {
+            return Long.parseLong(obj.toString());
+        } catch(Exception ex) {
+            return null;
+        }
+    }
+
+    public static Double parseDouble(Object obj) {
+        try {
+            return Double.parseDouble(obj.toString());
+        } catch(Exception ex) {
+            return null;
+        }
+    }
+
     /**
      * Save file to given directory path.
      *

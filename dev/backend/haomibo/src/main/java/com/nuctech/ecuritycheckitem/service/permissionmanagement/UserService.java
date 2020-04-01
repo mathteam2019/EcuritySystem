@@ -220,9 +220,10 @@ public interface UserService {
      * edit user group role
      * @param userGroupId
      * @param userIdList
+     * @param groupName
      * @return
      */
-    boolean modifyUserGroup(long userGroupId, List<Long> userIdList);
+    boolean modifyUserGroup(long userGroupId, String groupName, List<Long> userIdList);
 
     /**
      * remove user group

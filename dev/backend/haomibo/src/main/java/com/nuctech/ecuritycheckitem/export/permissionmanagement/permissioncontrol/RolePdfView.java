@@ -22,11 +22,14 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
+import com.nuctech.ecuritycheckitem.models.db.SysResource;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -48,9 +51,9 @@ public class RolePdfView extends BasePdfView {
             document.add(getTitle(messageSource.getMessage("Role.Title", null, currentLocale)));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(3);
+            PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(99);
-            Stream.of("Role.No", "Role.Number", "Role.Name")
+            Stream.of("Role.No", "Role.Number", "Role.Name", "Role.Resource")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -66,6 +69,12 @@ public class RolePdfView extends BasePdfView {
                 addTableCell(table, String.valueOf(++ number));
                 addTableCell(table, role.getRoleNumber());
                 addTableCell(table, role.getRoleName());
+                List<String> resourceNames = new ArrayList<>();
+                for(SysResource resource: role.getResources()) {
+                    resourceNames.add(resource.getResourceCaption());
+                }
+                String resourceName = StringUtils.join(resourceNames, ",");
+                addTableCell(table, resourceName);
             }
 
             document.add(table);

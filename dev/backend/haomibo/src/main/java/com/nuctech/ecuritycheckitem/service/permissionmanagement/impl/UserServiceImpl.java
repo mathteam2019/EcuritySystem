@@ -218,7 +218,7 @@ public class UserServiceImpl implements UserService {
             return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupName.eq(groupName));
         }
         return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupName.eq(groupName)
-                .and(QSysUser.sysUser.userId.ne(groupId)));
+                .and(QSysUserGroup.sysUserGroup.userGroupId.ne(groupId)));
     }
 
     /**
@@ -233,7 +233,7 @@ public class UserServiceImpl implements UserService {
             return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupNumber.eq(groupNumber));
         }
         return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupNumber.eq(groupNumber)
-                .and(QSysUser.sysUser.userId.ne(groupId)));
+                .and(QSysUserGroup.sysUserGroup.userGroupId.ne(groupId)));
     }
 
     /**
@@ -774,7 +774,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public boolean modifyUserGroup(long userGroupId, List<Long> userIdList) {
+    public boolean modifyUserGroup(long userGroupId, String groupName, List<Long> userIdList) {
         Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(userGroupId));
 
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
@@ -803,6 +803,7 @@ public class UserServiceImpl implements UserService {
         sysUserGroupUserRepository.saveAll(relationList);
 
         // Add edited info.
+        sysUserGroup.setGroupName(groupName);
         sysUserGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysUserGroupRepository.save(sysUserGroup);
         String valueAfter = getJsonFromUserGroup(sysUserGroup);

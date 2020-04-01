@@ -13,6 +13,7 @@
 package com.nuctech.ecuritycheckitem.service.statistics;
 
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatisticsResponse;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatisticsResponse;
 
 import java.util.Date;
 
@@ -20,14 +21,14 @@ public interface StatisticsByDeviceService {
 
     /**
      * get statistics by device
-     * @param deviceCategoryId
-     * @param deviceId
+     * @param deviceType
+     * @param deviceName
      * @param startTime
      * @param endTime
      * @param currentPage
      * @param perPage
      * @return
      */
-    TotalStatisticsResponse getStatistics(String sortBy, String order, String deviceCategory, String deviceName, Date startTime, Date endTime, Integer currentPage, Integer perPage);
+    TotalTimeStatisticsResponse getStatistics(String sortBy, String order, String deviceType, String deviceName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
 
 }

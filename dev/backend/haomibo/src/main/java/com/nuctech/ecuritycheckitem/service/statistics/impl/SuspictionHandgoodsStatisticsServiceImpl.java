@@ -82,8 +82,8 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, startTime, endTime);
         try {
             Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
             response.setDetailedStatistics((TreeMap<Integer, TreeMap<String, Long>>) paginatedResult.get("list"));
         } catch (Exception e) {
             response.setDetailedStatistics(detailedStatistics);
@@ -121,7 +121,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         for (int i = 0; i < resultTotal.size(); i++) {
             Object[] item = (Object[]) resultTotal.get(i);
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
-                record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Long.parseLong(item[j + 1].toString()));
+                record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Utils.parseLong(item[j + 1].toString()));
             }
         }
 
@@ -168,10 +168,10 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             }
             TreeMap<String, Long> record = new TreeMap<>();
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
-                record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Long.parseLong(item[j + 1].toString()));
+                record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Utils.parseLong(item[j + 1].toString()));
             }
-            record.put("time", Long.parseLong(item[0].toString()));
-            data.put(Integer.parseInt(record.get("time").toString()), record);
+            record.put("time", Utils.parseLong(item[0].toString()));
+            data.put(Utils.parseInt(record.get("time").toString()), record);
         }
 
         return data;

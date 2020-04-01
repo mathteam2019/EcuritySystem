@@ -265,19 +265,19 @@ public class FieldServiceImpl implements FieldService {
 
     /**
      * get prediate from filter parameters
-     * @param fieldDesignation
+     * @param fieldId
      * @param status
      * @param parentDesignation
      * @return
      */
-    private BooleanBuilder getPredicate(String fieldDesignation, String status, String parentDesignation) {
+    private BooleanBuilder getPredicate(Long fieldId, String status, String parentDesignation) {
         QSysField builder = QSysField.sysField;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
 
-        if (!StringUtils.isEmpty(fieldDesignation)) {
-            predicate.and(builder.fieldDesignation.contains(fieldDesignation));
+        if (fieldId != null) {
+            predicate.and(builder.parentFieldId.eq(fieldId));
         }
         if (!StringUtils.isEmpty(status)) {
             predicate.and(builder.status.eq(status));
@@ -296,7 +296,7 @@ public class FieldServiceImpl implements FieldService {
 
     /**
      * get pagniated and filtered device list
-     * @param designation
+     * @param fieldId
      * @param status
      * @param parentDesignation
      * @param currentPage
@@ -304,8 +304,8 @@ public class FieldServiceImpl implements FieldService {
      * @return
      */
     @Override
-    public PageResult<SysField> getDeviceListByFilter(String sortBy, String order, String designation, String status, String parentDesignation, int currentPage, int perPage) {
-        BooleanBuilder predicate = getPredicate(designation, status, parentDesignation);
+    public PageResult<SysField> getDeviceListByFilter(String sortBy, String order, Long fieldId, String status, String parentDesignation, int currentPage, int perPage) {
+        BooleanBuilder predicate = getPredicate(fieldId, status, parentDesignation);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -370,7 +370,7 @@ public class FieldServiceImpl implements FieldService {
 
     /**
      * get field export list
-     * @param designation
+     * @param fieldId
      * @param status
      * @param parentDesignation
      * @param isAll
@@ -378,8 +378,8 @@ public class FieldServiceImpl implements FieldService {
      * @return
      */
     @Override
-    public List<SysField> getExportList(String sortBy, String order, String designation, String status, String parentDesignation, boolean isAll, String idList) {
-        BooleanBuilder predicate = getPredicate(designation, status, parentDesignation);
+    public List<SysField> getExportList(String sortBy, String order, Long fieldId, String status, String parentDesignation, boolean isAll, String idList) {
+        BooleanBuilder predicate = getPredicate(fieldId, status, parentDesignation);
         String[] splits = idList.split(",");
         List<Long> fieldIdList = new ArrayList<>();
         for(String idStr: splits) {

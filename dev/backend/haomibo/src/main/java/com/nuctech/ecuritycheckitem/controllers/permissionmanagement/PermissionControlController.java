@@ -127,6 +127,9 @@ public class PermissionControlController extends BaseController {
         long roleId;
 
         @NotNull
+        String roleName;
+
+        @NotNull
         List<@ResourceId Long> resourceIdList;
     }
 
@@ -147,6 +150,7 @@ public class PermissionControlController extends BaseController {
         static class Filter {
 
             String roleName;
+            String resourceName;
         }
 
         @NotNull
@@ -282,6 +286,8 @@ public class PermissionControlController extends BaseController {
         @NotNull
         long dataGroupId;
         @NotNull
+        String dataGroupName;
+        @NotNull
         List<Long> userIdList;
     }
 
@@ -390,11 +396,13 @@ public class PermissionControlController extends BaseController {
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
         String roleName = "";
+        String resourceName = "";
         if(requestBody.getFilter() != null) {
             roleName = requestBody.getFilter().getRoleName();
+            resourceName = requestBody.getFilter().getResourceName();
         }
 
-        PageResult<SysRole> result = permissionService.getRoleListByPage(sortBy, order, roleName, currentPage, perPage);
+        PageResult<SysRole> result = permissionService.getRoleListByPage(sortBy, order, roleName, resourceName, currentPage, perPage);
 
         long total = result.getTotal();
         List<SysRole> data = result.getDataList();
@@ -435,8 +443,10 @@ public class PermissionControlController extends BaseController {
         }
 
         String roleName = "";
+        String resourceName = "";
         if(requestBody.getFilter() != null) {
             roleName = requestBody.getFilter().getRoleName();
+            resourceName = requestBody.getFilter().getResourceName();
         }
 
         String sortBy = "";
@@ -449,7 +459,7 @@ public class PermissionControlController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data
         RoleExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -484,8 +494,10 @@ public class PermissionControlController extends BaseController {
         }
 
         String roleName = "";
+        String resourceName = "";
         if(requestBody.getFilter() != null) {
             roleName = requestBody.getFilter().getRoleName();
+            resourceName = requestBody.getFilter().getResourceName();
         }
         String sortBy = "";
         String order = "";
@@ -498,7 +510,7 @@ public class PermissionControlController extends BaseController {
             }
         }
 
-        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data
         RoleWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -535,8 +547,10 @@ public class PermissionControlController extends BaseController {
 
         //get all role list
         String roleName = "";
+        String resourceName = "";
         if(requestBody.getFilter() != null) {
             roleName = requestBody.getFilter().getRoleName();
+            resourceName = requestBody.getFilter().getResourceName();
         }
         String sortBy = "";
         String order = "";
@@ -549,7 +563,7 @@ public class PermissionControlController extends BaseController {
             }
         }
 
-        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList());
         RolePdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale());  //set dictionary data
         RolePdfView.setMessageSource(messageSource);
@@ -597,6 +611,14 @@ public class PermissionControlController extends BaseController {
 
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        if(permissionService.checkRoleNameExist(requestBody.getRoleName(), requestBody.getRoleId())) { // if role name exists
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("UsedRoleName", null, currentLocale), "", null, false, "", "");
+
+            return new CommonResponseBody(ResponseMessage.USED_ROLE_NAME);
+        }
         if (permissionService.checkUserExist(requestBody.getRoleId())) { // If there are users assigned with this role, it can't be deleted.
             //return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
@@ -604,7 +626,7 @@ public class PermissionControlController extends BaseController {
             //return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
         }
 
-        boolean result = permissionService.modifyRole(requestBody.getRoleId(), requestBody.getResourceIdList()); // Get role from database.
+        boolean result = permissionService.modifyRole(requestBody.getRoleId(), requestBody.getRoleName(), requestBody.getResourceIdList()); // Get role from database.
         if(result == false) {
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("Role", null, currentLocale),
@@ -695,7 +717,7 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if (permissionService.checkGroupNameExist(requestBody.getDataGroupName())) { //if group name exists
+        if (permissionService.checkGroupNameExist(requestBody.getDataGroupName(), null)) { //if group name exists
             auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("DataGroup", null, currentLocale),
                     messageSource.getMessage("UsedGroupName", null, currentLocale), "", null, false, "", "");
@@ -957,6 +979,14 @@ public class PermissionControlController extends BaseController {
                     messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        if (permissionService.checkGroupNameExist(requestBody.getDataGroupName(), requestBody.getDataGroupId())) { //if group name exists
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("UsedGroupName", null, currentLocale), "", null, false, "", "");
+
+            return new CommonResponseBody(ResponseMessage.USED_DATA_GROUP_NAME);
+        }
 //        if (permissionService.checkUserLookUpExist(requestBody.getDataGroupId())) { // If there are users assigned with this data group, it can't be deleted.
 //            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
 //                    "", messageSource.getMessage("DataGroup", null, currentLocale),
@@ -971,7 +1001,7 @@ public class PermissionControlController extends BaseController {
 //        }
 
         List<Long> userIdList = requestBody.getUserIdList();
-        permissionService.modifyDataGroup(requestBody.getDataGroupId(), userIdList);
+        permissionService.modifyDataGroup(requestBody.getDataGroupId(), requestBody.getDataGroupName(), userIdList);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

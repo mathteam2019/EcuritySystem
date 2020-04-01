@@ -13,9 +13,12 @@
 
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.DetailTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatistics;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -28,10 +31,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class UserOrDeviceStatisticsWordView extends BaseWordView {
+
+    private static List<String> nameList;
+    private static List<String> deviceCategoryList;
 
     /**
      * create title paragraph
@@ -74,27 +82,16 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
+
         tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
 
-        if (isUserStatOrDeviceStat) {
-            tableRowHeader.addNewTableCell().setText(messageSource.getMessage("UserName", null, currentLocale));
+        for(int i = 0; i < deviceCategoryList.size(); i ++) {
+            tableRowHeader.addNewTableCell().setText(ConstantDictionary.getDataValue(deviceCategoryList.get(i)));
         }
-        else {
-            tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceName", null, currentLocale));
-        }
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalHandExam", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Missing", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("MissingRate", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Mistake", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("MistakeRate", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudge", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMissing", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMissingRate", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMistake", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMistakeRate", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudge", null, currentLocale));
-        
 
+        for(int i = 0; i < nameList.size(); i ++) {
+            tableRowHeader.addNewTableCell().setText(nameList.get(i));
+        }
     }
 
     /**
@@ -102,9 +99,21 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildWordDocument(TreeMap<Long, TotalStatistics> detailedStatistics, boolean isUserStatOrDeviceStat) {
+    public static InputStream buildWordDocument(TreeMap<Long, TotalTimeStatistics> detailedStatistics, boolean isUserStatOrDeviceStat) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        TotalTimeStatistics firstRecord = detailedStatistics.firstEntry().getValue();
+        List<DetailTimeStatistics> firstDetail = firstRecord.getDetailedStatistics();
+        nameList = new ArrayList<>();
+        deviceCategoryList = new ArrayList<>();
+        for(int i = 0; i < firstDetail.size(); i ++) {
+            if(i < 3) {
+                deviceCategoryList.add(firstDetail.get(i).getUserName());
+            } else {
+                nameList.add(firstDetail.get(i).getUserName());
+            }
+        }
 
         try {
             //Blank Document
@@ -117,65 +126,30 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
             createTableHeader(table, isUserStatOrDeviceStat);
 
             long index = 1;
+            List<String> totalNameList = deviceCategoryList;
+            for(int i = 0; i < nameList.size(); i ++) {
+                totalNameList.add(nameList.get(i));
+            }
+            for (Map.Entry<Long, TotalTimeStatistics> entry : detailedStatistics.entrySet()) {
 
-            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
-
-                TotalStatistics record = entry.getValue();
+                TotalTimeStatistics record = entry.getValue();
+                long key = entry.getKey();
 
                 XWPFTableRow tableRow = table.createRow();
 
                 DecimalFormat df = new DecimalFormat("0.00");
+                int colNum = 0;
+                tableRow.getCell(colNum ++).setText(Long.toString(index ++));
 
-                tableRow.getCell(0).setText(Long.toString(index ++));
-                tableRow.getCell(1).setText(record.getName());
-                if (record.getScanStatistics() != null) {
-                    tableRow.getCell(2).setText(Long.toString(record.getScanStatistics().getTotalScan()));
-                    tableRow.getCell(3).setText(Long.toString(record.getScanStatistics().getInvalidScan()));
-                    tableRow.getCell(4).setText(df.format(record.getScanStatistics().getInvalidScanRate()));
+                List<DetailTimeStatistics> detailTimeStatistics = record.getDetailedStatistics();
+                for(int i = 0; i < totalNameList.size(); i ++) {
+                    String name = totalNameList.get(i);
+                    for(int j = 0; j < detailTimeStatistics.size(); j ++) {
+                        if(detailTimeStatistics.get(j).getUserName().equals(name)) {
+                            tableRow.getCell(colNum ++).setText(String.valueOf(detailTimeStatistics.get(j).getWorkingTime()));
+                        }
+                    }
                 }
-                else {
-                    tableRow.getCell(2).setText(messageSource.getMessage("None", null, currentLocale));
-                    tableRow.getCell(3).setText(messageSource.getMessage("None", null, currentLocale));
-                    tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
-                }
-
-                if (record.getJudgeStatistics() != null) {
-                    tableRow.getCell(5).setText(Long.toString(record.getJudgeStatistics().getTotalJudge()));
-                }
-                else {
-                    tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
-                }
-
-                if (record.getHandExaminationStatistics() != null) {
-                    tableRow.getCell(6).setText(Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
-                }
-                else {
-                    tableRow.getCell(6);
-                }
-
-                if (record.getJudgeStatistics() != null) {
-                    tableRow.getCell(7).setText(df.format(record.getJudgeStatistics().getNoSuspictionJudge()));
-                    tableRow.getCell(8).setText(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                }
-                else {
-                    tableRow.getCell(7);
-                    tableRow.getCell(8);
-                }
-
-                if (record.getHandExaminationStatistics() != null) {
-                    tableRow.getCell(9).setText(Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
-                    tableRow.getCell(10).setText(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
-                    tableRow.getCell(11).setText(Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
-                    tableRow.getCell(12).setText(df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
-                }
-                else {
-                    tableRow.getCell(9);
-                    tableRow.getCell(10);
-                    tableRow.getCell(11);
-                    tableRow.getCell(12);
-                }
-
-
             }
 
             document.write(out);

@@ -32,20 +32,22 @@ public interface PermissionService {
     /**
      * get paginated and filtered role list
      * @param roleName
+     * @param resourceName
      * @param currentPage
      * @param perPage
      * @return
      */
-    PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, int currentPage, int perPage);
+    PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, String resourceName, int currentPage, int perPage);
 
     /**
      * get export role list
      * @param roleName
+     * @param resourceName
      * @param isAll
      * @param idList
      * @return
      */
-    List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, boolean isAll, String idList);
+    List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, String resourceName, boolean isAll, String idList);
 
     /**
      * check if role exists
@@ -58,9 +60,10 @@ public interface PermissionService {
      * edit role
      * @param roleId
      * @param resourceIdList
+     * @param roleName
      * @return
      */
-    boolean modifyRole(long roleId, List<Long> resourceIdList);
+    boolean modifyRole(long roleId, String roleName, List<Long> resourceIdList);
 
     /**
      * check if resource exists
@@ -86,9 +89,10 @@ public interface PermissionService {
     /**
      * check if group name exists
      * @param groupName
+     * @param groupId
      * @return
      */
-    boolean checkGroupNameExist(String groupName);
+    boolean checkGroupNameExist(String groupName, Long groupId);
 
     /**
      * check if group exists
@@ -160,10 +164,11 @@ public interface PermissionService {
     /**
      * edit data group
      * @param dataGroupId
+     * @param dataGroupName
      * @param userIdList
      * @return
      */
-    boolean modifyDataGroup(long dataGroupId, List<Long> userIdList);
+    boolean modifyDataGroup(long dataGroupId, String dataGroupName, List<Long> userIdList);
 
     /**
      * check if datagroup exists

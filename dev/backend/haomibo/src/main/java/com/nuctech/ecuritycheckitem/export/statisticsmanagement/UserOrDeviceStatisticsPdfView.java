@@ -19,9 +19,12 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.DetailTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatistics;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,16 +38,29 @@ import java.util.Map;
 
 public class UserOrDeviceStatisticsPdfView extends BasePdfView {
 
+    private static List<String> nameList;
+    private static List<String> deviceCategoryList;
     /**
      * build inputstream of data to be printed
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildPDFDocument(TreeMap<Long, TotalStatistics> detailedStatistics, boolean type) {
+    public static InputStream buildPDFDocument(TreeMap<Long, TotalTimeStatistics> detailedStatistics, boolean type) {
 
         Document document = new Document();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+        TotalTimeStatistics firstRecord = detailedStatistics.firstEntry().getValue();
+        List<DetailTimeStatistics> firstDetail = firstRecord.getDetailedStatistics();
+        nameList = new ArrayList<>();
+        deviceCategoryList = new ArrayList<>();
+        for(int i = 0; i < firstDetail.size(); i ++) {
+            if(i < 3) {
+                deviceCategoryList.add(firstDetail.get(i).getUserName());
+            } else {
+                nameList.add(firstDetail.get(i).getUserName());
+            }
+        }
 
         try {
 
@@ -58,16 +74,15 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
             }
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(13);
+            PdfPTable table = new PdfPTable(deviceCategoryList.size() + nameList.size() + 1);
 
-            List<String> strHeaderList = new ArrayList<>();
+            List<String> strHeaderList = Arrays.asList(new String[]{messageSource.getMessage("ID", null, currentLocale)});
 
-
-            if (type) {
-                strHeaderList = Arrays.asList(new String[]{"ID", "UserName", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge"});
+            for(int i = 0; i < deviceCategoryList.size(); i ++) {
+                strHeaderList.add(ConstantDictionary.getDataValue(deviceCategoryList.get(i)));
             }
-            else {
-                strHeaderList = Arrays.asList(new String[]{"ID", "DeviceName", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge"});
+            for(int i = 0; i < nameList.size(); i ++) {
+                strHeaderList.add(nameList.get(i));
             }
 
 
@@ -82,60 +97,28 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
                     });
 
             long index = 1;
+            List<String> totalNameList = deviceCategoryList;
+            for(int i = 0; i < nameList.size(); i ++) {
+                totalNameList.add(nameList.get(i));
+            }
 
-            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
+            for (Map.Entry<Long, TotalTimeStatistics> entry : detailedStatistics.entrySet()) {
 
-                TotalStatistics record = entry.getValue();
+                TotalTimeStatistics record = entry.getValue();
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 addTableCell(table, Long.toString(index++));
-                addTableCell(table, record.getName());
-                if (record.getScanStatistics() != null) {
-                    addTableCell(table, Long.toString(record.getScanStatistics().getTotalScan()));
-                    addTableCell(table, Long.toString(record.getScanStatistics().getInvalidScan()));
-                    addTableCell(table, df.format(record.getScanStatistics().getInvalidScanRate()));
-                }
-                else {
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                }
+                int colNum = 0;
 
-                if (record.getJudgeStatistics() != null) {
-                    addTableCell(table, Long.toString(record.getJudgeStatistics().getTotalJudge()));
-                }
-                else {
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                }
-
-                if (record.getHandExaminationStatistics() != null) {
-                    addTableCell(table, Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
-                }
-                else {
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                }
-
-                if (record.getJudgeStatistics() != null) {
-                    addTableCell(table, df.format(record.getJudgeStatistics().getNoSuspictionJudge()));
-                    addTableCell(table, df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                }
-                else {
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                }
-
-                if (record.getHandExaminationStatistics() != null) {
-                    addTableCell(table, Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
-                    addTableCell(table, df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
-                    addTableCell(table, Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
-                    addTableCell(table, df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
-                }
-                else {
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                List<DetailTimeStatistics> detailTimeStatistics = record.getDetailedStatistics();
+                for(int i = 0; i < totalNameList.size(); i ++) {
+                    String name = totalNameList.get(i);
+                    for(int j = 0; j < detailTimeStatistics.size(); j ++) {
+                        if(detailTimeStatistics.get(j).getUserName().equals(name)) {
+                            addTableCell(table, String.valueOf(detailTimeStatistics.get(j).getWorkingTime()));
+                        }
+                    }
                 }
 
             }

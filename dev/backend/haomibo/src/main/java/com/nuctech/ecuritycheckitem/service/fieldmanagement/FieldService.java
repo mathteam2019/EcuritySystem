@@ -90,23 +90,23 @@ public interface FieldService {
 
     /**
      * get paginated and filtered field list
-     * @param designation
+     * @param fieldId
      * @param status
      * @param parentDesignation
      * @param currentPage
      * @param perPage
      * @return
      */
-    PageResult<SysField> getDeviceListByFilter(String sortBy, String order, String designation, String status, String parentDesignation, int currentPage, int perPage);
+    PageResult<SysField> getDeviceListByFilter(String sortBy, String order, Long fieldId, String status, String parentDesignation, int currentPage, int perPage);
 
     /**
      * get filtered export field list
-     * @param designation
+     * @param fieldId
      * @param status
      * @param parentDesignation
      * @param isAll
      * @param idList
      * @return
      */
-    List<SysField> getExportList(String sortBy, String order, String designation, String status, String parentDesignation, boolean isAll, String idList);
+    List<SysField> getExportList(String sortBy, String order, Long fieldId, String status, String parentDesignation, boolean isAll, String idList);
 }

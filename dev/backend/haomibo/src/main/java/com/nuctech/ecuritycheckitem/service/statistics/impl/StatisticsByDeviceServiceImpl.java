@@ -16,15 +16,13 @@ import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatisticsResponse;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsModelForPreview;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsForPreview;
+import com.nuctech.ecuritycheckitem.models.db.SysDevice;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByDeviceService;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,120 +51,199 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * get total statistics by device
-     *
-     * @param deviceType  : device category id
-     * @param deviceName  : device id
-     * @param startTime   : start time
-     * @param endTime     : end time
-     * @param currentPage : current page
-     * @param perPage     : per page
+     * @param deviceType : workmode id
+     * @param deviceName         : user name
+     * @param startTime        : start time
+     * @param endTime          : end time
+     * @param currentPage      : current page
+     * @param perPage          : per page
      * @return
      */
     @Override
-    public TotalStatisticsResponse getStatistics(String sortBy, String order, String deviceType, String deviceName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+    public TotalTimeStatisticsResponse getStatistics(String sortBy, String order, String deviceType, String deviceName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
-        TotalStatisticsResponse response = new TotalStatisticsResponse();
-
-        //.... Get Total Statistics
+        TotalTimeStatisticsResponse response = new TotalTimeStatisticsResponse();
         //categoryUser = authService.getDataCategoryUserList();
-        String strQuery = makeQuery(deviceType, deviceName, startTime, endTime);
-        TotalStatistics totalStatistics = getTotalStatistics(strQuery);
-        response.setTotalStatistics(totalStatistics);
+        //.... Get Total Statistics
+        String strQuery = makeQuery(deviceType, deviceName, startTime, endTime, statWidth);
+        TotalTimeStatistics mainTimeStatics = getTotalStatistics(strQuery);
 
         //.... Get Detailed Statistics
-        TreeMap<Long, TotalStatistics> detailedStatistics = getDetailedStatistics(strQuery, startTime, endTime);
+        TotalTimeStatistics detailTimeStatics = getDetailedStatistics(strQuery, startTime, endTime);
+        TreeMap<Long, TotalTimeStatistics> data = new TreeMap<>();
+        List<String> nameList = new ArrayList<>();
+        List<Long> timeList = new ArrayList<>();
+        List<DetailTimeStatistics> statisticsList = mainTimeStatics.getDetailedStatistics();
+        List<DetailTimeStatistics> detailStatisticsList = detailTimeStatics.getDetailedStatistics();
+        for(int i = 0; i < detailStatisticsList.size(); i ++) {
+            statisticsList.add(detailStatisticsList.get(i));
+        }
+        for(int i = 0; i < statisticsList.size(); i ++) {
+            String name = statisticsList.get(i).getUserName();
+            long time = statisticsList.get(i).getTime();
+            if(!nameList.contains(name)) {
+                nameList.add(name);
+            }
+            if(!timeList.contains(time)) {
+                timeList.add(time);
+            }
+        }
+
+
+        List<DetailTimeStatistics> totalStatistics = new ArrayList<>();
+        for(int i = 0; i < nameList.size(); i ++) {
+            DetailTimeStatistics statistics = new DetailTimeStatistics();
+            statistics.setUserName(nameList.get(i));
+            long workingTime = 0;
+            for(int j = 0; j < statisticsList.size(); j ++) {
+                if(nameList.get(i).equals(statisticsList.get(j).getUserName())) {
+                    workingTime += statisticsList.get(j).getWorkingTime();
+                }
+            }
+            statistics.setWorkingTime(workingTime);
+            totalStatistics.add(statistics);
+        }
+        TotalTimeStatistics totalTimeStatistics = new TotalTimeStatistics();
+        totalTimeStatistics.setDetailedStatistics(totalStatistics);
+        response.setTotalStatistics(totalTimeStatistics);
+
+        for(int id = 0; id < timeList.size(); id ++) {
+            long time = timeList.get(id);
+            List<DetailTimeStatistics> detailTimeStatistics = new ArrayList<>();
+            for(int i = 0; i < nameList.size(); i ++) {
+                DetailTimeStatistics statistics = new DetailTimeStatistics();
+                statistics.setUserName(nameList.get(i));
+                long workingTime = 0;
+                for(int j = 0; j < statisticsList.size(); j ++) {
+                    if(nameList.get(i).equals(statisticsList.get(j).getUserName()) && time == statisticsList.get(j).getTime()) {
+                        workingTime += statisticsList.get(j).getWorkingTime();
+                    }
+                }
+                statistics.setWorkingTime(workingTime);
+                detailTimeStatistics.add(statistics);
+            }
+            TotalTimeStatistics subTotalStatistics = new TotalTimeStatistics();
+            subTotalStatistics.setDetailedStatistics(detailTimeStatistics);
+            data.put(time, subTotalStatistics);
+
+        }
         try {
-            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, currentPage, perPage);
-            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Long, TotalStatistics>) paginatedResult.get("list"));
+            Map<String, Object> paginatedResult = getPaginatedList(data, currentPage, perPage);
+            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
+            response.setDetailedStatistics((TreeMap<Long, TotalTimeStatistics>) paginatedResult.get("list"));
         } catch (Exception e) {
-            response.setDetailedStatistics(detailedStatistics);
+            response.setDetailedStatistics(data);
         }
 
         if (perPage != null && currentPage != null) {
             response.setPer_page(perPage);
             response.setCurrent_page(currentPage);
             try {
-                response.setTotal(detailedStatistics.size());
+                response.setTotal(data.size());
                 if (response.getTotal() % response.getPer_page() == 0) {
                     response.setLast_page(response.getTotal() / response.getPer_page());
                 } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
-            } catch (Exception e) {
-            }
+            } catch (Exception e) { }
         }
+
+
 
         return response;
     }
 
     /**
      * Get total statistics amount
-     *
      * @param query
      * @return
      */
-    private TotalStatistics getTotalStatistics(String query) {
+    private TotalTimeStatistics getTotalStatistics(String query) {
 
-        String temp = query.replace(":scanGroupBy", "1");
-        temp = temp.replace(":handGroupBy", "1");
-        temp = temp.replace(":judgeGroupBy", "1");
+        String temp = query;
+        temp = temp + ", (d.DEVICE_TYPE)";
+        temp = temp.replace(":detail", "d.DEVICE_TYPE");
+
+        temp = temp + " ORDER BY d.DEVICE_TYPE ASC ";
 
         Query jpaQuery = entityManager.createNativeQuery(temp);
         List<Object> resultTotal = jpaQuery.getResultList();
 
-        TotalStatistics record = new TotalStatistics();
+        TotalTimeStatistics record = new TotalTimeStatistics();
+        List<DetailTimeStatistics> detailTimeStatistics = new ArrayList<>();
+        DetailTimeStatistics scanStatics = new DetailTimeStatistics();
+        scanStatics.setUserName(SysDevice.DeviceType.SECURITY);
+        scanStatics.setWorkingTime(0);
+
+        DetailTimeStatistics judgeStatics = new DetailTimeStatistics();
+        judgeStatics.setUserName(SysDevice.DeviceType.JUDGE);
+        judgeStatics.setWorkingTime(0);
+
+        DetailTimeStatistics handStatics = new DetailTimeStatistics();
+        handStatics.setUserName(SysDevice.DeviceType.MANUAL);
+        handStatics.setWorkingTime(0);
+
+        detailTimeStatistics.add(scanStatics);
+        detailTimeStatistics.add(judgeStatics);
+        detailTimeStatistics.add(handStatics);
+
+
         for (int i = 0; i < resultTotal.size(); i++) {
             Object[] item = (Object[]) resultTotal.get(i);
-            record = initModelFromObject(item);
+            DetailTimeStatistics timeStatistics = initModelFromObject(item);
+            if(timeStatistics.getUserName() != null) {
+                for(int j = 0; j < detailTimeStatistics.size(); j ++) {
+                    if(detailTimeStatistics.get(j).getUserName().equals(timeStatistics.getUserName())) {
+                        detailTimeStatistics.set(j, timeStatistics);
+                    }
+                }
+            }
         }
-
+        record.setDetailedStatistics(detailTimeStatistics);
         return record;
     }
 
     /**
      * Get statistics by statistics width
-     *
      * @param query
      * @param startTime : start time
      * @param endTime   : endtime
      * @return
      */
-    private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query, Date startTime, Date endTime) {
+    private TotalTimeStatistics getDetailedStatistics(String query, Date startTime, Date endTime) {
 
         String temp = query;
-        temp = temp.replace(":scanGroupBy", "(SCAN_DEVICE_ID)");
-        temp = temp.replace(":judgeGroupBy", "(JUDGE_DEVICE_ID)");
-        temp = temp.replace(":handGroupBy", "(HAND_DEVICE_ID)");
+        temp = temp + ", (r.DEVICE_ID)";
+        temp = temp.replace(":detail", "d.DEVICE_NAME");
+        temp = temp + " ORDER BY d.DEVICE_NAME ASC ";
 
         Query jpaQuery = entityManager.createNativeQuery(temp);
         List<Object> result = jpaQuery.getResultList();
-        TreeMap<Long, TotalStatistics> data = new TreeMap<>();
+        TotalTimeStatistics record = new TotalTimeStatistics();
+        record.setDetailedStatistics(new ArrayList<>());
 
         for (int i = 0; i < result.size(); i++) {
             Object[] item = (Object[]) result.get(i);
-            if (item[0] != null) {
-                TotalStatistics record = initModelFromObject(item);
-                data.put(record.getId(), record);
+            DetailTimeStatistics timeStatistics = initModelFromObject(item);
+            if(timeStatistics.getUserName() != null) {
+                record.getDetailedStatistics().add(timeStatistics);
             }
         }
-
-        return data;
+        return record;
     }
 
     /**
      * Get paginated list using current pang and per page
-     *
      * @param list
      * @param currentPage
      * @param perPage
      * @return
      */
-    private Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> list, Integer currentPage, Integer perPage) {
+    private Map<String, Object> getPaginatedList(TreeMap<Long, TotalTimeStatistics> list, Integer currentPage, Integer perPage) {
 
         HashMap<String, Object> paginationResult = new HashMap<String, Object>();
-        TreeMap<Long, TotalStatistics> subList = new TreeMap<>();
+        TreeMap<Long, TotalTimeStatistics> subList = new TreeMap<>();
 
         if (currentPage == null || perPage == null) {
             return null;
@@ -196,7 +273,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         }
 
         int index = 0;
-        for (Map.Entry<Long, TotalStatistics> entry : list.entrySet()) {
+        for (Map.Entry<Long, TotalTimeStatistics> entry : list.entrySet()) {
             if (index >= from - 1 && index <= to - 1) {
                 subList.put(entry.getKey(), entry.getValue());
             }
@@ -208,123 +285,82 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         return paginationResult;
     }
 
-    /**
-     * join query to get available scan device list
-     *
-     * @param deviceName
-     * @return
-     */
-    private String getJoinWhereQueryForAvailableScanDeviceId(String deviceType, String deviceName) {
 
-        String strResult = "\t\t\tLEFT JOIN sys_device d on s.SCAN_DEVICE_ID = d.DEVICE_ID where d.DEVICE_NAME like '%:deviceName%' AND d.DEVICE_TYPE like ':deviceType'\n";
-        strResult = strResult.replace(":deviceName", deviceName);
-        strResult = strResult.replace(":deviceType", deviceType);
-
-        return strResult;
-    }
-
-    /**
-     * join query to get available judge device list
-     *
-     * @param deviceName
-     * @return
-     */
-    private String getJoinWhereQueryForAvailableJudgeDeviceId(String deviceType, String deviceName) {
-
-        String strResult = "\t\t\tLEFT JOIN sys_device d on j.JUDGE_DEVICE_ID = d.DEVICE_ID where d.DEVICE_NAME like '%:deviceName%'  AND d.DEVICE_TYPE like ':deviceType'\n";
-        strResult = strResult.replace(":deviceName", deviceName);
-        strResult = strResult.replace(":deviceType", deviceType);
-
-        return strResult;
-    }
-
-    /**
-     * join query to get available handexamination device list
-     *
-     * @param deviceName
-     * @return
-     */
-    private String getJoinWhereQueryForAvailableHandDeviceId(String deviceType, String deviceName) {
-
-        String strResult = "\t\t\tLEFT JOIN sys_device d on h.HAND_DEVICE_ID = d.DEVICE_ID where d.DEVICE_NAME like '%:deviceName%' AND d.DEVICE_TYPE like ':deviceType'\n";
-        strResult = strResult.replace(":deviceName", deviceName);
-        strResult = strResult.replace(":deviceType", deviceType);
-
-        return strResult;
-    }
 
     /**
      * build entire query
-     *
-     * @param deviceName
-     * @return
-     */
-    private String makeQuery(String deviceType, String deviceName, Date startTime, Date endTime) {
-
-        if (deviceType == null) {
-            deviceType = "";
-        }
-        if (deviceName == null) {
-            deviceName = "";
-        }
-
-        String strQuery = getSelectQuery() + getJoinQuery();
-
-        strQuery = strQuery.replace(":whereScan", getWhereCauseScan(deviceType, deviceName, startTime, endTime));
-        strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(deviceType, deviceName, startTime, endTime));
-        strQuery = strQuery.replace(":whereHand", getWhereCauseHand(deviceType, deviceName, startTime, endTime));
-
-        if (!deviceName.isEmpty() && !deviceType.isEmpty()) {
-            strQuery = strQuery.replace(":selectScanDeviceIds", getJoinWhereQueryForAvailableScanDeviceId(deviceType, deviceName));
-            strQuery = strQuery.replace(":selectJudgeDeviceIds", getJoinWhereQueryForAvailableJudgeDeviceId(deviceType, deviceName));
-            strQuery = strQuery.replace(":selectHandDeviceIds", getJoinWhereQueryForAvailableHandDeviceId(deviceType, deviceName));
-        } else if (!deviceName.isEmpty() && deviceType.isEmpty()) {
-            strQuery = strQuery.replace(":selectScanDeviceIds", getJoinWhereQueryForAvailableScanDeviceId("%%", deviceName));
-            strQuery = strQuery.replace(":selectJudgeDeviceIds", getJoinWhereQueryForAvailableJudgeDeviceId("%%", deviceName));
-            strQuery = strQuery.replace(":selectHandDeviceIds", getJoinWhereQueryForAvailableHandDeviceId("%%", deviceName));
-        } else if (deviceName.isEmpty() && !deviceType.isEmpty()) {
-            strQuery = strQuery.replace(":selectScanDeviceIds", getJoinWhereQueryForAvailableScanDeviceId(deviceType, deviceName));
-            strQuery = strQuery.replace(":selectJudgeDeviceIds", getJoinWhereQueryForAvailableJudgeDeviceId(deviceType, deviceName));
-            strQuery = strQuery.replace(":selectHandDeviceIds", getJoinWhereQueryForAvailableHandDeviceId(deviceType, deviceName));
-        }
-        else {
-            strQuery = strQuery.replace(":selectScanDeviceIds", "");
-            strQuery = strQuery.replace(":selectJudgeDeviceIds", "");
-            strQuery = strQuery.replace(":selectHandDeviceIds", "");
-        }
-
-        return strQuery;
-    }
-
-    /**
-     * Get where query for scan statistics
-     *
      * @param deviceType
      * @param deviceName
      * @param startTime
      * @param endTime
      * @return
      */
-    private String getWhereCauseScan(String deviceType, String deviceName, Date startTime, Date endTime) {
+    private String makeQuery(String deviceType, String deviceName, Date startTime, Date endTime, String groupBy) {
+
+        String strQuery = getSelectQuery(groupBy) + getJoinQuery();
+
+        strQuery = strQuery +  " " + getWhereCause(deviceType, deviceName, startTime, endTime);
+        strQuery = strQuery + " " + "GROUP BY  hour(r.REGISTER_TIME) ";
+//        strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(modeId, userName, startTime, endTime));
+//        strQuery = strQuery.replace(":whereHand", getWhereCauseHand(modeId, userName, startTime, endTime));
+
+        return strQuery;
+    }
+
+
+    /**
+     * query of select part
+     * @param groupBy : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private String getSelectQuery(String groupBy) {
+        return "SELECT\n" +
+                "\n" +
+                groupBy +
+                "\t (r.REGISTER_TIME) as time,\n" +
+                "\t sum(TIMESTAMPDIFF(SECOND,REGISTER_TIME,IF ( ISNULL(UNREGISTER_TIME) , NOW(), UNREGISTER_TIME ))),\n" +
+                "\t :detail \n" +
+                "\t FROM ser_device_register r \n";
+    }
+
+    /**
+     * get join query part
+     * @return
+     */
+    private String getJoinQuery() {
+
+        return "\tLEFT JOIN \n" +
+                "\tsys_device d ON r.DEVICE_ID = d.DEVICE_ID \n";
+    }
+
+    /**
+     * get where cause for scan statistics
+     * @param deviceType
+     * @param deviceName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    private String getWhereCause(String deviceType, String deviceName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
 
+        if (deviceType != null) {
+            whereCause.add("d.DEVICE_TYPE = '" + deviceType + "'");
+        }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(startTime);
-            whereCause.add("SCAN_START_TIME >= '" + strDate + "'");
+            whereCause.add("r.REGISTER_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(endTime);
-            whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
+            whereCause.add("r.UNREGISTER_TIME <= '" + strDate + "'");
         }
         if (deviceName != null && !deviceName.isEmpty()) {
-            whereCause.add("d.DEVICE_NAME like '%" + deviceName + "%'");
-        }
-        if (deviceType != null && !deviceType.isEmpty()) {
-            whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
+            whereCause.add("d.DEVICE_NAME like '%" + deviceName + "%' ");
         }
 
 //        if(categoryUser.isAll() == false) {
@@ -337,266 +373,23 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
-
-
         return stringBuilder.toString();
     }
 
-    /**
-     * Get where query for judge statistics
-     *
-     * @param deviceType
-     * @param deviceName
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    private String getWhereCauseJudge(String deviceType, String deviceName, Date startTime, Date endTime) {
-
-        List<String> whereCause = new ArrayList<>();
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (startTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            String strDate = dateFormat.format(startTime);
-            whereCause.add("JUDGE_START_TIME >= '" + strDate + "'");
-        }
-        if (endTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            String strDate = dateFormat.format(endTime);
-            whereCause.add("JUDGE_END_TIME <= '" + strDate + "'");
-        }
-        if (deviceName != null && !deviceName.isEmpty()) {
-            whereCause.add("d.DEVICE_NAME like '%" + deviceName + "%'");
-        }
-        if (deviceType != null && !deviceType.isEmpty()) {
-            whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
-        }
-
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("j.CREATEDBY in (" + idListStr + ") ");
-//        }
-
-        if (!whereCause.isEmpty()) {
-            stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
-        }
-
-
-
-        return stringBuilder.toString();
-    }
-
-    /**
-     * get where query for hand examination statistics
-     *
-     * @param deviceType
-     * @param deviceName
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    private String getWhereCauseHand(String deviceType, String deviceName, Date startTime, Date endTime) {
-
-        List<String> whereCause = new ArrayList<>();
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (startTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            String strDate = dateFormat.format(startTime);
-            whereCause.add("HAND_START_TIME >= '" + strDate + "'");
-        }
-        if (endTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            String strDate = dateFormat.format(endTime);
-            whereCause.add("HAND_END_TIME <= '" + strDate + "'");
-        }
-        if (deviceName != null && !deviceName.isEmpty()) {
-            whereCause.add("d.DEVICE_NAME like '%" + deviceName + "%'");
-        }
-        if (deviceType != null && !deviceType.isEmpty()) {
-            whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
-        }
-
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-//        }
-
-        if (!whereCause.isEmpty()) {
-            stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
-        }
-
-        return stringBuilder.toString();
-    }
-
-    /**
-     * Get select query part
-     *
-     * @return
-     */
-    private String getSelectQuery() {
-
-        return "SELECT\n" +
-                "\tq,\n" +
-                "\tIFNULL(totalScan, 0),\n" + "\tIFNULL(validScan, 0),\n" + "\tIFNULL(invalidScan, 0),\n" + "\tIFNULL(passedScan, 0),\n" + "\tIFNULL(alarmScan, 0),\n" +
-                "\tIFNULL(totalJudge, 0),\n" + "\tIFNULL(suspictionJudge, 0),\n" + "\tIFNULL(noSuspictionJudge, 0),\n" +
-                "\tIFNULL(totalHand, 0),\n" + "\tIFNULL(seizureHand, 0),\n" + "\tIFNULL(noSeizureHand, 0), \n" +
-                "\tIFNULL(d.device_name, ''),\n" + "\t\tIFNULL(scanWorkingSeconds, 0),\n" + "\tIFNULL(judgeWorkingSeconds, 0),\n" + "\tIFNULL(handWorkingSeconds, 0)\n" +
-                "\tFROM\n" + "\t(\n" +
-                "\tSELECT\n" + "\t\tq \n" + "\tFROM\n" + "\t\t(\n" +
-                "\t\tSELECT DISTINCT \n" +
-                "\t\t:scanGroupBy AS q \n" +
-                "\t\tFROM\n" + "\t\t\tser_scan s \n" +
-                "\t:selectScanDeviceIds\n" +
-                "\t\tUNION\n" +
-                "\t\tSELECT DISTINCT \n" +
-                "\t\t:judgeGroupBy AS q \n" +
-                "\t\tFROM\n" + "\t\t\tser_judge_graph j " +
-                "\t\t:selectJudgeDeviceIds\n" +
-                "\tUNION\n" +
-                "\t\tSELECT DISTINCT \n" +
-                "\t\t:handGroupBy AS q \n" +
-                "\t\tFROM\n" + "\t\t\tser_hand_examination h \n" +
-                "\t\t:selectHandDeviceIds\n" +
-                "\t\t) AS t00 \n" +
-                "\t) AS t0 \n" +
-                "\tLEFT JOIN sys_device d ON t0.q = d.device_id\n";
-    }
-
-    /**
-     * build entire join query
-     *
-     * @return
-     */
-    private String getJoinQuery() {
-
-        return getScanJoinQuery() + getJudgeJoinQuery() + getHandJoinQuery();
-    }
-
-    /**
-     * get scan join query
-     *
-     * @return
-     */
-    private String getScanJoinQuery() {
-
-        return "LEFT JOIN (\n" +
-                "\tSELECT\n" +
-                "\t\tcount( SCAN_ID ) AS totalScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS validScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalidScan,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScan,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScan,\n" +
-                "\t\tsum(TIMESTAMPDIFF(SECOND,SCAN_START_TIME,SCAN_END_TIME)) as scanWorkingSeconds,\n" +
-                "\t\t:scanGroupBy AS q1 \n" +
-                "\tFROM\n" +
-                "\t\tser_scan s \n" +
-                "\t\tLEFT JOIN sys_device d on s.SCAN_DEVICE_ID = d.DEVICE_ID\n" +
-                "\t:whereScan\t" +
-                "\tGROUP BY\n" +
-                "\t\tq1 \n" +
-                "\t) AS t1 ON t0.q = t1.q1\t";
-    }
-
-    /**
-     * get judge join query
-     *
-     * @return
-     */
-    private String getJudgeJoinQuery() {
-
-        return "LEFT JOIN (\n" +
-                "\tSELECT\n" +
-                "\t\tcount( judge_id ) AS totalJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
-                "\t\tsum(TIMESTAMPDIFF(SECOND,JUDGE_START_TIME,JUDGE_END_TIME)) as judgeWorkingSeconds,\t" +
-                "\t\t:judgeGroupBy AS q2 \n" +
-                "\tFROM\n" +
-                "\t\tser_judge_graph j \n" +
-                "\t\tLEFT JOIN sys_device d on j.JUDGE_DEVICE_ID = d.DEVICE_ID\n" +
-                "\t:whereJudge\t" +
-                "\tGROUP BY\n" +
-                "\t\tq2 \n" +
-                "\t) AS t2 ON t0.q = t2.q2\t";
-    }
-
-    /**
-     * get hand join query
-     *
-     * @return
-     */
-    private String getHandJoinQuery() {
-
-        return "LEFT JOIN (\n" +
-                "\tSELECT\n" +
-                "\t\tcount( HAND_EXAMINATION_ID ) AS totalHand,\n" +
-                "\t\tsum( IF ( HAND_RESULT LIKE '" + SerHandExamination.Result.TRUE + "', 1, 0 ) ) AS seizureHand,\n" +
-                "\t\tsum( IF ( HAND_RESULT LIKE '" + SerHandExamination.Result.FALSE + "', 1, 0 ) ) AS noSeizureHand,\n" +
-                "\t\tsum(TIMESTAMPDIFF(SECOND,HAND_START_TIME,HAND_END_TIME)) as handWorkingSeconds,\n" +
-                "\t\t:handGroupBy AS q3 \n" +
-                "\tFROM\n" +
-                "\t\tser_hand_examination h \n" +
-                "\t\tLEFT JOIN sys_device d on h.HAND_DEVICE_ID = d.DEVICE_ID\n" +
-                "\t:whereHand\t" +
-                "\tGROUP BY\n" +
-                "\t\tq3 \n" +
-                "\t) AS t3 ON t0.q = t3.q3\t";
-    }
 
     /**
      * return a total statistics record from a record of a query
-     *
      * @param item
      * @return
      */
-    private TotalStatistics initModelFromObject(Object[] item) {
+    private DetailTimeStatistics initModelFromObject(Object[] item) {
 
-        TotalStatistics record = new TotalStatistics();
+        DetailTimeStatistics record = new DetailTimeStatistics();
         try {
-            record.setId(Integer.parseInt(item[0].toString()));
-            ScanStatistics scanStat = new ScanStatistics();
-            JudgeStatisticsModelForPreview judgeStat = new JudgeStatisticsModelForPreview();
-            HandExaminationStatisticsForPreview handStat = new HandExaminationStatisticsForPreview();
-
-            scanStat.setTotalScan(Long.parseLong(item[1].toString()));
-            scanStat.setValidScan(Long.parseLong(item[2].toString()));
-            scanStat.setInvalidScan(Long.parseLong(item[3].toString()));
-            scanStat.setPassedScan(Long.parseLong(item[4].toString()));
-            scanStat.setAlarmScan(Long.parseLong(item[5].toString()));
-            judgeStat.setTotalJudge(Long.parseLong(item[6].toString()));
-            judgeStat.setSuspictionJudge(Long.parseLong(item[7].toString()));
-            judgeStat.setNoSuspictionJudge(Long.parseLong(item[8].toString()));
-            handStat.setTotalHandExamination(Long.parseLong(item[9].toString()));
-            handStat.setSeizureHandExamination(Long.parseLong(item[10].toString()));
-            handStat.setNoSeizureHandExamination(Long.parseLong(item[11].toString()));
-            record.setName(item[12].toString());
-            scanStat.setWorkingSeconds(Double.parseDouble(item[13].toString()));
-            judgeStat.setWorkingSeconds(Double.parseDouble(item[14].toString()));
-            handStat.setWorkingSeconds(Double.parseDouble(item[15].toString()));
-            if (scanStat.getTotalScan() > 0) {
-                scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double) scanStat.getTotalScan());
-                scanStat.setInvalidScanRate(scanStat.getInvalidScan() * 100 / (double) scanStat.getTotalScan());
-                scanStat.setPassedScanRate(scanStat.getPassedScan() * 100 / (double) scanStat.getTotalScan());
-                scanStat.setAlarmScanRate(scanStat.getAlarmScan() * 100 / (double) scanStat.getTotalScan());
-            }
-            if (judgeStat.getTotalJudge() > 0) {
-                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
-                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
-            }
-            if (handStat.getTotalHandExamination() > 0) {
-                handStat.setSeizureHandExaminationRate(handStat.getSeizureHandExamination() * 100 / (double) handStat.getTotalHandExamination());
-                handStat.setNoSeizureHandExaminationRate(handStat.getNoSeizureHandExamination() * 100 / (double) handStat.getTotalHandExamination());
-            }
-            record.setScanStatistics(scanStat);
-            record.setJudgeStatistics(judgeStat);
-            record.setHandExaminationStatistics(handStat);
-
-        } catch (Exception e) {
-        }
+            record.setTime(Utils.parseLong(item[0]));
+            record.setWorkingTime(Utils.parseLong(item[1]));
+            record.setUserName(item[2].toString());
+        } catch (Exception e) { }
 
         return record;
     }

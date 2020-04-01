@@ -118,7 +118,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             predicate.and(builder.handTaskResult.eq(taskResult));
         }
         if (fieldId != null) {
-            predicate.and(builder.scanDevice.field.fieldId.eq(fieldId));
+            predicate.and(builder.task.field.fieldId.eq(fieldId));
         }
         if (!StringUtils.isEmpty(handGoods)) {
             predicate.and(builder.handGoods.contains(handGoods));
