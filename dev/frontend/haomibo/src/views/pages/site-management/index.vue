@@ -30,7 +30,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('system-setting.super-site')">
-                      <b-form-select v-model="filterOption.parentFieldId" :options="superSiteOption" plain/>
+                      <b-form-select v-model="filterOption.parentFieldId" :options="superSiterFilterOptions" plain/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -541,7 +541,11 @@
           text: this.treeData.fieldDesignation,
           value: this.treeData.fieldId
         });
-        this.superSiteOption.unshift({value: null, text: this.$t('permission-management.all')});
+        this.superSiterFilterOptions = [];
+        this.superSiteOptions.forEach(site => {
+            this.superSiterFilterOptions.push(site);
+        })
+          this.superSiterFilterOptions.unshift({value: null, text: this.$t('permission-management.all')});
         let getLevel = (org) => {
 
           let getParent = (org) => {
@@ -708,6 +712,7 @@
         pageStatus: 'table', // table, create, edit, show
         selectedSite: '0000',
         superSiteOptions: [],
+        superSiterFilterOptions: [],
         superSiteOption: [],
         treeData: {},
         siteForm: {

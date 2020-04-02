@@ -54,7 +54,7 @@
 
                     <b-col>
                       <b-form-group :label="$t('permission-management.parent-organization-name')">
-                        <b-form-input v-model="filter.parentOrgName"/>
+                        <b-form-select :options="parentOrganizationNameFilterOptions"  v-model="filter.parentOrgId" plain/>
                       </b-form-group>
                     </b-col>
 
@@ -658,7 +658,7 @@
         filter: {
           orgName: '',
           status: null,
-          parentOrgName: ''
+          parentOrgId: null
         }, // used for filtering table
         selectedOrg: {}, // this is used for holding data while delete and update status modals
         createPage: { // create page
@@ -698,6 +698,7 @@
           {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
         parentOrganizationNameSelectOptions: [], // this is used for both create and modify pages, parent org select box options
+        parentOrganizationNameFilterOptions: [], // this is used for filter pages, parent org select box options
         vuetableItems: { // main table options
           apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
           fields: [
@@ -850,6 +851,15 @@
           text: this.treeData.orgName,
           value: this.treeData.orgId
         });
+
+        this.parentOrganizationNameFilterOptions = [];
+        this.parentOrganizationNameFilterOptions.push({
+            value: null,
+            text: this.$t('permission-management.all')
+        });
+        this.parentOrganizationNameSelectOptions.forEach(org => {
+            this.parentOrganizationNameFilterOptions.push(org);
+        })
 
 
 
@@ -1082,7 +1092,7 @@
           filter: {
             orgName: this.filter.orgName,
             status: this.filter.status,
-            parentOrgName: this.filter.parentOrgName
+            parentOrgId: this.filter.parentOrgId
           }
         });
       },

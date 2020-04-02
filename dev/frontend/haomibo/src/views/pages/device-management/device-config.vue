@@ -449,7 +449,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.operate-mode')}}
                   </template>
-                  <b-form-select v-model="configForm.modeId" :options="modeSelectData" @input="changeDefault" @change="changeDefault" plain/>
+                  <b-form-select v-model="configForm.modeId" :options="modeSelectData" @input="multiSelect" @change="changeDefault" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -1040,6 +1040,20 @@
             break;
           }
         }
+      },
+
+      multiSelect(val) {
+          if(val == 1) {
+              this.disableMultipleSelect(1);
+          } else if(val == 2) {
+              this.disableMultipleSelect(3);
+              this.enableMultipleSelect(val);
+          } else if(val == 3) {
+              this.disableMultipleSelect(2);
+              this.enableMultipleSelect(val);
+          } else if(val == 4) {
+              this.enableMultipleSelect(1);
+          }
       },
 
       enableMultipleSelect(val) {

@@ -317,7 +317,7 @@
                   <b-col>
                     <b-form-group :label="$t('permission-management.affiliated-institution')">
                       <b-form-select v-model="filter.orgId"
-                                     :options="orgNameSelectData"
+                                     :options="orgNameFilterData"
                                      plain/>
                     </b-form-group>
                   </b-col>
@@ -1374,6 +1374,7 @@
           {value: '1000000303', text: this.$t('permission-management.blocked')},
         ],
         orgNameSelectData: [],
+        orgNameFilterData: [],
         educationOptions: [
           {value: '1000000101', text: this.$t('permission-management.belowcollege')},
           {value: '1000000102', text: this.$t('permission-management.student')},
@@ -1598,8 +1599,12 @@
           text: this.treeData.orgName,
           value: this.treeData.orgId
         });
+          this.orgNameFilterData = [];
+          this.orgNameSelectData.forEach(org => {
+              this.orgNameFilterData.push(org);
+          })
 
-          this.orgNameSelectData.unshift({
+          this.orgNameFilterData.unshift({
               value: null,
               text: this.$t('permission-management.all')
           });

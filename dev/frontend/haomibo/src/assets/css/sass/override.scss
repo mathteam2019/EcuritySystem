@@ -81,8 +81,8 @@ main {
   .row {
     margin: 0 -0.9375rem 0 -0.9375rem;
     &>[class^='col-'],&>.col {
-      padding-right: 0.75rem;
-      padding-left: 0.75rem;
+      padding-right: 0.9375rem;
+      padding-left: 0.9375rem;
     }
   }
   div.loading {

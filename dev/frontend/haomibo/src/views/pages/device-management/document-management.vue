@@ -487,7 +487,7 @@
             },
             {
               name: 'status',
-              title: this.$t('device-management.active'),
+              title: this.$t('permission-management.th-status'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {

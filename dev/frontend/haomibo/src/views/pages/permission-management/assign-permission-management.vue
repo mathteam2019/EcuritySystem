@@ -39,7 +39,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.affiliated-org')">
-                      <b-form-select :options="orgNameSelectData" v-model="userFilter.orgId" plain/>
+                      <b-form-select :options="orgNameFilterData" v-model="userFilter.orgId" plain/>
                     </b-form-group>
                   </b-col>
 
@@ -789,7 +789,11 @@
             this.orgData = data;
             this.orgTreeData = nest(this.orgData, rootOrgId);
             this.orgNameSelectData = indentData(this.orgTreeData, 0);
-            this.orgNameSelectData.push({value: null, text: this.$t('permission-management.all')});
+              this.orgNameFilterData = [];
+            this.orgNameSelectData.forEach(org => {
+                this.orgNameFilterData.push(org);
+            })
+              this.orgNameFilterData.unshift({value: null, text: this.$t('permission-management.all')});
             break;
         }
       });
@@ -1002,6 +1006,7 @@
         roleData: [],
         dataGroupList: [],
         orgNameSelectData: [],
+        orgNameFilterData: [],
         userSelectData: [],
         roleSelectData: [],
         dataGroupSelectData: [],
