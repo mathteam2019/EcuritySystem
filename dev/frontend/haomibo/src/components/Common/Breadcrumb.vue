@@ -12,7 +12,7 @@ export default {
   },
   methods: {
     getUrl (path, sub, index) {
-      var pathToGo = '/' + path.split(sub)[0] + sub
+      let pathToGo = '/' + path.split(sub)[0] + sub;
       if (pathToGo === '/app') {
         pathToGo = '/'
       }
@@ -20,17 +20,17 @@ export default {
     }
   },
   mounted () {
-    var num
+    let num;
     if(this.$route.path.substring(1, 2)==='u')
       num = 6;
     else num=7;
 
-    let path = this.$route.path.substr(num)
-    let rawPaths = path.split('/')
+    let path = this.$route.path.substr(num);
+    let rawPaths = path.split('/');
 
-    for (var pName in this.$route.params) {
+    for (let pName in this.$route.params) {
 
-      if (rawPaths.includes(this.$route.params[pName])&&pName!="app") {
+      if (rawPaths.includes(this.$route.params[pName])&&pName!=="app") {
         rawPaths = rawPaths.filter(x => x !== this.$route.params[pName])
       }
     }

@@ -1250,12 +1250,13 @@
           let j = transformed.tKey[i];
           //temp = data.detailedStatistics[j];
           temp = {};
+          temp.id = j;
 
           if(this.filter.statWidth === 'hour') {
             if (j < 9) {
               temp.time = '0' + j + ' : 00 ~ 0' + (toInt(j) + 1) + ': 00';
             }
-            else if(j === 9){
+            else if(toInt(j) === 9){
               temp.time = '09 :00 ~ 10 : 00';
             }
             else {
