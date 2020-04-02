@@ -223,7 +223,7 @@
     "th-no": "序号",
     "th-org-number": "机构编号",
     "th-org-name": "机构名称",
-    "th-org-status": "生效",
+    "th-org-status": "状态",
     "th-org-parent-org-number": "上级机构编号",
     "th-org-parent-org-name": "上级机构",
     "th-org-leader": "负责人",

@@ -883,6 +883,18 @@
                       variant="success default" size="sm"><i class="icofont-check-circled"/> {{
               $t('permission-management.active') }}
             </b-button>
+            <b-button :disabled="checkPermItem('user_modify')" v-if="profileForm.status==='1000000304'"
+                      class="mr-1" @click="onAction('reset-password', profileForm)"
+                      variant="purple default" size="sm"><i class="icofont-ui-password"/> {{
+              $t('permission-management.pending') }}
+            </b-button>
+
+            <b-button :disabled="checkPermItem('user_modify')" v-if="profileForm.status==='1000000303'"
+                      class="mr-1" @click="onAction('unblock', profileForm)"
+                      variant="success default" size="sm"><i class="icofont-power"/> {{
+              $t('permission-management.action-unblock') }}
+            </b-button>
+
             <b-button @click="onTableListPage()" variant="danger default" size="sm"><i
               class="icofont-long-arrow-left"/> {{
               $t('permission-management.return') }}
@@ -1288,6 +1300,7 @@
         switch (message) {
           case responseMessages['ok']:
             this.orgData = data;
+            console.log(this.orgData);
             break;
         }
       });
@@ -1580,10 +1593,16 @@
         this.treeData = nest(newVal)[0];
 
         this.changeOrgTree(this.treeData.children, 1);
+
         this.orgNameSelectData.unshift({
           text: this.treeData.orgName,
           value: this.treeData.orgId
         });
+
+          this.orgNameSelectData.unshift({
+              value: null,
+              text: this.$t('permission-management.all')
+          });
         let getLevel = (org) => {
 
           let getParent = (org) => {
@@ -2182,9 +2201,11 @@
                   permanent: false
                 });
                 this.$refs['modal-reset'].hide();
-                this.$refs.vuetable.reload();
                 this.passwordForm.password = null;
                 this.passwordForm.confirmPassword = null;
+                this.profileForm.status = '1000000301';
+                this.$refs.vuetable.reload();
+                this.getAllUser();
                 break;
               case responseMessages['user-not-lock']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.user-not-locked`), {
@@ -2572,7 +2593,6 @@
         };
 
         this.orgUserTreeData = nest(this.orgData, this.userData, pseudoRootId);
-        //log(this.orgUserTreeData);
         this.getTreeData(this.orgUserTreeData, 0);
 
       },

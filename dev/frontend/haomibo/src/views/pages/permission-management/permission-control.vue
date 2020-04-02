@@ -1380,6 +1380,8 @@
         this.resourceList.forEach((resource) => {
           resource.selected = false;
         });
+        this.refreshResourceTreeData();
+
       },
       onClickSaveRole() {
         if (this.selectedRole) {
