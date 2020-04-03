@@ -519,14 +519,14 @@
               <b-col cols="8">
                 <b-row>
                   <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.access-user')">
-                      <b-form-input v-model="manualFilter.operateAccount"/>
+                    <b-form-group :label="$t('log-management.device-log.device')">
+                      <b-form-input v-model="manualFilter.deviceName"/>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
-                    <b-form-group :label="$t('log-management.device-log.device')">
-                      <b-form-input v-model="manualFilter.deviceName"/>
+                    <b-form-group :label="$t('log-management.operating-log.access-user')">
+                      <b-form-input v-model="manualFilter.userName"/>
                     </b-form-group>
                   </b-col>
 
@@ -1232,7 +1232,7 @@
           'idList': checkedIds.join()
         };
         this.link = `log-management/device-log`;
-        this.name = 'device-log';
+        this.name = page === 'device' ? 'Security-Device Log' : page === 'judge' ? 'Judgment-Station Log' : 'Hand-Check Log';
         this.isModalVisible = true;
         // downLoadFileFromServer(link, params, 'device-log');
       },

@@ -954,9 +954,13 @@
       },
       getDataFetch(isCurrentPage=false) { // customize data loading for table from server
         this.isLoading = true;
+        //let current = false;
+        if(this.filter.categoryId !== null || this.filter.fieldId !== null || this.filter.deviceName !== null) {
+          this.pagination.currentPage = 1;
+        }
         getApiManager().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-filter-and-page`,
           {
-            currentPage: isCurrentPage=true ? this.pagination.currentPage : 1,
+            currentPage: this.pagination.currentPage,
             perPage: this.pagination.perPage,
             filter: this.filter
           }).then((response) => {
