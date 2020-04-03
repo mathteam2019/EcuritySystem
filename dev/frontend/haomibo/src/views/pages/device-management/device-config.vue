@@ -1329,6 +1329,7 @@
                 });
                 if (this.configForm.configId > 0)
                   this.configForm.status = statusValue;
+                console.log(this.configForm)
 
                 this.$refs.pendingListTable.reload();
                 break;

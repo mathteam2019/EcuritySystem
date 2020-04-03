@@ -347,6 +347,7 @@
           {value: '修改', text: '修改'},
           {value: '删除', text: '删除'},
           {value: '更新状态', text: '更新状态'},
+          {value: '修改密码', text: '修改密码'},
         ],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/log-management/operating-log/access/get-by-filter-and-page`,

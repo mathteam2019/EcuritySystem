@@ -26,7 +26,7 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.status')">
-                  <b-form-select v-model="filter.status" :options="statusOptions" plain/>
+                  <b-form-select v-model="filter.taskStatus" :options="statusOptions" plain/>
                 </b-form-group>
               </b-col>
 
@@ -1077,7 +1077,7 @@
         filter: {
           taskNumber: null,
           mode: null,
-          status: null,
+          taskStatus: null,
           fieldId: null,
           userName: null,
           startTime: null,
@@ -1136,6 +1136,7 @@
 
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
+          {value: '1000001102', text: this.$t('maintenance-management.process-task.dispatch')},
           {value: '1000001103', text: this.$t('maintenance-management.process-task.judge')},
           {value: '1000001104', text: this.$t('maintenance-management.process-task.hand')},
           {value: '1000001106', text: this.$t('maintenance-management.process-task.scan')}
@@ -2082,7 +2083,7 @@
         this.filter = {
           taskNumber: null,
           mode: null,
-          status: null,
+          taskStatus: null,
           fieldId: null,
           userName: null,
           startTime: null,
