@@ -732,6 +732,7 @@
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
+          'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'sort' : httpOption.params.sort,
           'filter': this.filterOption,

@@ -128,7 +128,7 @@
                   <b-col cols="2" offset="1">
                     <b-form-group class="mb-0"
                                   :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
-                      <colorpicker :color="platFormData.displayDeleteSuspicionColour" :change="onChange()"/>
+                      <colorpicker :disabled="platFormData.displayDeleteSuspicion === '1000000602'" :color="platFormData.displayDeleteSuspicionColour" :change="onChange()"/>
                     </b-form-group>
                   </b-col>
 
