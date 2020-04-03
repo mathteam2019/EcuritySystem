@@ -1552,7 +1552,7 @@
           this.submitted = true;
           this.$v.platFormOtherData.$touch();
 
-          if(parseInt(this.platFormOtherData.deviceTrafficHigh) < parseInt(this.platFormOtherData.deviceTrafficMiddle)){
+          if(parseInt(this.platFormOtherData.deviceTrafficHigh) <= parseInt(this.platFormOtherData.deviceTrafficMiddle)){
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.security-instrument-flow-high-middle`), {
               duration: 3000,
               permanent: false
