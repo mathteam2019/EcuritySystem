@@ -1605,12 +1605,7 @@
                 this.handDeviceName = null;
                 this.handUserName = null;
 
-		if (this.showPage.serJudgeGraph !== null) {
-                  // this.judgeStartTime = this.showPage.serJudgeGraph.judgeStartTime;
-                  // this.judgeDeviceName = this.showPage.serJudgeGraph.judgeDevice.deviceName;
-                  this.judgeUserId = this.showPage.serJudgeGraph.judgeUserId;
-                  this.judgeUserName = this.showPage.serJudgeGraph.judgeUser.userName;
-                }
+
 
                 for (let i = 0; i < this.showPage.serAssignList.length; i++) {
                   if (this.showPage.serAssignList[i].handDevice !== null) {
@@ -1625,6 +1620,13 @@
                     this.judgeStartTime = this.showPage.serAssignList[i].assignEndTime;
                     this.judgeUserId = this.showPage.serAssignList[i].assignUser.userId;
                   }
+                }
+
+                if (this.showPage.serJudgeGraph !== null) {
+                  // this.judgeStartTime = this.showPage.serJudgeGraph.judgeStartTime;
+                  // this.judgeDeviceName = this.showPage.serJudgeGraph.judgeDevice.deviceName;
+                  this.judgeUserId = this.showPage.serJudgeGraph.judgeUserId;
+                  this.judgeUserName = this.showPage.serJudgeGraph.judgeUser.userName;
                 }
 
 

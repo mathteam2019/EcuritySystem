@@ -700,6 +700,7 @@
         renderedCheckList: [],
         renderedCheckListGroup: [],
         pageStatus: 'list',
+        selectedId : null,
         switchStatus: 'config', // config / list
         deviceCategoryOptions: [],
         siteSelectOptions: [],
@@ -1315,7 +1316,7 @@
           return false;
         getApiManager()
           .post(`${apiBaseUrl}/device-management/device-config/config/update`, {
-            configId: templateId,
+            configId: this.selectedId,
             status: statusValue
           })
           .then((response) => {
@@ -1488,22 +1489,24 @@
             this.pageStatus = 'edit';
             break;
           case 'activate':
-            if(this.pageStatus==='list') {
-              this.initializeConfigData(data);
-            }
-            else{
-              this.initializeConfigData(data, false);
-            }
+            this.selectedId= data.configId;
+            // if(this.pageStatus==='list') {
+            //   this.initializeConfigData(data);
+            // }
+            // else{
+            //   this.initializeConfigData(data, false);
+            // }
             //this.updateItemStatus('1000000701');
             this.$refs['modal-active'].show();
             break;
           case 'inactivate':
-            if(this.pageStatus==='list') {
-              this.initializeConfigData(data);
-            }
-            else{
-              this.initializeConfigData(data, false);
-            }
+            this.selectedId= data.configId;
+            // if(this.pageStatus==='list') {
+            //   this.initializeConfigData(data);
+            // }
+            // else{
+            //   this.initializeConfigData(data, false);
+            // }
             //this.updateItemStatus('1000000702');
             this.$refs['modal-inactive'].show();
             break;

@@ -1664,6 +1664,7 @@
         this.cntCartoon = 0;
         this.orderCartoon = 0;
         this.judgeUserId = null;
+        this.caseId = data.caseId;
         this.caseDealId = data.caseDealId;
         let url1 = '';
         let url2 = '';
