@@ -955,7 +955,7 @@
       getDataFetch(isCurrentPage=false) { // customize data loading for table from server
         this.isLoading = true;
         //let current = false;
-        if(this.filter.categoryId !== null || this.filter.fieldId !== null || this.filter.deviceName !== null) {
+        if((this.filter.categoryId !== null || this.filter.fieldId !== null || this.filter.deviceName !== null) && !isCurrentPage) {
           this.pagination.currentPage = 1;
         }
         getApiManager().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-filter-and-page`,
