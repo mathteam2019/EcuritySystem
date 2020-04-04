@@ -180,12 +180,12 @@
                   <b-row>
                     <b-col>
                       <b-form-group :label="$t('device-management.indicator.name')">
-                        <b-form-input type="text" v-model="indicatorForm.indicatorsName" :state="!$v.indicatorForm.indicatorsName.$dirty ? null : !$v.indicatorForm.indicatorsName.$invalid"/>
+                        <b-form-input type="text" v-model="indicatorForm.indicatorsName"/>
                       </b-form-group>
                     </b-col>
                     <b-col>
                       <b-form-group :label="$t('device-management.indicator.unit')">
-                        <b-form-input type="text" v-model="indicatorForm.indicatorsUnit" :state="!$v.indicatorForm.indicatorsUnit.$dirty ? null : !$v.indicatorForm.indicatorsUnit.$invalid"/>
+                        <b-form-input type="text" v-model="indicatorForm.indicatorsUnit"/>
                       </b-form-group>
                     </b-col>
                     <b-col>
@@ -447,14 +447,6 @@
     validations: {
       fileSelection: {
         required
-      },
-      indicatorForm: {
-          indicatorsName: {
-              required
-          },
-          indicatorsUnit: {
-              required
-          }
       },
       basicForm: {
         templateName: {
@@ -1119,37 +1111,30 @@
         };
       },
       onSaveIndicator() {
-          this.$v.indicatorForm.$touch();
-          if (!this.$v.indicatorForm.$invalid) {
-
-            getApiManager()
-                .post(`${apiBaseUrl}/device-management/document-template/archive-indicator/create`, this.indicatorForm)
-                .then((response) => {
-                    let message = response.data.message;
-                    let data = response.data.data;
-                    switch (message) {
-                        case responseMessages['ok']: // okay
-                            this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-template.indicator-added-successfully`), {
-                                duration: 3000,
-                                permanent: false
-                            });
-
-                            this.indicatorForm.indicatorsId = data;
-                            this.indicatorData.push(this.indicatorForm);
-                            this.indicatorForm = {
-                                indicatorsId: 0,
-                                indicatorsName: null,
-                                indicatorsUnit: null,
-                                isNull: "1000000601"
-                            };
-                            this.$v.indicatorForm.$reset();
-                            break;
-                    }
-                })
-                .catch((error) => {
+        getApiManager()
+          .post(`${apiBaseUrl}/device-management/document-template/archive-indicator/create`, this.indicatorForm)
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-template.indicator-added-successfully`), {
+                  duration: 3000,
+                  permanent: false
                 });
-        }
-
+                this.indicatorForm.indicatorsId = data;
+                this.indicatorData.push(this.indicatorForm);
+                this.indicatorForm = {
+                  indicatorsId: 0,
+                  indicatorsName: null,
+                  indicatorsUnit: null,
+                  isNull: "1000000601"
+                };
+                break;
+            }
+          })
+          .catch((error) => {
+          });
       },
       onSwitchIsNull(item, index) {
         let value = item.isNull === '1000000601' ? '1000000602' : '1000000601';

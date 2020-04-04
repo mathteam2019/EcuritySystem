@@ -621,10 +621,10 @@
       },
       createPage: { // create page
         orgName: {
-          required
+          required, maxLength:maxLength(50)
         },
         orgNumber: {
-          required
+          required, maxLength:maxLength(50)
         },
         parentOrgId: {
           required
@@ -635,10 +635,10 @@
       },
       modifyPage: { // modify page
         orgName: {
-          required
+          required, maxLength:maxLength(50)
         },
         orgNumber: {
-          required
+          required, maxLength:maxLength(50)
         },
         parentOrgId: {
           required
@@ -841,8 +841,17 @@
               ...item,
               children: nest(items, item.orgId, depth + 1),
               id: id++,
-              label: `<div class="org-content-top"><span>${depth}</span>${item.orgNumber}</div><div class="org-content-bottom">${item.orgName}</div>`
+              label: `<div class="org-content-top"><span>${depth}</span>${nameLabel(item.orgNumber)}</div><div class="org-content-bottom">${item.orgName}</div>`
             }));
+
+        let nameLabel = (orgNumber) => {
+          console.log(orgNumber)
+          if(orgNumber.toString().length>7) {
+            orgNumber = orgNumber.substring(0, 7) + '...';
+          }
+          console.log(orgNumber);
+          return orgNumber;
+        }
 
         this.treeData = nest(newVal)[0];
 
@@ -1007,6 +1016,9 @@
           let data = response.data.data;
           switch (message) {
             case responseMessages['ok']:
+              // for(let i = 0; i < data.length; i++) {
+              //
+              // }
               this.orgData = data;
               break;
           }
@@ -1248,17 +1260,33 @@
         this.$v.createPage.$touch();
         if (this.$v.createPage.$invalid) {
           if (this.$v.createPage.orgNumber.$invalid) {
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-number`), {
-              duration: 3000,
-              permanent: false
-            });
+            if(this.createPage.orgNumber === '') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-number`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-number-length-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
             return;
           }
           if (this.$v.createPage.orgName.$invalid) {
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-name`), {
-              duration: 3000,
-              permanent: false
-            });
+            if(this.createPage.orgName === '') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-name`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-name-length-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
             return;
           }
           if (this.$v.createPage.parentOrgId.$invalid) {
@@ -1355,10 +1383,18 @@
         this.$v.modifyPage.$touch();
         if (this.$v.modifyPage.$invalid) {
           if (this.$v.modifyPage.orgName.$invalid) {
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-name`), {
-              duration: 3000,
-              permanent: false
-            });
+            if(this.modifyPage.orgName === '') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-name`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-name-length-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
             return;
           }
           if (this.$v.modifyPage.mobile.$invalid) {

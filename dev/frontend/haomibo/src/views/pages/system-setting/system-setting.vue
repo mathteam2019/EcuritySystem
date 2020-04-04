@@ -619,11 +619,11 @@
                   <b-form-input type="number" v-model="scanForm.deviceStorageAlarm" :state="!$v.scanForm.deviceStorageAlarm.$dirty ? null : !$v.scanForm.deviceStorageAlarm.$invalid"/>
                 </b-form-group>
               </b-col>
-              <b-col cols="3">
-                <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
-                  <b-form-input type="number" v-model="scanForm.deviceStorageAlarmPercent" :state="!$v.scanForm.deviceStorageAlarmPercent.$dirty ? null : !$v.scanForm.deviceStorageAlarmPercent.$invalid"/>
-                </b-form-group>
-              </b-col>
+<!--              <b-col cols="3">-->
+<!--                <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">-->
+<!--                  <b-form-input type="number" v-model="scanForm.deviceStorageAlarmPercent" :state="!$v.scanForm.deviceStorageAlarmPercent.$dirty ? null : !$v.scanForm.deviceStorageAlarmPercent.$invalid"/>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
             </b-row>
 
           </b-col>
@@ -763,10 +763,7 @@
           required,
           minValue: minValue(0), maxValue: maxValue(1000)
         },
-        deviceStorageAlarmPercent:{
-          required,
-          minValue: minValue(0), maxValue: maxValue(100)
-        }
+
       },
       platFormData: {
         scanRecogniseColour: {
@@ -1289,22 +1286,22 @@
               return;
             }
           }
-          if (this.$v.scanForm.deviceStorageAlarmPercent.$invalid) {
-            if(this.scanForm.deviceStorageAlarmPercent==='') {
-              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.device-storage-alarm-percent`), {
-                duration: 3000,
-                permanent: false
-              });
-              return;
-            }
-            else {
-              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.device-storage-alarm-percent-valid`), {
-                duration: 3000,
-                permanent: false
-              });
-              return;
-            }
-          }
+          // if (this.$v.scanForm.deviceStorageAlarmPercent.$invalid) {
+          //   if(this.scanForm.deviceStorageAlarmPercent==='') {
+          //     this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.device-storage-alarm-percent`), {
+          //       duration: 3000,
+          //       permanent: false
+          //     });
+          //     return;
+          //   }
+          //   else {
+          //     this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.device-storage-alarm-percent-valid`), {
+          //       duration: 3000,
+          //       permanent: false
+          //     });
+          //     return;
+          //   }
+          // }
           return;
         }
         if (this.scanForm.fromDeviceId.length === 0) {
