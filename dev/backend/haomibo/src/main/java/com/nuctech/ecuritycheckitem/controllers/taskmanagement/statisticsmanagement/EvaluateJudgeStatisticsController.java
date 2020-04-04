@@ -336,9 +336,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 }
                 if (isExist == true) { //if exist
                     exportList.put(entry.getKey(), record);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
+
                 }
             }
 
@@ -346,9 +344,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             for (Map.Entry<Integer, EvaluateJudgeResponseModel> entry : detailedStatistics.entrySet()) {
                 EvaluateJudgeResponseModel record = entry.getValue();
                 exportList.put(entry.getKey(), record);
-                if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                    break;
-                }
+
             }
         }
         return exportList;

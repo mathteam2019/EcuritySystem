@@ -110,8 +110,8 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
                 }
 
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
-                    row.createCell(4).setCellValue(deal.getScanDevice().getField().getFieldDesignation());
+                if(deal.getTask() != null && deal.getTask().getField() != null) {
+                    row.createCell(4).setCellValue(deal.getTask().getField().getFieldDesignation());
                 } else {
                     row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

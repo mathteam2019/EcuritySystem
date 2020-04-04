@@ -330,18 +330,14 @@ public class HandExaminationStatisticsController extends BaseController {
                 }
                 if (isExist == true) {  //if exist
                     exportList.put(entry.getKey(), record);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
+
                 }
             }
         } else { //if isAll is true
             for (Map.Entry<Integer, HandExaminationResponseModel> entry : detailedStatistics.entrySet()) {
                 HandExaminationResponseModel record = entry.getValue();
                 exportList.put(entry.getKey(), record);
-                if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                    break;
-                }
+
             }
         }
         return exportList;

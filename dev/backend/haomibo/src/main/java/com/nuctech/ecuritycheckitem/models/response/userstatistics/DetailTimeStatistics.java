@@ -19,7 +19,7 @@ import lombok.Setter;
 @Setter
 public class DetailTimeStatistics {
 
-    long time;
+    int time;
     long workingTime;
     String userName;
 

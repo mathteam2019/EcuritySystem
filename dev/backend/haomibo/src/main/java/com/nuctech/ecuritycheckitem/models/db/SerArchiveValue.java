@@ -20,14 +20,12 @@ import lombok.ToString;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -53,6 +51,12 @@ public class SerArchiveValue extends BaseEntity implements Serializable {
 
     @Column(name = "VALUE", length = 255)
     private String value;
+
+//    @ToString.Exclude
+//    @ManyToOne()
+//    @JoinColumn(name = "INDICATORS_ID", referencedColumnName = "INDICATORS_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SerArchiveIndicators indicators; // Relation to SerArchivesValue table.
 
 
 }

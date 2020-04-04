@@ -321,14 +321,14 @@ public class OrganizationServiceImpl implements OrganizationService {
      * get paginated and filered organizations list
      * @param orgName
      * @param status
-     * @param parentOrgName
+     * @param parentOrgId
      * @param currentPage
      * @param perPage
      * @return
      */
-    public PageResult<SysOrg> getOrganizationByFilterAndPage(String sortBy, String order, String orgName, String status, String parentOrgName, Integer currentPage, Integer perPage) {
+    public PageResult<SysOrg> getOrganizationByFilterAndPage(String sortBy, String order, String orgName, String status, Long parentOrgId, Integer currentPage, Integer perPage) {
 
-        BooleanBuilder predicate = getPredicate(orgName, status, parentOrgName);
+        BooleanBuilder predicate = getPredicate(orgName, status, parentOrgId);
 
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
@@ -354,12 +354,12 @@ public class OrganizationServiceImpl implements OrganizationService {
      * get filtered organization list
      * @param orgName
      * @param status
-     * @param parentOrgName
+     * @param parentOrgId
      * @return
      */
-    public List<SysOrg> getOrganizationByFilter(String sortBy, String order, String orgName, String status, String parentOrgName) {
+    public List<SysOrg> getOrganizationByFilter(String sortBy, String order, String orgName, String status, Long parentOrgId) {
 
-        BooleanBuilder predicate = getPredicate(orgName, status, parentOrgName);
+        BooleanBuilder predicate = getPredicate(orgName, status, parentOrgId);
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = Sort.by(sortBy).ascending();
@@ -384,10 +384,10 @@ public class OrganizationServiceImpl implements OrganizationService {
      * get predicate from filter parameters
      * @param orgName
      * @param status
-     * @param parentOrgName
+     * @param parentOrgId
      * @return
      */
-    private BooleanBuilder getPredicate(String orgName, String status, String parentOrgName) {
+    private BooleanBuilder getPredicate(String orgName, String status, Long parentOrgId) {
         QSysOrg builder = QSysOrg.sysOrg;
         CategoryUser categoryUser = authService.getDataCategoryUserList();
 
@@ -400,8 +400,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (!StringUtils.isEmpty(status)) {
             predicate.and(builder.status.eq(status));
         }
-        if (!StringUtils.isEmpty(parentOrgName)) {
-            predicate.and(builder.parent.orgName.contains(parentOrgName));
+        if (parentOrgId != null) {
+            predicate.and(builder.parent.orgId.eq(parentOrgId));
         }
 
         if(categoryUser.isAll() == false) {

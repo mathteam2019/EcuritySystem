@@ -75,22 +75,33 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         TotalTimeStatistics detailTimeStatics = getDetailedStatistics(strQuery, startTime, endTime);
         TreeMap<Long, TotalTimeStatistics> data = new TreeMap<>();
         List<String> nameList = new ArrayList<>();
-        List<Long> timeList = new ArrayList<>();
+        List<Integer> timeList = new ArrayList<>();
         List<DetailTimeStatistics> statisticsList = mainTimeStatics.getDetailedStatistics();
         List<DetailTimeStatistics> detailStatisticsList = detailTimeStatics.getDetailedStatistics();
+
         for(int i = 0; i < detailStatisticsList.size(); i ++) {
             statisticsList.add(detailStatisticsList.get(i));
         }
+        int max = -1;
         for(int i = 0; i < statisticsList.size(); i ++) {
             String name = statisticsList.get(i).getUserName();
-            long time = statisticsList.get(i).getTime();
+            int time = statisticsList.get(i).getTime();
             if(!nameList.contains(name)) {
                 nameList.add(name);
             }
-            if(!timeList.contains(time)) {
-                timeList.add(time);
+            if(max < time) {
+                max = time;
             }
         }
+        for(int i = 0; i <= max; i ++) {
+            timeList.add(i);
+        }
+        nameList.remove(SysDevice.DeviceType.SECURITY);
+        nameList.remove(SysDevice.DeviceType.JUDGE);
+        nameList.remove(SysDevice.DeviceType.MANUAL);
+        nameList.add(0, SysDevice.DeviceType.MANUAL);
+        nameList.add(0, SysDevice.DeviceType.JUDGE);
+        nameList.add(0, SysDevice.DeviceType.SECURITY);
 
 
         List<DetailTimeStatistics> totalStatistics = new ArrayList<>();
@@ -175,34 +186,17 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
 
         TotalTimeStatistics record = new TotalTimeStatistics();
         List<DetailTimeStatistics> detailTimeStatistics = new ArrayList<>();
-        DetailTimeStatistics scanStatics = new DetailTimeStatistics();
-        scanStatics.setUserName(SysDevice.DeviceType.SECURITY);
-        scanStatics.setWorkingTime(0);
 
-        DetailTimeStatistics judgeStatics = new DetailTimeStatistics();
-        judgeStatics.setUserName(SysDevice.DeviceType.JUDGE);
-        judgeStatics.setWorkingTime(0);
-
-        DetailTimeStatistics handStatics = new DetailTimeStatistics();
-        handStatics.setUserName(SysDevice.DeviceType.MANUAL);
-        handStatics.setWorkingTime(0);
-
-        detailTimeStatistics.add(scanStatics);
-        detailTimeStatistics.add(judgeStatics);
-        detailTimeStatistics.add(handStatics);
 
 
         for (int i = 0; i < resultTotal.size(); i++) {
             Object[] item = (Object[]) resultTotal.get(i);
             DetailTimeStatistics timeStatistics = initModelFromObject(item);
             if(timeStatistics.getUserName() != null) {
-                for(int j = 0; j < detailTimeStatistics.size(); j ++) {
-                    if(detailTimeStatistics.get(j).getUserName().equals(timeStatistics.getUserName())) {
-                        detailTimeStatistics.set(j, timeStatistics);
-                    }
-                }
+                detailTimeStatistics.add(timeStatistics);
             }
         }
+        record.setDetailedStatistics(detailTimeStatistics);
         return record;
     }
 
@@ -366,6 +360,8 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
+        whereCause.add("l.LOGOUT_TIME IS NOT NULL ");
+        whereCause.add("l.USER_ID IS NOT NULL ");
 
 //        if(categoryUser.isAll() == false) {
 //            List<Long> idList = categoryUser.getUserIdList();
@@ -390,7 +386,7 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
 
         DetailTimeStatistics record = new DetailTimeStatistics();
         try {
-            record.setTime(Utils.parseLong(item[0]));
+            record.setTime(Utils.parseInt(item[0]));
             record.setWorkingTime(Utils.parseLong(item[1]));
             record.setUserName(item[2].toString());
         } catch (Exception e) { }

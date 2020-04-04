@@ -191,6 +191,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         categoryId = 3L;
         predicate.and(builder.device.categoryId.eq(categoryId));
         predicate.and(builder.device.status.eq(SysDevice.Status.ACTIVE));
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+        }
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
 
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -204,11 +209,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         } else {
             pageRequest = PageRequest.of(currentPage, perPage, Sort.by(defaultConfigSort).ascending());
         }
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> userIdList = categoryUser.getUserIdList();
-            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
-        }
+
 
 
 
@@ -373,18 +374,24 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
      */
     @Override
     public List<SysDeviceConfig> findAllDeviceConfigExceptId(Long deviceId) {
-        List<SysDeviceConfig> preSysDeviceConfigList = sysDeviceConfigRepository.findAll();
-        List<SysDeviceConfig> sysDeviceConfigList = new ArrayList<>();
+        QSysDeviceConfig builder = QSysDeviceConfig.sysDeviceConfig;
 
-        for (int i = 0; i < preSysDeviceConfigList.size(); i++) {
-            if (preSysDeviceConfigList.get(i).getDeviceId() != deviceId) {
-                if(preSysDeviceConfigList.get(i).getDevice().getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
-                    sysDeviceConfigList.add(preSysDeviceConfigList.get(i));
-                }
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-            }
+        Long categoryId = 3L;
+        predicate.and(builder.device.categoryId.eq(categoryId));
+        predicate.and(builder.device.status.eq(SysDevice.Status.ACTIVE));
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
         }
-        return sysDeviceConfigList;
+        List<SysDeviceConfig> preSysDeviceConfigList = StreamSupport
+                .stream(sysDeviceConfigRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+
+        return preSysDeviceConfigList;
     }
 
     /**

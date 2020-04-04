@@ -238,13 +238,10 @@ public class AssignPermissionManagementController extends BaseController {
                 }
                 if (isExist == true) {
                     exportList.add(user);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
                 }
             }
         } else {
-            for(int i = 0; i < userList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+            for(int i = 0; i < userList.size(); i ++) {
                 exportList.add(userList.get(i));
             }
         }
@@ -788,13 +785,11 @@ public class AssignPermissionManagementController extends BaseController {
                 }
                 if (isExist == true) {
                     exportList.add(userGroup);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
+
                 }
             }
         } else {
-            for(int i = 0; i < userGroupList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+            for(int i = 0; i < userGroupList.size(); i ++) {
                 exportList.add(userGroupList.get(i));
             }
         }

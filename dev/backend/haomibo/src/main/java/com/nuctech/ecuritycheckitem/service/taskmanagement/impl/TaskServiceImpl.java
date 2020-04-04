@@ -77,9 +77,9 @@ public class TaskServiceImpl implements TaskService {
         if (modeId != null) {
             predicate.and(builder.workFlow.workMode.modeId.eq(modeId));
         }
-//        if (taskStatus != null && !taskStatus.isEmpty()) {
-//            predicate.and(builder.taskStatus.eq(taskStatus));
-//        }
+        if (taskStatus != null && !taskStatus.isEmpty()) {
+            predicate.and(builder.taskStatus.eq(taskStatus));
+        }
         if (fieldId != null) {
             predicate.and(builder.fieldId.eq(fieldId));
         }
@@ -229,7 +229,7 @@ public class TaskServiceImpl implements TaskService {
         for(String idStr: splits) {
             fieldIdList.add(Long.valueOf(idStr));
         }
-        predicate.and(QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement.taskId.in(fieldIdList));
+        predicate.and(QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement.taskId.in(fieldIdList));
 
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -410,7 +410,7 @@ public class TaskServiceImpl implements TaskService {
         for(String idStr: splits) {
             taskIdList.add(Long.valueOf(idStr));
         }
-        predicate.and(QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement.taskId.in(taskIdList));
+        predicate.and(QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement.taskId.in(taskIdList));
 
         Sort sort = null;
 

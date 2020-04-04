@@ -336,9 +336,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 }
                 if (isExist == true) {//if exist
                     exportList.put(entry.getKey(), record);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
+
                 }
 
             }
@@ -347,9 +345,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
                 TreeMap<String, Long> record = entry.getValue();
                 exportList.put(entry.getKey(), record);
-                if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                    break;
-                }
+
             }
         }
 

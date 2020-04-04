@@ -94,7 +94,7 @@ public class ProcessTaskController extends BaseController {
         public static class Filter {
             String taskNumber; //task number
             Long mode; //mode id
-            String status; //task status
+            String taskStatus; //task status
             Long fieldId; //sccene id
             String userName; //user name
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
@@ -206,7 +206,7 @@ public class ProcessTaskController extends BaseController {
         PageResult<SerTaskSimplifiedForProcessTableManagement> result = taskService.getProcessTaskByFilter(
                 requestBody.getFilter().getTaskNumber(),//task number from request body
                 requestBody.getFilter().getMode(), //modeId from request body
-                requestBody.getFilter().getStatus(), //status from request body
+                requestBody.getFilter().getTaskStatus(), //status from request body
                 requestBody.getFilter().getFieldId(),//field id from request body
                 requestBody.getFilter().getUserName(),//user name from request body
                 requestBody.getFilter().getStartTime(),//start time from request body
@@ -289,7 +289,7 @@ public class ProcessTaskController extends BaseController {
         taskList = taskService.getExportProcessTask(
                 requestBody.getFilter().getTaskNumber(),//get task numer from request body
                 requestBody.getFilter().getMode(),//get mode id from request body
-                requestBody.getFilter().getStatus(), // get status from request body
+                requestBody.getFilter().getTaskStatus(), // get status from request body
                 requestBody.getFilter().getFieldId(),// get field id from request body
                 requestBody.getFilter().getUserName(),//get user name from request body
                 requestBody.getFilter().getStartTime(),//get start time from request body

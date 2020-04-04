@@ -76,10 +76,12 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
 
             PdfPTable table = new PdfPTable(deviceCategoryList.size() + nameList.size() + 1);
 
-            List<String> strHeaderList = Arrays.asList(new String[]{messageSource.getMessage("ID", null, currentLocale)});
+            List<String> strHeaderList = new ArrayList<>();
+            strHeaderList.add(messageSource.getMessage("ID", null, currentLocale));
 
             for(int i = 0; i < deviceCategoryList.size(); i ++) {
-                strHeaderList.add(ConstantDictionary.getDataValue(deviceCategoryList.get(i)));
+                String categoryName = ConstantDictionary.getDataValue(deviceCategoryList.get(i));
+                strHeaderList.add(categoryName);
             }
             for(int i = 0; i < nameList.size(); i ++) {
                 strHeaderList.add(nameList.get(i));

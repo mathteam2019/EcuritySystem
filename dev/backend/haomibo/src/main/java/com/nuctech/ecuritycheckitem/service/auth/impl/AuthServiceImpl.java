@@ -186,9 +186,9 @@ public class AuthServiceImpl implements AuthService {
 
 
         List<SysResource> availableSysResourceListPre = new ArrayList<>();
-//        sysUser.getRoles().forEach(sysRole -> {
-//            availableSysResourceListPre.addAll(sysRole.getResources());
-//        });
+        sysUser.getRoles().forEach(sysRole -> {
+            availableSysResourceListPre.addAll(sysRole.getResources());
+        });
 
         QSysUserGroupUserDetail builder = QSysUserGroupUserDetail.sysUserGroupUserDetail;
 

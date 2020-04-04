@@ -152,7 +152,7 @@ public class FieldManagementController extends BaseController {
         static class Filter {
             Long parentFieldId;
             String status;
-            String parentFieldDesignation;
+            String fieldDesignation;
         }
 
         @NotNull
@@ -473,13 +473,13 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Long fieldId = null;
+        Long parentFieldId = null;
         String status = "";
-        String parentDesignation = "";
+        String designation = "";
         if(requestBody.getFilter() != null) {
-            fieldId = requestBody.getFilter().getParentFieldId(); //get field id from input parameter
+            parentFieldId = requestBody.getFilter().getParentFieldId(); //get field id from input parameter
             status = requestBody.getFilter().getStatus(); //get status from input parameter
-            parentDesignation = requestBody.getFilter().getParentFieldDesignation(); //get parent field name from input parameter
+            designation = requestBody.getFilter().getFieldDesignation(); //get parent field name from input parameter
         }
 
         String sortBy = "";
@@ -495,7 +495,7 @@ public class FieldManagementController extends BaseController {
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageResult<SysField> result = fieldService.getDeviceListByFilter(sortBy, order, fieldId, status, parentDesignation, currentPage, perPage); //get list of field from database through fieldService
+        PageResult<SysField> result = fieldService.getDeviceListByFilter(sortBy, order, designation, status, parentFieldId, currentPage, perPage); //get list of field from database through fieldService
         long total = result.getTotal(); //get total count
         List<SysField> data = result.getDataList();
 
@@ -535,13 +535,13 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Long fieldId = null;
+        Long parentFieldId = null;
         String status = "";
-        String parentDesignation = "";
+        String designation = "";
         if(requestBody.getFilter() != null) {
-            fieldId = requestBody.getFilter().getParentFieldId(); //get field id from input parameter
+            parentFieldId = requestBody.getFilter().getParentFieldId(); //get field id from input parameter
             status = requestBody.getFilter().getStatus(); //get status from input parameter
-            parentDesignation = requestBody.getFilter().getParentFieldDesignation(); //get parent field name from input parameter
+            designation = requestBody.getFilter().getFieldDesignation(); //get parent field name from input parameter
         }
 
         String sortBy = "";
@@ -554,7 +554,7 @@ public class FieldManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SysField> exportList = fieldService.getExportList(sortBy, order, fieldId, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        List<SysField> exportList = fieldService.getExportList(sortBy, order, designation, status, parentFieldId, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(requestBody.getLocale()); //set dictionary data
         FieldManagementExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -588,13 +588,13 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Long fieldId = null;
+        Long parentFieldId = null;
         String status = "";
-        String parentDesignation = "";
+        String designation = "";
         if(requestBody.getFilter() != null) {
-            fieldId = requestBody.getFilter().getParentFieldId(); //get field id from input parameter
-            status = requestBody.getFilter().getStatus();
-            parentDesignation = requestBody.getFilter().getParentFieldDesignation();
+            parentFieldId = requestBody.getFilter().getParentFieldId(); //get field id from input parameter
+            status = requestBody.getFilter().getStatus(); //get status from input parameter
+            designation = requestBody.getFilter().getFieldDesignation(); //get parent field name from input parameter
         }
 
         String sortBy = "";
@@ -607,7 +607,7 @@ public class FieldManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SysField> exportList = fieldService.getExportList(sortBy, order, fieldId, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        List<SysField> exportList = fieldService.getExportList(sortBy, order, designation, status, parentFieldId, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(requestBody.getLocale()); //set dictionary data
         FieldManagementWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -642,13 +642,13 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Long fieldId = null;
+        Long parentFieldId = null;
         String status = "";
-        String parentDesignation = "";
+        String designation = "";
         if(requestBody.getFilter() != null) {
-            fieldId = requestBody.getFilter().getParentFieldId(); //get field id from input parameter
+            parentFieldId = requestBody.getFilter().getParentFieldId(); //get field id from input parameter
             status = requestBody.getFilter().getStatus(); //get status from input parameter
-            parentDesignation = requestBody.getFilter().getParentFieldDesignation(); //get parent field name from input parameter
+            designation = requestBody.getFilter().getFieldDesignation(); //get parent field name from input parameter
         }
 
         String sortBy = "";
@@ -661,7 +661,7 @@ public class FieldManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SysField> exportList = fieldService.getExportList(sortBy, order, fieldId, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
+        List<SysField> exportList = fieldService.getExportList(sortBy, order, designation, status, parentFieldId, requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
 
         FieldManagementPdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale()); //set dictionary data

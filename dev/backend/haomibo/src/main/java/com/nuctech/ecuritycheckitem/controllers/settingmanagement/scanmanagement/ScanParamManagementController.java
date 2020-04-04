@@ -269,7 +269,7 @@ public class ScanParamManagementController extends BaseController {
     @RequestMapping(value = "/get-all", method = RequestMethod.POST)
     public Object scanParamGetAll() {
 
-        List<SerScanParam> data = scanParamService.getAllWithoutFilter();
+        List<SerScanParam> data = scanParamService.getAllWithFilter(null, null);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, data));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters()

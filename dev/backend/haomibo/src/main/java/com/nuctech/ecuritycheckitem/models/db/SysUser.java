@@ -138,13 +138,13 @@ public class SysUser extends BaseEntity implements Serializable {
     @MapsId("org")
     private SysOrg org; // Relation to SysOrg table.
 
-//    @OneToMany(fetch = FetchType.EAGER)
-//    @JoinTable(
-//            name = "sys_role_user",
-//            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
-//            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
-//    )
-//    private Set<SysRole> roles; // Relation to SysRole table.
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sys_role_user",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
+    )
+    private Set<SysRole> roles; // Relation to SysRole table.
 
 //    @OneToMany(fetch = FetchType.EAGER)
 //    @JoinTable(

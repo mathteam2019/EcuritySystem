@@ -120,20 +120,20 @@ public interface OrganizationService {
      * get filtered and paginated organization list
      * @param orgName
      * @param status
-     * @param parentOrgName
+     * @param parentOrgId
      * @param currentPage
      * @param perPage
      * @return
      */
-    PageResult<SysOrg> getOrganizationByFilterAndPage(String sortBy, String order, String orgName, String status, String parentOrgName, Integer currentPage, Integer perPage);
+    PageResult<SysOrg> getOrganizationByFilterAndPage(String sortBy, String order, String orgName, String status, Long parentOrgId, Integer currentPage, Integer perPage);
 
     /**
      * get filtered organization list
      * @param orgName
      * @param status
-     * @param parentOrgName
+     * @param parentOrgId
      * @return
      */
-    List<SysOrg> getOrganizationByFilter(String sortBy, String order, String orgName, String status, String parentOrgName);
+    List<SysOrg> getOrganizationByFilter(String sortBy, String order, String orgName, String status, Long parentOrgId);
 
 }

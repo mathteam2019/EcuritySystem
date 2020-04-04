@@ -547,16 +547,14 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(key)) { //if specified id is contained idList
+                    if (splits[j].equals(String.valueOf(key))) { //if specified id is contained idList
                         isExist = true;
                         break;
                     }
                 }
                 if (isExist == true) {//if exist
                     exportList.put(entry.getKey(), record);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
+
                 }
 
             }
@@ -565,9 +563,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             for (Map.Entry<Long, TotalTimeStatistics> entry : detailedStatistics.entrySet()) {
                 TotalTimeStatistics record = entry.getValue();
                 exportList.put(entry.getKey(), record);
-                if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                    break;
-                }
+
             }
         }
 

@@ -75,8 +75,8 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
 
 
                 addTableCell(table, ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
-                    addTableCell(table, deal.getScanDevice().getField().getFieldDesignation());
+                if(deal.getTask() != null && deal.getTask().getField() != null) {
+                    addTableCell(table, deal.getTask().getField().getFieldDesignation());
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }

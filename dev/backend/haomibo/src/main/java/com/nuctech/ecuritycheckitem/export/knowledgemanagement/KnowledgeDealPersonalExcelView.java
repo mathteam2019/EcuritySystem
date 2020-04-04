@@ -95,8 +95,8 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
                 }
 
                 row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
-                    row.createCell(3).setCellValue(deal.getScanDevice().getField().getFieldDesignation());
+                if(deal.getTask() != null && deal.getTask().getField() != null) {
+                    row.createCell(3).setCellValue(deal.getTask().getField().getFieldDesignation());
                 } else {
                     row.createCell(3).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

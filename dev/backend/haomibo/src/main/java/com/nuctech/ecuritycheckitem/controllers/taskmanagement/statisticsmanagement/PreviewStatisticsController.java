@@ -334,9 +334,7 @@ public class PreviewStatisticsController extends BaseController {
                 }
                 if (isExist == true) {  //if exist
                     exportList.put(entry.getKey(), record);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
+
                 }
 
             }
@@ -345,9 +343,7 @@ public class PreviewStatisticsController extends BaseController {
             for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
                 TotalStatistics record = entry.getValue();
                 exportList.put(entry.getKey(), record);
-                if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                    break;
-                }
+
             }
         }
 

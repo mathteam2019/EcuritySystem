@@ -643,13 +643,10 @@ public class PermissionServiceImpl implements PermissionService {
                 }
                 if (isExist == true) {
                     exportList.add(dataGroup);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
                 }
             }
         } else {
-            for(int i = 0; i < dataGroupList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+            for(int i = 0; i < dataGroupList.size(); i ++) {
                 exportList.add(dataGroupList.get(i));
             }
         }
@@ -694,8 +691,8 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
 
-        List<SysDataGroup> exportList = getDataGroupExportList(dataGroupList, isAll, idList);
-        return exportList;
+        //List<SysDataGroup> exportList = getDataGroupExportList(dataGroupList, isAll, idList);
+        return dataGroupList;
     }
 
     /**

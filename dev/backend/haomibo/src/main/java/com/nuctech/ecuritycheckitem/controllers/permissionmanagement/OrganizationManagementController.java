@@ -146,7 +146,7 @@ public class OrganizationManagementController extends BaseController {
         static class Filter {
             String orgName;
             String status;
-            String parentOrgName;
+            Long parentOrgId;
         }
 
         @NotNull
@@ -555,7 +555,7 @@ public class OrganizationManagementController extends BaseController {
         PageResult<SysOrg> result = organizationService.getOrganizationByFilterAndPage(sortBy, order,
                 requestBody.getFilter().getOrgName(), //get org name from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
-                requestBody.getFilter().getParentOrgName(), //get parent org name from input parameter
+                requestBody.getFilter().getParentOrgId(), //get parent org name from input parameter
                 currentPage,
                 perPage);
 
@@ -606,13 +606,11 @@ public class OrganizationManagementController extends BaseController {
                 }
                 if (isExist == true) {
                     exportList.add(org);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
+
                 }
             }
         } else {
-            for(int i = 0; i < orgList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+            for(int i = 0; i < orgList.size(); i ++) {
                 exportList.add(orgList.get(i));
             }
         }
@@ -649,7 +647,7 @@ public class OrganizationManagementController extends BaseController {
         List<SysOrg> orgList = organizationService.getOrganizationByFilter(sortBy, order,
                 requestBody.getFilter().getOrgName(), //get org name from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
-                requestBody.getFilter().getParentOrgName() //get parent org name from input parameter
+                requestBody.getFilter().getParentOrgId() //get parent org name from input parameter
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
@@ -701,7 +699,7 @@ public class OrganizationManagementController extends BaseController {
         List<SysOrg> orgList = organizationService.getOrganizationByFilter(sortBy, order,
                 requestBody.getFilter().getOrgName(), //get org name from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
-                requestBody.getFilter().getParentOrgName() //get parent org name from input parameter
+                requestBody.getFilter().getParentOrgId() //get parent org name from input parameter
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
@@ -751,7 +749,7 @@ public class OrganizationManagementController extends BaseController {
         List<SysOrg> orgList = organizationService.getOrganizationByFilter(sortBy, order,
                 requestBody.getFilter().getOrgName(), //get org name from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
-                requestBody.getFilter().getParentOrgName() //get parent org name from input parameter
+                requestBody.getFilter().getParentOrgId() //get parent org name from input parameter
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());

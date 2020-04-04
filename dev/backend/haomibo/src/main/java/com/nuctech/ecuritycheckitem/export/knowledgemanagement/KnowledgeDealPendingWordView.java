@@ -117,8 +117,8 @@ public class KnowledgeDealPendingWordView extends BaseWordView {
                 }
 
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
-                    tableRow.getCell(4).setText(deal.getScanDevice().getField().getFieldDesignation());
+                if(deal.getTask() != null && deal.getTask().getField() != null) {
+                    tableRow.getCell(4).setText(deal.getTask().getField().getFieldDesignation());
                 } else {
                     tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
