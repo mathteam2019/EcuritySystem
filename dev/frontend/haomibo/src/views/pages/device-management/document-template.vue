@@ -180,12 +180,12 @@
                   <b-row>
                     <b-col>
                       <b-form-group :label="$t('device-management.indicator.name')">
-                        <b-form-input type="text" v-model="indicatorForm.indicatorsName"/>
+                        <b-form-input type="text" v-model="indicatorForm.indicatorsName" :state="!$v.indicatorForm.indicatorsName.$dirty ? null : !$v.indicatorForm.indicatorsName.$invalid"/>
                       </b-form-group>
                     </b-col>
                     <b-col>
                       <b-form-group :label="$t('device-management.indicator.unit')">
-                        <b-form-input type="text" v-model="indicatorForm.indicatorsUnit"/>
+                        <b-form-input type="text" v-model="indicatorForm.indicatorsUnit" :state="!$v.indicatorForm.indicatorsUnit.$dirty ? null : !$v.indicatorForm.indicatorsUnit.$invalid"/>
                       </b-form-group>
                     </b-col>
                     <b-col>
@@ -445,6 +445,14 @@
     },
     mixins: [validationMixin],
     validations: {
+      indicatorForm : {
+        indicatorsUnit : {
+          required,
+        },
+        indicatorsName :{
+          required,
+        }
+      },
       fileSelection: {
         required
       },
@@ -1111,6 +1119,24 @@
         };
       },
       onSaveIndicator() {
+        this.$v.indicatorForm.$touch();
+        if (this.$v.indicatorForm.$invalid) {
+          if(this.$v.indicatorForm.indicatorsName.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.please-enter-indicator-name`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          if(this.$v.indicatorForm.indicatorsUnit.$invalid){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.please-enter-indicator-unit`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
+          }
+          return;
+        }
         getApiManager()
           .post(`${apiBaseUrl}/device-management/document-template/archive-indicator/create`, this.indicatorForm)
           .then((response) => {
@@ -1130,11 +1156,13 @@
                   indicatorsUnit: null,
                   isNull: "1000000601"
                 };
+
                 break;
             }
           })
           .catch((error) => {
           });
+        this.$v.indicatorForm.$reset();
       },
       onSwitchIsNull(item, index) {
         let value = item.isNull === '1000000601' ? '1000000602' : '1000000601';

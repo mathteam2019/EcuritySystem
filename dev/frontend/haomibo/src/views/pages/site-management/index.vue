@@ -139,7 +139,7 @@
                       </template>
                       <b-form-input type="text" v-model="siteForm.fieldSerial"
                                     :disabled="pageStatus==='edit'"
-                                    :state="!$v.siteForm.fieldSerial.$invalid"
+                                    :state="!$v.siteForm.fieldSerial.$dirty ? null : !$v.siteForm.fieldSerial.$invalid"
                                     :placeholder="$t('system-setting.please-enter-site-no')"/>
                       <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}
                       </b-form-invalid-feedback>
@@ -153,7 +153,7 @@
                         <span class="text-danger">*</span>
                       </template>
                       <b-form-input type="text" v-model="siteForm.fieldDesignation"
-                                    :state="!$v.siteForm.fieldDesignation.$invalid"
+                                    :state="!$v.siteForm.fieldDesignation.$dirty ? null : !$v.siteForm.fieldDesignation.$invalid"
                                     :placeholder="$t('system-setting.please-enter-site-name')"/>
                       <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}
                       </b-form-invalid-feedback>
@@ -177,7 +177,7 @@
                         <span class="text-danger">*</span>
                       </template>
                       <b-form-select :disabled="pageStatus==='edit' && siteForm.status === '1000000701'" :options="superSiteOption"
-                                     :state="!$v.siteForm.parentFieldId.$invalid"
+                                     :state="!$v.siteForm.parentFieldId.$dirty ? null : !$v.siteForm.parentFieldId.$invalid"
                                      v-model="siteForm.parentFieldId" plain/>
                       <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}
                       </b-form-invalid-feedback>
@@ -199,7 +199,7 @@
                       <template slot="label">
                         {{$t('system-setting.system-phone')}}
                       </template>
-                      <b-form-input type="text" v-model="siteForm.mobile" :state="!$v.siteForm.mobile.$invalid"
+                      <b-form-input type="text" v-model="siteForm.mobile" :state="!$v.siteForm.mobile.$dirty ? null : !$v.siteForm.mobile.$invalid"
                                     :placeholder="'000-0000-0000'"/>
                     </b-form-group>
                   </b-col>
@@ -470,7 +470,7 @@
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
 
-  const {required} = require('vuelidate/lib/validators');
+  const {required, maxLength} = require('vuelidate/lib/validators');
 
 
   let getParentSerialName = (siteData, fieldId) => {
@@ -734,10 +734,10 @@
       },
       siteForm: {
         fieldSerial: {
-          required
+          required, maxLength: maxLength(50),
         },
         fieldDesignation: {
-          required
+          required, maxLength: maxLength(50),
         },
         parentFieldId: {
           required
@@ -971,17 +971,35 @@
         this.$v.siteForm.$touch();
         if (this.$v.siteForm.$invalid) {
           if(this.$v.siteForm.fieldSerial.$invalid){
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.please-enter-site-no`), {
-              duration: 3000,
-              permanent: false
-            });
+            if(this.siteForm.fieldSerial === ''){
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.please-enter-site-no`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else  {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.length-valid-site-no`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+
             return;
           }
           if(this.$v.siteForm.fieldDesignation.$invalid){
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.please-enter-site-name`), {
-              duration: 3000,
-              permanent: false
-            });
+            if(this.siteForm.fieldDesignation === ''){
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.please-enter-site-name`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.length-valid-site-name`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+
             return;
           }
           if(this.$v.siteForm.parentFieldId.$invalid){
@@ -1057,6 +1075,8 @@
           .catch((error) => {
             this.isLoading = false;
           });
+
+        this.$v.siteForm.$reset();
 
       },
 
