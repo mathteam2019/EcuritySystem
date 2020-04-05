@@ -10,6 +10,9 @@
       }
 
     }
+.class-form-label {
+  margin-bottom: 1px;
+}
   }
   .pointer {cursor: pointer;}
 </style>
@@ -37,6 +40,7 @@
                   <b-col cols="2">
                     <b-form-group :label="$t('system-setting.parameter-setting.atr-suspect-box-color')" class="pointer">
                       <colorpicker :color="platFormData.scanRecogniseColour"
+                                   v-model="platFormData.scanRecogniseColour"
                                    :change="onChange()"
                                    style="margin-bottom: 0 !important;"/>
                     </b-form-group>
@@ -74,7 +78,7 @@
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.judgement-frame-color')">
-                      <colorpicker :color="platFormData.judgeRecogniseColour" :change="onChange()"
+                      <colorpicker :color="platFormData.judgeRecogniseColour" v-model="platFormData.judgeRecogniseColour" :change="onChange()"
                                    style="margin-bottom: 0rem !important;"/>
                     </b-form-group>
                   </b-col>
@@ -128,7 +132,7 @@
                   <b-col cols="2" offset="1">
                     <b-form-group class="mb-0"
                                   :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
-                      <colorpicker :disabled="platFormData.displayDeleteSuspicion === '1000000602'" :color="platFormData.displayDeleteSuspicionColour" :change="onChange()"/>
+                      <colorpicker :disablePicker="platFormData.displayDeleteSuspicion === '1000000602'" :color="platFormData.displayDeleteSuspicionColour" v-model="platFormData.displayDeleteSuspicionColour" :change="onChange()"/>
                     </b-form-group>
                   </b-col>
 

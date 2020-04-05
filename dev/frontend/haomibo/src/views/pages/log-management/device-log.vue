@@ -1278,7 +1278,7 @@
           if(contentLabel.length>20){
             isLong = true;
             temp.content = {
-              content : contentLabel,
+              content : contentLabel.toString(),
               label : contentLabel.substr(0, 19) + '...',
               isLong : isLong
             };

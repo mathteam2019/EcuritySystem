@@ -300,10 +300,10 @@
             </b-row>
             <b-row style="height : 100px;">
               <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
-                <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
+                <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')" style="margin-bottom: 1px">
                   <v-select v-model="fileSelection" :options="fileSelectionOptions"
                             :state="!$v.fileSelection.$invalid" :searchable="false"
-                            class="v-select-custom-style" :dir="direction" multiple/>
+                            class="v-select-custom-style" multiple/>
                 </b-form-group>
               </b-col>
             </b-row>

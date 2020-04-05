@@ -509,7 +509,7 @@
 
   .item-wrapper {
     position: relative;
-    //height: fit-content !important;
+    height: fit-content !important;
     padding-bottom: $item-padding;
     padding-left: $item-padding;
     display: inline-block;
@@ -1084,8 +1084,8 @@
     },
     methods: {
       hoverContent(value) {
-        let content = value.label + '<div class="item-wrapper slide-right">\n' +
-          '      <span class="item d-flex flex-column">\n' + 'ddd' +
+        let content = '<div class="item-wrapper slide-right">\n' +
+          '      <span class="item d-flex flex-column">\n' + value.label +
           '      </span>\n' +
           '      <div class="item-extra-info flex-column d-flex">\n' + value.groupMember +
           '      </div>\n' +

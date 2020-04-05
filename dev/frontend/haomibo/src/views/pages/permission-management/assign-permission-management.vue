@@ -553,7 +553,7 @@
                         class="text-danger">*</span></template>
 
                       <v-select :disabled="groupPageStatus === 'show'" class="v-select-custom-style"
-                                v-model="groupForm.role" multiple :options="roleSelectData"
+                                v-model="groupForm.role" multiple :options="roleSelectData" style="overflow:hidden;"
                                 :state="!$v.groupForm.role.$dirty ? null : !$v.groupForm.role.$invalid"
                                 :searchable="false" :dir="direction"/>
                       <div class="invalid-feedback d-block">

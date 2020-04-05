@@ -383,7 +383,7 @@
                       :fields="taskVuetableItems.fields"
                       :http-fetch="taskVuetableHttpFetch"
                       :per-page="taskVuetableItems.perPage"
-                      track-by="time"
+                      track-by="id"
                       pagination-path="pagination"
                       class="table-hover"
                       @vuetable:checkbox-toggled="onCheckStatusChange"
@@ -1248,6 +1248,7 @@
         for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i - 1];
           temp = data.detailedStatistics[j];
+          temp.id = temp.time;
           this.renderedCheckList.push(data.detailedStatistics[j].time);
           if(this.filter.statWidth === 'hour') {
             if (temp.time < 9) {

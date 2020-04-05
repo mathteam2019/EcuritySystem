@@ -733,7 +733,7 @@
           <b-col style="margin-top: 1rem; margin-left: 5rem; margin-right: 5rem;">
             <b-form-group class="mw-100 w-100" label="标签">
               <v-select v-model="collectionLabel" :options="collectionLabelOptions"
-                        class="v-select1" multiple :searchable="false" :dir="direction"/>
+                        class="v-select" multiple :searchable="false" :dir="direction"/>
             </b-form-group>
           </b-col>
         </b-row>
@@ -798,6 +798,10 @@
     -ms-flex: 0 0 30%;
     flex: 0 0 30%;
     max-width: 30%;
+  }
+
+  .col-form-label {
+    margin-bottom: 1px;
   }
 
   .col-70 {

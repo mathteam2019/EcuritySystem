@@ -250,7 +250,7 @@
                   />
                   </div>
                 </b-col>
-                <b-col v-else cols="12" class="table-responsive text-center" style="height: 100%">
+                <b-col v-else cols="12" class="table-responsive text-center" style="height: 95%">
                   <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="indicatorTable"
