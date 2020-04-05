@@ -929,13 +929,13 @@
           if (item.indicatorsId > 0)
             this.basicForm.archiveIndicatorsList.push(item.indicatorsId)
         });
-        // if (this.basicForm.archiveIndicatorsList.length === 0) {
-        //   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.not-have-indicators`), {
-        //     duration: 3000,
-        //     permanent: false
-        //   });
-        //   return false;
-        // }
+        if (this.basicForm.archiveIndicatorsList.length === 0) {
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-indicator-input`), {
+            duration: 3000,
+            permanent: false
+          });
+          return;
+        }
         this.isLoading = true;
         let finalLink = this.basicForm.archivesTemplateId > 0 ? 'modify' : 'create';
         getApiManager()

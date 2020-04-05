@@ -477,6 +477,7 @@
     "template-name-placeholder": "Please enter template number",
     "device-classify": " Device classify ",
     "device-classify-placeholder": " Please select device classification ",
+    "device-indicator-input": "Please input device indicator",
     "manufacture": " Manufacture ",
     "origin-model": " Origin model ",
     "device-model": " Device model ",

@@ -860,6 +860,7 @@
         this.dicDataId = dataItem.dictionaryId;
         this.dicIdType = dataItem.dictionaryType;
         this.pageStatus = 'modify';
+        this.resetDicDataSearchForm();
         // this.pageStatus = 'table';
         this.$refs.vuetableData.refresh();
       },

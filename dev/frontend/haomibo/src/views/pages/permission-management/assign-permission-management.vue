@@ -568,7 +568,7 @@
                         class="text-danger">*</span></template>
                       <div class="d-flex ">
                         <div>
-                          <b-form-radio-group stacked v-model="groupForm.dataRange">
+                          <b-form-radio-group stacked v-model="groupForm.dataRange" :disabled="groupPageStatus === 'show'">
                             <b-form-radio value="1000000501" class="pb-2">
                               {{$t('permission-management.assign-permission-management.group.one-user-data')}}
                             </b-form-radio>
@@ -584,7 +584,7 @@
                           </b-form-radio-group>
                         </div>
                         <div class="align-self-end flex-grow-1 pl-5">
-                          <b-form-select class="mw-100" :disabled="groupForm.dataRange!=='1000000505'"
+                          <b-form-select class="mw-100" :disabled="groupPageStatus === 'show' || groupForm.dataRange!=='1000000505'"
                                          v-model="groupForm.filterGroup"
                                          :options="dataGroupSelectData" plain/>
                         </div>
