@@ -1,4 +1,7 @@
   <style lang="scss">
+    .col-form-label {
+      margin-bottom: 1px;
+    }
 
   .operating-log {
     .rounded-span {

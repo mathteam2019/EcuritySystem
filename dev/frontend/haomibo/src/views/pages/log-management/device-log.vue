@@ -1,4 +1,7 @@
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
 
   /*.device-log {*/
   /*  .rounded-span {*/
@@ -1232,7 +1235,7 @@
           'idList': checkedIds.join()
         };
         this.link = `log-management/device-log`;
-        this.name = page === 'device' ? 'Security-Device Log' : page === 'judge' ? 'Judgment-Station Log' : 'Hand-Check Log';
+        this.name = page === 'device' ? 'Inspection Machine Log' : page === 'judge' ? 'Judgment Station Log' : 'Re-Check Station Log';
         this.isModalVisible = true;
         // downLoadFileFromServer(link, params, 'device-log');
       },

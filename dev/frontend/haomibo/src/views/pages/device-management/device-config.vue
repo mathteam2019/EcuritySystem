@@ -1,7 +1,18 @@
 <style lang="scss">
   @import '../../../assets/css/dual-list.css';
 
+  .col-form-label {
+    margin-bottom: 1px;
+  }
+  .vs__selected-options {
+    margin-bottom: 1px;
+  }
+
   $cyan-button-color: #178af7;
+  .vs__selected-options {
+    margin-left: 1px;
+    margin-bottom: 1px;
+  }
   .device-config {
     .v-select.v-select-custom-style {
       & > div {

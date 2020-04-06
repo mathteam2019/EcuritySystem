@@ -744,6 +744,9 @@
   </div>
 </template>
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .col-30 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 30%;
