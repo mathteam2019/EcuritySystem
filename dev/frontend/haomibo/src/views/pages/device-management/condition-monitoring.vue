@@ -827,7 +827,7 @@
               this.items[index].slaveCardStatusName = findDicTextData(this.deviceStatusDicData, data.slaveCardStatus);
               this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
               //this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
-              this.items[index].emergencyStopName = findDicTextData(this.deviceStatusDicData, data.emergencyStop);
+              this.items[index].emergencyStopName = findDicTextData(this.stopStatusDicData, data.emergencyStop);
               this.items[index].footWarningName = findDicTextData(this.footStatusDicData, data.footWarning);
 
               this.items[index].runningTimeValue = getDateTimeWithFormat(data.loginTime, 'monitor-diff', this.$i18n.locale);

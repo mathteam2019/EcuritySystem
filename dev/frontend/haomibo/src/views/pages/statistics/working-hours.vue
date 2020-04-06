@@ -1182,6 +1182,9 @@
 </script>
 
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   /*.span-font{*/
   /*  font-size: 1.4rem;*/
   /*}*/

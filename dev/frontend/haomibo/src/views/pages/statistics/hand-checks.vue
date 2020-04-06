@@ -1609,6 +1609,9 @@
 </script>
 
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .hand-checks {
 
     display: flex;

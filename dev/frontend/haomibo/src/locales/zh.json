@@ -36,6 +36,7 @@
     "data-group-already-used":"数据组已经使用",
     "category-has-archive-template":"设备分类已经使用-档案模板",
     "category-has-children":"设备分类该有子节点",
+    "dictionary-has-children":"该有子节点",
     "used-seized-good" : "物品名称已被使用",
     "used-dictionary-name" : "词典名称已被使用",
     "used-dictionary-code" : "词典编号已被使用",

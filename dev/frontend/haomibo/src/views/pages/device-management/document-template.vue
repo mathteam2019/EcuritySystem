@@ -1256,6 +1256,9 @@
   }
 </script>
 <style>
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .img-rotate{
     -ms-transform: rotate(-15deg); /* IE 9 */
     -webkit-transform: rotate(-15deg); /* Safari 3-8 */
