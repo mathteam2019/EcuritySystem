@@ -1322,6 +1322,9 @@
 </script>
 
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .operating-hours {
 
     display: flex;

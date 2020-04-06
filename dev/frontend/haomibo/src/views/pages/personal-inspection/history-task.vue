@@ -793,6 +793,10 @@
   </div>
 </template>
 <style lang="scss">
+  .vs__selected-options {
+    margin-left: 1px;
+    margin-bottom: 1px;
+  }
   .col-30 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 30%;

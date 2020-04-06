@@ -1,4 +1,226 @@
 <style lang="scss">
+  .item-wrapper {
+    position: relative;
+    height: fit-content !important;
+    //padding-left: $item-padding;
+    display: inline-block;
+    width: 100%;
+    //z-index: 1;
+
+    //height: 100%;
+    /*& > .item {*/
+    /*  z-index: 1;*/
+    /*  position: relative;*/
+    /*  height: 100%;*/
+    /*  width: 100%;*/
+    /*  display: inline-block;*/
+    /*  cursor: pointer;*/
+    /*  !*&:hover {*!*/
+    /*  !*  box-shadow: 1px 2px 0 #c6c6c6;*!*/
+    /*  !*}*!*/
+    /*  !*&.active {*!*/
+    /*  !*  .item-header {*!*/
+    /*  !*    border-bottom-color: #009900;*!*/
+    /*  !*  }*!*/
+    /*  !*}*!*/
+    /*  .item-header {*/
+    /*    background: #f3f3f3;*/
+    /*    border-bottom: solid 2px #c6c6c6;*/
+    /*    height: calculateRem(50px);*/
+    /*    display: flex;*/
+    /*    justify-content: space-between;*/
+    /*    align-items: center;*/
+    /*    padding: 0 calculateRem(20px) 0 calculateRem(20px);*/
+    /*    .label {*/
+    /*      white-space: pre;*/
+    /*      font-size: calculateRem(15px);*/
+    /*      color: #666666;*/
+    /*      max-width: 100%;*/
+    /*      flex-grow: 1;*/
+    /*      text-overflow: ellipsis;*/
+    /*      overflow: hidden;*/
+    /*    }*/
+    /*    .action-list {*/
+    /*      white-space: pre;*/
+    /*      img {*/
+    /*        width: calculateRem(20px);*/
+    /*        margin-left: 0.5rem;*/
+    /*        &.disabled {*/
+    /*          filter: grayscale(1);*/
+    /*        }*/
+    /*        img:first-child {*/
+    /*          margin-left: 0;*/
+    /*        }*/
+    /*      }*/
+
+    /*    }*/
+    /*  }*/
+    /*  .item-body {*/
+    /*    padding: calculateRem(10px);*/
+    /*    .left-side {*/
+    /*      .action {*/
+    /*        button.btn {*/
+    /*          margin-bottom: calculateRem(10px);*/
+    /*          white-space: pre;*/
+    /*          font-size: calculateRem(11px);*/
+    /*          &.btn-success {*/
+    /*            background-color: #49cf6f;*/
+    /*            border-color: #49cf6f;*/
+    /*            &:hover {*/
+    /*              background-color: darken(#49cf6f, 8%);*/
+    /*              border-color: darken(#49cf6f, 8%);*/
+    /*            }*/
+    /*          }*/
+    /*          &.btn-info {*/
+    /*            background-color: #1782d4;*/
+    /*            &:hover {*/
+    /*              background-color: darken(#1782d4, 8%);*/
+    /*              border-color: darken(#1782d4, 8%);*/
+    /*            }*/
+    /*          }*/
+    /*        }*/
+    /*      }*/
+    /*      .img {*/
+    /*        flex-grow: 1;*/
+    /*        width: 65px;*/
+    /*        height: 94px;*/
+    /*        display: flex;*/
+    /*        align-items: center;*/
+    /*        img {*/
+    /*          width: 90%;*/
+    /*          object-fit: contain;*/
+    /*        }*/
+    /*      }*/
+    /*    }*/
+    /*    .right-side {*/
+    /*      .text-top {*/
+    /*        color: #1782d4;*/
+    /*        font-weight: bold;*/
+    /*        margin-bottom: calculateRem(15px);*/
+    /*      }*/
+    /*      .content {*/
+    /*        & > div {*/
+    /*          display: flex;*/
+    /*          label {*/
+    /*            white-space: pre;*/
+    /*            overflow: visible;*/
+    /*            text-overflow: ellipsis;*/
+    /*            max-width: 100%;*/
+    /*            color: #606266;*/
+    /*            font-size: calculateRem(12px);*/
+    /*            line-height: calculateRem(12px);*/
+    /*            &:first-child {*/
+    /*              width: 37%;*/
+    /*              min-width: 37%;*/
+    /*            }*/
+    /*            &:last-child {*/
+    /*              flex-grow: 1;*/
+    /*            }*/
+    /*            &.disabled {*/
+    /*              color: #c0c0c0;*/
+    /*            }*/
+    /*          }*/
+    /*        }*/
+
+    /*      }*/
+
+    /*      .caption {*/
+    /*        width: 37%;*/
+    /*      }*/
+    /*    }*/
+    /*  }*/
+    /*}*/
+    & > .item-extra-info {
+      padding: calculateRem(18px);
+      opacity: 0;
+      transition: 0ms;
+      display: none !important;
+      border-radius: 0.3rem;
+      position: absolute;
+      top: 0;
+      width: 80%;
+      left: calculateRem(30px);
+      background: wheat;
+      z-index: 1;
+      /*& > div {*/
+      /*  & > div {*/
+      /*    margin-bottom: calculateRem(4px);*/
+      /*    align-items: center;*/
+      /*    &:first-child {*/
+      /*      width: calculateRem(75px);*/
+      /*      margin-bottom: 0;*/
+      /*      font-size: 0.7rem;*/
+      /*      color: white;*/
+      /*      white-space: pre;*/
+      /*      overflow: hidden;*/
+      /*      text-overflow: ellipsis;*/
+      /*    }*/
+      /*    &:last-child {*/
+      /*      display: flex;*/
+      /*      align-items: center;*/
+      /*      flex-grow: 1;*/
+      /*      color: white;*/
+      /*      white-space: pre;*/
+      /*      overflow: hidden;*/
+      /*      text-overflow: ellipsis;*/
+      /*      img {*/
+      /*        width: calculateRem(12px);*/
+      /*      }*/
+      /*      span {*/
+      /*        font-size: 0.7rem;*/
+      /*        &.success {*/
+      /*          color: #42b662;*/
+      /*        }*/
+      /*        &.pending {*/
+      /*          color: #bbbbbb;*/
+      /*        }*/
+      /*        &.danger {*/
+      /*          color: #e12c48;*/
+      /*        }*/
+      /*        margin-left: calculateRem(5px);*/
+      /*        &.without {*/
+      /*          margin-left: calculateRem(18px);*/
+      /*        }*/
+      /*      }*/
+      /*      .chart-container {*/
+      /*        width: 100%;*/
+      /*        height: 100%;*/
+      /*      }*/
+      /*    }*/
+      /*  }*/
+      /*}*/
+    }
+    /*&.slide-left {*/
+    /*  & > .item-extra-info {*/
+    /*    left: 0;*/
+    /*  }*/
+    /*  &:hover {*/
+    /*    & > .item-extra-info {*/
+    /*      left: calc(1.25rem - 100%);*/
+    /*    }*/
+
+    /*  }*/
+    /*}*/
+    &:hover {
+      & > .item {
+        z-index: 4;
+      }
+      & > .item-extra-info {
+        top: -0.5rem;
+        padding: 0.5rem;
+        //position: fixed;
+        display: inline-block !important;
+        opacity: 1;
+        transition: 10ms;
+        left: 100%;
+        z-index: 1;
+      }
+
+    }
+  }
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .assign-permission-management {
     .v-select.v-select-custom-style {
       & > div {
@@ -553,7 +775,7 @@
                         class="text-danger">*</span></template>
 
                       <v-select :disabled="groupPageStatus === 'show'" class="v-select-custom-style"
-                                v-model="groupForm.role" multiple :options="roleSelectData" style="overflow:hidden;"
+                                v-model="groupForm.role" multiple :options="roleSelectData"
                                 :state="!$v.groupForm.role.$dirty ? null : !$v.groupForm.role.$invalid"
                                 :searchable="false" :dir="direction"/>
                       <div class="invalid-feedback d-block">
@@ -1113,28 +1335,42 @@
               title: this.$t('permission-management.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '8%'
+              width: '7%'
             },
             {
               name: '__slot:groupName',
               title: this.$t('permission-management.assign-permission-management.group.user-group'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '20%'
+              width: '15%'
             },
             {
               name: 'groupMember',
               title: this.$t('permission-management.assign-permission-management.group.groupMember'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '22%'
+              width: '25%',
+              callback: (value) => {
+                if (value === null) return '';
+                if (value.isLong === false) return value.groupMember;
+                else {
+                  return this.hoverContent(value);
+                }
+              }
             },
             {
               name: 'groupRole',
               title: this.$t('permission-management.assign-permission-management.group.role'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '18%'
+              width: '25%',
+              callback: (value) => {
+                if (value === null) return '';
+                if (value.isLong === false) return value.groupMember;
+                else {
+                  return this.hoverContent(value);
+                }
+              }
             },
             {
               name: 'dataRangeCategory',
@@ -1163,6 +1399,7 @@
               title: this.$t('permission-management.user.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width:'10%'
             }
           ],
         }
@@ -1234,9 +1471,18 @@
       }
     },
     methods: {
-      removeSpace(e){
-
+      hoverContent(value) {
+        let content = '<div class="item-wrapper slide-right">\n' +
+          '      <span class="item d-flex flex-column">\n' + value.label +
+          '      </span>\n' +
+          '      <div class="item-extra-info flex-column d-flex">\n' + value.groupMember +
+          '      </div>\n' +
+          '    </div>';
+        return content;
       },
+      // removeSpace(e){
+      //
+      // },
       selectAll(value){
         this.$refs.userVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
         this.$refs.userVuetable.isCheckAllStatus=value;
@@ -2008,13 +2254,49 @@
           temp.roles.forEach(role => {
             groupRoles.push(role.roleName);
           });
-          temp.groupRole = groupRoles.join(',');
+          //temp.groupRole = groupRoles.join(',');
           //temp.groupMember = userMembers.join(',');
+
           let groupMember = userMembers.join(',');
-          if(groupMember.length>40){
-            groupMember = groupMember.substr(0, 40) + "···"; // Gets the first part
+          // if(groupMember.length>20){
+          //   groupMember = groupMember.substr(0, 20) + "···"; // Gets the first part
+          // }
+          // temp.groupMember =groupMember;
+          let roles = groupRoles.join(',');
+          // if(roles.length>20){
+          //   roles = roles.substr(0, 20) + "···"; // Gets the first part
+          // }
+          // temp.groupRole =roles;
+          let isLong = false;
+          if(groupMember.length>20){
+            isLong = true;
+            temp.groupMember = {
+              groupMember : groupMember,
+              label : groupMember.substr(0, 19) + '...',
+              isLong : isLong
+            };
           }
-          temp.groupMember =groupMember;
+          else {
+            temp.groupMember = {
+              groupMember : groupMember,
+              isLong : isLong
+            };
+          }
+          let isLong2 = false;
+          if(roles.length>20){
+            isLong2 = true;
+            temp.groupRole = {
+              groupMember : roles,
+              label : roles.substr(0, 19) + '...',
+              isLong : isLong2
+            };
+          }
+          else {
+            temp.groupRole = {
+              groupMember : roles,
+              isLong : isLong2
+            };
+          }
           transformed.data.push(temp);
         }
 

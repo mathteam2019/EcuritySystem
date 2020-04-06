@@ -1,4 +1,7 @@
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .bg-organization-structure {
     background: url("../../../assets/img/bg-china-map.png") no-repeat center;
     background-size: contain;

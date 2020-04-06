@@ -1,4 +1,8 @@
 <style lang="scss">
+  .vs__selected-options {
+    margin-left: 1px;
+    margin-bottom: 1px;
+  }
   .system-setting {
     .v-select.v-select-custom-style {
       & > div {
@@ -696,6 +700,9 @@
 </template>
 
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .vc-chrome {
     position: absolute;
     top: calc(2rem + 4px);

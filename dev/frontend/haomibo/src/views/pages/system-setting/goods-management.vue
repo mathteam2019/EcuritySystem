@@ -158,6 +158,9 @@
 </template>
 
 <style>
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .section {
     border-radius: 0.3125rem;
     border-top-left-radius: 0.3125rem;

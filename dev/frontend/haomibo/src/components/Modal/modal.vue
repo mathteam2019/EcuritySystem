@@ -194,6 +194,13 @@
 </template>
 
 <style>
+  .col-form-label {
+    margin-bottom: 1px;
+  }
+  .vs__selected-options {
+    margin-left: 1px;
+    margin-bottom: 1px;
+  }
   .modal-backdrop {
     position: fixed;
     top: 0;

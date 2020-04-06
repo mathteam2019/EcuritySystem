@@ -1,4 +1,7 @@
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .device-table {
     .form-group {
       label.input-label {
@@ -446,7 +449,7 @@
                   $t('permission-management.upload-image')}}
                 </b-button>
 
-                  <div class="d-flex flex-column align-items-center" style="margin-top: 50px; margin-left: 60px;">
+                  <div class="d-flex flex-column align-items-center" style="margin-top: 50px;">
                     <div>
                       <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
                         class="icofont-save"/>

@@ -1335,6 +1335,9 @@
 </script>
 
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .statistics-view {
 
     display: flex;

@@ -1,4 +1,7 @@
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .document-management {
       .v-select.v-select-custom-style {
         & > div {

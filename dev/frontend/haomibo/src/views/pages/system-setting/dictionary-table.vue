@@ -283,7 +283,9 @@
 </template>
 
 <style>
-  .section {
+  .col-form-label {
+    margin-bottom: 1px;
+  }{
     border-radius: 0.3125rem;
     border-top-left-radius: 0.3125rem;
     border-top-right-radius: 0.3125rem;
@@ -639,14 +641,14 @@
                   });
                   this.$refs.vuetableId.reload();
                   break;
-                case responseMessages['used-dictionary-name']:
+                case responseMessages['used-dictionary-value']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-dictionary-name`), {
                     duration: 3000,
                     permanent: false
                   });
                   break;
                 case responseMessages['has-children']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-children`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.dictionary-has-children`), {
                     duration: 3000,
                     permanent: false
                   });

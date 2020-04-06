@@ -1303,6 +1303,9 @@
 </script>
 
 <style lang="scss">
+  .col-form-label {
+    margin-bottom: 1px;
+  }
   .statistics-scan-devices {
 
     display: flex;
