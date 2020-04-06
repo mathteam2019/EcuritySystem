@@ -159,6 +159,7 @@
       /*  }*/
       /*}*/
       & > .item-extra-info {
+        overflow-wrap: break-word;
         padding: calculateRem(18px);
         opacity: 0;
         transition: 0ms;
@@ -2055,6 +2056,12 @@
           if (this.$v.profileForm.userAccount.$invalid) {
             if(this.profileForm.userAccount === '') {
               this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-user-account`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else if(this.profileForm.userAccount.length > 16) {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.invalid-user-account-length`), {
                 duration: 3000,
                 permanent: false
               });

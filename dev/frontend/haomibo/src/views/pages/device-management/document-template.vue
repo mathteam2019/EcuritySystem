@@ -24,7 +24,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-classify')">
-                  <b-form-select v-model="filterOption.categoryId" :options="categoryFilterData" plain/>
+                  <b-form-select v-model="filterOption.categoryId" :options="categoryFilterDatas" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -513,6 +513,12 @@
           archivesTemplateId: 0
         },
         categoryFilterData: [],
+        categoryFilterDatas: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: '2', text: this.$t('log-management.device-log.judge')},
+          {value: '3', text: this.$t('log-management.device-log.manual')},
+          {value: '4', text: this.$t('log-management.device-log.hand')}
+        ],
         categorySelectOptions: [],
         manufacturerOptions: [],
         vuetableItems: {
@@ -562,7 +568,16 @@
               name: 'category',
               title: this.$t('device-management.device-classify'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  "2": `<span>${this.$t('log-management.device-log.judge')}</span>`,
+                  "3": `<span>${this.$t('log-management.device-log.manual')}</span>`,
+                  "4": `<span>${this.$t('log-management.device-log.hand')}</span>`
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
             },
             {
               name: 'manufacturerName',
@@ -827,7 +842,7 @@
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
           this.renderedCheckList.push(data.data[i].archivesTemplateId);
-          temp.category = temp.deviceCategory.categoryName;
+          temp.category = temp.deviceCategory.categoryId;
           temp.manufacturerName = getManufacturerName(this.manufacturerOptions, temp.manufacturer);
           transformed.data.push(temp);
         }

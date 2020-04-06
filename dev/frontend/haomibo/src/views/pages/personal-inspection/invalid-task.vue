@@ -399,19 +399,19 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
-                        {{$t('maintenance-management.process-task.default-user')}}
+<!--                        {{$t('maintenance-management.process-task.default-user')}}-->
                     </div>
                   </div>
 
                   <div class="top-date">
-                    <label v-if="showPage.serJudgeGraph==null"/>
-                    <label
-                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeStartTime)}}</label>
+<!--                    <label v-if="showPage.serJudgeGraph==null"/>-->
+<!--                    <label-->
+<!--                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeStartTime)}}</label>-->
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.serJudgeGraph==null"/>
-                    <label
-                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
+<!--                    <label v-if="showPage.serJudgeGraph==null"/>-->
+<!--                    <label-->
+<!--                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>-->
                   </div>
                 </div>
 
