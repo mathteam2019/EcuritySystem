@@ -1570,7 +1570,6 @@
               isLong : isLong
             };
           }
-          console.log(temp.resourcesLabel);
           this.renderedCheckList.push(data.data[i].roleId);
           transformed.data.push(temp);
         }

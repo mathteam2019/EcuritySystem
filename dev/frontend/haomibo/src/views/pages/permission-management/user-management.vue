@@ -1676,15 +1676,37 @@
       isSelectedAllUsersForDataGroup(newVal) {
 
         if (this.selectedUserGroupItem) {
-          let tempSelectedUserGroup = this.selectedUserGroupItem;
-          tempSelectedUserGroup.users = newVal ? this.userData : [];
-          this.selectedUserGroupItem = null;
-          this.selectedUserGroupItem = tempSelectedUserGroup;
+            if(this.isSelectedAllUsersForDataGroup == true) {
+                this.userData.forEach((user) => {
+                    user.selected = true;
+                });
+            } else {
+                this.userData.forEach((user) => {
+                    //user.selected = false;
+                });
+            }
+
           this.fnRefreshOrgUserTreeData();
         }
       }
     },
     methods: {
+        isSelectedAllUsersForDataGroupClick() {
+            console.log("Change select all user");
+            //if (this.selectedUserGroupItem) {
+                if (this.isSelectedAllUsersForDataGroup== false) {
+                    this.userData.forEach((user) =>  {
+                        user.selected = true;
+                    });
+                } else {
+                    this.userData.forEach((user) => {
+                        user.selected = false;
+                    });
+                }
+
+                this.fnRefreshOrgUserTreeData();
+            //}
+        },
       getAllUser(){
         getApiManagerError().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
           type: 'with_org_tree'
@@ -2569,7 +2591,6 @@
       },
       onUserGroupTableRowClick(dataItems) {
         this.selectedUserGroupItem = dataItems;
-        console.log(this.selectedUserGroupItem);
         this.groupForm.status = 'modify';
       },
       // user tree group
@@ -2609,7 +2630,7 @@
           return;
         }
         let tmp = treeData;
-        var answer = [];
+        let selectedCount = 0;
         for (let i = tmp.length - 1; i >= 0; i--) {
 
           if (tmp[i].userId != null && tmp[i].userId != undefined) {
@@ -2618,6 +2639,10 @@
           this.getTreeData(tmp[i].children, index + 1);
           if (!tmp[i].children || tmp[i].children.length == 0) {
             tmp.splice(i, 1);
+            continue;
+          }
+          if(tmp[i].selected == true) {
+              selectedCount = selectedCount + 1;
           }
         }
         return;
