@@ -1169,6 +1169,10 @@
         this.refreshResourceTreeData();
       },
       selectedRole(newVal, oldVal) {
+        if(oldVal!= null && newVal != null) {
+            if(newVal.roleNumber === oldVal.roleNumber)
+                return false;
+        }
         if (newVal) {
           if(newVal.resources.length === this.resourceList.length) {
             this.isSelectedAllResourcesForRole = true;
@@ -1209,6 +1213,10 @@
         this.refreshOrgUserTreeData();
       },
       selectedDataGroup(newVal, oldVal) {
+          if(oldVal!= null && newVal != null) {
+              if(newVal.dataGroupNumber === oldVal.dataGroupNumber)
+                  return false;
+          }
         if (newVal) {
           if(newVal.users.length === this.userList.length) {
             this.isSelectedAllResourcesForRoleForm = true;

@@ -1662,7 +1662,12 @@
       userData(newVal) {
         this.fnRefreshOrgUserTreeData();
       },
-      selectedUserGroupItem(newVal) {
+      selectedUserGroupItem(newVal,oldVal) {
+
+          if(oldVal!= null && newVal != null) {
+              if(newVal.userGroupId === oldVal.userGroupId)
+                  return false;
+          }
         if (newVal) {
           if (newVal.users.length === this.userData.length) {
             this.isSelectedAllUsersForDataGroup = true;
