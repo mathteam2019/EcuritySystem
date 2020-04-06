@@ -521,9 +521,9 @@
 
         categoryFilterData: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: "1000002602", text: this.$t('maintenance-management.process-task.scan')},
-          {value: "1000002603", text: this.$t('maintenance-management.process-task.judge')},
-          {value: "1000002604", text: this.$t('maintenance-management.process-task.hand')}
+          {value: "1000001901", text: this.$t('maintenance-management.process-task.scan')},
+          {value: "1000001902", text: this.$t('maintenance-management.process-task.judge')},
+          {value: "1000001903", text: this.$t('maintenance-management.process-task.hand')}
         ],
 
         statisticalStepSizeOptions: [

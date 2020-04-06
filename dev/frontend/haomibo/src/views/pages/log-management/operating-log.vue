@@ -291,6 +291,7 @@
       },
     },
     mounted() {
+      //this.handleWindowResize();
       this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
       this.$refs.operatingLogTable.$parent.transform = this.transformOperatingTable.bind(this);
     },
@@ -298,6 +299,7 @@
       return {
         isExpanded: false,
         pageStatus: 'table',
+        showLength:20,
         direction: getDirection().direction,
         tabStatus: 'access',
         link: '',
