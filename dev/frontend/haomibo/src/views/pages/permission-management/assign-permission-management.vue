@@ -131,6 +131,7 @@
     /*  }*/
     /*}*/
     & > .item-extra-info {
+      overflow-wrap: break-word;
       padding: calculateRem(18px);
       opacity: 0;
       transition: 0ms;

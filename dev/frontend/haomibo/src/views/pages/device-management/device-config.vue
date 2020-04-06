@@ -246,7 +246,7 @@
                   </b-col>
                   <b-col cols="3">
                     <b-form-group :label="$t('maintenance-management.maintenance-task.device-classification')">
-                      <b-form-select v-model="configFilter.categoryId" :options="deviceCategoryOptions"
+                      <b-form-select v-model="configFilter.categoryId" :options="deviceCategoryOption"
                                      plain/>
                     </b-form-group>
                   </b-col>
@@ -714,6 +714,12 @@
         selectedId : null,
         switchStatus: 'config', // config / list
         deviceCategoryOptions: [],
+        deviceCategoryOption: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: '2', text: this.$t('log-management.device-log.judge')},
+          {value: '3', text: this.$t('log-management.device-log.manual')},
+          {value: '4', text: this.$t('log-management.device-log.hand')}
+        ],
         siteSelectOptions: [],
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -869,11 +875,20 @@
               width: '20%'
             },
             {
-              name: 'deviceCategoryName',
+              name: 'deviceCategoryId',
               title: this.$t('menu.device-classify'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '25%'
+              width: '25%',
+              callback: (value) => {
+                const dictionary = {
+                  "2": `<span>${this.$t('log-management.device-log.judge')}</span>`,
+                  "3": `<span>${this.$t('log-management.device-log.manual')}</span>`,
+                  "4": `<span>${this.$t('log-management.device-log.hand')}</span>`
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
             },
             {
               name: 'siteNameWithParent',
@@ -1444,7 +1459,7 @@
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
           this.renderedCheckList.push(data.data[i].deviceId);
-          temp.deviceCategoryName = temp.archive ? temp.category.categoryName : '';
+          temp.deviceCategoryId = temp.archive ? temp.category.categoryId : '';
           temp.siteNameWithParent = getSiteFullName(temp.field);
           transformed.data.push(temp);
         }
@@ -1793,7 +1808,7 @@
         }
         this.deviceCategoryOptions = JSON.parse(JSON.stringify(options));
         this.deviceCategoryOptions.push({value: null, text: this.$t('permission-management.all')});
-        this.$refs.fieldSelectList.setFilterOptions(this.deviceCategoryOptions);
+        this.$refs.fieldSelectList.setFilterOptions(this.deviceCategoryOption);
       },
       siteData(newVal, oldVal) { // maybe called when the org data is loaded from server
         let getLevel = (org) => {

@@ -388,7 +388,7 @@
 
               <b-col>
                 <b-form-group :label="$t('device-management.device-classify')">
-                  <b-form-select v-model="filter.categoryId" :options="deviceCategoryOptions" plain/>
+                  <b-form-select v-model="filter.categoryId" :options="deviceCategoryOption" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -578,8 +578,6 @@
               </div>
             </div>
           </div>
-
-
         </div>
         <div class="flex-grow-1 m-0 no-item" v-if="!isExist">
           <div class="text-center no-item-data">{{$t('vuetable.no-data')}}</div>
@@ -712,8 +710,19 @@
         siteData: [],
         categoryData: [],
         deviceCategoryOptions: [],
+        deviceCategoryOption: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: '2', text: this.$t('log-management.device-log.judge')},
+          {value: '3', text: this.$t('log-management.device-log.manual')},
+          {value: '4', text: this.$t('log-management.device-log.hand')}
+        ],
         siteSelectOptions: [],
         filter: {
+          fieldId: null,
+          categoryId: null,
+          deviceName: null
+        },
+        saveFilter: {
           fieldId: null,
           categoryId: null,
           deviceName: null
@@ -857,7 +866,6 @@
       },
       generateChartData(data, hValue, mValue) {
 
-
         let xValues = data.timeList;
         let yValues = data.countList;
         let hValues = [];
@@ -970,6 +978,9 @@
             case responseMessages['ok']:
               this.transformData(data);
               this.isLoading = false;
+              this.saveFilter.fieldId = this.filter.fieldId;
+              this.saveFilter.categoryId = this.filter.categoryId;
+              this.saveFilter.deviceName = this.filter.deviceName;
               break;
           }
           this.isLoading = false;
@@ -981,7 +992,7 @@
           {
             currentPage: this.pagination.currentPage,
             perPage: this.pagination.perPage,
-            filter: this.filter
+            filter: this.saveFilter
           }).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
