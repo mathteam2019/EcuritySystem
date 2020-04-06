@@ -3,7 +3,7 @@
     <div class="main-menu">
         <vue-perfect-scrollbar class="scroll" :settings="{ suppressScrollX: true, wheelPropagation: false }">
             <ul class="list-unstyled">
-                <li v-tooltip.left="$t(item.label)" v-for="(item,index) in menuItems" :class="{ 'active' : (selectedParentMenu === item.id && viewingParentMenu === '') || viewingParentMenu === item.id }" :key="`parent_${item.id}`" :data-flag="item.id">
+                <li v-tooltip.left="$t(item.label)" v-for="(item,index) in menuItems" @click="parentMenuToggle(item.id)"  :class="{ 'active' : (selectedParentMenu === item.id && viewingParentMenu === '') || viewingParentMenu === item.id }" :key="`parent_${item.id}`" :data-flag="item.id">
                     <a   v-if="item.newWindow" :href="item.to" rel="noopener noreferrer" target="_blank">
                         <i :class="item.icon" />
                     </a>
@@ -81,6 +81,7 @@ export default {
             menuItems:null,
             viewingParentMenu: '',
             subMenuIndex:0,
+            activatedParentMenu:'',
         }
     },
     mounted() {
@@ -229,6 +230,7 @@ export default {
           //}
         },
         handleDocumentClick(e) {
+
             if (!this.isMenuOver) {
                 let cont = true
                 var path = e.path || (e.composedPath && e.composedPath())
@@ -303,6 +305,16 @@ export default {
             }
             return nextClasses
         },
+        parentMenuToggle(e) {
+            if(this.activatedParentMenu === e) {
+                this.activatedParentMenu = '';
+                this.viewingParentMenu = '';
+                this.selectMenu();
+                this.toggle();
+            }
+            else
+                this.activatedParentMenu = e;
+        }
     },
     computed: {
         ...mapGetters({
