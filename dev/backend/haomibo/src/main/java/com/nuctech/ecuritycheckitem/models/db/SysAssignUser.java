@@ -141,13 +141,13 @@ public class SysAssignUser extends BaseEntity implements Serializable {
     )
     private Set<SysRole> roles; // Relation to SysRole table.
 
-//    @OneToMany(fetch = FetchType.EAGER)
-//    @JoinTable(
-//            name = "sys_user_lookup",
-//            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
-//            inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
-//    )
-//    private Set<SysDataGroup> dataGroups;
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sys_user_lookup",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
+    )
+    private Set<SysDataGroup> dataGroups;
 
 
 }

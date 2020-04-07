@@ -127,6 +127,7 @@ public class DeviceArchiveWordView extends BaseWordView {
                 }
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         }

@@ -152,6 +152,7 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
                 }
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         }

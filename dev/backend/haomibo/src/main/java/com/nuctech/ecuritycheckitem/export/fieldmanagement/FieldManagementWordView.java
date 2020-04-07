@@ -120,6 +120,7 @@ public class FieldManagementWordView extends BaseWordView {
                 tableRow.getCell(8).setText(field.getNote());
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         }

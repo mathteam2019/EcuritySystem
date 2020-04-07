@@ -112,6 +112,7 @@ public class AuditLogWordView extends BaseWordView {
 
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         }

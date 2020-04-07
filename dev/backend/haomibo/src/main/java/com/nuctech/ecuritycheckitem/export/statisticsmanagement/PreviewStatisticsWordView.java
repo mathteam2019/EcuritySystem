@@ -129,6 +129,7 @@ public class PreviewStatisticsWordView extends BaseWordView {
 
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         }

@@ -108,6 +108,7 @@ public class UserGroupWordView extends BaseWordView {
                 tableRow.getCell(3).setText(userName);
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         }

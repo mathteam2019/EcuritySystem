@@ -291,7 +291,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
             whereCause.add("t.SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("h.HAND_DEVICE_ID = " + deviceId);
+            whereCause.add("t.DEVICE_ID = " + deviceId);
         }
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%'");

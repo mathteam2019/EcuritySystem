@@ -14,8 +14,14 @@
 package com.nuctech.ecuritycheckitem.export;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.context.MessageSource;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -66,5 +72,36 @@ public class BaseWordView {
         } catch(Exception ex) { }
 
         return strDate;
+    }
+
+    public static void setWidth(XWPFTable table, XWPFDocument document) {
+//        CTBody body = document.getDocument().getBody();
+//        if(!body.isSetSectPr()) {
+//            body.addNewSectPr();
+//        }
+//        CTSectPr sectPr = body.getSectPr();
+//        if(!sectPr.isSetPgSz()) {
+//            sectPr.addNewPgSz();
+//        }
+//        CTPageSz pageSize = sectPr.getPgSz();
+//        pageSize.setOrient(STPageOrientation.LANDSCAPE);
+//        double pageWidth = pageSize.getW().doubleValue();
+//        CTPageMar pageMargin = sectPr.getPgMar();
+//        double pageMarginLeft = pageMargin.getLeft().doubleValue();
+//        double pageMarginRight = pageMargin.getRight().doubleValue();
+//        double effectivePageWidth = pageWidth - pageMarginLeft - pageMarginRight;
+        double effectivePageWidth = 9600;
+        for(int i = 0; i < table.getNumberOfRows(); i ++) {
+            XWPFTableRow tableRow = table.getRow(i);
+            int colSize = tableRow.getTableCells().size();
+            for(int j = 0; j < colSize; j ++) {
+                XWPFTableCell cell = tableRow.getCell(j);
+                CTTblWidth cellWidth = cell.getCTTc().addNewTcPr().addNewTcW();
+                CTTcPr pr = cell.getCTTc().addNewTcPr();
+                pr.addNewNoWrap();
+                cellWidth.setW(BigInteger.valueOf((int) (effectivePageWidth / colSize)));
+            }
+        }
+
     }
 }

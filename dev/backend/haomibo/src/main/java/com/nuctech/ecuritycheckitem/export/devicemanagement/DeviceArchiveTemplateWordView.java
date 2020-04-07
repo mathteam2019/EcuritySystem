@@ -24,6 +24,9 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.poi.xwpf.usermodel.TableWidthType;
+import org.apache.poi.openxml4j.opc.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -36,7 +39,6 @@ public class DeviceArchiveTemplateWordView extends BaseWordView {
      * @param document
      */
     private static void createHeaderPart(XWPFDocument document) {
-
         XWPFParagraph title = document.createParagraph();
         title.setAlignment(ParagraphAlignment.CENTER);
 
@@ -62,6 +64,7 @@ public class DeviceArchiveTemplateWordView extends BaseWordView {
     private static void createTableHeader(XWPFTable table) {
 
         table.setWidthType(TableWidthType.DXA);
+
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
         tableRowHeader.getCell(0).setText(messageSource.getMessage("DeviceArchiveTemplate.No", null, currentLocale));
@@ -110,6 +113,7 @@ public class DeviceArchiveTemplateWordView extends BaseWordView {
                 tableRow.getCell(6).setText(template.getOriginalModel());
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         }

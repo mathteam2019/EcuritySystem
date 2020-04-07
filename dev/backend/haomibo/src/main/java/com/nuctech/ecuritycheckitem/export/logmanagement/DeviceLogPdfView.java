@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 
 public class DeviceLogPdfView extends BasePdfView {
 
+    private static Long categoryId = 0L;
     /**
      * build inputstream of data to be printed
      * @param exportLogList
@@ -45,10 +46,18 @@ public class DeviceLogPdfView extends BasePdfView {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
+            categoryId = exportLogList.get(0).getDevice().getCategoryId();
             PdfWriter.getInstance(document, out);
             document.open();
-
-            document.add(getTitle(messageSource.getMessage("DeviceLog.Title", null, currentLocale)));
+            String titleStr = "";
+            if(categoryId.intValue() == Constants.SECURITY_CATEGORY_ID) {
+                titleStr = messageSource.getMessage("DeviceLog.Security.Title", null, currentLocale);
+            } else if(categoryId.intValue() == Constants.JUDGE_CATEGORY_ID) {
+                titleStr = messageSource.getMessage("DeviceLog.Judge.Title", null, currentLocale);
+            } else {
+                titleStr = messageSource.getMessage("DeviceLog.Hand.Title", null, currentLocale);
+            }
+            document.add(getTitle(titleStr));
             document.add(getTime());
             PdfPTable table = new PdfPTable(8);
 
@@ -77,7 +86,7 @@ public class DeviceLogPdfView extends BasePdfView {
 
 
                 addTableCell(table, ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogCategory"));
-                addTableCell(table, ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogLevel"));
+                addTableCell(table, ConstantDictionary.getDataValue(log.getLevel().toString(), "DeviceLogLevel"));
                 addTableCell(table, log.getContent());
                 addTableCell(table, formatDate(log.getTime()));
             }
