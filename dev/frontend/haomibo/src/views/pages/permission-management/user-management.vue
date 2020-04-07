@@ -1345,6 +1345,7 @@
             }
         },
         mounted() {
+      this.handleWindowResize();
 
             this.$refs.vuetable.$parent.transform = this.transform.bind(this);
             this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
@@ -1554,6 +1555,7 @@
                     perPage: 10,
                 },
                 //second tab content
+        showLabel:20,
                 selectedUserGroupItem: null,
                 orgUserTreeDataTmp: [],
                 groupForm: {
@@ -1734,6 +1736,13 @@
             },
         },
         methods: {
+      handleWindowResize(event) {
+        const windowWidth = window.innerWidth;
+        console.log(windowWidth);
+        if(windowWidth<=1280) {
+          this.showLabel = 10;
+        }
+      },
             toggleSelectAllUsersForDataGroup(e) {
                 if (this.selectedUserGroupItem) {
                     this.userData.forEach((user) => {
@@ -2558,11 +2567,11 @@
                     });
                     let groupMember = usersName.join(',');
                     let isLong = false;
-                    if (groupMember.length > 20) {
+          if(groupMember.length>this.showLabel){
                         isLong = true;
                         temp.groupMember = {
                             groupMember: groupMember,
-                            label: groupMember.substr(0, 19) + '...',
+              label : groupMember.substr(0, this.showLabel) + '...',
                             isLong: isLong
                         };
                     }
