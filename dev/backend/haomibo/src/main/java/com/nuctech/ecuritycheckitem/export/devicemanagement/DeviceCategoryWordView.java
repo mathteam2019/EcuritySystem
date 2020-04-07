@@ -110,6 +110,7 @@ public class DeviceCategoryWordView extends BaseWordView {
                 tableRow.getCell(6).setText(category.getNote());
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         }

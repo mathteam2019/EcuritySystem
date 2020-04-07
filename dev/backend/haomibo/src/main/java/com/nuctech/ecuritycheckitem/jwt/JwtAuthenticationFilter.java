@@ -34,6 +34,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.PathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -189,7 +190,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         endTime = new Date();
         long dif_roles = endTime.getTime() - startTime.getTime();
 
-        String ipAddress = request.getRemoteAddr();
+        String ipAddress = request.getHeader("X-FORWARDED-FOR");
+        if(StringUtils.isEmpty(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
 
         utils.ipAddress = ipAddress;
 
@@ -214,7 +218,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String ipAddress = request.getRemoteAddr();
+        String ipAddress = request.getHeader("X-FORWARDED-FOR");
+        if(StringUtils.isEmpty(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
 
         utils.ipAddress = ipAddress;
 

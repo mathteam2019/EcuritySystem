@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
@@ -27,6 +28,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.User;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
 import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import lombok.Getter;
@@ -77,6 +79,9 @@ public class AuthController extends BaseController {
 
     @Autowired
     AsyncController asyncController;
+
+    @Autowired
+    AuditLogService auditLogService;
 
     /**
      * Login request body.
@@ -288,6 +293,9 @@ public class AuthController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -298,16 +306,59 @@ public class AuthController extends BaseController {
         }
         if (CryptUtil.matches(requestBody.getOldPassword(), password) == false) {
         //if(!sysUser.getPassword().equals(requestBody.getOldPassword())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
         }
-
+        String valueBefore = getJsonFromUser(sysUser);
         boolean result = authService.modifyPassword(sysUser.getUserId(), CryptUtil.encode(requestBody.getPassword()));
         if(result == false) {
+            auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("User", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        sysUser.setPassword(password);
+        String valueAfter = getJsonFromUser(sysUser);
+        auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("User", null, currentLocale), "", sysUser.getUserId().toString(), null, true, valueBefore, valueAfter);
+
         return new CommonResponseBody(ResponseMessage.OK);
 
+    }
+
+    public String getJsonFromUser(SysUser user) {
+        SysUser newUser = SysUser.builder()
+                .userId(user.getUserId())
+                .orgId(user.getOrgId())
+                .userName(user.getUserName())
+                .userAccount(user.getUserAccount())
+                .password(user.getPassword())
+                .dataRangeCategory(user.getDataRangeCategory())
+                .userNumber(user.getUserNumber())
+                .gender(user.getGender())
+                .identityCard(user.getIdentityCard())
+                .post(user.getPost())
+                .education(user.getEducation())
+                .degree(user.getDegree())
+                .email(user.getEmail())
+                .mobile(user.getMobile())
+                .address(user.getAddress())
+                .category(user.getDataRangeCategory())
+                .status(user.getStatus())
+                .portrait(user.getPortrait())
+                .taskId(user.getTaskId())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            answer = objectMapper.writer(filters).writeValueAsString(newUser);
+        } catch(Exception ex) {
+        }
+        return answer;
     }
 
 

@@ -135,6 +135,7 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
                 tableRow.getCell(5).setText(convertGoods);
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         }

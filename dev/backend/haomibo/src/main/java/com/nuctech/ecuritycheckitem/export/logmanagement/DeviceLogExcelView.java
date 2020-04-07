@@ -14,6 +14,7 @@
 package com.nuctech.ecuritycheckitem.export.logmanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,6 +31,7 @@ import java.io.InputStream;
 import java.util.List;
 
 public class DeviceLogExcelView extends BaseExcelView {
+    private static Long categoryId = 0L;
 
     /**
      * create table header row
@@ -71,14 +73,21 @@ public class DeviceLogExcelView extends BaseExcelView {
     public static InputStream buildExcelDocument(List<SerDevLog> exportLogList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
-
+            categoryId = exportLogList.get(0).getDevice().getCategoryId();
             Workbook workbook = new XSSFWorkbook();
 
             Sheet sheet = workbook.createSheet("Device-Log");
-
+            String titleStr = "";
+            if(categoryId.intValue() == Constants.SECURITY_CATEGORY_ID) {
+                titleStr = messageSource.getMessage("DeviceLog.Security.Title", null, currentLocale);
+            } else if(categoryId.intValue() == Constants.JUDGE_CATEGORY_ID) {
+                titleStr = messageSource.getMessage("DeviceLog.Judge.Title", null, currentLocale);
+            } else {
+                titleStr = messageSource.getMessage("DeviceLog.Hand.Title", null, currentLocale);
+            }
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue(messageSource.getMessage("DeviceLog.Title", null, currentLocale));
+            titleCell.setCellValue(titleStr);
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);
@@ -103,7 +112,7 @@ public class DeviceLogExcelView extends BaseExcelView {
                 }
                 row.createCell(3).setCellValue(log.getLoginName());
                 row.createCell(4).setCellValue(ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogCategory"));
-                row.createCell(5).setCellValue(ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogLevel"));
+                row.createCell(5).setCellValue(ConstantDictionary.getDataValue(log.getLevel().toString(), "DeviceLogLevel"));
                 row.createCell(6).setCellValue(log.getContent());
                 row.createCell(7).setCellValue(formatDate(log.getTime()));
 

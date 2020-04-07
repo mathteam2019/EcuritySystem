@@ -268,7 +268,7 @@ public class ScanParamServiceImpl implements ScanParamService {
                 boolean isExist = false;
                 SerScanParam scanParam = null;
                 for (int j = 0; j < serScanParamList.size(); j++) {
-                    if (serScanParamList.get(j).getDeviceId() == paramDeviceIdList.get(i)) {
+                    if (serScanParamList.get(j).getDeviceId().equals(paramDeviceIdList.get(i))) {
                         scanParam = serScanParamList.get(j);
                         scanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                         isExist = true;

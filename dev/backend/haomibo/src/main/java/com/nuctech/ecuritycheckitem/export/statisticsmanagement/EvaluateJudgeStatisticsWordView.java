@@ -130,6 +130,7 @@ public class EvaluateJudgeStatisticsWordView extends BaseWordView {
                 tableRow.getCell(16).setText(df.format(record.getIntelligenceJudgeMissingRate()));
             }
 
+            setWidth(table, document);
             document.write(out);
             document.close();
         } catch (Exception e) { }
