@@ -132,7 +132,7 @@
 
                                     <div class="text-left">
                                         <b-form-group>
-                                            <b-form-checkbox v-model="isSelectedAllResourcesForRoleForm">
+                                            <b-form-checkbox v-model="isSelectedAllResourcesForRoleForm" @change="toggleSelectedAllResourcesForRoleForm($event)">
                                                 {{$t('permission-management.permission-control.select-all')}}
                                             </b-form-checkbox>
                                         </b-form-group>
@@ -196,7 +196,7 @@
 
                                 <div class="text-left" v-if="selectedRole">
                                     <b-form-group>
-                                        <b-form-checkbox v-model="isSelectedAllResourcesForRole">
+                                        <b-form-checkbox v-model="isSelectedAllResourcesForRole" @change="toggleSelectedAllResourcesForRole($event)">
                                             {{$t('permission-management.permission-control.select-all')}}
                                         </b-form-checkbox>
                                     </b-form-group>
@@ -205,7 +205,7 @@
                                 <div class="flex-grow-1 overflow-auto" style="height: 0;">
                                     <div v-if="selectedRole">
                                         <v-tree ref='resourceTree' :data='resourceTreeData' :multiple="true"
-                                                :halfcheck='false'/>
+                                                :halfcheck='true'/>
                                     </div>
                                 </div>
 
@@ -382,7 +382,7 @@
 
                             <div class="text-left">
                                 <b-form-group>
-                                    <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
+                                    <b-form-checkbox v-model="isSelectedAllUsersForDataGroup" @change="toggleSelectedAllUsersForDataGroup($event)">
                                         {{$t('permission-management.permission-control.select-all')}}
                                     </b-form-checkbox>
                                 </b-form-group>
@@ -391,7 +391,7 @@
                             <div class="flex-grow-1 overflow-auto" style="height: 0;">
                                 <div>
                                     <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true"
-                                            :halfcheck='false'/>
+                                            :halfcheck='true'/>
                                 </div>
                             </div>
 
@@ -1217,26 +1217,6 @@
                     this.refreshResourceTreeData();
                 }
             },
-            isSelectedAllResourcesForRole(newVal, oldVal) {
-
-                if (this.selectedRole) {
-                    this.tempRoleResource = this.selectedRole.resources;
-                    let tempSelectedRole = this.selectedRole;
-                    tempSelectedRole.resources = newVal ? this.resourceList : this.tempRoleResource;
-                    this.resourceList.forEach((resource) =>  {
-                        resource.selected = newVal;
-                    });
-                    this.selectedRole = null;
-                    this.selectedRole = tempSelectedRole;
-                    this.refreshResourceTreeData();
-                }
-            },
-            isSelectedAllResourcesForRoleForm(newVal, oldVal) {
-                this.resourceList.forEach((resource) => {
-                    resource.selected = newVal;
-                });
-                this.refreshResourceTreeData();
-            },
             orgList(newVal, oldVal) {
                 this.refreshOrgUserTreeData();
             },
@@ -1264,18 +1244,31 @@
                     });
                     this.refreshOrgUserTreeData();
                 }
-            },
-            isSelectedAllUsersForDataGroup(newVal, oldVal) {
-                if (this.selectedDataGroup) {
-                    let tempSelectedDataGroup = this.selectedDataGroup;
-                    tempSelectedDataGroup.users = newVal ? this.userList : [];
-                    this.selectedDataGroup = null;
-                    this.selectedDataGroup = tempSelectedDataGroup;
-                    this.refreshOrgUserTreeData();
-                }
             }
         },
         methods: {
+            toggleSelectedAllUsersForDataGroup(e) {
+                if (this.selectedDataGroup) {
+                    this.userList.forEach((user) => {
+                        user.selected = e;
+                    });
+                    this.refreshOrgUserTreeData();
+                }
+            },
+            toggleSelectedAllResourcesForRoleForm(e) {
+                this.resourceList.forEach((resource) =>  {
+                    resource.selected = e;
+                });
+                this.refreshResourceTreeData();
+            },
+            toggleSelectedAllResourcesForRole(e) {
+                if (this.selectedRole) {
+                    this.resourceList.forEach((resource) =>  {
+                        resource.selected = e;
+                    });
+                    this.refreshResourceTreeData();
+                }
+            },
             // Resize
             handleWindowResize(event) {
                 const windowWidth = window.innerWidth;
