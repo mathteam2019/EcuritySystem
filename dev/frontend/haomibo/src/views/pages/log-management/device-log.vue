@@ -176,7 +176,7 @@
         width: 80%;
         left: calculateRem(30px);
         background: wheat;
-        z-index: 0;
+        z-index: 1;
         /*& > div {*/
         /*  & > div {*/
         /*    margin-bottom: calculateRem(4px);*/
@@ -248,7 +248,7 @@
           opacity: 1;
           transition: 10ms;
           left: 100%;
-          z-index: 0;
+          z-index: 1;
         }
 
       }
@@ -707,6 +707,7 @@
       },
     },
     mounted() {
+      this.handleWindowResize();
       this.$refs.securityLogTable.$parent.transform = this.transformTable.bind(this);
       this.$refs.decisionLogTable.$parent.transform = this.transformTable.bind(this);
       this.$refs.handCheckLogTable.$parent.transform = this.transformTable.bind(this);
@@ -776,6 +777,7 @@
           {value: '3', text: this.$t('log-management.device-log.error')},
           {value: '4', text: this.$t('log-management.device-log.fatal')},
         ],
+        showLength:20,
         //first tab
         securityLogTableItems: {
           apiUrl: `${apiBaseUrl}/log-management/device-log/get-by-filter-and-page`,
@@ -1070,6 +1072,13 @@
       }
     },
     methods: {
+      handleWindowResize(event) {
+        const windowWidth = window.innerWidth;
+        console.log(windowWidth);
+        if(windowWidth<=1200) {
+          this.showLength = 10;
+        }
+      },
       hoverContent(value) {
         let content = '<div class="item-wrapper slide-right">\n' +
           '      <span class="item d-flex flex-column">\n' + value.label +
@@ -1285,11 +1294,11 @@
           temp.deviceSerial = temp.device.deviceSerial;
           let contentLabel = temp.content;
           let isLong = false;
-          if(contentLabel.length>20){
+          if(contentLabel.length>this.showLength){
             isLong = true;
             temp.content = {
               content : contentLabel.toString(),
-              label : contentLabel.substr(0, 19) + '...',
+              label : contentLabel.substr(0, this.showLength) + '...',
               isLong : isLong
             };
           }
