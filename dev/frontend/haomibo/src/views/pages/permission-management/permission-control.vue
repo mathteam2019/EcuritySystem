@@ -741,7 +741,7 @@
                 opacity: 1;
                 transition: 10ms;
                 left: 100%;
-                z-index: 0;
+        z-index: 1;
             }
 
         }
@@ -1272,7 +1272,7 @@
             // Resize
             handleWindowResize(event) {
                 const windowWidth = window.innerWidth;
-                if (windowWidth <= 1200) {
+        if(windowWidth<=1280) {
                     this.showLength = 10;
                 }
             },
