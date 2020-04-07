@@ -268,7 +268,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("t.SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
+            whereCause.add("t.DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -337,7 +337,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("t.SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("JUDGE_DEVICE_ID = " + deviceId);
+            whereCause.add("t.DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -371,10 +371,13 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
                 "\t\tLEFT JOIN " +
+                "\t\tser_scan s\n" +
+                "\t\tON j.task_id = s.task_id " +
+                "\t\tLEFT JOIN " +
                 "\t\tsys_user u\n" +
                 "\t\tON j.JUDGE_USER_ID = u.user_id ");
 
-
+        whereCause.add(" s.SCAN_INVALID = 'FALSE' ");
         if (!whereCause.isEmpty()) {
 
 
@@ -405,7 +408,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("t.SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("HAND_DEVICE_ID = " + deviceId);
+            whereCause.add("t.DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");

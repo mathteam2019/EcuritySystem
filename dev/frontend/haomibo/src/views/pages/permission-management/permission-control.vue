@@ -717,7 +717,7 @@
         opacity: 1;
         transition: 10ms;
         left: 100%;
-        z-index: 0;
+        z-index: 1;
       }
 
     }

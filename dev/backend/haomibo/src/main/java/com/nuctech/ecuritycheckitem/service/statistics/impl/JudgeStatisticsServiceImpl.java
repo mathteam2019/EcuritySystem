@@ -256,7 +256,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 "\tsum( IF ( g.judge_user_id != " + Constants.DEFAULT_SYSTEM_USER + ", 1, 0 ) ) AS artificialJudge,\n" +
                 "\tsum( IF ( a.ASSIGN_TIMEOUT LIKE '" + SerJudgeGraph.AssignTimeout.TRUE + "', 1, 0 ) ) AS assignResult,\n" +
                 "\tsum( IF ( g.judge_user_id = " + Constants.DEFAULT_SYSTEM_USER + " AND a.assign_judge_device_id IS NOT NULL " + " AND g.judge_timeout LIKE '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeout,\n" +
-                "\tsum( IF ( a.ASSIGN_TIMEOUT LIKE '" + SerJudgeGraph.AssignTimeout.FALSE + "' AND a.assign_judge_device_id IS NULL " + ", 1, 0 ) ) AS atrResult,\n" +
+                "\tsum( IF ( (a.assign_id IS NULL OR a.ASSIGN_TIMEOUT LIKE '" + SerJudgeGraph.AssignTimeout.FALSE + "') AND a.assign_judge_device_id IS NULL " + ", 1, 0 ) ) AS atrResult,\n" +
                 "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "' " +
                 " AND g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspiction,\n" +
                 "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.FALSE + "' " +
@@ -305,7 +305,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             whereCause.add("t.SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("g.JUDGE_DEVICE_ID = " + deviceId);
+            whereCause.add("t.DEVICE_ID = " + deviceId);
         }
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");

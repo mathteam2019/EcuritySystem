@@ -448,7 +448,7 @@
                       <img v-else src="../../../assets/img/small_tablet.png">
                     </div>
                   </b-col>
-                  <b-col cols="8" class="right-side d-flex flex-column">
+                  <b-col cols="8" class="right-side d-flex flex-column" style="padding-left: 0; padding-right: 2px;">
                     <label v-if="(item.deviceOnline === 0 && item.device.status === '1000000701' && item.device.currentStatus !=='1000002002')" class="text-top">{{$t('device-management.device-monitoring.running-time')}}
                       {{item.runningTimeValue}}</label>
                     <label v-else class="text-top" style="opacity: 0">{{$t('device-management.device-monitoring.running-time')}}</label>
@@ -458,7 +458,7 @@
                         <label>{{item.fieldName}}</label>
                       </div>
                       <div class="w-100">
-                        <label> IP:</label>
+                        <label>IP:</label>
                         <label v-if="item.deviceOnline === 0 && item.device.status === '1000000701' && item.device.currentStatus !=='1000002002'">{{item.ipAddress}}</label>
                       </div>
                       <div class="w-100">
@@ -821,16 +821,16 @@
               this.lineChartOption = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
               //this.items[index].lineChartOptions = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
               //this.items[index].lineChartOptions = this.chartOption;
-              this.items[index].maxScanCount = Math.max.apply(Math, data.record.countList);
-              this.items[index].deviceNumber = data.device.deviceName;
+              //this.items[index].maxScanCount = Math.max.apply(Math, data.record.countList);
+              //this.items[index].deviceNumber = data.device.deviceName;
               this.items[index].device = data.device;
-              this.items[index].fieldName = data.device && data.device.field ? data.device.field.fieldDesignation : '';
-              this.items[index].landTime = getDateTimeWithFormat(data.loginTime, 'monitor');
-              this.items[index].category = data.device.category ? data.device.category.categoryName : '';
-              this.items[index].manufacturerName = data.device.archive && data.device.archive.archiveTemplate ? findDicTextData(this.manufacturerDicData, data.device.archive.archiveTemplate.manufacturer):'';
-              this.items[index].currentWorkFlowName = findDicTextData(this.currentFlowDicData, data.currentWorkFlow);
-              this.items[index].currentStatusName = findDicTextData(this.currentStatusDicData, data.currentStatus);
-              this.items[index].imageUrl = data.device && data.device.imageUrl ? data.device.imageUrl : null;
+              //this.items[index].fieldName = data.device && data.device.field ? data.device.field.fieldDesignation : '';
+              //this.items[index].landTime = getDateTimeWithFormat(data.loginTime, 'monitor');
+              //this.items[index].category = data.device.category ? data.device.category.categoryName : '';
+              //this.items[index].manufacturerName = data.device.archive && data.device.archive.archiveTemplate ? findDicTextData(this.manufacturerDicData, data.device.archive.archiveTemplate.manufacturer):'';
+              //this.items[index].currentWorkFlowName = findDicTextData(this.currentFlowDicData, data.currentWorkFlow);
+              //this.items[index].currentStatusName = findDicTextData(this.currentStatusDicData, data.currentStatus);
+              //this.items[index].imageUrl = data.device && data.device.imageUrl ? data.device.imageUrl : null;
               this.items[index].plcStatusName = findDicTextData(this.deviceStatusDicData, data.plcStatus);
               this.items[index].masterCardStatusName = findDicTextData(this.deviceStatusDicData, data.masterCardStatus);
               this.items[index].slaveCardStatusName = findDicTextData(this.deviceStatusDicData, data.slaveCardStatus);
@@ -839,14 +839,14 @@
               this.items[index].emergencyStopName = findDicTextData(this.stopStatusDicData, data.emergencyStop);
               this.items[index].footWarningName = findDicTextData(this.footStatusDicData, data.footWarning);
 
-              this.items[index].runningTimeValue = getDateTimeWithFormat(data.loginTime, 'monitor-diff', this.$i18n.locale);
-              this.items[index].deviceTrafficHigh = data.deviceTrafficHigh;
-              this.items[index].deviceStorageAlarm = data.deviceStorageAlarm;
+              //this.items[index].runningTimeValue = getDateTimeWithFormat(data.loginTime, 'monitor-diff', this.$i18n.locale);
+              //this.items[index].deviceTrafficHigh = data.deviceTrafficHigh;
+              //this.items[index].deviceStorageAlarm = data.deviceStorageAlarm;
               this.items[index].plcStatus = data.plcStatus;
               this.items[index].slaveCardStatus = data.slaveCardStatus;
               this.items[index].masterCardStatus = data.masterCardStatus;
               this.items[index].footWarning = data.footWarning;
-              this.items[index].deviceOnline = data.deviceOnline;
+              //this.items[index].deviceOnline = data.deviceOnline;
               this.items[index].servo = data.servo;
               this.items[index].slidePosition = data.slidePosition;
               this.items[index].emergencyStop = data.emergencyStop;
@@ -911,6 +911,7 @@
         });
       },
       onSearchButton() {
+        this.selectedId = null;
         this.getDataFetch();
       },
       onResetButton() {
@@ -961,6 +962,7 @@
         }
       },
       getDataFetch(isCurrentPage=false) { // customize data loading for table from server
+        this.selectedId = null;
         this.isLoading = true;
         //let current = false;
         if((this.filter.categoryId !== null || this.filter.fieldId !== null || this.filter.deviceName !== null) && !isCurrentPage) {

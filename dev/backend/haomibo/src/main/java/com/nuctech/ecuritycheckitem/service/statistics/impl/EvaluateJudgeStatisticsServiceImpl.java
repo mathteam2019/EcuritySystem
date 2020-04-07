@@ -236,27 +236,13 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
                 "\tsum( IF ( c.HAND_APPRAISE LIKE '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0 ) ) AS missingReport,\n" +
                 "\tsum( IF ( c.HAND_APPRAISE2 LIKE '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0 ) ) AS falseReport,\n" +
                 "\t\n" +
-                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT), 1, 0)) as artificialJudge,\n" +
-                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT) and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as artificialJudgeMissing,\n" +
-                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT) and c.HAND_APPRAISE2 like '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as artificialJudgeMistake,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID != 10000, 1, 0)) as artificialJudge,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID != 10000 and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as artificialJudgeMissing,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID != 10000 and c.HAND_APPRAISE2 like '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as artificialJudgeMistake,\n" +
                 "\t\n" +
-                "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "' " +
-                "and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
-                "OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "')" +
-                " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID =  " + Constants.DEFAULT_SYSTEM_USER + " and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "', 1, 0)) as intelligenceJudge,\n" +
-                "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "' " +
-                " and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
-                " OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "') " +
-                " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID =  " + Constants.DEFAULT_SYSTEM_USER + " and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
-                " and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as intelligenceJudgeMissing,\n" +
-                "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "' " +
-                " and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
-                " OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "') " +
-                " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID =  " + Constants.DEFAULT_SYSTEM_USER + " and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
-                " and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as intelligenceJudgeMistake,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID = 10000, 1, 0)) as intelligenceJudge,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID = 10000 and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as intelligenceJudgeMissing,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID = 10000 and c.HAND_APPRAISE2 like '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as intelligenceJudgeMistake,\n" +
                 "\t\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +
                 "\tMIN( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS minDuration,\n" +
@@ -302,7 +288,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
             whereCause.add("t.SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("h.HAND_DEVICE_ID = " + deviceId);
+            whereCause.add("t.DEVICE_ID = " + deviceId);
         }
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%'");

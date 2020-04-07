@@ -17,20 +17,19 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
-import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.XWPFTableRow;
-import org.apache.poi.xwpf.usermodel.TableWidthType;
+import com.nuctech.ecuritycheckitem.models.db.SysDevice;
+import org.apache.poi.xwpf.usermodel.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.List;
 
 public class DeviceLogWordView extends BaseWordView {
+
+    private static Long categoryId = 0L;
 
     /**
      * create title paragraph
@@ -40,9 +39,26 @@ public class DeviceLogWordView extends BaseWordView {
 
         XWPFParagraph title = document.createParagraph();
         title.setAlignment(ParagraphAlignment.CENTER);
+//
+//        CTSectPr sectPr = document.getDocument().getBody().getSectPr();
+//        CTPageSz pageSize = sectPr.getPgSz();
+//        double pageWidth =  sectPr.getPgSz().getW().doubleValue();
+//
+//        CTPageMar pageMargin = sectPr.getPgMar();
+//        double pageMarginLeft = pageMargin.getLeft().doubleValue();
+//        double pageMarginRight = pageMargin.getRight().doubleValue();
+//        double effectivePageWidth = pageWidth - pageMarginLeft - pageMarginRight;
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText(messageSource.getMessage("DeviceLog.Title", null, currentLocale));
+        String titleStr = "";
+        if(categoryId.intValue() == Constants.SECURITY_CATEGORY_ID) {
+            titleStr = messageSource.getMessage("DeviceLog.Security.Title", null, currentLocale);
+        } else if(categoryId.intValue() == Constants.JUDGE_CATEGORY_ID) {
+            titleStr = messageSource.getMessage("DeviceLog.Judge.Title", null, currentLocale);
+        } else {
+            titleStr = messageSource.getMessage("DeviceLog.Hand.Title", null, currentLocale);
+        }
+        titleRun.setText(titleStr);
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -62,8 +78,9 @@ public class DeviceLogWordView extends BaseWordView {
      */
     private static void createTableHeader(XWPFTable table) {
 
+
         table.setWidthType(TableWidthType.DXA);
-        //create first row
+
         XWPFTableRow tableRowHeader = table.getRow(0);
         tableRowHeader.getCell(0).setText(messageSource.getMessage("DeviceLog.No", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Device", null, currentLocale));
@@ -73,6 +90,7 @@ public class DeviceLogWordView extends BaseWordView {
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Level", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Content", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Time", null, currentLocale));
+
 
     }
 
@@ -84,8 +102,8 @@ public class DeviceLogWordView extends BaseWordView {
     public static InputStream buildWordDocument(List<SerDevLog> exportList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-
         try {
+            categoryId = exportList.get(0).getDevice().getCategoryId();
             //Blank Document
             XWPFDocument document = new XWPFDocument();
             createHeaderPart(document);
@@ -110,13 +128,13 @@ public class DeviceLogWordView extends BaseWordView {
                 tableRow.getCell(3).setText(log.getLoginName());
 
                 tableRow.getCell(4).setText(ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogCategory"));
-                tableRow.getCell(5).setText(ConstantDictionary.getDataValue(log.getCategory().toString(), "DeviceLogLevel"));
+                tableRow.getCell(5).setText(ConstantDictionary.getDataValue(log.getLevel().toString(), "DeviceLogLevel"));
                 tableRow.getCell(6).setText(log.getContent());
                 tableRow.getCell(7).setText(formatDate(log.getTime()));
-
             }
-
+            setWidth(table, document);
             document.write(out);
+
             document.close();
         }
         catch (Exception e) {
