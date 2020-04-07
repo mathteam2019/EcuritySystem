@@ -1,6 +1,6 @@
 <template>
   <b-input-group class="mb-3 colorpicker-chrome" ref="colorpicker">
-    <b-form-input v-model="colorValue" @focus="showPicker()" @input="updateFromInput" :disabled="disablePicker"/>
+    <b-form-input v-model="colorValue" @focus="showPicker()" @input="updateFromInput" :disabled="true" :style="disablePicker?'background-color: #e9ecef;':''"/>
     <b-input-group-text>
       <span class="current-color" :style="'background-color: ' + colorValue" @click="togglePicker()"></span>
       <chrome-picker :value="colors" @input="updateFromPicker" v-if="displayPicker" />
