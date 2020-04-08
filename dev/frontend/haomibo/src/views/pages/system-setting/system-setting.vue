@@ -350,7 +350,7 @@
                   </b-col>
 
                   <b-col>
-                    <b-form-group :label="$t('permission-management.active')">
+                    <b-form-group :label="$t('system-setting.status')">
                       <b-form-select v-model="filter.status" :options="stateOptions" plain/>
                     </b-form-group>
                   </b-col>

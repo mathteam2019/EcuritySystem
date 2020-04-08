@@ -534,8 +534,16 @@
               ...item,
               children: nest(items, item.fieldId, depth + 1),
               id: id++,
-              label: `<div class="org-content-top"><span>${depth}</span>${item.fieldSerial}</div><div class="org-content-bottom">${item.fieldDesignation}</div>`
+              label: `<div class="org-content-top"><span>${depth}</span>${nameLabel(item.fieldSerial)}</div><div class="org-content-bottom">${item.fieldDesignation}</div>`
             }));
+        let nameLabel = (orgNumber) => {
+          //console.log(orgNumber)
+          if(orgNumber.toString().length>7) {
+            orgNumber = orgNumber.substring(0, 7) + '...';
+          }
+          //console.log(orgNumber);
+          return orgNumber;
+        }
         this.treeData = nest(newVal)[0];
         this.changeOrgTree(this.treeData.children, 1);
         this.superSiteOption.unshift({

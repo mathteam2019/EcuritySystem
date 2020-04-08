@@ -620,7 +620,7 @@
           return;
         }
 
-        this.isLoading = true;
+        //this.isLoading = true;
 
         if (this.selectedDic) {
           getApiManager()
@@ -630,7 +630,7 @@
               'note': this.dicForm.note,
             })
             .then((response) => {
-              this.isLoading = false;
+              //this.isLoading = false;
               let message = response.data.message;
               let data = response.data.data;
               switch (message) {
@@ -664,7 +664,7 @@
               }
             })
             .catch((error) => {
-              this.isLoading = false;
+              //this.isLoading = false;
             });
         }
         if (this.dicForm.visible) {
@@ -674,7 +674,7 @@
               'note': this.dicForm.note,
             })
             .then((response) => {
-              this.isLoading = false;
+              //this.isLoading = false;
               let message = response.data.message;
               let data = response.data.data;
               switch (message) {
@@ -702,7 +702,7 @@
               }
             })
             .catch((error) => {
-              this.isLoading = false;
+              //this.isLoading = false;
             });
         }
 
@@ -737,7 +737,7 @@
           }
           return;
         }
-        this.isLoading = true;
+        //this.isLoading = true;
 
         if (this.selectedDicData) {
           getApiManager()
@@ -749,7 +749,7 @@
               'note': this.dicDataForm.note,
             })
             .then((response) => {
-              this.isLoading = false;
+              //this.isLoading = false;
               let message = response.data.message;
               let data = response.data.data;
               switch (message) {
@@ -783,7 +783,7 @@
               }
             })
             .catch((error) => {
-              this.isLoading = false;
+              //this.isLoading = false;
             });
         }
         if (this.dicDataForm.visible) {
@@ -795,7 +795,7 @@
               'note': this.dicDataForm.note,
             })
             .then((response) => {
-              this.isLoading = false;
+              //this.isLoading = false;
               let message = response.data.message;
               let data = response.data.data;
               switch (message) {
@@ -829,7 +829,7 @@
               }
             })
             .catch((error) => {
-              this.isLoading = false;
+              //this.isLoading = false;
             });
         }
 
@@ -874,7 +874,7 @@
               'dictionaryId': this.deletingDic.dictionaryId
             })
             .then((response) => {
-              this.isLoading = false;
+              //this.isLoading = false;
               this.hideModal('modal-delete-dic');
               let message = response.data.message;
               let data = response.data.data;
@@ -904,7 +904,7 @@
               }
             })
             .catch((error) => {
-              this.isLoading = false;
+              //this.isLoading = false;
             });
         }
       },
@@ -915,7 +915,7 @@
               'dataId': this.deletingDicData.dataId
             })
             .then((response) => {
-              this.isLoading = false;
+              //this.isLoading = false;
               this.hideModal('modal-delete-dicData');
               let message = response.data.message;
               let data = response.data.data;
@@ -944,7 +944,7 @@
               }
             })
             .catch((error) => {
-              this.isLoading = false;
+              //this.isLoading = false;
             });
         }
       },
