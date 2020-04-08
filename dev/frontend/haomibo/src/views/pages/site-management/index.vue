@@ -543,7 +543,7 @@
           value: this.treeData.fieldId
         });
         this.superSiterFilterOptions = [];
-        this.superSiteOptions.forEach(site => {
+        this.superSiteOption.forEach(site => {
             this.superSiterFilterOptions.push(site);
         })
           this.superSiterFilterOptions.unshift({value: null, text: this.$t('permission-management.all')});

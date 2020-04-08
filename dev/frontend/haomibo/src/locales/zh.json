@@ -1249,7 +1249,8 @@
     "error-title": "错误",
     "network-error": "网路错误",
     "forbidden": "没有权限",
-    "invalid-parameter": "无效的参数"
+    "invalid-parameter": "无效的参数",
+    "invalid-export-number": "日志导出条数限制超过"
   },
   "vuetable": {
     "every-page-showing": "每页显示",

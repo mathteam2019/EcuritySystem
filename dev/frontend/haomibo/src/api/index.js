@@ -8,7 +8,11 @@ import {apiBaseUrl} from '../constants/config';
 const getApiManager = function () {
 
   const apiManager = axios.create({
-    headers: {'X-AUTH-TOKEN': getAuthTokenInfo().token}
+    headers: {'X-AUTH-TOKEN': getAuthTokenInfo().token},
+    validateStatus: function (status) {
+
+      return status >= 200 && status <= 503;
+    },
   });
   apiManager.interceptors.response.use((response) => {
     // Any status code that lie within the range of 2xx cause this function to trigger
@@ -184,41 +188,52 @@ const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
   let ext2 =  ['docx','pdf','xlsx'];
   let ext1 = [];
 
-  if(ext !== null){
-    for(let i=0; i<ext.length; i++){
-      ext1[i] = ext[i].value;
-    }
-  }else {
-    ext1=ext2;
-  }
+  console.log(ext);
 
-  for(let i=0; i<ext1.length; i++) {
-  getApiManager()
-      .post(`${apiBaseUrl}/` + link + '/' + ext1[i], params, {
-      responseType: 'blob'
-    })
-    .then((response) => {
-      let status = response.status;
-      if(status === 200) {
-        let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-        let fileLink = document.createElement('a');
-        fileLink.href = fileURL;
-          fileLink.setAttribute('download', name + '.' + ext1[i]);
-        document.body.appendChild(fileLink);
-        fileLink.click();
-        fileLink.parentNode.removeChild(fileLink);
-      } else if(status === 201) {
-        app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.forbidden`), {
-          duration: 3000,
-          permanent: false
+  let extension = ext.shift();
+
+
+  // if(ext !== null){
+  //   for(let i=0; i<ext.length; i++){
+  //     ext1[i] = ext[i].value;
+  //   }
+  // }else {
+  //   ext1=ext2;
+  //   return;
+  // }
+
+      getApiManager()
+        .post(`${apiBaseUrl}/` + link + '/' + extension.value, params, {
+          responseType: 'blob'
+        })
+        .then((response) => {
+          let status = response.status;
+          console.log(status);
+          if (status === 200) {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', name + '.' + extension.value);
+            document.body.appendChild(fileLink);
+            fileLink.click();
+            fileLink.parentNode.removeChild(fileLink);
+            console.log(ext);
+            downLoadFileFromServer(link, params, name, ext);
+          } else if (status === 403) {
+
+            app.$notify('warning', app.$t(`permission-management.warning`), app.$t(`api-call-error-messages.invalid-export-number`), {
+              duration: 3000,
+              permanent: false
+            });
+          }
+
+        })
+        .catch(error => {
+
+          throw new Error(error);
         });
-      }
 
-    })
-    .catch(error => {
-      throw new Error(error);
-    });
-  }
+
 
 };
 
@@ -236,6 +251,7 @@ const printFileFromServer = (link,params) => {
       })
       .then((response) => {
         let status = response.status;
+        console.log(response);
         if (status === 200) {
           let els = document.querySelectorAll('body>iframe');
           els.forEach(item => {
@@ -249,14 +265,15 @@ const printFileFromServer = (link,params) => {
           document.body.appendChild(objFra);
           objFra.contentWindow.focus();
           objFra.contentWindow.print();
-        } else if (status === 201) {
-          app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.forbidden`), {
+        } else if (status === 403) {
+          app.$notify('warning', app.$t(`permission-management.warning`), app.$t(`api-call-error-messages.invalid-export-number`), {
             duration: 3000,
             permanent: false
           });
         }
       })
       .catch(error => {
+        console.log(Error(error));
         throw new Error(error);
       });
   }
@@ -368,7 +385,7 @@ function isAccountValid(value) {
   let accountReg = /^[A-Za-z0-9._-]+$/;
   let arrReg = [/^[A-Z]+$/, /^[a-z]+$/, /^[0-9]+$/, /^[._-]+$/];
   let regId=0;
-  if(value === null) {
+  if(value === null || !accountReg.test(value)) {
     return false;
   }else {
     let arrPassword = value.split('');

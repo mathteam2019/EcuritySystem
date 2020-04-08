@@ -1594,7 +1594,7 @@
                       break;
                     }
                   }
-                  if(!isDeleted && this.cartoonsInfo[k].displayDel === '1000000602') {
+                  if(!isDeleted) {
                     this.cartoonRectL.push({
                       x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
                       y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
@@ -1672,7 +1672,7 @@
                       break;
                     }
                   }
-                  if(!isDeleted && this.cartoonsInfo[k + 1].displayDel === '1000000602') {
+                  if(!isDeleted) {
                     this.cartoonRectR.push({
                       x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
                       y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
@@ -2054,7 +2054,7 @@
                             break;
                           }
                         }
-                        if(!isDeleted && this.imagesInfo[0].displayDel === '1000000602') {
+                        if(!isDeleted) {
                           this.imageRectL.push({
                             x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
                             y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
@@ -2134,7 +2134,7 @@
                             break;
                           }
                         }
-                        if(!isDeleted && this.imagesInfo[1].displayDel === '1000000602') {
+                        if(!isDeleted) {
                           this.imageRectR.push({
                             x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
                             y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,

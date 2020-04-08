@@ -638,7 +638,9 @@ $check-checked-color:#67c23a;
 .vuetable {
   thead > tr > th[class*='vuetable-th-checkbox-'], tbody > tr > td.vuetable-checkboxes {
     position: relative;
-    width: 3.75rem!important;
+    min-width: 30px !important;
+    width: 3%!important;
+    align-content: center;
     input[type=checkbox] {
       width: 0;
       opacity: 0;
@@ -649,11 +651,10 @@ $check-checked-color:#67c23a;
       & ~ label::before {
         content: "";
         position: absolute;
-        left: 1.25rem;
-        /*top: .25rem;*/
-        min-width: 1.25rem;
-        width: 1.25rem;
-        height: 1.25rem;
+        left: calc(50% - 10px);
+        top: calc(50% - 10px);
+        width: 20px;
+        height: 20px;
         border: 1px solid #909090;
         border-radius: .25rem;
       }
@@ -661,11 +662,10 @@ $check-checked-color:#67c23a;
         & ~ label::before {
           content: "";
           position: absolute;
-          left: 1.25rem;
-          /*top: .25rem;*/
-          min-width: 1rem;
-          width: 1.25rem;
-          height: 1.25rem;
+          left: calc(50% - 10px);
+          top: calc(50% - 10px);
+          width: 20px;
+          height: 20px;
           border: 1px solid #909090;
           border-radius: .25rem;
           background-color: $check-checked-color;
@@ -673,11 +673,10 @@ $check-checked-color:#67c23a;
         & ~ label::after {
           content: "";
           position: absolute;
-          left: 1.25rem;
-          /*top: .25rem;*/
-          min-width: 1rem;
-          width: 1.25rem;
-          height: 1.25rem;
+          left: calc(50% - 10px);
+          top: calc(50% - 10px);
+          width: 20px;
+          height: 20px;
           border: 1px solid $check-checked-color;
           border-radius: .25rem;
           background: no-repeat 50% / 50% 50%;
@@ -917,6 +916,7 @@ $check-checked-color:#67c23a;
           background: white;
           padding: 5px;
           color: #676e6f;
+          word-break: break-word;
         }
       }
     }

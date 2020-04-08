@@ -963,6 +963,9 @@
       },
       getDataFetch(isCurrentPage=false) { // customize data loading for table from server
         this.selectedId = null;
+        this.saveFilter.fieldId = this.filter.fieldId;
+        this.saveFilter.categoryId = this.filter.categoryId;
+        this.saveFilter.deviceName = this.filter.deviceName;
         //this.isLoading = true;
         //let current = false;
         if((this.filter.categoryId !== null || this.filter.fieldId !== null || this.filter.deviceName !== null) && !isCurrentPage) {
@@ -980,9 +983,7 @@
             case responseMessages['ok']:
               this.transformData(data);
               //this.isLoading = false;
-              this.saveFilter.fieldId = this.filter.fieldId;
-              this.saveFilter.categoryId = this.filter.categoryId;
-              this.saveFilter.deviceName = this.filter.deviceName;
+
               break;
           }
           //this.isLoading = false;

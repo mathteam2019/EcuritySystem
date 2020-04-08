@@ -730,16 +730,18 @@
         /*  }*/
         /*}*/
         &:hover {
+
             & > .item {
-                z-index: 4;
+                //z-index: 4;
+                display: none !important;
             }
             & > .item-extra-info {
                 top: -0.5rem;
                 padding: 0.5rem;
-                //position: fixed;
+                position:static;
                 display: inline-block !important;
                 opacity: 1;
-                transition: 10ms;
+               //transition: 1000ms;
                 left: 100%;
         z-index: 1;
             }

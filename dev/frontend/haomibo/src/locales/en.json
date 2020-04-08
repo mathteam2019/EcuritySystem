@@ -1239,7 +1239,8 @@
     "error-title": "Error report",
     "network-error": "Network error",
     "forbidden": "Forbidden",
-    "invalid-parameter": "Invalid parameter"
+    "invalid-parameter": "Invalid parameter",
+    "invalid-export-number": "The number of hard log exports exceeds the limit."
   },
   "vuetable": {
     "every-page-showing": " Display per page",

@@ -1104,7 +1104,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'scanResultRate',
+              name: 'atrResultRate',
               title: this.$t('statistics.monitors.atr-result-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',

@@ -1324,6 +1324,9 @@ export default {
     color: #2185d0;
     cursor: pointer;
   }
+  .vuetable-body{
+    word-break: break-word;
+  }
   .vuetable-body-wrapper {
     position:relative;
     overflow-y:auto;
