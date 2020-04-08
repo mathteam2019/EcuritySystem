@@ -442,7 +442,7 @@
       "user-exist": "用户存在",
       "user-group-exist": "用户组存在",
       "role-modified": "人员授权修改成功",
-      "role-deleted": "成功删除一个角色",
+      "role-deleted": "人员授权删除成功",
       "delete-role-prompt": "您要删除此角色吗？",
       "data-group-created": "创建一个数据组",
       "data-group-modified": "数据组已修改",

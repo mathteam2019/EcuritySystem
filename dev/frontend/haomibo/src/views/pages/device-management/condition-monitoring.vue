@@ -963,7 +963,7 @@
       },
       getDataFetch(isCurrentPage=false) { // customize data loading for table from server
         this.selectedId = null;
-        this.isLoading = true;
+        //this.isLoading = true;
         //let current = false;
         if((this.filter.categoryId !== null || this.filter.fieldId !== null || this.filter.deviceName !== null) && !isCurrentPage) {
           this.pagination.currentPage = 1;
@@ -979,13 +979,13 @@
           switch (message) {
             case responseMessages['ok']:
               this.transformData(data);
-              this.isLoading = false;
+              //this.isLoading = false;
               this.saveFilter.fieldId = this.filter.fieldId;
               this.saveFilter.categoryId = this.filter.categoryId;
               this.saveFilter.deviceName = this.filter.deviceName;
               break;
           }
-          this.isLoading = false;
+          //this.isLoading = false;
         });
         //this.isLoading = false;
       },
@@ -1002,7 +1002,7 @@
             case responseMessages['ok']:
               this.transformData(data);
               //this.getDataFetchRefresh();
-              this.isLoading = false;
+              //this.isLoading = false;
               break;
           }
         });

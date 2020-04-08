@@ -1861,7 +1861,7 @@
 
                 if (this.imagesInfo[0] !== undefined) {
                   if (this.imagesInfo[0].imageRect != null) {
-                    if(this.imagesInfo[0].displayDel === '1000000602' && this.imagesInfo[0].rectsDel != null){
+                    if(this.imagesInfo[0].rectsDel != null){
                       for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
                         let isDeleted = false;
                         for (let j = 0; j < this.imagesInfo[0].rectsDel.length; j++) {
@@ -1870,7 +1870,7 @@
                             break;
                           }
                         }
-                        if(!isDeleted) {
+                        if(!isDeleted && this.imagesInfo[0].displayDel === '1000000602') {
                           this.imageRectL.push({
                             x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
                             y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
@@ -1878,6 +1878,22 @@
                             height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
                             colour: this.imagesInfo[0].colorRect,
                           });
+                        }
+                      }
+                      for (let i = 0; i < this.imagesInfo[0].rectsDel.length; i++) {
+                        console.log(this.imagesInfo[0].rectsDel);
+                        let isDeleted = false;
+                        for (let j = 0; j < this.imagesInfo[0].imageRect.length; j++) {
+                          if(this.imagesInfo[0].rectsDel[i].x === this.imagesInfo[0].imageRect[j].x && this.imagesInfo[0].rectsDel[i].y === this.imagesInfo[0].imageRect[j].y && this.imagesInfo[0].rectsDel[i].width === this.imagesInfo[0].imageRect[j].width && this.imagesInfo[0].rectsDel[i].height === this.imagesInfo[0].imageRect[j].height) {
+                            isDeleted = true;
+                            break;
+                          }
+                        }
+                        if(!isDeleted) {
+                          this.imagesInfo[0].rectsDel[i].x = 0;
+                          this.imagesInfo[0].rectsDel[i].y = 0;
+                          this.imagesInfo[0].rectsDel[i].width = 0;
+                          this.imagesInfo[0].rectsDel[i].height = 0;
                         }
                       }
                     }
@@ -1925,7 +1941,7 @@
 
                 if (this.imagesInfo[1] !== undefined) {
                   if (this.imagesInfo[1].imageRect != null) {
-                    if(this.imagesInfo[1].displayDel === '1000000602' && this.imagesInfo[1].rectsDel != null){
+                    if(this.imagesInfo[1].rectsDel != null){
                       for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
                         let isDeleted = false;
                         for (let j = 0; j < this.imagesInfo[1].rectsDel.length; j++) {
@@ -1934,7 +1950,7 @@
                             break;
                           }
                         }
-                        if(!isDeleted) {
+                        if(!isDeleted && this.imagesInfo[1].displayDel === '1000000602') {
                           this.imageRectR.push({
                             x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
                             y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
@@ -1942,6 +1958,21 @@
                             height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
                             colour: this.imagesInfo[1].colorRect,
                           });
+                        }
+                      }
+                      for (let i = 0; i < this.imagesInfo[1].rectsDel.length; i++) {
+                        let isDeleted = false;
+                        for (let j = 0; j < this.imagesInfo[1].imageRect.length; j++) {
+                          if(this.imagesInfo[1].rectsDel[i].x === this.imagesInfo[1].imageRect[j].x && this.imagesInfo[1].rectsDel[i].y === this.imagesInfo[1].imageRect[j].y && this.imagesInfo[1].rectsDel[i].width === this.imagesInfo[1].imageRect[j].width && this.imagesInfo[1].rectsDel[i].height === this.imagesInfo[1].imageRect[j].height) {
+                            isDeleted = true;
+                            break;
+                          }
+                        }
+                        if(!isDeleted) {
+                          this.imagesInfo[1].rectsDel[i].x = 0;
+                          this.imagesInfo[1].rectsDel[i].y = 0;
+                          this.imagesInfo[1].rectsDel[i].width = 0;
+                          this.imagesInfo[1].rectsDel[i].height = 0;
                         }
                       }
                     }

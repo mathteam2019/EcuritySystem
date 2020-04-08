@@ -274,7 +274,7 @@
         </b-col>
       </b-row>
     </b-col>
-    <footer class="auth-login">Copyright by JINUNG Company limited 2020.All right Reserved</footer>
+
   </b-row>
 </template>
 <script>

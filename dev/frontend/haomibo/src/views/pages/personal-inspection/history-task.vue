@@ -1585,7 +1585,7 @@
           if (this.cartoonsInfo[k] !== undefined) {
             url1 = this.cartoonsInfo[k].imageUrl;
             if(this.cartoonsInfo[k].imageRect!=null) {
-              if(this.cartoonsInfo[k].displayDel === '1000000602' && this.cartoonsInfo[k].rectsDel != null){
+              if(this.cartoonsInfo[k].rectsDel != null){
                 for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
                   let isDeleted = false;
                   for (let j = 0; j < this.cartoonsInfo[k].rectsDel.length; j++) {
@@ -1594,7 +1594,7 @@
                       break;
                     }
                   }
-                  if(!isDeleted) {
+                  if(!isDeleted && this.cartoonsInfo[k].displayDel === '1000000602') {
                     this.cartoonRectL.push({
                       x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
                       y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
@@ -1602,6 +1602,21 @@
                       height: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].height,
                       colour: this.cartoonsInfo[k].colorRect,
                     });
+                  }
+                }
+                for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
+                  let isDeleted = false;
+                  for (let j = 0; j < this.cartoonsInfo[k].imageRect.length; j++) {
+                    if(this.cartoonsInfo[k].rectsDel[i].x === this.cartoonsInfo[k].imageRect[j].x && this.cartoonsInfo[k].rectsDel[i].y === this.cartoonsInfo[k].imageRect[j].y && this.cartoonsInfo[k].rectsDel[i].width === this.cartoonsInfo[k].imageRect[j].width && this.cartoonsInfo[k].rectsDel[i].height === this.cartoonsInfo[k].imageRect[j].height) {
+                      isDeleted = true;
+                      break;
+                    }
+                  }
+                  if(!isDeleted) {
+                    this.cartoonsInfo[k].rectsDel[i].x = 0;
+                    this.cartoonsInfo[k].rectsDel[i].y = 0;
+                    this.cartoonsInfo[k].rectsDel[i].width = 0;
+                    this.cartoonsInfo[k].rectsDel[i].height = 0;
                   }
                 }
               }
@@ -1648,7 +1663,7 @@
           if (this.cartoonsInfo[k + 1] !== undefined) {
             url2 = this.cartoonsInfo[k + 1].imageUrl;
             if (this.cartoonsInfo[k + 1].imageRect != null) {
-              if(this.cartoonsInfo[k + 1].displayDel === '1000000602' && this.cartoonsInfo[k + 1].rectsDel != null){
+              if(this.cartoonsInfo[k + 1].rectsDel != null){
                 for (let i = 0; i < this.cartoonsInfo[k+ 1].imageRect.length; i++) {
                   let isDeleted = false;
                   for (let j = 0; j < this.cartoonsInfo[k+ 1].rectsDel.length; j++) {
@@ -1657,7 +1672,7 @@
                       break;
                     }
                   }
-                  if(!isDeleted) {
+                  if(!isDeleted && this.cartoonsInfo[k + 1].displayDel === '1000000602') {
                     this.cartoonRectR.push({
                       x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
                       y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
@@ -1665,6 +1680,21 @@
                       height: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].height,
                       colour: this.cartoonsInfo[k + 1].colorRect,
                     });
+                  }
+                }
+                for (let i = 0; i < this.cartoonsInfo[k + 1].rectsDel.length; i++) {
+                  let isDeleted = false;
+                  for (let j = 0; j < this.cartoonsInfo[k + 1].imageRect.length; j++) {
+                    if(this.cartoonsInfo[k + 1].rectsDel[i].x === this.cartoonsInfo[k + 1].imageRect[j].x && this.cartoonsInfo[k + 1].rectsDel[i].y === this.cartoonsInfo[k + 1].imageRect[j].y && this.cartoonsInfo[k + 1].rectsDel[i].width === this.cartoonsInfo[k + 1].imageRect[j].width && this.cartoonsInfo[k + 1].rectsDel[i].height === this.cartoonsInfo[k + 1].imageRect[j].height) {
+                      isDeleted = true;
+                      break;
+                    }
+                  }
+                  if(!isDeleted) {
+                    this.cartoonsInfo[k + 1].rectsDel[i].x = 0;
+                    this.cartoonsInfo[k + 1].rectsDel[i].y = 0;
+                    this.cartoonsInfo[k + 1].rectsDel[i].width = 0;
+                    this.cartoonsInfo[k + 1].rectsDel[i].height = 0;
                   }
                 }
               }
@@ -2015,7 +2045,7 @@
 
                 if (this.imagesInfo[0] !== undefined) {
                   if (this.imagesInfo[0].imageRect != null) {
-                    if(this.imagesInfo[0].displayDel === '1000000602' && this.imagesInfo[0].rectsDel != null){
+                    if(this.imagesInfo[0].rectsDel != null){
                       for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
                         let isDeleted = false;
                         for (let j = 0; j < this.imagesInfo[0].rectsDel.length; j++) {
@@ -2024,7 +2054,7 @@
                             break;
                           }
                         }
-                        if(!isDeleted) {
+                        if(!isDeleted && this.imagesInfo[0].displayDel === '1000000602') {
                           this.imageRectL.push({
                             x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
                             y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
@@ -2032,6 +2062,22 @@
                             height: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].height,
                             colour: this.imagesInfo[0].colorRect,
                           });
+                        }
+                      }
+                      for (let i = 0; i < this.imagesInfo[0].rectsDel.length; i++) {
+                        console.log(this.imagesInfo[0].rectsDel);
+                        let isDeleted = false;
+                        for (let j = 0; j < this.imagesInfo[0].imageRect.length; j++) {
+                          if(this.imagesInfo[0].rectsDel[i].x === this.imagesInfo[0].imageRect[j].x && this.imagesInfo[0].rectsDel[i].y === this.imagesInfo[0].imageRect[j].y && this.imagesInfo[0].rectsDel[i].width === this.imagesInfo[0].imageRect[j].width && this.imagesInfo[0].rectsDel[i].height === this.imagesInfo[0].imageRect[j].height) {
+                            isDeleted = true;
+                            break;
+                          }
+                        }
+                        if(!isDeleted) {
+                          this.imagesInfo[0].rectsDel[i].x = 0;
+                          this.imagesInfo[0].rectsDel[i].y = 0;
+                          this.imagesInfo[0].rectsDel[i].width = 0;
+                          this.imagesInfo[0].rectsDel[i].height = 0;
                         }
                       }
                     }
@@ -2064,6 +2110,7 @@
                   if (this.imagesInfo[0].displayDel === '1000000601') {
                     if (this.imagesInfo[0].rectsDel != null) {
                       for (let i = 0; i < this.imagesInfo[0].rectsDel.length; i++) {
+
                         this.imageRectL.push({
                           x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].rectsDel[i].x,
                           y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].rectsDel[i].y,
@@ -2078,7 +2125,7 @@
 
                 if (this.imagesInfo[1] !== undefined) {
                   if (this.imagesInfo[1].imageRect != null) {
-                    if(this.imagesInfo[1].displayDel === '1000000602' && this.imagesInfo[1].rectsDel != null){
+                    if(this.imagesInfo[1].rectsDel != null){
                       for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
                         let isDeleted = false;
                         for (let j = 0; j < this.imagesInfo[1].rectsDel.length; j++) {
@@ -2087,7 +2134,7 @@
                             break;
                           }
                         }
-                        if(!isDeleted) {
+                        if(!isDeleted && this.imagesInfo[1].displayDel === '1000000602') {
                           this.imageRectR.push({
                             x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
                             y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
@@ -2095,6 +2142,21 @@
                             height: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].height,
                             colour: this.imagesInfo[1].colorRect,
                           });
+                        }
+                      }
+                      for (let i = 0; i < this.imagesInfo[1].rectsDel.length; i++) {
+                        let isDeleted = false;
+                        for (let j = 0; j < this.imagesInfo[1].imageRect.length; j++) {
+                          if(this.imagesInfo[1].rectsDel[i].x === this.imagesInfo[1].imageRect[j].x && this.imagesInfo[1].rectsDel[i].y === this.imagesInfo[1].imageRect[j].y && this.imagesInfo[1].rectsDel[i].width === this.imagesInfo[1].imageRect[j].width && this.imagesInfo[1].rectsDel[i].height === this.imagesInfo[1].imageRect[j].height) {
+                            isDeleted = true;
+                            break;
+                          }
+                        }
+                        if(!isDeleted) {
+                          this.imagesInfo[1].rectsDel[i].x = 0;
+                          this.imagesInfo[1].rectsDel[i].y = 0;
+                          this.imagesInfo[1].rectsDel[i].width = 0;
+                          this.imagesInfo[1].rectsDel[i].height = 0;
                         }
                       }
                     }

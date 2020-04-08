@@ -50,7 +50,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group :label="$t('device-management.active')">
+                <b-form-group :label="$t('system-setting.status')">
                   <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -834,7 +834,7 @@
             },
             {
               name: 'status',
-              title: this.$t('device-management.active'),
+              title: this.$t('system-setting.status'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
@@ -1043,6 +1043,7 @@
         let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'locale' : getLocale(),
           'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()

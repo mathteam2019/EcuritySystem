@@ -232,16 +232,16 @@
             /*  }*/
             /*}*/
             &:hover {
-                & > .item {
-                    z-index: 4;
-                }
+                /*& > .item {*/
+                /*    z-index: 4;*/
+                /*}*/
                 & > .item-extra-info {
                     top: -0.5rem;
                     padding: 0.5rem;
                     //position: fixed;
-                    display: inline-block !important;
+                    display: inline !important;
                     opacity: 1;
-                    transition: 10ms;
+                    //transition: 10ms;
                     left: 100%;
                     z-index: 0;
                 }

@@ -61,7 +61,7 @@
                 </b-form-group>
               </b-col>
               <b-col cols="3">
-                <b-form-group :label="$t('device-management.active')">
+                <b-form-group :label="$t('system-setting.status')">
                   <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
