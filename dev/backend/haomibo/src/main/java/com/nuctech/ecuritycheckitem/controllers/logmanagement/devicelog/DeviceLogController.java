@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -246,6 +247,14 @@ public class DeviceLogController extends BaseController {
             }
         }
         List<SerDevLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-log.xlsx"); //set filename
+        if(exportList == null) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .headers(headers)
+                    .body("Exceed Limit");
+        }
         setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceLogExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -255,8 +264,7 @@ public class DeviceLogController extends BaseController {
         }
         InputStream inputStream = DeviceLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device-log.xlsx"); //set filename
+
 
         return ResponseEntity
                 .ok()
@@ -288,7 +296,15 @@ public class DeviceLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-log.docx"); //set filename
         List<SerDevLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //set list to be exported
+        if(exportList == null) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .headers(headers)
+                    .body("Exceed Limit");
+        }
         setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceLogWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -298,8 +314,7 @@ public class DeviceLogController extends BaseController {
         }
         InputStream inputStream = DeviceLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device-log.docx"); //set filename
+
 
         return ResponseEntity
                 .ok()
@@ -332,7 +347,15 @@ public class DeviceLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-log.pdf"); //set filename
         List<SerDevLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
+        if(exportList == null) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .headers(headers)
+                    .body("Exceed Limit");
+        }
         DeviceLogPdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceLogPdfView.setMessageSource(messageSource);
@@ -343,8 +366,7 @@ public class DeviceLogController extends BaseController {
         }
         InputStream inputStream = DeviceLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device-log.pdf"); //set filename
+
         return ResponseEntity
                 .ok()
                 .headers(headers)

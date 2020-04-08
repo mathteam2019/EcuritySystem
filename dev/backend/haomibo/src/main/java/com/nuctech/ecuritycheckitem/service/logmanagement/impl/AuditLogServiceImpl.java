@@ -209,6 +209,9 @@ public class AuditLogServiceImpl implements AuditLogService {
         for(String idStr: splits) {
             logIdList.add(Long.valueOf(idStr));
         }
+        if(max_size < logIdList.size()) {
+            return null;
+        }
         predicate.and(QSysAuditLog.sysAuditLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {

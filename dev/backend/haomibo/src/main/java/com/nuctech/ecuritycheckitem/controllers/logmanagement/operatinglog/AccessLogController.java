@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -246,7 +247,15 @@ public class AccessLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=access-log.xlsx"); //set filename
         List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        if(exportList == null) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .headers(headers)
+                    .body("Exceed Limit");
+        }
         setDictionary(requestBody.getLocale()); //set dictionary data
         AccessLogExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -256,8 +265,7 @@ public class AccessLogController extends BaseController {
         }
         InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=access-log.xlsx"); //set filename
+
 
         return ResponseEntity
                 .ok()
@@ -290,6 +298,14 @@ public class AccessLogController extends BaseController {
             }
         }
         List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=access-log.docx"); //set filename
+        if(exportList == null) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .headers(headers)
+                    .body("Exceed Limit");
+        }
         setDictionary(requestBody.getLocale()); //set dictionary data
         AccessLogWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -299,8 +315,7 @@ public class AccessLogController extends BaseController {
         }
         InputStream inputStream = AccessLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=access-log.docx"); //set filename
+
 
         return ResponseEntity
                 .ok()
@@ -333,7 +348,15 @@ public class AccessLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=access-log.pdf"); //set filename
         List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        if(exportList == null) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .headers(headers)
+                    .body("Exceed Limit");
+        }
         setDictionary(requestBody.getLocale()); //set dictionary data
         AccessLogPdfView.setResource(getFontResource()); //set font resource
         AccessLogPdfView.setMessageSource(messageSource);
@@ -344,8 +367,7 @@ public class AccessLogController extends BaseController {
         }
         InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=access-log.pdf"); //set filename
+
 
         return ResponseEntity
                 .ok()
