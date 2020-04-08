@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -244,7 +245,15 @@ public class AuditLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=audit-log.xlsx"); //set filename
         List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        if(exportList == null) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .headers(headers)
+                    .body("Exceed Limit");
+        }
         setDictionary(requestBody.getLocale()); //set dictionary data
         AuditLogExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -254,8 +263,7 @@ public class AuditLogController extends BaseController {
         }
         InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=audit-log.xlsx"); //set filename
+
 
         return ResponseEntity
                 .ok()
@@ -287,7 +295,15 @@ public class AuditLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=audit-log.docx"); //set filename
         List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        if(exportList == null) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .headers(headers)
+                    .body("Exceed Limit");
+        }
         setDictionary(requestBody.getLocale()); //set dictionary data
         AuditLogWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -297,8 +313,7 @@ public class AuditLogController extends BaseController {
         }
         InputStream inputStream = AuditLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=audit-log.docx"); //set filename
+
 
         return ResponseEntity
                 .ok()
@@ -331,7 +346,15 @@ public class AuditLogController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=audit-log.pdf"); //set file name
         List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        if(exportList == null) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .headers(headers)
+                    .body("Exceed Limit");
+        }
         AuditLogPdfView.setResource(getFontResource()); // set font resource
         //AuditLogPdfView.setResourceFile(resourceFile); // set font resource
         setDictionary(requestBody.getLocale()); //set dictionary data
@@ -343,8 +366,7 @@ public class AuditLogController extends BaseController {
         }
         InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=audit-log.pdf"); //set file name
+
 
         return ResponseEntity
                 .ok()

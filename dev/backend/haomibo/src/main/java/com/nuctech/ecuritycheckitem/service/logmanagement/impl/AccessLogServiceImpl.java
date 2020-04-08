@@ -162,6 +162,9 @@ public class AccessLogServiceImpl implements AccessLogService {
         for(String idStr: splits) {
             logIdList.add(Long.valueOf(idStr));
         }
+        if(max_size < logIdList.size()) {
+            return null;
+        }
         predicate.and(QSysAccessLog.sysAccessLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {

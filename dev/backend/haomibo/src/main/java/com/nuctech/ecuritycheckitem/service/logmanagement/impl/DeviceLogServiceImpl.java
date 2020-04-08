@@ -210,6 +210,9 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         if(max_size == 0) {
             max_size = Long.MAX_VALUE;
         }
+        if(max_size < logIdList.size()) {
+            return null;
+        }
         predicate.and(QSerDevLog.serDevLog.id.in(logIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
