@@ -1098,7 +1098,7 @@
               }
             },
             {
-              name: 'scanResult',
+              name: 'atrResult',
               title: this.$t('statistics.monitors.atr-result-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center'

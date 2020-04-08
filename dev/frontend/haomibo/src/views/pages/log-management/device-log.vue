@@ -1075,7 +1075,7 @@
       handleWindowResize(event) {
         const windowWidth = window.innerWidth;
         console.log(windowWidth);
-        if(windowWidth<=1200) {
+        if(windowWidth<=1280) {
           this.showLength = 10;
         }
       },
