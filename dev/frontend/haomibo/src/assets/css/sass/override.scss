@@ -75,6 +75,16 @@ $tab-nav-item-height: 2.1875rem;
     }
   }
 }
+
+.notify-whole {
+  background-color: transparent;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 4;
+}
 //breadcrumb style point
 main {
   margin: $nav-height + $bread-height + $page-padding-vertical $page-padding-horizontal 0 $side-bar-width+$page-padding-horizontal !important;

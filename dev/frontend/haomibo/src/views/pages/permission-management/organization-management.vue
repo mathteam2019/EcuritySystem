@@ -1856,7 +1856,6 @@
                 });
                 if (this.modifyPage != null)
                   this.modifyPage.selectedOrg.status = '1000000701';
-
                 this.$refs.vuetable.reload();
                 this.getOrgDataAll();
                 break;

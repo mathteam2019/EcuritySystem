@@ -1,17 +1,23 @@
+
 <template>
-  <div :class="{'notification-container': true, 'notification-container-empty' : items.length===0}">
-    <div class="notification-wrapper">
-      <transition-group name="ntf" tag="div" mode="out">
-        <div v-for="item in items" :key="item.id" :class="'notification notification-'+item.options.type"
-             @click="removeItem(item.id)">
-          <div class="notification-message">
-            <h4 class="title" v-if="item.title">{{ item.title }}</h4>
-            <div class="message" v-if="item.message" v-html="item.message"/>
+  <div>
+    <div v-if="items && items.length != 0" class="notify-whole">
+    </div>
+    <div :class="{'notification-container': true, 'notification-container-empty' : items.length===0}">
+      <div class="notification-wrapper">
+        <transition-group name="ntf" tag="div" mode="out">
+          <div v-for="item in items" :key="item.id" :class="'notification notification-'+item.options.type"
+               @click="removeItem(item.id)">
+            <div class="notification-message">
+              <h4 class="title" v-if="item.title">{{ item.title }}</h4>
+              <div class="message" v-if="item.message" v-html="item.message"/>
+            </div>
           </div>
-        </div>
-      </transition-group>
+        </transition-group>
+      </div>
     </div>
   </div>
+
 
 </template>
 

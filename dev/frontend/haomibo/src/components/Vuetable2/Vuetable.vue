@@ -924,7 +924,7 @@ export default {
     },
     singleColumnSort (field) {
       if (this.sortOrder.length === 0) {
-        this.clearSortOrder()
+        this.clearSortOrder();
       }
 
       this.sortOrder.splice(1); //removes additional columns
