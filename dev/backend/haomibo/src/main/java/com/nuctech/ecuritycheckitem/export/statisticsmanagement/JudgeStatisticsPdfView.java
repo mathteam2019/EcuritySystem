@@ -55,7 +55,7 @@ public class JudgeStatisticsPdfView extends BasePdfView {
             PdfPTable table = new PdfPTable(19);
 
             table.setWidthPercentage(99);
-            Stream.of("ID", "StatWidth", "TotalJudge", "ArtificialResult", "ArtificialResultRate", "AssignTimoutResult", "AssignTimeoutResultRate", "JudgeTimeoutResult", "JudgeTimeoutResultRate", "ScanResult", "ScanResultRate", "NoSuspicion", "NoSuspicionRate", "Suspicion", "SuspicionRate", "ArtificialJudgeDefaultTime", "ArtificialJudgeAvgTime", "ArtificialJudgeMaxTime", "ArtificialJudgeMinTime")
+            Stream.of("ID", "StatWidth", "TotalJudge", "ArtificialResult", "ArtificialResultRate", "AssignTimoutResult", "AssignTimeoutResultRate", "JudgeTimeoutResult", "JudgeTimeoutResultRate", "AtrResult", "AtrResultRate", "NoSuspicion", "NoSuspicionRate", "Suspicion", "SuspicionRate", "ArtificialJudgeDefaultTime", "ArtificialJudgeAvgTime", "ArtificialJudgeMaxTime", "ArtificialJudgeMinTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -81,8 +81,8 @@ public class JudgeStatisticsPdfView extends BasePdfView {
                 addTableCell(table, df.format(record.getAssignTimeoutResultRate()));
                 addTableCell(table, Long.toString(record.getJudgeTimeout()));
                 addTableCell(table, df.format(record.getJudgeTimeoutResultRate()));
-                addTableCell(table, Long.toString(record.getScanResult()));
-                addTableCell(table, df.format(record.getScanResultRate()));
+                addTableCell(table, Long.toString(record.getAtrResult()));
+                addTableCell(table, df.format(record.getAtrResultRate()));
                 addTableCell(table, Long.toString(record.getNoSuspiction()));
                 addTableCell(table, df.format(record.getNoSuspictionRate()));
                 addTableCell(table, Long.toString(record.getSuspiction()));

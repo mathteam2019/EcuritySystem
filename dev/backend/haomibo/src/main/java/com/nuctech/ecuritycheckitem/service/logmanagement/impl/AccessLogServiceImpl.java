@@ -381,10 +381,10 @@ public class AccessLogServiceImpl implements AccessLogService {
 //        }
 //        return answerList;
         List<SysAccessLog> preResult = getExportListPre(sortBy, order, clientIp, userName, action, operateResult, operateStartTime, operateEndTime, isAll, idList);
-        List<EsSysAccessLog> data = new ArrayList<>();
-        for(int i = 0; i < preResult.size(); i ++) {
-            data.add(convertAccessLog(preResult.get(i)));
-        }
+//        List<EsSysAccessLog> data = new ArrayList<>();
+//        for(int i = 0; i < preResult.size(); i ++) {
+//            data.add(convertAccessLog(preResult.get(i)));
+//        }
         return preResult;//data;
 
     }

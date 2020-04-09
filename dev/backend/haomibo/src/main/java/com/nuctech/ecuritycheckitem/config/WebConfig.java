@@ -17,8 +17,10 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import org.apache.catalina.filters.RemoteIpFilter;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -31,6 +33,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.persistence.EntityManagerFactory;
 import java.io.File;
 import java.nio.file.Paths;
+import java.rmi.Remote;
 import java.util.List;
 
 @Configuration
@@ -103,5 +106,10 @@ public class WebConfig implements WebMvcConfigurer {
 
         mapper.setFilterProvider(ModelJsonFilters.getDefaultFilters());
 
+    }
+
+    @Bean
+    public RemoteIpFilter remoteIpFilter() {
+        return new RemoteIpFilter();
     }
 }

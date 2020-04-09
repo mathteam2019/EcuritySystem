@@ -75,8 +75,8 @@ public class JudgeStatisticsWordView extends BaseWordView {
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AssignTimeoutResultRate", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeTimeoutResult", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeTimeoutResultRate", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanResult", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanResultRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AtrResult", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AtrResultRate", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSuspicion", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSuspicionRate", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Suspicion", null, currentLocale));
@@ -127,8 +127,8 @@ public class JudgeStatisticsWordView extends BaseWordView {
                 tableRow.getCell(6).setText(df.format(record.getAssignTimeoutResultRate()));
                 tableRow.getCell(7).setText(Long.toString(record.getJudgeTimeout()));
                 tableRow.getCell(8).setText(df.format(record.getJudgeTimeoutResultRate()));
-                tableRow.getCell(9).setText(Long.toString(record.getScanResult()));
-                tableRow.getCell(10).setText(df.format(record.getScanResultRate()));
+                tableRow.getCell(9).setText(Long.toString(record.getAtrResult()));
+                tableRow.getCell(10).setText(df.format(record.getAtrResultRate()));
                 tableRow.getCell(11).setText(Long.toString(record.getNoSuspiction()));
                 tableRow.getCell(12).setText(df.format(record.getNoSuspictionRate()));
                 tableRow.getCell(13).setText(Long.toString(record.getSuspiction()));

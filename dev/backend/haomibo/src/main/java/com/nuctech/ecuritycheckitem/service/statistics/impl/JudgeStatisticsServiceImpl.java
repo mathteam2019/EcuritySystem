@@ -368,7 +368,8 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 record.setJudgeTimeoutResultRate(record.getJudgeTimeout() * 100 / (double) record.getTotal());
                 record.setSuspictionRate(record.getSuspiction() * 100 / (double) record.getTotal());
                 record.setNoSuspictionRate(record.getNoSuspiction() * 100 / (double) record.getTotal());
-                record.setScanResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
+                record.setScanResultRate(record.getScanResult() * 100 / (double) record.getTotal());
+                record.setAtrResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
             }
         } catch (Exception e) {
             e.printStackTrace();

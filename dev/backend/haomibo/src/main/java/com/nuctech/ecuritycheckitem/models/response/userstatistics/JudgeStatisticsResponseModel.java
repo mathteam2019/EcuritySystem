@@ -39,6 +39,7 @@ public class JudgeStatisticsResponseModel {
     double assignTimeoutResultRate; //assign Timeout Result Rate
     double judgeTimeoutResultRate; //judge Timeout Result Rate
     long scanResult; //scan Result
+    double atrResultRate;
     double scanResultRate; //scanResult Rate
     double noSuspictionRate; //noSuspiction Rate
     double suspictionRate; //suspiction Rate

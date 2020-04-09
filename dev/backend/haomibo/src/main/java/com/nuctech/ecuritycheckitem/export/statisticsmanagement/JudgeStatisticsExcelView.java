@@ -68,10 +68,10 @@ public class JudgeStatisticsExcelView extends BaseExcelView {
         headerCellJudgeTimeoutResultRate.setCellValue(messageSource.getMessage("JudgeTimeoutResultRate", null, currentLocale));
 
         Cell headerCellScanResult = header.createCell(9);
-        headerCellScanResult.setCellValue(messageSource.getMessage("ScanResult", null, currentLocale));
+        headerCellScanResult.setCellValue(messageSource.getMessage("AtrResult", null, currentLocale));
 
         Cell headerCellScanResultRate = header.createCell(10);
-        headerCellScanResultRate.setCellValue(messageSource.getMessage("ScanResultRate", null, currentLocale));
+        headerCellScanResultRate.setCellValue(messageSource.getMessage("AtrResultRate", null, currentLocale));
 
         Cell headerCellNoSuspicion = header.createCell(11);
         headerCellNoSuspicion.setCellValue(messageSource.getMessage("NoSuspicion", null, currentLocale));
@@ -147,8 +147,8 @@ public class JudgeStatisticsExcelView extends BaseExcelView {
                 row.createCell(6).setCellValue(df.format(record.getAssignTimeoutResultRate()));
                 row.createCell(7).setCellValue(record.getJudgeTimeout());
                 row.createCell(8).setCellValue(df.format(record.getJudgeTimeoutResultRate()));
-                row.createCell(9).setCellValue(record.getScanResult());
-                row.createCell(10).setCellValue(df.format(record.getScanResultRate()));
+                row.createCell(9).setCellValue(record.getAtrResult());
+                row.createCell(10).setCellValue(df.format(record.getAtrResultRate()));
                 row.createCell(11).setCellValue(record.getNoSuspiction());
                 row.createCell(12).setCellValue(df.format(record.getNoSuspictionRate()));
                 row.createCell(13).setCellValue(record.getSuspiction());
