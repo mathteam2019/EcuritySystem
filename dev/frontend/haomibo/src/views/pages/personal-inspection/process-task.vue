@@ -1269,19 +1269,43 @@
       },
 
       siteData: function (newVal, oldVal) {
-        this.onSiteOption = [];
-        this.onSiteOption = newVal.map(site => ({
-          text: site.fieldDesignation,
-          value: site.fieldId
-        }));
-        this.onSiteOption.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.onSiteOption.length === 0)
-          this.onSiteOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
+          this.onSiteOption = [];
+          let nest = (newVal, id = 0, depth = 1) =>
+              newVal
+                  .filter(item => item.parentFieldId == id)
+                  .map(item => ({
+                      data: {fieldId: item.fieldId},
+                      children: nest(newVal, item.fieldId, depth + 1),
+                      text: item.fieldDesignation
+                  }));
+          let treeData = nest(newVal);
+
+          let generateSpace = (count) => {
+              let string = '';
+              while (count--) {
+                  string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+              }
+              return string;
+          };
+
+          let changeFieldTree = (treeData, index) => {
+              if (!treeData || treeData.length === 0) {
+                  return;
+              }
+              let tmp = treeData;
+              for (let i = 0; i < tmp.length; i++) {
+                  changeFieldTree(tmp[i].children, index + 1);
+                  this.onSiteOption.unshift({
+                      value: tmp[i].data.fieldId,
+                      html: `${generateSpace(index)}${tmp[i].text}`
+                  });
+              }
+          };
+
+          changeFieldTree(treeData, 1);
+          this.onSiteOption.unshift({
+              value: null,
+              html: `${this.$t('permission-management.all')}`
           });
       },
 
