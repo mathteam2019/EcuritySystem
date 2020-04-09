@@ -990,16 +990,14 @@
       };
 
       let indentData = (orgTreeData, level) => {
-        let result = [];
         orgTreeData.forEach((org) => {
-          result.push({
-            value: org.orgId,
-            html: `${generateSpace(level)}${org.orgName}`
-          });
-          result.push(...indentData(org.children, level + 1));
-        });
 
-        return result;
+          indentData(org.children, level + 1);
+          this.orgNameSelectData.unshift({
+              value: org.orgId,
+              html: `${generateSpace(level)}${org.orgName}`
+          });
+        });
       };
 
       getApiManagerError().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
@@ -1011,7 +1009,9 @@
           case responseMessages['ok']:
             this.orgData = data;
             this.orgTreeData = nest(this.orgData, rootOrgId);
-            this.orgNameSelectData = indentData(this.orgTreeData, 0);
+            console.log(this.orgTreeData);
+              this.orgNameSelectData = [];
+            indentData(this.orgTreeData, 0);
               this.orgNameFilterData = [];
             this.orgNameSelectData.forEach(org => {
                 this.orgNameFilterData.push(org);
