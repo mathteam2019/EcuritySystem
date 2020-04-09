@@ -908,6 +908,31 @@
 
         return getLocale();
       },
+
+      generatSpace(count) {
+          let string = '';
+          while (count--) {
+              string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+          }
+          return string;
+      },
+
+      changeFieldTree(treeData, index) {
+          if (!treeData || treeData.length === 0) {
+              return;
+          }
+
+          let tmp = treeData;
+
+          for (let i = 0; i < tmp.length; i++) {
+              this.changeFieldTree(tmp[i].children, index + 1);
+
+              this.siteSelectOptions.unshift({
+                  value: tmp[i].data.fieldId,
+                  html: `${this.generatSpace(index)}${tmp[i].text}`
+              });
+          }
+      },
       changeDefault(value){
 
         if(value===1){
@@ -1811,44 +1836,9 @@
         this.$refs.fieldSelectList.setFilterOptions(this.deviceCategoryOption);
       },
       siteData(newVal, oldVal) { // maybe called when the org data is loaded from server
-        let getLevel = (org) => {
-
-          let getParent = (org) => {
-            for (let i = 0; i < newVal.length; i++) {
-              if (newVal[i].fieldId === org.parentFieldId) {
-                return newVal[i];
-              }
-            }
-            return null;
-          };
-
-          let stepValue = org;
-          let level = 0;
-          while (getParent(stepValue) !== null) {
-            stepValue = getParent(stepValue);
-            level++;
-          }
-
-          return level;
-
-        };
-
-        let generateSpace = (count) => {
-          let string = '';
-          while (count--) {
-            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-          }
-          return string;
-        };
         this.siteSelectOptions = [];
-        this.siteSelectOptions = newVal.map(org => ({
-          value: org.fieldId,
-          html: `${generateSpace(getLevel(org))}${org.fieldDesignation}`
-        }));
-        this.siteSelectOptions.push({
-          value: null,
-          html: `${this.$t('permission-management.all')}`
-        });
+
+
         let nest = (newVal, id = 0, depth = 1) =>
           newVal
             .filter(item => item.parentFieldId == id)
@@ -1860,6 +1850,15 @@
               text: item.fieldDesignation
             }));
         this.siteTreeData = nest(newVal);
+
+
+        this.changeFieldTree(this.siteTreeData, 1);
+
+
+          this.siteSelectOptions.unshift({
+              value: null,
+              html: `${this.$t('permission-management.all')}`
+          });
         this.isLoadCompleted = true;
       },
       modeData(newVal, oldVal) { // maybe called when the org data is loaded from server

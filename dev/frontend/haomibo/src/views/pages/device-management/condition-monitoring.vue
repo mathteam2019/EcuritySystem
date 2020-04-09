@@ -1066,27 +1066,17 @@
         this.deviceCategoryOptions.push({value: null, text: this.$t('permission-management.all')});
       },
       siteData(newVal, oldVal) { // maybe called when the org data is loaded from server
-        let getLevel = (org) => {
-
-          let getParent = (org) => {
-            for (let i = 0; i < newVal.length; i++) {
-              if (newVal[i].fieldId === org.parentFieldId) {
-                return newVal[i];
-              }
-            }
-            return null;
-          };
-
-          let stepValue = org;
-          let level = 0;
-          while (getParent(stepValue) !== null) {
-            stepValue = getParent(stepValue);
-            level++;
-          }
-
-          return level;
-
-        };
+          let nest = (newVal, id = 0, depth = 1) =>
+              newVal
+                  .filter(item => item.parentFieldId == id)
+                  .map(item => ({
+                      data: {fieldId: item.fieldId},
+                      children: nest(newVal, item.fieldId, depth + 1),
+                      id: id++,
+                      state: {expanded: true},
+                      text: item.fieldDesignation
+                  }));
+          let treeData = nest(newVal);
 
         let generateSpace = (count) => {
           let string = '';
@@ -1095,15 +1085,29 @@
           }
           return string;
         };
-        this.siteSelectOptions = [];
-        this.siteSelectOptions = newVal.map(org => ({
-          value: org.fieldId,
-          html: `${generateSpace(getLevel(org))}${org.fieldDesignation}`
-        }));
-        this.siteSelectOptions.push({
-          value: null,
-          html: `${this.$t('permission-management.all')}`
-        });
+
+          this.siteSelectOptions = [];
+
+        let changeFieldTree = (treeData, index) => {
+            if (!treeData || treeData.length === 0) {
+                return;
+            }
+            let tmp = treeData;
+            for (let i = 0; i < tmp.length; i++) {
+                changeFieldTree(tmp[i].children, index + 1);
+                this.siteSelectOptions.unshift({
+                    value: tmp[i].data.fieldId,
+                    html: `${generateSpace(index)}${tmp[i].text}`
+                });
+            }
+        };
+
+          changeFieldTree(treeData, 1);
+          this.siteSelectOptions.unshift({
+              value: null,
+              html: `${this.$t('permission-management.all')}`
+          });
+
       },
     }
   }
