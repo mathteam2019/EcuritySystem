@@ -48,8 +48,8 @@
                 & > .item-extra-info {
                     top: -0.5rem;
                     padding: 0.5rem;
-                    //position: fixed;
-                    display: inline !important;
+                  position:static;
+                  display: inline-block !important;
                     opacity: 1;
                     //transition: 10ms;
                     left: 100%;

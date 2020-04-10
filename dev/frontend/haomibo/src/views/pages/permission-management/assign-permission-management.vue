@@ -139,7 +139,7 @@
       border-radius: 0.3rem;
       position: absolute;
       top: 0;
-      width: 80%;
+      width: 90%;
       left: calculateRem(30px);
       background: wheat;
       z-index: 1;
@@ -1186,9 +1186,13 @@
               title: this.$t('permission-management.assign-permission-management.group.role'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '17%',
-              callback: (roles) => {
-                return roles.map((role) => role.roleName).join(', ');
+              width: '20%',
+              callback: (value) => {
+                if (value === null) return '';
+                if (value.isLong === false) return value.groupMember;
+                else {
+                  return this.hoverContent(value);
+                }
               }
             },
             {
@@ -1196,7 +1200,7 @@
               title: this.$t('permission-management.assign-permission-management.group.data-range'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '13%',
+              width: '10%',
               callback: (dataRangeCategory) => {
                 if (dataRangeCategory === '1000000501' || dataRangeCategory === null) {
                   return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
@@ -2220,6 +2224,27 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          let userMembers = [];
+          temp.roles.forEach(role => {
+            userMembers.push(role.roleName);
+          });
+          let groupMember = userMembers.join(',');
+
+          let isLong = false;
+          if(groupMember.length>20){
+            isLong = true;
+            temp.roles = {
+              groupMember : groupMember,
+              label : groupMember.substr(0, 19) + '...',
+              isLong : isLong
+            };
+          }
+          else {
+            temp.roles = {
+              groupMember : groupMember,
+              isLong : isLong
+            };
+          }
           transformed.data.push(temp);
           this.renderedCheckList.push(data.data[i].userId);
         }
