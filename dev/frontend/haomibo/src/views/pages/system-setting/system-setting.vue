@@ -170,7 +170,7 @@
                 <b-row>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('permission-management.password')">
-                      <b-form-input type="password" v-model="platFormOtherData.initialPassword"
+                      <b-form-input type="text" v-model="platFormOtherData.initialPassword"
                                     :state="!$v.platFormOtherData.initialPassword.$dirty ? null : !$v.platFormOtherData.initialPassword.$invalid"/>
                     </b-form-group>
                   </b-col>
@@ -1638,14 +1638,14 @@
             }
             if (this.$v.platFormOtherData.logMaxNumber.$invalid) {
               if(this.platFormOtherData.logMaxNumber==='') {
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.dispatch-timeout-input`), {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.log-export-number-input`), {
                   duration: 3000,
                   permanent: false
                 });
                 return;
               }
               else {
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.dispatch-timeout-valid`), {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.log-export-number-valid`), {
                   duration: 3000,
                   permanent: false
                 });

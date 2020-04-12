@@ -1262,7 +1262,7 @@
           'idList': this.showTable === false ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/evaluatejudge/generate`;
-        this.name = 'Statistics-Evaluate';
+        this.name = this.$t('menu.statistics-evaluate-monitors');
         this.isModalVisible = true;
       },
       onExport() {

@@ -631,7 +631,7 @@
           'idList': checkedIds.join()
         };
         this.link = `log-management/operating-log/access`;
-        this.name = 'Access-Log';
+        this.name = this.$t('log-management.operating-log.access-log');
         // if(this.fileSelection !== null) {
         //   downLoadFileFromServer(link, params, 'Access-Log', this.fileSelection);
         //   this.hideModal('model-export')
@@ -663,7 +663,7 @@
           'idList': checkedIds.join()
         };
         this.link = `log-management/operating-log/audit`;
-        this.name = 'Operating-Log';
+        this.name = this.$t('log-management.operating-log.operating-log');
         // if(this.fileSelection !== null) {
         //   downLoadFileFromServer(link, params, 'Operating-Log', this.fileSelection);
         //   this.hideModal('model-export')

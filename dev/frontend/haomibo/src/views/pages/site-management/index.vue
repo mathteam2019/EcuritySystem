@@ -857,7 +857,7 @@
           'idList': checkedIds.join()
         };
         this.link = `site-management/field`;
-        this.name = 'site';
+        this.name = this.$t('system-setting.site-list');
         this.isModalVisible = true;
       },
       onExport(){

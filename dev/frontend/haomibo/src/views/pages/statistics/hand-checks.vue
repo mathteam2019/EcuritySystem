@@ -1281,7 +1281,7 @@
           'idList': this.pageStatus1 === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/handexamination/generate`;
-        this.name = 'Statistics-Hand';
+        this.name = this.$t('menu.statistics-hand-checks');
       },
 
       hideModal(modal) {
@@ -1329,7 +1329,7 @@
           'idList': this.pageStatus2 === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/suspiciongoods/generate`;
-        this.name = 'Statistics-HandGoods';
+        this.name = this.$t('knowledge-base.seized');
         // if (this.pageStatus2 !== 'charts' && checkedIds.length === 0) {
         //
         // } else {

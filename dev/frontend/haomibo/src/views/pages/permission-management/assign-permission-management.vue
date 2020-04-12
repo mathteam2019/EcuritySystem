@@ -1611,7 +1611,7 @@
           'idList': checkedIds.join()
         };
         this.link = `permission-management/assign-permission-management/user`;
-        this.name = 'Assign-User';
+        this.name = this.$t('permission-management.assign-permission-management.assign-to-user');
         // if(this.fileSelection !== null) {
         //   downLoadFileFromServer(link, params, 'Assign-User', this.fileSelection);
         //   this.hideModal('model-export')
@@ -1643,7 +1643,7 @@
           'idList': checkedIds.join()
         };
         this.link = `permission-management/assign-permission-management/user-group`;
-        this.name = 'Assign-UserGroup';
+        this.name = this.$t('permission-management.assign-permission-management.assign-to-group');
         // if(this.fileSelection !== null) {
         //   downLoadFileFromServer(link, params, 'Assign-UserGroup', this.fileSelection);
         //   this.hideModal('model-export')

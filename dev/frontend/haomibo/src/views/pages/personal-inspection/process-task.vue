@@ -1088,6 +1088,18 @@
           // TODO: search filter
         },
 
+        saveFilter: {
+          taskNumber: null,
+          mode: null,
+          taskStatus: null,
+          fieldId: null,
+          userName: null,
+          startTime: null,
+          endTime: null
+          // TODO: search filter
+        },
+
+
         taskDetailForm: {
           taskNumber: null,
           fieldName: null,
@@ -1249,7 +1261,7 @@
       }
     },
     created() {
-      this.timer = setInterval(this.autoUpdate, 20000)
+      //this.timer = setInterval(this.autoUpdate, 20000)
     },
     beforeDestroy() {
       clearInterval(this.timer)
@@ -1261,11 +1273,11 @@
       },
 
       pageStatus(newval) {
-        if (newval === 'show') {
-          clearInterval(this.timer);
-        } else {
-          this.timer = setInterval(() => this.autoUpdate(), 20000);
-        }
+        // if (newval === 'show') {
+        //   clearInterval(this.timer);
+        // } else {
+        //   this.timer = setInterval(() => this.autoUpdate(), 20000);
+        // }
       },
 
       siteData: function (newVal, oldVal) {
@@ -1344,7 +1356,7 @@
     },
     methods: {
       cancelAutoUpdate() {
-        clearInterval(this.timer)
+        //clearInterval(this.timer)
       },
       selectAll(value){
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
@@ -1708,7 +1720,7 @@
         };
         this.link = `task/process-task/generate`;
         this.imgUrl = `task/process-task/generate/image`;
-        this.name = 'Process-Task';
+        this.name = this.$t('menu.process-task');
         this.isModalVisible = true;
       },
       onExport() {
@@ -1882,8 +1894,8 @@
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 248 / deviceImage[i].width :0,
-                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 521 / deviceImage[i].height :0,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 1 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 1 / deviceImage[i].height :0,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour,
@@ -1897,8 +1909,8 @@
 
 
                       this.cartoonsInfo.push({
-                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 205 / deviceImage[i].width :0,
-                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ?  426 / deviceImage[i].height :0,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 1 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ?  1 / deviceImage[i].height :0,
                         imageUrl: deviceImage[i].image,
                         imageRect: deviceImage[i].imageRects,
                         colorRect: colourInfo.scanRecogniseColour,
@@ -2153,18 +2165,39 @@
           }
 
         }
+        // saveFilter: {
+        //   taskNumber: null,
+        //     mode: null,
+        //     taskStatus: null,
+        //     fieldId: null,
+        //     userName: null,
+        //     startTime: null,
+        //     endTime: null
+        //   // TODO: search filter
+        // },
+        this.saveFilter.taskNumber = this.filter.taskNumber;
+        this.saveFilter.mode = this.filter.mode;
+        this.saveFilter.taskStatus = this.filter.taskStatus;
+        this.saveFilter.fieldId = this.filter.fieldId;
+        this.saveFilter.userName = this.filter.userName;
+        this.saveFilter.startTime = this.filter.startTime;
+        this.saveFilter.endTime = this.filter.endTime;
 
         this.$refs.taskVuetable.refresh();
       },
       autoUpdate() {
-        if(this.filter.startTime !== null && this.filter.endTime !== null) {
-
-          if (this.filter.startTime >= this.filter.endTime) {
-              return;
-          }
-
-        }
-        this.$refs.taskVuetable.reload();
+        // if(this.filter.startTime !== null && this.filter.endTime !== null) {
+        //
+        //   if (this.filter.startTime >= this.filter.endTime) {
+        //       return;
+        //   }
+        //
+        // }
+        // this.$refs.taskVuetable.reload();
+        //this.taskVuetableHttpFetch1(this.apiUrl, this.httpOption);
+        //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
+        //console.log(transformData.data);
+        //this.transform(transformData);
       },
 
       onResetButton() {
@@ -2234,6 +2267,28 @@
             }
           }
         }
+      },
+
+      taskVuetableHttpFetch1(apiUrl, httpOptions) { // customize data loading for table from server
+
+        getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          filter: this.saveFilter,
+          sort: httpOptions.params.sort,
+          perPage: this.taskVuetableItems.perPage,
+        }).then((response) => {
+          console.log(response);
+          let message = response.data.message;
+          let data = response.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.$refs.taskVuetable.loadSuccess(response);
+              //this.isLoading = false;
+
+              break;
+          }
+          //this.isLoading = false;
+        });;
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server

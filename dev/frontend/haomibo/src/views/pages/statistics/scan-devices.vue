@@ -1077,7 +1077,7 @@
           'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         this.link = `task/statistics/scan/generate`;
-        this.name = 'Statistics-Scan';
+        this.name = this.$t('menu.statistics-scan-devices');
         this.isModalVisible = true;
       },
       onExport(){

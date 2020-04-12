@@ -1179,7 +1179,7 @@
 
     created() {
       //this.onSearchButton();
-      this.timer = setInterval(this.autoUpdate, 20000)
+      //this.timer = setInterval(this.autoUpdate, 20000)
 
       //this.timer = setInterval(() => this.onTaskVuetableChangePage(this.httpOption.params.page), 15000);
       //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
@@ -1196,11 +1196,11 @@
       },
 
       pageStatus(newval) {
-        if (newval === 'show') {
-          clearInterval(this.timer);
-        } else {
-          this.timer = setInterval(() => this.autoUpdate(), 20000);
-        }
+        // if (newval === 'show') {
+        //   clearInterval(this.timer);
+        // } else {
+        //   this.timer = setInterval(() => this.autoUpdate(), 20000);
+        // }
       },
 
       siteData: function (newVal, oldVal) {
@@ -1278,7 +1278,7 @@
     },
     methods: {
       cancelAutoUpdate() {
-        clearInterval(this.timer)
+        //clearInterval(this.timer)
       },
       selectAll(value) {
         this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
@@ -1516,7 +1516,7 @@
         };
         this.link = `task/invalid-task/generate`;
         this.imgUrl = `task/invalid-task/generate/image`;
-        this.name = 'Invalid-Task';
+        this.name = this.$t('menu.invalid-task');
 
         this.isModalVisible = true;
       },
@@ -1664,8 +1664,8 @@
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width != null ? 248 / deviceImage[i].width : 0,
-                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 521 / deviceImage[i].height : 0,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width != null ? 1 / deviceImage[i].width : 0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 1 / deviceImage[i].height : 0,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
                       });
@@ -1673,8 +1673,8 @@
 
 
                     this.cartoonsInfo.push({
-                      rateWidth: deviceImage[i].width != 0 && deviceImage[i].width != null ? 205 / deviceImage[i].width : 0,
-                      rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 426 / deviceImage[i].height : 0,
+                      rateWidth: deviceImage[i].width != 0 && deviceImage[i].width != null ? 1 / deviceImage[i].width : 0,
+                      rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 1 / deviceImage[i].height : 0,
                       imageUrl: deviceImage[i].image,
                       imageRect: deviceImage[i].imageRects,
                     });
@@ -1801,14 +1801,14 @@
         this.$refs.taskVuetable.refresh();
       },
       autoUpdate() {
-        if(this.filter.startTime !== null && this.filter.endTime !== null) {
-
-          if (this.filter.startTime >= this.filter.endTime) {
-            return;
-          }
-
-        }
-        this.$refs.taskVuetable.reload();
+        // if(this.filter.startTime !== null && this.filter.endTime !== null) {
+        //
+        //   if (this.filter.startTime >= this.filter.endTime) {
+        //     return;
+        //   }
+        //
+        // }
+        // this.$refs.taskVuetable.reload();
       },
 
       onResetButton() {

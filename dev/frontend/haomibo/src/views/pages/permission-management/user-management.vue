@@ -42,9 +42,10 @@
             }
 
             &:hover {
-                /*& > .item {*/
-                /*    z-index: 4;*/
-                /*}*/
+              & > .item {
+                //z-index: 4;
+                display: none !important;
+              }
                 & > .item-extra-info {
                     top: -0.5rem;
                     padding: 0.5rem;
@@ -1737,7 +1738,7 @@
                     'idList': checkedIds.join()
                 };
                 this.link = `permission-management/user-management/user`;
-                this.name = 'User';
+                this.name = this.$t('permission-management.member-table');
             },
             onPrintUserButton() {
                 let checkedAll = this.$refs.vuetable.checkedAllStatus;
@@ -1766,7 +1767,7 @@
                     'idList': checkedIds.join()
                 };
                 this.link = `permission-management/user-management/user-group`;
-                this.name = 'UserGroup';
+                this.name = this.$t('permission-management.user-group');
                 // if(this.fileSelection !== null) {
                 //   downLoadFileFromServer(link, params, 'UserGroup', this.fileSelection);
                 //   this.fnHideModal('model-export')

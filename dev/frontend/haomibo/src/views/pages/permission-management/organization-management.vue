@@ -1254,7 +1254,7 @@
           'idList': checkedIds.join()
         };
         this.link = `permission-management/organization-management/organization`;
-        this.name = 'organization';
+        this.name = this.$t('permission-management.organization-table');
         this.isModalVisible = true;
       },
 
