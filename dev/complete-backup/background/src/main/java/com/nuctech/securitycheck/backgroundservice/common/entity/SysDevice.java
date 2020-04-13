@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,9 +23,11 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Table(name = "sys_device")
+//@Document(indexName = "haomibo", type = "sys_device")
 public class SysDevice extends BaseEntity implements Serializable {
 
     @Id
+//    @org.springframework.data.annotation.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DEVICE_ID", length = 20, nullable = false)
     private Long deviceId;

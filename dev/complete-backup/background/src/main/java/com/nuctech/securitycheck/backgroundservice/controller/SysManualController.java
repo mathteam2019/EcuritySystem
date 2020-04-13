@@ -93,7 +93,7 @@ public class SysManualController {
                 resultMsg.setContent(model);
                 messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
                 serMqMessageService.save(resultMsg, 1, guid, null,
-                        CommonConstant.RESULT_SUCCESS.getValue().toString());
+                        CommonConstant.RESULT_INVALID_DEVICE.getValue().toString());
             } else {
                 Long deviceId = sysDevice.getDeviceId();
                 SysManualGroup sysManualGroup = sysManualGroupService.findLastManualConfig(deviceId);
@@ -132,7 +132,7 @@ public class SysManualController {
                 serDeviceConfigModel.setGuid(guid);
                 serDeviceConfigModel.setDeviceNumber(sysDevice.getDeviceSerial());
                 serDeviceConfigModel.setATRColor(serPlatformCheckParams.getScanRecogniseColour());
-                serDeviceConfigModel.setManualColor(serPlatformCheckParams.getHandRecogniseColour());
+                serDeviceConfigModel.setManualColor(serPlatformCheckParams.getJudgeRecogniseColour());
                 serDeviceConfigModel.setDeleteColor(serPlatformCheckParams.getDisplayDeleteSuspicionColour());
                 serDeviceConfigModel.setParams(serScanParamModelList);
                 ResultMessageVO resultMessageVO = new ResultMessageVO();

@@ -49,7 +49,7 @@ public class SysManualDevice extends BaseEntity implements Serializable {
     private SysDevice device;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinFormula("(SELECT login.LOGIN_INFO_ID FROM ser_login_info login WHERE login.DEVICE_ID = MANUAL_DEVICE_ID ORDER BY login.TIME DESC LIMIT 1)")
+    @JoinFormula("(SELECT login.LOGIN_INFO_ID  FROM ser_login_info login WHERE login.DEVICE_ID = MANUAL_DEVICE_ID ORDER BY login.CREATEDTIME DESC LIMIT 1)")
     @NotFound(action = NotFoundAction.IGNORE)
     private SerLoginInfo loginInfo;
 

@@ -48,12 +48,14 @@ public class SerTask extends BaseEntity implements Serializable {
     @Column(name = "TASK_STATUS", length = 10)
     private String taskStatus;
 
+    @Column(name = "SCAN_INVALID", length = 10)
+    private String scanInvalid;
+
     @ManyToOne
     @JoinColumn(name = "WORKFLOW_ID")
     private SysWorkflow sysWorkflow;
 
-    @ManyToOne
-    @JoinColumn(name = "SCENE")
-    private SysField sysField;
+    @Column(name = "SCENE", length = 20)
+    private Long fieldId;
 
 }

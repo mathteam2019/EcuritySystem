@@ -14,6 +14,7 @@ import com.nuctech.securitycheck.backgroundservice.common.vo.*;
 import com.nuctech.securitycheck.backgroundservice.message.MessageSender;
 import com.nuctech.securitycheck.backgroundservice.repositories.*;
 import com.nuctech.securitycheck.backgroundservice.service.ISerPlatformCheckParamsService;
+import com.nuctech.securitycheck.backgroundservice.service.ISerPlatformOtherParamsService;
 import com.nuctech.securitycheck.backgroundservice.service.ISysDeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * SysDeviceServiceImpl
@@ -91,7 +93,22 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
     private ISerPlatformCheckParamsService serPlatformCheckParamsService;
 
     @Autowired
+    private ISerPlatformOtherParamsService serPlatformOtherParamsService;
+
+    @Autowired
     private SysDeviceDetailRepository sysDeviceDetailRepository;
+
+    @Autowired
+    private SysRoleResourceRepository sysRoleResourceRepository;
+
+    @Autowired
+    private SysRoleUserRepository sysRoleUserRepository;
+
+    @Autowired
+    private SysUserGroupRoleRepository sysUserGroupRoleRepository;
+
+    @Autowired
+    private SysUserGroupUserRepository sysUserGroupUserRepository;
 
     /**
      * 通过判断设备和手动检查点获取所有安全设备信息
@@ -105,7 +122,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
         //获取所有设备列表
         List<SysDevice> sysDeviceList = sysDeviceRepository.findAll();
         for (SysDevice item : sysDeviceList) {
-            if (item.getDeviceType() != null && item.getDeviceType().equals(DeviceType.SECURITY.getValue())) {
+            if (item.getDeviceType() != null && DeviceType.SECURITY.getValue().equals(item.getDeviceType())) {
                 SysSecurityInfoVO sysSecurityInfoVO = new SysSecurityInfoVO();
                 sysSecurityInfoVO.setGuid(item.getGuid());
                 sysSecurityInfoVO.setDeviceId(item.getDeviceId());
@@ -170,7 +187,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
 
                             SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(judgeDevice.getDeviceId());
                             if (serLoginInfo != null) {
-                                if (serLoginInfo.getLoginCategory().equals(LogType.LOGIN.getValue())) {
+                                if (LogType.LOGIN.getValue().equals(serLoginInfo.getLoginCategory())) {
                                     sysJudgeInfoVO.setLogInedUserId(serLoginInfo.getUserId());
                                 }
                             }
@@ -205,7 +222,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
 
                             SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(manualDevice.getDeviceId());
                             if (serLoginInfo != null) {
-                                if (serLoginInfo.getLoginCategory().equals(LogType.LOGIN.getValue())) {
+                                if (LogType.LOGIN.getValue().equals(serLoginInfo.getLoginCategory())) {
                                     sysManualInfoVO.setLogInedUserId(serLoginInfo.getUserId());
                                 }
                             }
@@ -221,7 +238,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
 
                 SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(item.getDeviceId());
                 if (serLoginInfo != null) {
-                    if (serLoginInfo.getLoginCategory().equals(LogType.LOGIN.getValue())) {
+                    if (LogType.LOGIN.getValue().equals(serLoginInfo.getLoginCategory())) {
                         sysSecurityInfoVO.setLogInedUserId(serLoginInfo.getUserId());
                     }
                 }
@@ -254,7 +271,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 sysJudgeInfoVO.setConfigInfo(null);
                 SerLoginInfo serLoginInfo = item.getLoginInfo();
                 if (serLoginInfo != null) {
-                    if (serLoginInfo.getLoginCategory().equals(LogType.LOGIN.getValue())) {
+                    if (LogType.LOGIN.getValue().equals(serLoginInfo.getLoginCategory())) {
                         sysJudgeInfoVO.setLogInedUserId(serLoginInfo.getUserId());
                     }
                 }
@@ -286,10 +303,9 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 sysManualInfoVO.setWorkStatus(manualDevice.getWorkStatus());
                 sysManualInfoVO.setDeviceCheckerGender(item.getDeviceCheckGender());
                 sysManualInfoVO.setConfigInfo(null);
-
                 SerLoginInfo serLoginInfo = item.getLoginInfo();
                 if (serLoginInfo != null) {
-                    if (serLoginInfo.getLoginCategory().equals(LogType.LOGIN.getValue())) {
+                    if (LogType.LOGIN.getValue().equals(serLoginInfo.getLoginCategory())) {
                         sysManualInfoVO.setLogInedUserId(serLoginInfo.getUserId());
                     }
                 }
@@ -387,35 +403,24 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             loop:
             while (true) {
 
-                log.info("任务" + taskInfoVO.getTaskNumber() + "正在等待分配手检站");
-                boolean lockResult = redisUtil.aquirePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
-                        taskInfoVO.getTaskNumber(), CommonConstant.MAX_MANUAL_REDIS_LOCK.getValue());
-
-                if(!lockResult) {
-                    log.error("任务" + taskInfoVO.getTaskNumber() + "无法检查手检站");
-                    //Thread.sleep(100);
-                    continue;
-                }
-
-                log.info("任务" + taskInfoVO.getTaskNumber() + "正在检查手检站");
                 ObjectMapper objectRedisMapper = new ObjectMapper();
                 String dataStr = CryptUtil.decrypt(redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.manual.info")));
 
                 JSONArray dataContent = JSONArray.parseArray(dataStr);
+                if(dataContent == null) {
+                    continue;
+                }
                 List<SysManualInfoVO> manualDeviceModelList = dataContent.toJavaList(SysManualInfoVO.class);
 
                 //是否已分派
                 DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = isManualDeviceDispatched(taskInfoVO.getTaskNumber());
                 if (dispatchManualDeviceInfoVO != null) {
-                    redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
-                            taskInfoVO.getTaskNumber());
-
                     return dispatchManualDeviceInfoVO;
                 }
                 for (SysManualInfoVO manualModel : manualDeviceModelList) {
                     boolean isExist = false;
                     for(Long manualDeviceId: serDeviceConfigSettingModel.getManualDeviceIdList()) {
-                        if(manualDeviceId == manualModel.getDeviceId()) {
+                        if(manualDeviceId.equals(manualModel.getDeviceId())) {
                             isExist = true;
                         }
                     }
@@ -424,14 +429,22 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                     }
 
                     //是否有资源
-                    if ((manualModel.getCurrentStatus().equals(DeviceStatusType.LOGIN.getValue()) ||
-                            manualModel.getCurrentStatus().equals(DeviceStatusType.START.getValue())) &&
-                            manualModel.getWorkStatus().equals(DeviceWorkStatusType.FREE.getValue())) {
+                    if ((DeviceStatusType.LOGIN.getValue().equals(manualModel.getCurrentStatus()) ||
+                            DeviceStatusType.START.getValue().equals(manualModel.getCurrentStatus())) &&
+                            DeviceWorkStatusType.FREE.getValue().equals(manualModel.getWorkStatus())) {
                         //引导员性别匹配
                         if (genderCheck(manualModel.getDeviceCheckerGender(), taskInfoVO, deviceConfigInfo)) {
+                            boolean lockResult = redisUtil.aquirePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.device.current.status") + manualModel.getGuid(),
+                                    taskInfoVO.getTaskNumber(), 0);
+
+                            if(!lockResult) {
+                                log.error("任务" + taskInfoVO.getTaskNumber() + "无法检查手检站");
+                                //Thread.sleep(100);
+                                continue;
+                            }
                             ret.setLocalRecheck(false);
-                            ret.setRecheckNumber(manualModel.getDeviceSerial());
                             internalData.setLocalRecheck(false);
+                            ret.setRecheckNumber(manualModel.getDeviceSerial());
                             internalData.setRecheckNumber(manualModel.getDeviceSerial());
 
                             //insert & update db
@@ -443,17 +456,21 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                             sysWorkflowModel.setTaskType(TaskType.HAND.getValue());
                             Example<SysWorkflow> sysWorkflowEx = Example.of(sysWorkflowModel);
                             SysWorkflow sysWorkflow = sysWorkflowRepository.findOne(sysWorkflowEx);
-
                             SysDevice manualDeviceModel = new SysDevice();
                             manualDeviceModel.setDeviceId(manualModel.getDeviceId());
                             Example<SysDevice> manualDeviceEx = Example.of(manualDeviceModel);
                             SysDevice manualDevice = sysDeviceRepository.findOne(manualDeviceEx);
+                            manualDevice.setCurrentStatus(manualModel.getCurrentStatus());
                             manualDevice.setWorkStatus(DeviceWorkStatusType.BUSY.getValue());
+                            //sysDeviceRepository.save(manualDevice);
+
 
                             serTask.setTaskStatus(TaskStatusType.HAND.getValue());
                             serTaskRepository.save(serTask);
-                            SysUser logInedUser = SysUser.builder()
+                            SysUser logInedUserModel = SysUser.builder()
                                     .userId(manualModel.getLogInedUserId()).build();
+                            Example<SysUser> logInedUserEx = Example.of(logInedUserModel);
+                            SysUser logInedUser = sysUserRepository.findOne(logInedUserEx);
 
                             assign.setSerTask(task);
                             assign.setSysWorkflow(sysWorkflow);
@@ -462,9 +479,10 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                             assign.setAssignHandDevice(manualDevice);
                             assign.setAssignEndTime(DateUtil.getCurrentDate());
                             assign.setAssignStartTime(assignStartTime);
+                            assign.setAssignTimeout(TimeDefaultType.FALSE.getValue());
 
                             serAssignRepository.save(assign);
-                            sysDeviceRepository.save(manualDevice);
+
 
                             manualModel.setWorkStatus(DeviceWorkStatusType.BUSY.getValue());
 
@@ -489,25 +507,26 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
 
                 redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.status.info") + taskInfoVO.getTaskNumber(),
                         DeviceDefaultType.FALSE.getValue(), CommonConstant.EXPIRE_TIME.getValue());
-                redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
-                        taskInfoVO.getTaskNumber());
+//                redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
+//                        taskInfoVO.getTaskNumber());
 
                 //Thread.sleep(1000);
             }
 
             log.info("任务" + taskInfoVO.getTaskNumber() + "是分配手检站");
-            redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
-                    taskInfoVO.getTaskNumber());
+//            redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
+//                    taskInfoVO.getTaskNumber());
         } catch (Exception e) {
             log.error("未能分配手检端");
             log.error(e.getMessage());
+            e.printStackTrace();
             ret.setRecheckNumber(null);
             ret.setLocalRecheck(null);
             internalData.setLocalRecheck(null);
             internalData.setRecheckNumber(null);
         }
 
-            return ret;
+        return ret;
     }
 
     /**
@@ -521,19 +540,19 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
         String customerGender = "";
 
         // 得到性别
-        if (taskInfoVO.getCustomerGender().equals(DeviceGenderType.MALE.getValue())) {
+        if (DeviceGenderType.MALE.getValue().equals(taskInfoVO.getCustomerGender())) {
             customerGender = GenderType.MALE.getValue();
-        } else if (taskInfoVO.getCustomerGender().equals(DeviceGenderType.FEMALE.getValue())) {
+        } else if (DeviceGenderType.FEMALE.getValue().equals(taskInfoVO.getCustomerGender())) {
             customerGender = GenderType.FEMALE.getValue();
         }
         Boolean ret;
-        if (checkerGender.equals(GenderType.MALE.getValue())) {
+        if (GenderType.MALE.getValue().equals(checkerGender)) {
             configGender = deviceConfig.getManManualGender();
-        } else if (checkerGender.equals(GenderType.FEMALE.getValue())) {
+        } else if (GenderType.FEMALE.getValue().equals(checkerGender)) {
             configGender = deviceConfig.getWomanManualGender();
         }
 
-        if (configGender.equals(GenderType.MALE_AND_FEMALE.getValue()))
+        if (GenderType.MALE_AND_FEMALE.getValue().equals(configGender))
             ret = true;
         else {
             if (configGender.equals(customerGender))
@@ -542,6 +561,54 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 ret = false;
         }
         return ret;
+    }
+
+    @Override
+    public boolean genderCheckSecurity(String gender, String guid) {
+        try {
+            SysDevice securityDeviceModel = SysDevice.builder().guid(guid).build();
+            Example<SysDevice> securityDeviceEx = Example.of(securityDeviceModel);
+            SysDevice securityDevice = sysDeviceRepository.findOne(securityDeviceEx);
+
+            SysDeviceConfig securityDeviceConfigModel = SysDeviceConfig.builder().sysDevice(securityDevice).build();
+            Example<SysDeviceConfig> securityDeviceConfigEx = Example.of(securityDeviceConfigModel);
+            SysDeviceConfig securityDeviceConfig = sysDeviceConfigRepository.findOne(securityDeviceConfigEx);
+            if (!(DeviceInfoDefaultType.TRUE.getValue().equals(securityDeviceConfig.getManualSwitch()))) {
+                return false;
+            }
+
+
+            SerLoginInfo loginInfo = serLoginInfoRepository.findLatestLoginInfo(securityDevice.getDeviceId());
+            SysUser loginSecurityUserModel = SysUser.builder().userId(loginInfo.getUserId()).build();
+            Example<SysUser> loginSecurityUserEx = Example.of(loginSecurityUserModel);
+            SysUser loginSecurityUser = sysUserRepository.findOne(loginSecurityUserEx);
+            String possibleGender;
+            if(GenderType.MALE.getValue().equals(loginSecurityUser.getGender())) {
+                possibleGender = securityDeviceConfig.getManDeviceGender();
+            } else {
+                possibleGender = securityDeviceConfig.getWomanDeviceGender();
+            }
+            if(GenderType.MALE_AND_FEMALE.getValue().equals(possibleGender)) {
+                return true;
+            }
+
+            if(GenderType.MALE.getValue().equals(possibleGender)) {
+                if(DeviceGenderType.MALE.getValue().equals(gender)) {
+                    return true;
+                }
+            }
+
+            if(GenderType.FEMALE.getValue().equals(possibleGender)) {
+                if(DeviceGenderType.FEMALE.getValue().equals(gender)) {
+                    return true;
+                }
+            }
+        } catch(Exception ex) {
+
+        }
+        return false;
+
+
     }
 
 
@@ -575,7 +642,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
     @Override
     public boolean register(SysDevice sysDevice, SysRegisterModel sysRegisterModel) {
         try {
-            if(!(sysDevice.getCurrentStatus().equals(DeviceStatusType.UNREGISTER.getValue()))) {
+            if(!(DeviceStatusType.UNREGISTER.getValue().equals(sysDevice.getCurrentStatus()))) {
                 return false;
             }
             // sys_device
@@ -592,6 +659,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             SerDeviceRegister serDeviceRegister = new SerDeviceRegister();
             serDeviceRegister.setDeviceId(sysDevice.getDeviceId());
             serDeviceRegister.setDeviceId(sysDevice.getDeviceId());
+            serDeviceRegister.setUnRegisterTime(null);
             serDeviceRegister.setRegisterTime(DateUtil.stringDateToDate(sysRegisterModel.getTime()));
             serDeviceRegisterRepository.save(serDeviceRegister);
 
@@ -605,11 +673,14 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             }
             serDeviceStatus.setIpAddress(sysRegisterModel.getIp());
             serDeviceStatus.setAccount(null);
+            serDeviceStatus.setLoginTime(null);
+            serDeviceStatus.setDeviceLoginTime(DateUtil.stringDateToDate(sysRegisterModel.getTime()));
             serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowNameType.LIFE_LOGIN_WAIT.getValue());
-            serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowStatusType.WAIT_TO_START.getValue());
+            serDeviceStatus.setCurrentStatus(DeviceCurrentFlowStatusType.WAIT_TO_START.getValue());
+            serDeviceStatus.setDeviceOnline(DeviceOnlineType.ONLINE.getValue());
             serDeviceStatusRepository.save(serDeviceStatus);
 
-            if (sysDevice.getDeviceType().equals(DeviceType.JUDGE.getValue())) {
+            if (DeviceType.JUDGE.getValue().equals(sysDevice.getDeviceType())) {
                 SysJudgeDevice sysJudgeDevice = new SysJudgeDevice();
                 sysJudgeDevice.setJudgeDeviceId(sysDevice.getDeviceId());
                 sysJudgeDevice = sysJudgeDeviceRepository.findOne(Example.of(sysJudgeDevice));
@@ -619,7 +690,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 }
             }
 
-            if (sysDevice.getDeviceType().equals(DeviceType.MANUAL.getValue())) {
+            if (DeviceType.MANUAL.getValue().equals(sysDevice.getDeviceType())) {
                 SysManualDevice sysManualDevice = new SysManualDevice();
                 sysManualDevice.setManualDeviceId(sysDevice.getDeviceId());
                 sysManualDevice = sysManualDeviceRepository.findOne(Example.of(sysManualDevice));
@@ -628,6 +699,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                     sysManualDeviceRepository.save(sysManualDevice);
                 }
             }
+            redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.device.current.status") + sysDevice.getGuid());
 
             return true;
         } catch (Exception e) {
@@ -648,13 +720,13 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
     public boolean unRegister(SysDevice sysDevice, SysUnregisterModel sysUnregisterModel) {
         try {
             // sys_device
-            if(sysDevice.getCurrentStatus().equals(DeviceStatusType.UNREGISTER.getValue())) {
+            if(DeviceStatusType.UNREGISTER.getValue().equals(sysDevice.getCurrentStatus())) {
                 return false;
             }
             sysDevice.setCurrentStatus(DeviceStatusType.UNREGISTER.getValue());
             sysDeviceRepository.save(sysDevice);
 
-            if (sysDevice.getDeviceType().equals(DeviceType.JUDGE.getValue())) {
+            if (DeviceType.JUDGE.getValue().equals(sysDevice.getDeviceType())) {
                 SysJudgeDevice sysJudgeDevice = new SysJudgeDevice();
                 sysJudgeDevice.setJudgeDeviceId(sysDevice.getDeviceId());
                 sysJudgeDevice = sysJudgeDeviceRepository.findOne(Example.of(sysJudgeDevice));
@@ -665,7 +737,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 }
             }
 
-            if (sysDevice.getDeviceType().equals(DeviceType.MANUAL.getValue())) {
+            if (DeviceType.MANUAL.getValue().equals(sysDevice.getDeviceType())) {
                 SysManualDevice sysManualDevice = new SysManualDevice();
                 sysManualDevice.setManualDeviceId(sysDevice.getDeviceId());
                 sysManualDevice = sysManualDeviceRepository.findOne(Example.of(sysManualDevice));
@@ -676,17 +748,25 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 }
             }
 
+
+
             SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
             serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
             serDeviceStatus = serDeviceStatusRepository.findOne(Example.of(serDeviceStatus));
             if (serDeviceStatus == null) {
                 return false;
             }
-            serDeviceStatus.setAccount(null);
-            serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowNameType.LIFE_EXIT.getValue());
-            serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowStatusType.WAIT_TO_START.getValue());
-            serDeviceStatusRepository.save(serDeviceStatus);
 
+            SerDeviceRegister serDeviceRegister = serDeviceRegisterRepository.findLatestRegisterInfo(sysDevice.getDeviceId());
+            serDeviceRegister.setUnRegisterTime(DateUtil.stringDateToDate(sysUnregisterModel.getTime()));
+            serDeviceRegisterRepository.save(serDeviceRegister);
+            serDeviceStatus.setAccount(null);
+            serDeviceStatus.setDeviceLoginTime(null);
+            serDeviceStatus.setLoginTime(null);
+            serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowNameType.LIFE_EXIT.getValue());
+            serDeviceStatus.setCurrentStatus(DeviceCurrentFlowStatusType.WAIT_TO_START.getValue());
+            serDeviceStatusRepository.save(serDeviceStatus);
+            redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.device.current.status") + sysDevice.getGuid());
             return true;
         } catch (Exception e) {
             log.error("设备登录错误");
@@ -717,24 +797,55 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
      * @return boolean
      */
     @Override
-    public boolean login(SysDevice sysDevice, SysLoginModel sysLoginModel) {
+    public int login(SysDevice sysDevice, SysLoginModel sysLoginModel) {
         try {
             SysUser sysUser = new SysUser();
             sysUser.setUserAccount(sysLoginModel.getUserName());
-            sysUser.setPassword(sysLoginModel.getPassword());
-            sysUser = sysUserRepository.findOne(Example.of(sysUser));
 
+            sysUser = sysUserRepository.findOne(Example.of(sysUser));
             if (sysUser == null) {
-                return false;
+                return 0;
+            }
+            String password = sysUser.getPassword();
+            if(password.equals(BackgroundServiceUtil.getConfig("default.password"))) {
+                password = serPlatformOtherParamsService.getLastOtherParams().getInitialPassword();
+            }
+            if(!(password.equals(sysLoginModel.getPassword()))) {
+                return 1;
+            }
+            if(sysUser.getStatus().equals(UserStatusType.BLOCKED.getValue())) {
+                return 2;
+            }
+            Long resourceId = null;
+            if (DeviceType.SECURITY.getValue().equals(sysDevice.getDeviceType())) {
+                resourceId = Long.valueOf(UserDeviceManageResourceType.DEVICE.getValue());
+            } else if (DeviceType.MANUAL.getValue().equals(sysDevice.getDeviceType())) {
+                resourceId = Long.valueOf(UserDeviceManageResourceType.MANUAL.getValue());
+            } else if (DeviceType.JUDGE.getValue().equals(sysDevice.getDeviceType())) {
+                resourceId = Long.valueOf(UserDeviceManageResourceType.JUDGE.getValue());
             }
 
-            if(checkDeviceLogin(sysDevice) == 2) {
+            SysRoleResource sysRoleResource = SysRoleResource.builder().resourceId(resourceId).build();
+            Example<SysRoleResource> ex = Example.of(sysRoleResource);
+            List<SysRoleResource> sysRoleResourceList = sysRoleResourceRepository.findAll(ex);
+            List<Long> roleIds = sysRoleResourceList.stream().map(x -> x.getRoleId()).collect(Collectors.toList());
+            List<SysRoleUser> roleUsers = sysRoleUserRepository.getRoleUserListByUserId(sysUser.getUserId(), roleIds);
+            if(roleUsers.size() == 0)  {
+                List<SysUserGroupRole> roleUserGroups = sysUserGroupRoleRepository.getRoleUserGroupList(roleIds);
+                List<Long> userGroupIds = roleUserGroups.stream().map(x -> x.getUserGroupId()).collect(Collectors.toList());
+                if(sysUserGroupUserRepository.getGroupUserListByUserId(sysUser.getUserId(), userGroupIds).size() == 0) {
+                    return 0;
+                }
+            }
+
+
+            if(checkDeviceLogin(sysDevice) == 3) {
                 SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(sysDevice.getDeviceId());
                 if(serLoginInfo != null) {
-                    if(serLoginInfo.getUserId() != sysUser.getUserId()) {
-                        return false;
+                    if(serLoginInfo.getUserId() != null && !(serLoginInfo.getUserId().equals(sysUser.getUserId()))) {
+                        return 0;
                     }
-                    return true;
+                    return 3;
                 }
             }
 
@@ -744,7 +855,9 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             // sys_device
             sysDevice.setCurrentStatus(DeviceStatusType.LOGIN.getValue());
             sysDevice.setWorkStatus(DeviceWorkStatusType.FREE.getValue());
+            sysDevice.setEditedTime(new Date());
             sysDeviceRepository.save(sysDevice);
+
             redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.judge.process.info") + sysDevice.getGuid(), null);
 
             // ser_login_info
@@ -753,6 +866,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             serLoginInfo.setDeviceId(sysDevice.getDeviceId());
             serLoginInfo.setLoginCategory(LogType.LOGIN.getValue());
             serLoginInfo.setTime(DateUtil.stringDateToDate(sysLoginModel.getLoginTime()));
+            serLoginInfo.setLogoutTime(null);
             serLoginInfoRepository.save(serLoginInfo);
 
             // ser_device_status
@@ -760,15 +874,17 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
             serDeviceStatus = serDeviceStatusRepository.findOne(Example.of(serDeviceStatus));
             if (serDeviceStatus == null) {
-                return false;
+                return 0;
             }
             serDeviceStatus.setLoginTime(DateUtil.stringDateToDate(sysLoginModel.getLoginTime()));
             serDeviceStatus.setAccount(sysUser.getUserAccount());
             serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowNameType.DEVICE_INIT.getValue());
             serDeviceStatus.setCurrentStatus(DeviceCurrentFlowStatusType.PREPARING.getValue());
+            serDeviceStatus.setDeviceOnline(DeviceOnlineType.ONLINE.getValue());
+
             serDeviceStatusRepository.save(serDeviceStatus);
 
-            if (sysDevice.getDeviceType().equals(DeviceType.JUDGE.getValue())) {
+            if (DeviceType.JUDGE.getValue().equals(sysDevice.getDeviceType())) {
                 SysJudgeDevice sysJudgeDevice = new SysJudgeDevice();
                 sysJudgeDevice.setJudgeDeviceId(sysDevice.getDeviceId());
                 sysJudgeDevice = sysJudgeDeviceRepository.findOne(Example.of(sysJudgeDevice));
@@ -778,7 +894,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 }
             }
 
-            if (sysDevice.getDeviceType().equals(DeviceType.MANUAL.getValue())) {
+            if (DeviceType.MANUAL.getValue().equals(sysDevice.getDeviceType())) {
                 SysManualDevice sysManualDevice = new SysManualDevice();
                 sysManualDevice.setManualDeviceId(sysDevice.getDeviceId());
                 sysManualDevice = sysManualDeviceRepository.findOne(Example.of(sysManualDevice));
@@ -787,12 +903,94 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                     sysManualDeviceRepository.save(sysManualDevice);
                 }
             }
-            return true;
+            redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.device.current.status") + sysDevice.getGuid());
+            redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.device.overtime.last") + sysDevice.getDeviceId(), null);
+            return 3;
         } catch (Exception e) {
             log.error("无法登录设备");
             log.error(e.getMessage());
         }
-        return false;
+        return 0;
+    }
+
+    /**
+     * logout
+     *
+     * @param deviceId
+     * @return boolean
+     */
+    @Override
+    public int logout(Long deviceId) {
+        try {
+
+            SysDevice deviceModel = new SysDevice();
+            deviceModel.setDeviceId(deviceId);
+            Example<SysDevice> serDeviceEx = Example.of(deviceModel);
+            SysDevice sysDevice = sysDeviceRepository.findOne(serDeviceEx);
+
+            if((DeviceStatusType.UNREGISTER.getValue().equals(sysDevice.getCurrentStatus()))) {
+                return 0;
+            }
+
+            // sys_device
+            sysDevice.setCurrentStatus(DeviceStatusType.UNREGISTER.getValue());
+            sysDeviceRepository.save(sysDevice);
+            Date cur_date = new Date();
+
+            // ser_login_info
+            SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(sysDevice.getDeviceId());
+            serLoginInfo.setLoginCategory(LogType.LOGOUT.getValue());
+            serLoginInfo.setLogoutTime(cur_date);
+            serLoginInfoRepository.save(serLoginInfo);
+
+            SerDeviceRegister serDeviceRegister = serDeviceRegisterRepository.findLatestRegisterInfo(sysDevice.getDeviceId());
+            serDeviceRegister.setUnRegisterTime(cur_date);
+            serDeviceRegisterRepository.save(serDeviceRegister);
+
+            if (DeviceType.JUDGE.getValue().equals(sysDevice.getDeviceType())) {
+                SysJudgeDevice sysJudgeDevice = new SysJudgeDevice();
+                sysJudgeDevice.setJudgeDeviceId(sysDevice.getDeviceId());
+                sysJudgeDevice = sysJudgeDeviceRepository.findOne(Example.of(sysJudgeDevice));
+                if (sysJudgeDevice != null) {
+                    sysJudgeDevice.setDeviceStatus(DeviceStatusType.UNREGISTER.getValue());
+                    sysJudgeDevice.setDeviceCheckGender(null);
+                    sysJudgeDeviceRepository.save(sysJudgeDevice);
+                }
+            }
+
+            if (DeviceType.MANUAL.getValue().equals(sysDevice.getDeviceType())) {
+                SysManualDevice sysManualDevice = new SysManualDevice();
+                sysManualDevice.setManualDeviceId(sysDevice.getDeviceId());
+                sysManualDevice = sysManualDeviceRepository.findOne(Example.of(sysManualDevice));
+                if (sysManualDevice != null) {
+                    sysManualDevice.setDeviceStatus(DeviceStatusType.UNREGISTER.getValue());
+                    sysManualDevice.setDeviceCheckGender(null);
+                    sysManualDeviceRepository.save(sysManualDevice);
+                }
+            }
+
+
+            // ser_device_status
+            SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
+            serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
+            serDeviceStatus = serDeviceStatusRepository.findOne(Example.of(serDeviceStatus));
+            if (serDeviceStatus == null) {
+                return 1;
+            }
+
+            serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowNameType.LIFE_EXIT.getValue());
+            serDeviceStatus.setCurrentStatus(DeviceCurrentFlowStatusType.WAIT_TO_START.getValue());
+            serDeviceStatus.setAccount(null);
+            serDeviceStatus.setLoginTime(null);
+            serDeviceStatus.setDeviceOnline(DeviceOnlineType.OFFLINE.getValue());
+            serDeviceStatusRepository.save(serDeviceStatus);
+            redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.device.current.status") + sysDevice.getGuid());
+            return 2;
+        } catch (Exception e) {
+            log.error("无法注销设备");
+            log.error(e.getMessage());
+            return 1;
+        }
     }
 
     /**
@@ -803,22 +1001,22 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
      * @return boolean
      */
     @Override
-    public boolean logout(SysDevice sysDevice, SysLogoutModel sysLogoutModel) {
+    public int logout(SysDevice sysDevice, SysLogoutModel sysLogoutModel) {
         try {
             SysUser sysUser = new SysUser();
             sysUser.setUserAccount(sysLogoutModel.getUserName());
             sysUser = sysUserRepository.findOne(Example.of(sysUser));
 
             if (sysUser == null) {
-                return false;
+                return 0;
             }
-            if(checkDeviceLogin(sysDevice) != 2) {
-                return false;
+            if(checkDeviceLogin(sysDevice) != 3) {
+                return 1;
             }
 
             SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(sysDevice.getDeviceId());
-            if(serLoginInfo == null || serLoginInfo.getUserId() != sysUser.getUserId()) {
-                return false;
+            if(serLoginInfo == null || !(sysUser.getUserId().equals(serLoginInfo.getUserId()))) {
+                return 1;
             }
 
             // sys_device
@@ -826,14 +1024,11 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             sysDeviceRepository.save(sysDevice);
 
             // ser_login_info
-            serLoginInfo = new SerLoginInfo();
-            serLoginInfo.setUserId(sysUser.getUserId());
-            serLoginInfo.setDeviceId(sysDevice.getDeviceId());
             serLoginInfo.setLoginCategory(LogType.LOGOUT.getValue());
-            serLoginInfo.setTime(DateUtil.stringDateToDate(sysLogoutModel.getLogoutTime()));
+            serLoginInfo.setLogoutTime(DateUtil.stringDateToDate(sysLogoutModel.getLogoutTime()));
             serLoginInfoRepository.save(serLoginInfo);
 
-            if (sysDevice.getDeviceType().equals(DeviceType.JUDGE.getValue())) {
+            if (DeviceType.JUDGE.getValue().equals(sysDevice.getDeviceType())) {
                 SysJudgeDevice sysJudgeDevice = new SysJudgeDevice();
                 sysJudgeDevice.setJudgeDeviceId(sysDevice.getDeviceId());
                 sysJudgeDevice = sysJudgeDeviceRepository.findOne(Example.of(sysJudgeDevice));
@@ -844,7 +1039,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 }
             }
 
-            if (sysDevice.getDeviceType().equals(DeviceType.MANUAL.getValue())) {
+            if (DeviceType.MANUAL.getValue().equals(sysDevice.getDeviceType())) {
                 SysManualDevice sysManualDevice = new SysManualDevice();
                 sysManualDevice.setManualDeviceId(sysDevice.getDeviceId());
                 sysManualDevice = sysManualDeviceRepository.findOne(Example.of(sysManualDevice));
@@ -861,18 +1056,19 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
             serDeviceStatus = serDeviceStatusRepository.findOne(Example.of(serDeviceStatus));
             if (serDeviceStatus == null) {
-                return false;
+                return 1;
             }
             serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowNameType.LIFE_LOGOUT.getValue());
             serDeviceStatus.setCurrentStatus(DeviceCurrentFlowStatusType.CANCELLED.getValue());
             serDeviceStatus.setAccount(null);
+            serDeviceStatus.setLoginTime(null);
             serDeviceStatusRepository.save(serDeviceStatus);
-
-            return true;
+            redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.device.current.status") + sysDevice.getGuid());
+            return 2;
         } catch (Exception e) {
             log.error("无法注销设备");
             log.error(e.getMessage());
-            return false;
+            return 1;
         }
     }
 
@@ -892,7 +1088,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
 
             SerLoginInfoDetail serLoginInfo = sysDevice.getLoginInfo();
             if (serLoginInfo != null) {
-                if (serLoginInfo.getLoginCategory() != null && serLoginInfo.getLoginCategory().equals(LogType.LOGIN.getValue())) {
+                if (serLoginInfo.getLoginCategory() != null && LogType.LOGIN.getValue().equals(serLoginInfo.getLoginCategory())) {
                     SysUser sysUser = serLoginInfo.getSysUser();
 
                     if (sysUser != null) {
@@ -935,7 +1131,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
         if(sysDeviceConfig == null) {
             return false;
         }
-        if(sysDeviceConfig.getSysWorkMode().getModeName().equals(WorkModeType.SECURITY.getValue())) {
+        if(WorkModeType.SECURITY.getValue().equals(sysDeviceConfig.getSysWorkMode().getModeName())) {
             return true;
         }
         return false;
@@ -956,8 +1152,8 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             List<SysMonitoringDeviceStatusInfoVO> deviceList = deviceListJsonArray.toJavaList(SysMonitoringDeviceStatusInfoVO.class);
             for (SysMonitoringDeviceStatusInfoVO item : deviceList) {
                 if (item.getGuid().equals(guid)) {
-                    if (item.getCurrentStatus().equals(DeviceStatusType.LOGIN.getValue())
-                            || item.getCurrentStatus().equals(DeviceStatusType.START.getValue())) {
+                    if (DeviceStatusType.LOGIN.getValue().equals(item.getCurrentStatus())
+                            || DeviceStatusType.START.getValue().equals(item.getCurrentStatus())) {
                         isAvailable = true;
                     }
                 }
@@ -969,8 +1165,8 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             Example<SysDevice> sysDeviceEx = Example.of(deviceModel);
             SysDevice sysDevice = sysDeviceRepository.findOne(sysDeviceEx);
             if (sysDevice != null && sysDevice.getCurrentStatus() != null) {
-                if (sysDevice.getCurrentStatus().equals(DeviceStatusType.LOGIN.getValue())
-                        || sysDevice.getCurrentStatus().equals(DeviceStatusType.START.getValue())) {
+                if (DeviceStatusType.LOGIN.getValue().equals(sysDevice.getCurrentStatus())
+                        || DeviceStatusType.START.getValue().equals(sysDevice.getCurrentStatus())) {
                     isAvailable = true;
                 }
             }
@@ -989,14 +1185,14 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             return 0;
         }
 
-        if(sysDevice.getCurrentStatus().equals(DeviceStatusType.UNREGISTER.getValue())) {
+        if(DeviceStatusType.UNREGISTER.getValue().equals(sysDevice.getCurrentStatus())) {
             return 0;
-        } else if(sysDevice.getCurrentStatus().equals(DeviceStatusType.REGISTER.getValue())) {
+        } else if(DeviceStatusType.REGISTER.getValue().equals(sysDevice.getCurrentStatus())) {
             return 1;
-        } else if(sysDevice.getCurrentStatus().equals(DeviceStatusType.LOGOUT.getValue())) {
-            return 0;
+        } else if(DeviceStatusType.LOGOUT.getValue().equals(sysDevice.getCurrentStatus())) {
+            return 2;
         }
-        return 2;
+        return 3;
     }
 
 }

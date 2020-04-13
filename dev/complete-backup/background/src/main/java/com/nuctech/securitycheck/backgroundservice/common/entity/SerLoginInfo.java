@@ -41,4 +41,7 @@ public class SerLoginInfo extends BaseEntity implements Serializable {
     @Column(name = "TIME", nullable = false)
     private Date time;
 
+    @Column(name = "LOGOUT_TIME", nullable = false)
+    private Date logoutTime;
+
 }

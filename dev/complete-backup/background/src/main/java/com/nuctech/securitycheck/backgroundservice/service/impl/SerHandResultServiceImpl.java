@@ -18,6 +18,7 @@ import com.nuctech.securitycheck.backgroundservice.common.vo.*;
 import com.nuctech.securitycheck.backgroundservice.repositories.*;
 import com.nuctech.securitycheck.backgroundservice.service.ISerHandResultService;
 import com.nuctech.securitycheck.backgroundservice.service.ISysDeviceService;
+import com.nuctech.securitycheck.backgroundservice.service.ISysManualGroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,9 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
 
     @Autowired
     private SerHandExaminationRepository serHandExaminationRepository;
+
+    @Autowired
+    private ISysManualGroupService sysManualGroupService;
 
     @Autowired
     private ISysDeviceService sysDeviceService;
@@ -117,6 +121,8 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
             Example<SysDevice> serDeviceEx = Example.of(deviceModel);
             SysDevice handDevice = sysDeviceRepository.findOne(serDeviceEx);
 
+
+
             //从redis获取设备状态
             String deviceListStr = redisUtil.get(BackgroundServiceUtil
                     .getConfig("redisKey.sys.monitoring.device.status.info"));
@@ -132,16 +138,9 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
                     // 检查guid并获取用户信息并将其状态更新为免费
                     if (StringUtils.isNotBlank(item.getGuid()) && item.getGuid().equals(guid)) {
                         sysUser = item.getLoginUser();
-                        item.setWorkStatus(DeviceWorkStatusType.FREE.getValue());
                         break;
                     }
                 }
-
-                //将设备状态信息更新为Redis
-                deviceListStr = objectMapper.writeValueAsString(deviceList);
-                deviceListStr = CryptUtil.encrypt(deviceListStr);
-                redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.monitoring.device.status.info"),
-                        deviceListStr, CommonConstant.EXPIRE_TIME.getValue());
             }
 
             // 从redis获取相应安全设备的设备配置信息
@@ -211,16 +210,12 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
             //将数据保存到ser_check_result
             String handSubmitRectsStr = objectMapper.writeValueAsString(handSerResult.getCheckResult().getSubmitRects());
             String imageJudgeType = "";
-            if (handSerResult.getCheckResult().getImageJudge1().equals(DeviceImageJudgeType.MISJUDGE.getValue())) {
+            if (DeviceImageJudgeType.TRUE.getValue().equals(handSerResult.getCheckResult().getImageJudge2())) {
                 imageJudgeType = ImageJudgeType.MISJUDGE.getValue();
-            } else if (handSerResult.getCheckResult().getImageJudge1().equals(DeviceImageJudgeType.LEAKJUDGE.getValue())) {
-                imageJudgeType = ImageJudgeType.LEAKJUDGE.getValue();
             }
 
             String imageJudgeTypeSecond = "";
-            if (handSerResult.getCheckResult().getImageJudge2().equals(DeviceImageJudgeType.MISJUDGE.getValue())) {
-                imageJudgeTypeSecond = ImageJudgeType.MISJUDGE.getValue();
-            } else if (handSerResult.getCheckResult().getImageJudge2().equals(DeviceImageJudgeType.LEAKJUDGE.getValue())) {
+            if (DeviceImageJudgeType.TRUE.getValue().equals(handSerResult.getCheckResult().getImageJudge1())) {
                 imageJudgeTypeSecond = ImageJudgeType.LEAKJUDGE.getValue();
             }
             SerCheckResult serCheckResultModel = SerCheckResult.builder()
@@ -249,8 +244,9 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
 
             // 将当前设备状态更新为免费
             handDevice.setWorkStatus(DeviceWorkStatusType.FREE.getValue());
-            sysDeviceRepository.save(handDevice);
 
+            sysDeviceRepository.save(handDevice);
+            redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.device.current.status") + handDevice.getGuid());
 
 
             // 保存到历史
@@ -285,13 +281,38 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
             history.setHandAttached(serCheckResult.getHandAttached());
             history.setHandCollectLabel(serCheckResult.getHandCollectLabel());
             history.setHandAppraise(serCheckResult.getHandAppraise());
+            history.setHandAppraiseSecond(serCheckResult.getHandAppraiseSecond());
             history.setHandEndTime(serHandExamination.getHandEndTime());
             history.setHandStartTime(serHandExamination.getHandStartTime());
+            history.setTaskStatus(serTask.getTaskStatus());
 
             //change guid to security device guid
             historyRepository.save(history);
 
             handSerResult.setGuid(serTask.getDevice().getGuid());
+
+            if(DeviceDefaultType.TRUE.getValue().equals(handSerResult.getCheckResult().getImageKeep())) {
+                SerKnowledgeCase knowledgeCase = new SerKnowledgeCase();
+                knowledgeCase.setTaskId(serTask.getTaskId());
+                knowledgeCase.setCaseStatus(SerKnowledgeCase.Status.SUBMIT_APPROVAL);
+                Long userId = null;
+                if(sysUser != null) {
+                    userId = sysUser.getUserId();
+                }
+                knowledgeCase.setCaseCollectUserId(userId);
+
+                //insert new knowledge case and get new id
+                Long knowledgeId = sysManualGroupService.insertNewKnowledgeCase(knowledgeCase, userId);
+
+                knowledgeCase.setCaseId(knowledgeId);
+
+                //prepare new knowledgecasedeal to insert
+                SerKnowledgeCaseDeal knowledgeCaseDeal = initSerKnowCaseDealFromHistory(history);
+                knowledgeCaseDeal.setCaseId(knowledgeId);
+                Long knowledgeCaseDealId = sysManualGroupService.insertNewKnowledgeCaseDeal(knowledgeCaseDeal, userId);
+                knowledgeCase.setCaseDealId(knowledgeCaseDealId);
+                sysManualGroupService.updateKnowledgeCase(knowledgeId, knowledgeCase);
+            }
             return true;
 
         } catch (Exception e) {
@@ -299,6 +320,61 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
             log.error(e.getMessage());
             return false;
         }
+    }
+
+    private SerKnowledgeCaseDeal initSerKnowCaseDealFromHistory(History history) {
+
+        SerKnowledgeCaseDeal serKnowledgeCaseDeal = new SerKnowledgeCaseDeal();
+
+        serKnowledgeCaseDeal.setSerTask(history.getSerTask());
+        serKnowledgeCaseDeal.setSysWorkMode(history.getSysWorkMode());
+        serKnowledgeCaseDeal.setSerScan(history.getSerScan());
+        serKnowledgeCaseDeal.setSysWorkflow(history.getSysWorkflow());
+        serKnowledgeCaseDeal.setScanDevice(history.getScanDevice());
+        serKnowledgeCaseDeal.setScanImage(history.getScanImage());
+        serKnowledgeCaseDeal.setScanATRResult(history.getScanATRResult());
+        serKnowledgeCaseDeal.setScanFootAlarm(history.getScanFootAlarm());
+        serKnowledgeCaseDeal.setScanStartTime(history.getScanStartTime());
+        serKnowledgeCaseDeal.setScanEndTime(history.getScanEndTime());
+        serKnowledgeCaseDeal.setScanPointsman(history.getScanPointsman());
+        serKnowledgeCaseDeal.setScanPointsmanName(history.getScanPointsman().getUserName());
+//        serKnowledgeCaseDeal.setAssignscanId(history.getAssignScanId());
+//        serKnowledgeCaseDeal.setAssignWorkflowId(history.getAssignWorkflowId());
+//        serKnowledgeCaseDeal.setAssignUserId(history.getAssignUserId());
+//        serKnowledgeCaseDeal.setAssignUserName(history.getAssignUserName());
+        serKnowledgeCaseDeal.setAssignJudgeDevice(history.getAssignJudgeDevice());
+        serKnowledgeCaseDeal.setAssignHandDevice(history.getAssignHandDevice());
+//        serKnowledgeCaseDeal.setAssignStartTime(history.getAssignStartTime());
+//        serKnowledgeCaseDeal.setAssignEndTime(history.getAssignEndTime());
+//        serKnowledgeCaseDeal.setAssignTimeout(history.getAssignTimeout());
+//        serKnowledgeCaseDeal.setAssignStatus(history.getAssignStatus());
+        serKnowledgeCaseDeal.setJudgeGraph(history.getJudgeGraph());
+        serKnowledgeCaseDeal.setJudgeWorkflow(history.getJudgeWorkflow());
+        serKnowledgeCaseDeal.setJudgeDevice(history.getJudgeDevice());
+        serKnowledgeCaseDeal.setJudgeResult(history.getJudgeResult());
+        serKnowledgeCaseDeal.setJudgeTimeout(history.getJudgeTimeout());
+        serKnowledgeCaseDeal.setHandExamination(history.getHandExamination());
+        serKnowledgeCaseDeal.setHandWorkflow(history.getHandWorkflow());
+        serKnowledgeCaseDeal.setHandDevice(history.getHandDevice());
+        serKnowledgeCaseDeal.setHandResult(history.getHandResult());
+        serKnowledgeCaseDeal.setHandStartTime(history.getHandStartTime());
+        serKnowledgeCaseDeal.setHandEndTime(history.getHandEndTime());
+        serKnowledgeCaseDeal.setHandUser(history.getHandUser());
+        serKnowledgeCaseDeal.setHandTaskResult(history.getHandTaskResult());
+        serKnowledgeCaseDeal.setHandGoods(history.getHandGoods());
+        serKnowledgeCaseDeal.setHandGoodsGrade(history.getHandGoodsGrade());
+        serKnowledgeCaseDeal.setHandCollectSign(history.getHandCollectSign());
+        //serKnowledgeCaseDeal.setHandAttachedId(history.getHandAttached());
+        serKnowledgeCaseDeal.setHandCollectLabel(history.getHandCollectLabel());
+        serKnowledgeCaseDeal.setHandAppraise(history.getHandAppraise());
+        serKnowledgeCaseDeal.setHandAppraiseSecond(history.getHandAppraiseSecond());
+        serKnowledgeCaseDeal.setJudgeStartTime(history.getJudgeStartTime());
+        serKnowledgeCaseDeal.setJudgeEndTime(history.getJudgeEndTime());
+        serKnowledgeCaseDeal.setJudgeUser(history.getJudgeUser());
+        serKnowledgeCaseDeal.setJudgeAssignTimeout(history.getJudgeAssignTimeout());
+        serKnowledgeCaseDeal.setJudgeStatus(history.getJudgeStatus());
+
+        return serKnowledgeCaseDeal;
     }
 
     /**

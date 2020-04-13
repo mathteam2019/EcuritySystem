@@ -2,6 +2,7 @@ package com.nuctech.securitycheck.backgroundservice.message;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nuctech.securitycheck.backgroundservice.common.enums.CommonConstant;
 import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceType;
 import com.nuctech.securitycheck.backgroundservice.common.models.*;
 import com.nuctech.securitycheck.backgroundservice.common.utils.BackgroundServiceUtil;
@@ -363,23 +364,55 @@ public class MessageListener {
             msg = CryptUtil.decrypt(msg);
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
             String key = result.getKey();
-            if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.currentstatus"))) {
-                // 4.3.1.10 安检仪向后台服务发送 flow 信息（即时状态）-返回
-                SerDeviceStatusModel serDeviceStatusModel = objectMapper.convertValue(result.getContent(), SerDeviceStatusModel.class);
-                securitySysController.sendSerDeviceStatus(serDeviceStatusModel);
-            } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.heartbeat"))) {
+            if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.heartbeat"))) {
                 //4.3.1.8 安检仪向后台服务发送心跳信息
                 HeartBeatModel heartBeatModel = objectMapper.convertValue(result.getContent(), HeartBeatModel.class);
                 securitySysController.saveHeartBeatTime(heartBeatModel);
-            } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.hardwarestatus"))) {
-                HardwareStatusModel hardwareStatusModel = objectMapper.convertValue(result.getContent(), HardwareStatusModel.class);
-                //4.3.1.11 安检仪向后台服务发送硬件状态（即时状态）
-                securitySysController.sendHardwareStatus(hardwareStatusModel);
-            } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.rem.heartbeat"))) {
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    /**
+     * listenDevSysStatusMessage
+     *
+     * @param receiver Message
+     */
+    @RabbitListener(queues = "${rem.sys.status.queue}")
+    public void listenRemSysStatusMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
+        try {
+            msg = CryptUtil.decrypt(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+            String key = result.getKey();
+            if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.rem.heartbeat"))) {
                 //4.3.2.6 判图站向后台服务发送心跳信息
                 HeartBeatModel heartBeatModel = objectMapper.convertValue(result.getContent(), HeartBeatModel.class);
                 judgeSysController.saveHeartBeatTime(heartBeatModel);
-            } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.man.heartbeat"))) {
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    /**
+     * listenDevSysStatusMessage
+     *
+     * @param receiver Message
+     */
+    @RabbitListener(queues = "${man.sys.status.queue}")
+    public void listenManSysStatusMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
+        try {
+            msg = CryptUtil.decrypt(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+            String key = result.getKey();
+            if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.man.heartbeat"))) {
                 //4.3.3.8 手检端向后台服务发送心跳信息
                 HeartBeatModel heartBeatModel = objectMapper.convertValue(result.getContent(), HeartBeatModel.class);
                 manualSysController.saveHeartBeatTime(heartBeatModel);
@@ -389,6 +422,55 @@ public class MessageListener {
         }
     }
 
+    /**
+     * listenDevSysStatusMessage
+     *
+     * @param receiver Message
+     */
+    @RabbitListener(queues = "${dev.sys.currentstatus.queue}")
+    public void listenDevSysCurrentStatusMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
+        try {
+            msg = CryptUtil.decrypt(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+            String key = result.getKey();
+            if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.currentstatus"))) {
+                // 4.3.1.10 安检仪向后台服务发送 flow 信息（即时状态）-返回
+                SerDeviceStatusModel serDeviceStatusModel = objectMapper.convertValue(result.getContent(), SerDeviceStatusModel.class);
+                securitySysController.sendSerDeviceStatus(serDeviceStatusModel);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    /**
+     * listenDevSysStatusMessage
+     *
+     * @param receiver Message
+     */
+    @RabbitListener(queues = "${dev.sys.hardwarestatus.queue}")
+    public void listenDevSysHardwareStatusMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
+        try {
+            msg = CryptUtil.decrypt(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+            String key = result.getKey();
+            if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.hardwarestatus"))) {
+                HardwareStatusModel hardwareStatusModel = objectMapper.convertValue(result.getContent(), HardwareStatusModel.class);
+                //4.3.1.11 安检仪向后台服务发送硬件状态（即时状态）
+                securitySysController.sendHardwareStatus(hardwareStatusModel);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+
     @RabbitListener(queues = "${sys.dev.reply.queue}")
     public void listenSysDevReplyMessage(Message receiver) {
 
@@ -396,11 +478,16 @@ public class MessageListener {
         String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+            serMqMessageService.save(result, 0, null, null,
+                    CommonConstant.RESULT_SUCCESS.getValue().toString());
             log.info(msg);
         } catch (Exception e) {
 
         }
     }
+
+
 
     @RabbitListener(queues = "${dev.sys.reply.queue}")
     public void listenDevSysReplyMessage(Message receiver) {
@@ -409,7 +496,10 @@ public class MessageListener {
         String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
-            log.info(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+//            serMqMessageService.save(result, 0, null, null,
+//                    CommonConstant.RESULT_SUCCESS.getValue().toString());
+//            log.info(msg);
         } catch (Exception e) {
 
         }
@@ -422,6 +512,9 @@ public class MessageListener {
         String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+            serMqMessageService.save(result, 0, null, null,
+                    CommonConstant.RESULT_SUCCESS.getValue().toString());
             log.info(msg);
         } catch (Exception e) {
 
@@ -435,6 +528,9 @@ public class MessageListener {
         String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+//            serMqMessageService.save(result, 0, null, null,
+//                    CommonConstant.RESULT_SUCCESS.getValue().toString());
             log.info(msg);
         } catch (Exception e) {
 
@@ -448,6 +544,9 @@ public class MessageListener {
         String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+            serMqMessageService.save(result, 0, null, null,
+                    CommonConstant.RESULT_SUCCESS.getValue().toString());
             log.info(msg);
         } catch (Exception e) {
 
@@ -461,6 +560,9 @@ public class MessageListener {
         String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
+            ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
+//            serMqMessageService.save(result, 0, null, null,
+//                    CommonConstant.RESULT_SUCCESS.getValue().toString());
             log.info(msg);
         } catch (Exception e) {
 

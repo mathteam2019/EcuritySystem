@@ -30,13 +30,17 @@ public interface ISysDeviceService {
 
     boolean checkSecurityHandDevice(String guid);
 
+    boolean genderCheckSecurity(String gender, String guid);
+
     boolean register(SysDevice sysDevice, SysRegisterModel sysRegisterModel);
 
     boolean unRegister(SysDevice sysDevice, SysUnregisterModel sysUnregisterModel);
 
-    boolean login(SysDevice sysDevice, SysLoginModel sysLoginModel);
+    int login(SysDevice sysDevice, SysLoginModel sysLoginModel);
 
-    boolean logout(SysDevice sysDevice, SysLogoutModel sysLogoutModel);
+    int logout(Long deviceId);
+
+    int logout(SysDevice sysDevice, SysLogoutModel sysLogoutModel);
 
     List<SysSecurityInfoVO> findSecurityInfoList();
 

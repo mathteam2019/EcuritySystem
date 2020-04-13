@@ -1,6 +1,7 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceDefaultType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -69,23 +70,39 @@ public class ImageDataModel {
         this.KeyPoint = KeyPoint;
     }
 
+
+    public void init() {
+        invalidScan = invalidScan.toUpperCase();
+        atrResult = atrResult.toUpperCase();
+    }
+
     public int checkValid() {
+        init();
         if(StringUtils.isBlank(imageGuid) || StringUtils.isBlank(offline)) {
             return 1;
         }
         if(!offline.equals("0")) {
             return 2;
         }
-        return 0;
+        String upperCase = invalidScan.toUpperCase();
+        if(DeviceDefaultType.TRUE.getValue().equals(upperCase) ||  DeviceDefaultType.FALSE.getValue().equals(upperCase)) {
+            return 0;
+        }
+        return 2;
     }
 
     public int checkValidOffline() {
+        init();
         if(StringUtils.isBlank(imageGuid) || StringUtils.isBlank(offline)) {
             return 1;
         }
         if(!offline.equals("1")) {
             return 2;
         }
-        return 0;
+        String upperCase = invalidScan.toUpperCase();
+        if(DeviceDefaultType.TRUE.getValue().equals(upperCase) ||  DeviceDefaultType.FALSE.getValue().equals(upperCase)) {
+            return 0;
+        }
+        return 2;
     }
 }

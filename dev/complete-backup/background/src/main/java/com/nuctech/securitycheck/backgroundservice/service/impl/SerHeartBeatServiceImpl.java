@@ -8,6 +8,8 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 /**
  * SerHeartBeatServiceImpl
  *
@@ -41,6 +43,7 @@ public class SerHeartBeatServiceImpl implements ISerHeartBeatService {
      */
     @Override
     public void save(SerHeartBeat serHeartBeat) {
+        serHeartBeat.setEditedTime(new Date());
         serHeartBeatRepository.save(serHeartBeat);
     }
     

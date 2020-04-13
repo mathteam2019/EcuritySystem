@@ -14,6 +14,7 @@ import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceType;
 import com.nuctech.securitycheck.backgroundservice.common.models.DeviceOvertimeModel;
 import com.nuctech.securitycheck.backgroundservice.common.utils.BackgroundServiceUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.CryptUtil;
+import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.RedisUtil;
 import com.nuctech.securitycheck.backgroundservice.common.vo.MonitoringVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.ResultMessageVO;
@@ -37,8 +38,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * SchedulerController
@@ -72,11 +75,18 @@ public class SchedulerController {
     private ISerHeartBeatService serHeartBeatService;
 
     @Autowired
+    private ISysDeviceService sysDeviceService;
+
+    @Autowired
     private ISerMqMessageService serMqMessageService;
+
+    @Autowired
+    private SysJudgeController sysJudgeController;
 
     private ZabbixApi zabbixApi;
 
-    //@Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
+    @ApiOperation("Device Online")
     @PostMapping("device-online")
     public void deviceOnline() {
         try {
@@ -84,21 +94,36 @@ public class SchedulerController {
             //将检查参数数据上传到Redis
             List<SerDeviceStatus> deviceStatusList = serDeviceStatusService.findAll();
 
+            boolean isUpdate = false;
             //检查设备工作时间是否超过
             for (SerDeviceStatus deviceStatus : deviceStatusList) {
                 SerHeartBeat serHeartBeat = SerHeartBeat.builder().deviceId(deviceStatus.getDeviceId()).build();
                 SerHeartBeat oldSerHeartBeat = serHeartBeatService.find(serHeartBeat);
                 if(oldSerHeartBeat == null) {
-                    deviceStatus.setDeviceOnline(DeviceOnlineType.OFFLINE.getValue());
+                    //deviceStatus.setDeviceOnline(DeviceOnlineType.OFFLINE.getValue());
+                    int status = sysDeviceService.logout(deviceStatus.getDeviceId());
+                    if(status == 2) {
+                        isUpdate = true;
+                    }
                 } else {
-                    Date heartBeatTime = oldSerHeartBeat.getHeartBeatTime();
+                    Date heartBeatTime = oldSerHeartBeat.getEditedTime();
                     Date curDate = new Date();
                     long diffInMillies = Math.abs(curDate.getTime() - heartBeatTime.getTime());
                     if(diffInMillies > CommonConstant.LIMIT_OFFLINE_TIME.getValue() * 1000) {
+
                         deviceStatus.setDeviceOnline(DeviceOnlineType.OFFLINE.getValue());
+                        int status = sysDeviceService.logout(deviceStatus.getDeviceId());
+                        if(status == 2) {
+                            isUpdate = true;
+                        }
                     }
                 }
             }
+            if(isUpdate == true) {
+                sysJudgeController.uploadDeviceConfig();
+                sysJudgeController.uploadDeviceStatus();
+            }
+
             serDeviceStatusService.saveAll(deviceStatusList);
 
         } catch (Exception e) {
@@ -107,10 +132,30 @@ public class SchedulerController {
         }
     }
 
+
+    @Scheduled(cron = "0 * * * * ?")
+    @ApiOperation("Remove Mq Message")
+    @PostMapping("remove-mq-message")
+    public void removeMqMessage() {
+        try {
+            Date now = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(now);
+            int mqCycle = 7;
+            cal.add(Calendar.DATE, -mqCycle);
+            Date limitDate = cal.getTime();
+            serMqMessageService.removeAllMessage(limitDate);
+        } catch (Exception e) {
+            log.error("随着时间的推移未能监控安全性");
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     /**.
      * 后台服务向安检仪推送工作超时提醒
      */
-//    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     @ApiOperation("4.3.1.17 后台服务向安检仪推送工作超时提醒")
     @PostMapping("monitor-security-overtime")
     public void monitorSecurityOvertime() {
@@ -119,7 +164,7 @@ public class SchedulerController {
 
         DeviceOvertimeModel result = new DeviceOvertimeModel();
         ObjectMapper objectMapper = new ObjectMapper();
-
+        Date now = new Date();
         try {
 
             //将检查参数数据上传到Redis
@@ -136,12 +181,24 @@ public class SchedulerController {
 
             //检查设备工作时间是否超过
             for (SysMonitoringDeviceStatusInfoVO item : monitorList) {
-                if (item.getDeviceType().equals(DeviceType.SECURITY.getValue()) && item.getLoginTime() != null) {
-                    LocalDateTime now = LocalDateTime.now();
-                    LocalDateTime loginTime = LocalDateTime.fromDateFields(item.getLoginTime());
+                if (DeviceType.SECURITY.getValue().equals(item.getDeviceType()) && item.getLoginTime() != null) {
+
+                    Date loginTime = item.getLoginTime();
+                    long diffInMillies = Math.abs(now.getTime() - loginTime.getTime());
+                    long diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
                     if (checkParams != null) {
                         Long overTime = checkParams.getScanOverTime();
-                        if (loginTime.plusMinutes(overTime.intValue()).isBefore(now)) {
+                        if (overTime > 0 && diff >= overTime) {
+                            String lastDateStr = CryptUtil.decrypt(redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.device.overtime.last") + item.getDeviceId()));
+                            Date lastSubmit = DateUtil.stringDateToDate(lastDateStr);
+                            if(lastSubmit != null) {
+                                diffInMillies = Math.abs(now.getTime() - lastSubmit.getTime());
+                                diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                                if(diff < CommonConstant.PERMUTION_OVERTIME.getValue()) {
+                                    continue;
+                                }
+                            }
+                            redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.device.overtime.last") + item.getDeviceId(), DateUtil.getDateTmeAsString(now));
                             deviceListToRest.add(item);
                         }
                     }
@@ -171,7 +228,7 @@ public class SchedulerController {
     /**
      * 后台服务向判图站推送工作超时提醒
      */
-//    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     @ApiOperation("4.3.2.12 后台服务向判图站推送工作超时提醒")
     @PostMapping("monitor-judge-overtime")
     public void monitorJudgeOvertime() {
@@ -180,7 +237,7 @@ public class SchedulerController {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
-
+        Date now = new Date();
         try {
             //将检查参数数据上传到Redis
             SerPlatformCheckParams checkParams = iSerPlatformCheckParamsService.getLastCheckParams();
@@ -196,12 +253,23 @@ public class SchedulerController {
             List<SysMonitoringDeviceStatusInfoVO> deviceListToRest = new ArrayList<SysMonitoringDeviceStatusInfoVO>();
             //检查判断时间是否超过
             for (SysMonitoringDeviceStatusInfoVO item : monitorList) {
-                if (item.getDeviceType().equals(DeviceType.JUDGE.getValue()) && item.getLoginTime() != null) {
-                    LocalDateTime now = LocalDateTime.now();
-                    LocalDateTime loginTime = LocalDateTime.fromDateFields(item.getLoginTime());
+                if (DeviceType.JUDGE.getValue().equals(item.getDeviceType()) && item.getLoginTime() != null) {
+                    Date loginTime = item.getLoginTime();
+                    long diffInMillies = Math.abs(now.getTime() - loginTime.getTime());
+                    long diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
                     if (checkParams != null) {
                         Long overTime = checkParams.getJudgeScanOvertime();
-                        if (loginTime.plusMinutes(overTime.intValue()).isBefore(now)) {
+                        if (overTime > 0 && diff >= overTime) {
+                            String lastDateStr = CryptUtil.decrypt(redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.device.overtime.last") + item.getDeviceId()));
+                            Date lastSubmit = DateUtil.stringDateToDate(lastDateStr);
+                            if(lastSubmit != null) {
+                                diffInMillies = Math.abs(now.getTime() - lastSubmit.getTime());
+                                diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                                if(diff < CommonConstant.PERMUTION_OVERTIME.getValue()) {
+                                    continue;
+                                }
+                            }
+                            redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.device.overtime.last") + item.getDeviceId(), DateUtil.getDateTmeAsString(now));
                             deviceListToRest.add(item);
                         }
                     }
@@ -228,7 +296,7 @@ public class SchedulerController {
     /**
      * 后台服务向手检端推送工作超时提醒
      */
-//    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     @ApiOperation("4.3.3.13 后台服务向手检端推送工作超时提醒")
     @PostMapping("monitor-manual-overtime")
     public void monitorManualOvertime() {
@@ -236,7 +304,7 @@ public class SchedulerController {
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.man.overtime"));
 
         ObjectMapper objectMapper = new ObjectMapper();
-
+        Date now = new Date();
         try {
             List<SysMonitoringDeviceStatusInfoVO> monitorList;
 
@@ -253,12 +321,24 @@ public class SchedulerController {
 
             //检查手检查点时间超过
             for (SysMonitoringDeviceStatusInfoVO item : monitorList) {
-                if (item.getDeviceType().equals(DeviceType.MANUAL.getValue()) && item.getLoginTime() != null) {
-                    LocalDateTime now = LocalDateTime.now();
-                    LocalDateTime loginTime = LocalDateTime.fromDateFields(item.getLoginTime());
+                if (DeviceType.MANUAL.getValue().equals(item.getDeviceType()) && item.getLoginTime() != null) {
+
+                    Date loginTime = item.getLoginTime();
+                    long diffInMillies = Math.abs(now.getTime() - loginTime.getTime());
+                    long diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
                     if (checkParams != null) {
                         Long overTime = checkParams.getHandOverTime();
-                        if (loginTime.plusMinutes(overTime.intValue()).isBefore(now)) {
+                        if (overTime > 0 && diff >= overTime) {
+                            String lastDateStr = CryptUtil.decrypt(redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.device.overtime.last") + item.getDeviceId()));
+                            Date lastSubmit = DateUtil.stringDateToDate(lastDateStr);
+                            if(lastSubmit != null) {
+                                diffInMillies = Math.abs(now.getTime() - lastSubmit.getTime());
+                                diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                                if(diff < CommonConstant.PERMUTION_OVERTIME.getValue()) {
+                                    continue;
+                                }
+                            }
+                            redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.device.overtime.last") + item.getDeviceId(), DateUtil.getDateTmeAsString(now));
                             deviceListToRest.add(item);
                         }
                     }

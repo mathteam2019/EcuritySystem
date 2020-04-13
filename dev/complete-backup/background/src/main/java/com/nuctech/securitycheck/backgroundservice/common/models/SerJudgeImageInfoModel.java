@@ -34,6 +34,9 @@ public class SerJudgeImageInfoModel {
     @ApiModelProperty(value = "被检人信息，预留信息")
     private PersonDataModel personData;
 
+    @ApiModelProperty(value = "人工判图超时时长")
+    private int timeout;
+
 
 
 //    @ApiModelProperty(value = "离线标记", example = "0")

@@ -1,27 +1,28 @@
 package com.nuctech.securitycheck.backgroundservice.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.nuctech.securitycheck.backgroundservice.common.enums.CommonConstant;
+import com.nuctech.securitycheck.backgroundservice.common.entity.SerDeviceStatus;
+import com.nuctech.securitycheck.backgroundservice.common.enums.*;
 import com.nuctech.securitycheck.backgroundservice.common.entity.SerDevLog;
 import com.nuctech.securitycheck.backgroundservice.common.entity.SerHeartBeat;
 import com.nuctech.securitycheck.backgroundservice.common.entity.SysDevice;
-import com.nuctech.securitycheck.backgroundservice.common.enums.DefaultType;
-import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceStatusType;
-import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceType;
 import com.nuctech.securitycheck.backgroundservice.common.models.*;
 import com.nuctech.securitycheck.backgroundservice.common.utils.BackgroundServiceUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.CryptUtil;
+import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.RedisUtil;
 import com.nuctech.securitycheck.backgroundservice.common.vo.CommonResultVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.ResultMessageVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.SysSecurityInfoVO;
 import com.nuctech.securitycheck.backgroundservice.message.MessageSender;
+import com.nuctech.securitycheck.backgroundservice.repositories.SerDeviceStatusRepository;
 import com.nuctech.securitycheck.backgroundservice.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -69,13 +70,16 @@ public class ManualSysController {
     private SysManualController sysManualController;
 
     @Autowired
-    private JudgeSysController judgeSysController;
+    private SysJudgeController sysJudgeController;
 
     @Autowired
     private SecuritySysController securitySysController;
 
     @Autowired
     private ISerMqMessageService serMqMessageService;
+
+    @Autowired
+    private SerDeviceStatusRepository devStatusRepo;
 
 
 
@@ -114,25 +118,25 @@ public class ManualSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_DEVICE.getValue());
                 } else {
                     //注册设备(register device)
-                    boolean isSuccess = sysDeviceService.register(sysDevice, sysRegisterModel);
-                    if (isSuccess) {
-                        result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+                    sysDeviceService.register(sysDevice, sysRegisterModel);
 
-                        //将设备配置上传到Redis
-                        judgeSysController.uploadDeviceConfig();
-                        judgeSysController.uploadDeviceStatus();
+                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
 
-                        // 发送设备配置到rabbitmq
-                        sysManualController.sendDeviceConfig(sysRegisterModel.getGuid());
-                        // 发送字典数据到rabbitmq
-                        sysManualController.sendDictData(sysRegisterModel.getGuid());
+                    //将设备配置上传到Redis
+                    sysJudgeController.uploadDeviceConfig();
+                    sysJudgeController.uploadDeviceStatus();
 
-                    } else {
-                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
-                    }
+                    // 发送设备配置到rabbitmq
+                    sysManualController.sendDeviceConfig(sysRegisterModel.getGuid());
+                    // 发送字典数据到rabbitmq
+                    sysManualController.sendDictData(sysRegisterModel.getGuid());
+
+                    //sysSecurityController.sendUserList(sysRegisterModel.getGuid());
+
+
                 }
             } catch (Exception e) {
                 log.error("注册失败");
@@ -170,6 +174,7 @@ public class ManualSysController {
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysLoginModel.getGuid());
         int checkResult = sysLoginModel.checkValid();
+        int isSuccess = 0;
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
@@ -183,18 +188,20 @@ public class ManualSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_DEVICE.getValue());
                 } else {
-                    boolean isSuccess = sysDeviceService.login(sysDevice, sysLoginModel);
-                    if (isSuccess) {
-
+                    isSuccess = sysDeviceService.login(sysDevice, sysLoginModel);
+                    if (isSuccess == 3) {
                         result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
 
                         //将设备状态和设备配置上传到Redis( upload device status and device config to redis)
-                        judgeSysController.uploadDeviceConfig();
-                        judgeSysController.uploadDeviceStatus();
-                    } else {
-                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+
+                    } else if(isSuccess == 0){
+                        result.setResult(CommonConstant.RESULT_INVALID_USER.getValue());
+                    } else if(isSuccess == 1){
+                        result.setResult(CommonConstant.RESULT_INVALID_PASSWORD.getValue());
+                    } else if(isSuccess == 2){
+                        result.setResult(CommonConstant.RESULT_BLOCK_USER.getValue());
                     }
                 }
             } catch (Exception e) {
@@ -210,6 +217,10 @@ public class ManualSysController {
         messageSender.sendManLoginMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysLoginModel.getGuid(), null,
                 result.getResult().toString());
+        if(isSuccess == 3) {
+            sysJudgeController.uploadDeviceStatus();
+            sysJudgeController.uploadDeviceConfig();
+        }
         return resultMessageVO;
     }
 
@@ -246,15 +257,17 @@ public class ManualSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_DEVICE.getValue());
                 } else {
-                    boolean isSuccess = sysDeviceService.logout(sysDevice, sysLogoutModel);
-                    if (isSuccess) {
-
+                    int isSuccess = sysDeviceService.logout(sysDevice, sysLogoutModel);
+                    if (isSuccess == 2) {
                         result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
                         //将设备状态和设备配置上传到Redis( upload device status and device config to redis)
-                        judgeSysController.uploadDeviceConfig();
-                        judgeSysController.uploadDeviceStatus();
+                        sysJudgeController.uploadDeviceConfig();
+                        sysJudgeController.uploadDeviceStatus();
+
+                    } else if(isSuccess == 0) {
+                        result.setResult(CommonConstant.RESULT_INVALID_USER.getValue());
                     } else {
                         result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
@@ -303,14 +316,24 @@ public class ManualSysController {
         } else {
             try {
                 //// 启动设备
-                if (judgeSysService.updateSysDeviceStatus(sysDeviceStatusModel, DeviceStatusType.START.getValue())) {
-                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-
-                    // redis
-                    judgeSysController.uploadDeviceConfig();
-                    judgeSysController.uploadDeviceStatus();
+                SysDevice sysDevice = new SysDevice();
+                sysDevice.setGuid(sysDeviceStatusModel.getGuid());
+                sysDevice.setStatus(DefaultType.TRUE.getValue());
+                sysDevice.setDeviceType(DeviceType.MANUAL.getValue());
+                // 从数据库获取设备(get device data from database)
+                sysDevice = sysDeviceService.find(sysDevice);
+                if (sysDevice == null) {
+                    result.setResult(CommonConstant.RESULT_INVALID_DEVICE.getValue());
                 } else {
-                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                    if (judgeSysService.updateSysDeviceStatus(sysDeviceStatusModel, DeviceStatusType.START.getValue())) {
+                        result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+
+                        // redis
+                        sysJudgeController.uploadDeviceConfig();
+                        sysJudgeController.uploadDeviceStatus();
+                    } else {
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                    }
                 }
                 resultMessageVO.setContent(result);
             } catch (Exception e) {
@@ -357,14 +380,24 @@ public class ManualSysController {
         } else {
             try {
                 // 停止装置
-                if (judgeSysService.updateSysDeviceStatus(sysDeviceStatusModel, DeviceStatusType.STOP.getValue())) {
-                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-
-                    // redis
-                    judgeSysController.uploadDeviceConfig();
-                    judgeSysController.uploadDeviceStatus();
+                SysDevice sysDevice = new SysDevice();
+                sysDevice.setGuid(sysDeviceStatusModel.getGuid());
+                sysDevice.setStatus(DefaultType.TRUE.getValue());
+                sysDevice.setDeviceType(DeviceType.MANUAL.getValue());
+                // 从数据库获取设备(get device data from database)
+                sysDevice = sysDeviceService.find(sysDevice);
+                if (sysDevice == null) {
+                    result.setResult(CommonConstant.RESULT_INVALID_DEVICE.getValue());
                 } else {
-                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                    if (judgeSysService.updateSysDeviceStatus(sysDeviceStatusModel, DeviceStatusType.STOP.getValue())) {
+                        result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+
+                        // redis
+                        sysJudgeController.uploadDeviceConfig();
+                        sysJudgeController.uploadDeviceStatus();
+                    } else {
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                    }
                 }
                 resultMessageVO.setContent(result);
             } catch (Exception e) {
@@ -416,14 +449,14 @@ public class ManualSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_DEVICE.getValue());
                 } else {
                     // 取消注册设备
                     boolean isSuccess = sysDeviceService.unRegister(sysDevice, sysUnregisterModel);
                     if (isSuccess) {
                         result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-                        judgeSysController.uploadDeviceConfig();
-                        judgeSysController.uploadDeviceStatus();
+                        sysJudgeController.uploadDeviceConfig();
+                        sysJudgeController.uploadDeviceStatus();
                     } else {
                         result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
@@ -480,7 +513,9 @@ public class ManualSysController {
                 sysDevice = sysDeviceService.find(sysDevice);
 
                 // 检查设备是否开启( check device is on)
-                if (sysDeviceService.checkDeviceLogin(sysDevice) == 0) {
+                if (sysDevice == null) {
+                    result.setResult(CommonConstant.RESULT_INVALID_DEVICE.getValue());
+                } else if (sysDeviceService.checkDeviceLogin(sysDevice) == 0) {
                     log.error("设备已关闭");
                     result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
 
@@ -546,23 +581,40 @@ public class ManualSysController {
             heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
+
+
+
+
                 SysDevice sysDevice = SysDevice.builder().guid(heartBeatModel.getGuid()).build();
                 sysDevice = sysDeviceService.find(sysDevice);
 
                 // 检查设备是否开启( check device is on)
-                if(sysDeviceService.checkDeviceLogin(sysDevice) > 0) {
+                if (sysDevice == null) {
+                    heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_DEVICE.getValue());
+                } else if(sysDeviceService.checkDeviceLogin(sysDevice) > 0) {
                     //从数据库获取心跳
                     SerHeartBeat serHeartBeat = SerHeartBeat.builder().deviceId(sysDevice.getDeviceId()).deviceType(sysDevice.getDeviceType()).build();
                     SerHeartBeat oldSerHeartBeat = serHeartBeatService.find(serHeartBeat);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
+                    serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
+
+                    Example<SerDeviceStatus> devStatusEx = Example.of(serDeviceStatus);
+                    serDeviceStatus = devStatusRepo.findOne(devStatusEx);
+
+                    if (serDeviceStatus == null) {
+                        serDeviceStatus = new SerDeviceStatus();
+                        serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
+                    }
+                    serDeviceStatus.setDeviceOnline(DeviceOnlineType.ONLINE.getValue());
+                    devStatusRepo.save(serDeviceStatus);
                     //修改心跳时间
                     if (oldSerHeartBeat == null) {
                         //insert
-                        serHeartBeat.setHeartBeatTime(sdf.parse(heartBeatModel.getHeartbeatTime()));
+                        serHeartBeat.setHeartBeatTime(DateUtil.stringDateToDate(heartBeatModel.getHeartbeatTime()));
                         serHeartBeatService.save(serHeartBeat);
                     } else {
                         //update
-                        oldSerHeartBeat.setHeartBeatTime(sdf.parse(heartBeatModel.getHeartbeatTime()));
+                        oldSerHeartBeat.setHeartBeatTime(DateUtil.stringDateToDate(heartBeatModel.getHeartbeatTime()));
                         serHeartBeatService.save(oldSerHeartBeat);
                     }
                     heartBeatReplyModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
@@ -582,6 +634,7 @@ public class ManualSysController {
 
         // 将结果发送到rabbitmq
         heartBeatReplyModel.setGuid(heartBeatModel.getGuid());
+        heartBeatReplyModel.setNumber(heartBeatModel.getNumber());
         heartBeatReplyModel.setHeartbeatTime(heartBeatModel.getHeartbeatTime());
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(heartBeatReplyModel);
@@ -617,15 +670,24 @@ public class ManualSysController {
         } else if(checkResult == 2) {
             sendMessageModel.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
-            boolean isSucceed = serHandResultService.saveHandResult(handSerResultModel);
-            if (isSucceed) {
-                // 4.3.1.19 后台服务向设备推送安检仪结论
-                securitySysController.saveHandResult(handSerResultModel);
-                sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+            SysDevice sysDevice = SysDevice.builder().guid(handSerResultModel.getGuid()).build();
+            sysDevice = sysDeviceService.find(sysDevice);
 
+            // 检查设备是否开启( check device is on)
+            if (sysDevice == null) {
+                sendMessageModel.setResult(CommonConstant.RESULT_INVALID_DEVICE.getValue());
             } else {
-                sendMessageModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                boolean isSucceed = serHandResultService.saveHandResult(handSerResultModel);
+                if (isSucceed) {
+                    // 4.3.1.19 后台服务向设备推送安检仪结论
+                    securitySysController.saveHandResult(handSerResultModel);
+                    sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+
+                } else {
+                    sendMessageModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+                }
             }
+
         }
 
 

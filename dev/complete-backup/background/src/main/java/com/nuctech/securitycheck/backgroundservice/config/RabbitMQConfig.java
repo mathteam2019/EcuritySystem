@@ -170,6 +170,47 @@ public class RabbitMQConfig {
         return new Queue(BackgroundServiceUtil.getConfig("dev.sys.status.reply.queue"), false);
     }
 
+    @Bean
+    Queue manSysStatusQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("man.sys.status.queue"), false);
+    }
+
+    @Bean
+    Queue manSysStatusReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("man.sys.status.reply.queue"), false);
+    }
+
+    @Bean
+    Queue remSysStatusQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("rem.sys.status.queue"), false);
+    }
+
+    @Bean
+    Queue remSysStatusReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("rem.sys.status.reply.queue"), false);
+    }
+
+
+    @Bean
+    Queue devSysCurrentStatusQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("dev.sys.currentstatus.queue"), false);
+    }
+
+    @Bean
+    Queue devSysCurrentStatusReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("dev.sys.currentstatus.reply.queue"), false);
+    }
+
+    @Bean
+    Queue devSysHardwareStatusQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("dev.sys.hardwarestatus.queue"), false);
+    }
+
+    @Bean
+    Queue devSysHardwareStatusReplyQueue() {
+        return new Queue(BackgroundServiceUtil.getConfig("dev.sys.hardwarestatus.reply.queue"), false);
+    }
+
 
     @Bean
     Queue zabbixQueue() {
@@ -258,13 +299,56 @@ public class RabbitMQConfig {
 
     @Bean
     Binding devSysStatusBinding(Queue devSysStatusQueue, TopicExchange devSysStatusTopicExchange) {
-        return BindingBuilder.bind(devSysStatusQueue).to(devSysStatusTopicExchange).with("sys.#");
+        return BindingBuilder.bind(devSysStatusQueue).to(devSysStatusTopicExchange).with("sys.heartbeat");
     }
 
     @Bean
     Binding devSysStatusReplyBinding(Queue devSysStatusReplyQueue, TopicExchange devSysStatusTopicExchange) {
-        return BindingBuilder.bind(devSysStatusReplyQueue).to(devSysStatusTopicExchange).with("reply.sys.#");
+        return BindingBuilder.bind(devSysStatusReplyQueue).to(devSysStatusTopicExchange).with("reply.sys.heartbeat");
     }
+
+    @Bean
+    Binding manSysStatusBinding(Queue manSysStatusQueue, TopicExchange devSysStatusTopicExchange) {
+        return BindingBuilder.bind(manSysStatusQueue).to(devSysStatusTopicExchange).with("sys.man.heartbeat");
+    }
+
+    @Bean
+    Binding manSysStatusReplyBinding(Queue manSysStatusReplyQueue, TopicExchange devSysStatusTopicExchange) {
+        return BindingBuilder.bind(manSysStatusReplyQueue).to(devSysStatusTopicExchange).with("reply.sys.man.heartbeat");
+    }
+
+
+    @Bean
+    Binding remSysStatusBinding(Queue remSysStatusQueue, TopicExchange devSysStatusTopicExchange) {
+        return BindingBuilder.bind(remSysStatusQueue).to(devSysStatusTopicExchange).with("sys.rem.heartbeat");
+    }
+
+    @Bean
+    Binding remSysStatusReplyBinding(Queue remSysStatusReplyQueue, TopicExchange devSysStatusTopicExchange) {
+        return BindingBuilder.bind(remSysStatusReplyQueue).to(devSysStatusTopicExchange).with("reply.sys.rem.heartbeat");
+    }
+
+
+    @Bean
+    Binding devSysCurrentStatusBinding(Queue devSysCurrentStatusQueue, TopicExchange devSysStatusTopicExchange) {
+        return BindingBuilder.bind(devSysCurrentStatusQueue).to(devSysStatusTopicExchange).with("sys.currentstatus");
+    }
+
+    @Bean
+    Binding devSysCurrentStatusReplyBinding(Queue devSysCurrentStatusReplyQueue, TopicExchange devSysStatusTopicExchange) {
+        return BindingBuilder.bind(devSysCurrentStatusReplyQueue).to(devSysStatusTopicExchange).with("reply.sys.currentstatus");
+    }
+
+    @Bean
+    Binding devSysHardwareStatusBinding(Queue devSysHardwareStatusQueue, TopicExchange devSysStatusTopicExchange) {
+        return BindingBuilder.bind(devSysHardwareStatusQueue).to(devSysStatusTopicExchange).with("sys.hardwarestatus");
+    }
+
+    @Bean
+    Binding devSysHardwareStatusReplyBinding(Queue devSysHardwareStatusReplyQueue, TopicExchange devSysStatusTopicExchange) {
+        return BindingBuilder.bind(devSysHardwareStatusReplyQueue).to(devSysStatusTopicExchange).with("reply.sys.hardwarestatus");
+    }
+
 
 
     @Bean
@@ -284,6 +368,10 @@ public class RabbitMQConfig {
                 BackgroundServiceUtil.getConfig("sys.man.queue"), BackgroundServiceUtil.getConfig("sys.man.reply.queue"),
                 BackgroundServiceUtil.getConfig("dev.sys.data.queue"), BackgroundServiceUtil.getConfig("dev.sys.data.reply.queue"),
                 BackgroundServiceUtil.getConfig("dev.sys.status.queue"), BackgroundServiceUtil.getConfig("dev.sys.status.reply.queue"),
+                BackgroundServiceUtil.getConfig("man.sys.status.queue"), BackgroundServiceUtil.getConfig("man.sys.status.reply.queue"),
+                BackgroundServiceUtil.getConfig("rem.sys.status.queue"), BackgroundServiceUtil.getConfig("rem.sys.status.reply.queue"),
+                BackgroundServiceUtil.getConfig("dev.sys.currentstatus.queue"), BackgroundServiceUtil.getConfig("dev.sys.currentstatus.reply.queue"),
+                BackgroundServiceUtil.getConfig("dev.sys.hardwarestatus.queue"), BackgroundServiceUtil.getConfig("dev.sys.hardwarestatus.reply.queue"),
 
                 BackgroundServiceUtil.getConfig("zabbix.queue"));
         container.setMessageListener(listenerAdapter);

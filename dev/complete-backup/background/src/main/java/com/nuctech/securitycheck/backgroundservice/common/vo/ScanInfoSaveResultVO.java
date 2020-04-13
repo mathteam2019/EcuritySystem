@@ -1,5 +1,6 @@
 package com.nuctech.securitycheck.backgroundservice.common.vo;
 
+import com.nuctech.securitycheck.backgroundservice.common.entity.SysDeviceConfig;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,5 +28,9 @@ public class ScanInfoSaveResultVO {
     private String workModeName;
 
     private int modeId;
+
+    private String manualSwitch;
+
+    private String atrMode;
     
 }

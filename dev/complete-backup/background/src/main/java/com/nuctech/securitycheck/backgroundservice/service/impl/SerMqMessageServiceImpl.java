@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 /**
  * SerMqMessageServiceImpl
  *
@@ -52,6 +54,16 @@ public class SerMqMessageServiceImpl implements ISerMqMessageService {
                 .mqContent(str)
                 .build();
         return serMqMessageRepository.save(serMqMessage);
+    }
+
+    /**
+     *
+     * @param limitDate
+     */
+    @Override
+    public void removeAllMessage(Date limitDate) {
+
+        serMqMessageRepository.removeMqMessageBeforeLimit(limitDate);
     }
 
 }

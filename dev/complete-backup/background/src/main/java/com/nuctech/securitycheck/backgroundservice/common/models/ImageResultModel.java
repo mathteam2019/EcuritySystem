@@ -1,6 +1,7 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -42,7 +43,12 @@ public class ImageResultModel {
     private String time;
 
     @ApiModelProperty(value = "是否超时")
-    private String isTimeout;
+    private boolean isTimeout;
+
+    @JsonProperty("isTimeout")
+    public void setTimeout(boolean isTimeout) {
+        this.isTimeout = isTimeout;
+    }
 
     @ApiModelProperty(value = "提交的嫌疑框信息")
     private List<SubmitRectInfoModel> submitRects;
@@ -50,8 +56,13 @@ public class ImageResultModel {
     @ApiModelProperty(value = "提交的卡通图嫌疑框信息")
     private List<SubmitRectInfoModel> submitCartoonRects;
 
+    public void init() {
+        result = result.toUpperCase();
+    }
+
     public int checkValid() {
-        if(StringUtils.isBlank(imageGuid) || StringUtils.isBlank(userName) || StringUtils.isBlank(result) || StringUtils.isBlank(time) || StringUtils.isBlank(isTimeout)) {
+        init();
+        if(StringUtils.isBlank(imageGuid) || StringUtils.isBlank(userName) || StringUtils.isBlank(result) || StringUtils.isBlank(time)) {
             return 1;
         }
         if(DateUtil.stringDateToDate(time) == null || submitRects == null) {

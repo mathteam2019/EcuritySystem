@@ -16,7 +16,7 @@ import com.nuctech.securitycheck.backgroundservice.common.vo.ScanInfoSaveResultV
  */
 public interface ISecurityImageInfoService {
 
-    void sendInvalidResult(ScanInfoSaveResultVO scanInfoSaveResultVO, String atrResult);
+    void sendInvalidResult(ScanInfoSaveResultVO scanInfoSaveResultVO, String atrResult, boolean isFinished);
 
     ScanInfoSaveResultVO saveScanResult(DevSerImageInfoModel devSerImageInfo);
 

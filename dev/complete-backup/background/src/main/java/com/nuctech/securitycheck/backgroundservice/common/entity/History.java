@@ -53,6 +53,9 @@ public class History extends BaseEntity implements Serializable {
     @JoinColumn(name = "SCAN_IMAGE_ID")
     private SerImage scanImage;
 
+    @Column(name = "SCAN_INVALID", length = 10)
+    private String scanInvalid;
+
     @Column(name = "SCAN_ATR_RESULT", length = 10)
     private String scanATRResult;
 
@@ -198,6 +201,9 @@ public class History extends BaseEntity implements Serializable {
     @Column(name = "HAND_APPRAISE", length = 10)
     private String handAppraise;
 
+    @Column(name = "HAND_APPRAISE2", length = 10)
+    private String handAppraiseSecond;
+
     @Column(name = "JUDGE_START_TIME", nullable = false)
     private Date judgeStartTime;
 
@@ -213,5 +219,8 @@ public class History extends BaseEntity implements Serializable {
 
     @Column(name = "JUDGE_STATUS", length = 10)
     private String judgeStatus;
+
+    @Column(name = "TASK_STATUS", length = 10)
+    private String taskStatus;
 
 }

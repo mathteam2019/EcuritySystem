@@ -70,6 +70,9 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     @Column(name = "ACCOUNT", length = 50)
     private String account;
 
+    @Column(name = "DEVICE_LOGIN_TIME")
+    private Date deviceLoginTime;
+
     @Column(name = "LOGIN_TIME")
     private Date loginTime;
 

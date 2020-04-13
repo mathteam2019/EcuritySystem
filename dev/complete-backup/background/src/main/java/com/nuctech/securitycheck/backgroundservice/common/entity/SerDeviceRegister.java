@@ -35,4 +35,7 @@ public class SerDeviceRegister extends BaseEntity implements Serializable {
     @Column(name = "REGISTER_TIME")
     private Date registerTime;
 
+    @Column(name = "UNREGISTER_TIME")
+    private Date unRegisterTime;
+
 }

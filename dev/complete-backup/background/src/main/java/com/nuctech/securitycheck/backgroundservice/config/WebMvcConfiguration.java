@@ -3,6 +3,8 @@ package com.nuctech.securitycheck.backgroundservice.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -19,6 +21,8 @@ import java.util.concurrent.Executor;
  * @since 2019-11-27
  */
 @Configuration
+@EnableJpaRepositories("com.nuctech.securitycheck.backgroundservice.repositories")
+//@EnableElasticsearchRepositories(basePackages = "com.nuctech.securitycheck.backgroundservice.es.repository")
 public class WebMvcConfiguration {
 
     @Value("${spring.resource.static-locations}")

@@ -4,26 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.nuctech.securitycheck.backgroundservice.common.entity.*;
 import com.nuctech.securitycheck.backgroundservice.common.enums.CommonConstant;
+import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceDefaultType;
 import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceType;
-import com.nuctech.securitycheck.backgroundservice.common.enums.UserDeviceManageRoleType;
+import com.nuctech.securitycheck.backgroundservice.common.enums.UserDeviceManageResourceType;
 import com.nuctech.securitycheck.backgroundservice.common.models.*;
 import com.nuctech.securitycheck.backgroundservice.common.utils.BackgroundServiceUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.CryptUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.RedisUtil;
 import com.nuctech.securitycheck.backgroundservice.common.vo.*;
 import com.nuctech.securitycheck.backgroundservice.message.MessageSender;
-import com.nuctech.securitycheck.backgroundservice.repositories.SerDeviceStatusRepository;
-import com.nuctech.securitycheck.backgroundservice.repositories.SysDeviceRepository;
-import com.nuctech.securitycheck.backgroundservice.repositories.SysRoleUserRepository;
-import com.nuctech.securitycheck.backgroundservice.repositories.SysUserRepository;
+import com.nuctech.securitycheck.backgroundservice.repositories.*;
 import com.nuctech.securitycheck.backgroundservice.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +86,15 @@ public class SysSecurityController {
     @Autowired
     private ISerMqMessageService serMqMessageService;
 
+    @Autowired
+    private SysRoleResourceRepository sysRoleResourceRepository;
+
+    @Autowired
+    private SysUserGroupRoleRepository sysUserGroupRoleRepository;
+
+    @Autowired
+    private SysUserGroupUserRepository sysUserGroupUserRepository;
+
     /**
      * 后台服务向安检仪下发配置信息
      *
@@ -117,7 +120,7 @@ public class SysSecurityController {
                 resultMsg.setContent(model);
                 messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
                 serMqMessageService.save(resultMsg, 1, model.getGuid(), null,
-                        CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue().toString());
+                        CommonConstant.RESULT_INVALID_DEVICE.getValue().toString());
             } else {
                 Long deviceId = sysDevice.getDeviceId();
                 SysDeviceConfig sysDeviceConfig = sysDeviceConfigService.findLastConfig(deviceId);
@@ -154,7 +157,7 @@ public class SysSecurityController {
                 serDeviceConfigModel.setGuid(guid);
                 serDeviceConfigModel.setDeviceNumber(sysDevice.getDeviceSerial());
                 serDeviceConfigModel.setATRColor(serPlatformCheckParams.getScanRecogniseColour());
-                serDeviceConfigModel.setManualColor(serPlatformCheckParams.getHandRecogniseColour());
+                serDeviceConfigModel.setManualColor(serPlatformCheckParams.getJudgeRecogniseColour());
                 serDeviceConfigModel.setDeleteColor(serPlatformCheckParams.getDisplayDeleteSuspicionColour());
                 serDeviceConfigModel.setParams(serScanParamModelList);
                 resultMsg.setKey(routingKey);
@@ -209,24 +212,39 @@ public class SysSecurityController {
                 resultMessageVO.setContent(content);
                 messageSender.sendDevUserList(resultMessageVO, exchangeName, routingKey);
                 serMqMessageService.save(resultMessageVO, 1, guid, null,
-                        CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue().toString());
+                        CommonConstant.RESULT_INVALID_DEVICE.getValue().toString());
             } else {
 
                 //检查谁可以访问当前设备的角色(role id to access to current device)
-                Long roldId = null;
-                if (sysDevice.getDeviceType().equals(DeviceType.SECURITY.getValue())) {
-                    roldId = Long.valueOf(UserDeviceManageRoleType.DEVICE.getValue());
-                } else if (sysDevice.getDeviceType().equals(DeviceType.MANUAL.getValue())) {
-                    roldId = Long.valueOf(UserDeviceManageRoleType.MANUAL.getValue());
-                } else if (sysDevice.getDeviceType().equals(DeviceType.JUDGE.getValue())) {
-                    roldId = Long.valueOf(UserDeviceManageRoleType.JUDGE.getValue());
+                Long resourceId = null;
+                if (DeviceType.SECURITY.getValue().equals(sysDevice.getDeviceType())) {
+                    resourceId = Long.valueOf(UserDeviceManageResourceType.DEVICE.getValue());
+                } else if (DeviceType.MANUAL.getValue().equals(sysDevice.getDeviceType())) {
+                    resourceId = Long.valueOf(UserDeviceManageResourceType.MANUAL.getValue());
+                } else if (DeviceType.JUDGE.getValue().equals(sysDevice.getDeviceType())) {
+                    resourceId = Long.valueOf(UserDeviceManageResourceType.JUDGE.getValue());
                 }
-
-                // 获得与上述角色相关的用户
-                SysRoleUser sysRoleUser = SysRoleUser.builder().roleId(roldId).build();
-                Example<SysRoleUser> ex = Example.of(sysRoleUser);
-                List<SysRoleUser> roleUserList = sysRoleUserRepository.findAll(ex);
+                SysRoleResource sysRoleResource = SysRoleResource.builder().resourceId(resourceId).build();
+                Example<SysRoleResource> ex = Example.of(sysRoleResource);
+                List<SysRoleResource> sysRoleResourceList = sysRoleResourceRepository.findAll(ex);
+                List<Long> roleIds = sysRoleResourceList.stream().map(x -> x.getRoleId()).collect(Collectors.toList());
+                List<SysRoleUser> roleUserList = sysRoleUserRepository.getRoleUserList(roleIds);
+                List<SysUserGroupRole> userGroupRoleList = sysUserGroupRoleRepository.getRoleUserGroupList(roleIds);
+                List<Long> userGroupIds = userGroupRoleList.stream().map(x -> x.getUserGroupId()).collect(Collectors.toList());
+                List<SysUserGroupUser> userGroupList = sysUserGroupUserRepository.getUserIdList(userGroupIds);
                 List<Long> userIds = roleUserList.stream().map(x -> x.getUserId()).collect(Collectors.toList());
+                for(int i = 0; i < userGroupList.size(); i ++) {
+                    Long userId = userGroupList.get(i).getUserId();
+                    boolean isExist = false;
+                    for(int j = 0; j < userIds.size(); j ++) {
+                        if(userIds.get(j).equals(userId)) {
+                            isExist = true;
+                        }
+                    }
+                    if(isExist == false) {
+                        userIds.add(userId);
+                    }
+                }
 
                 List<SysUser> userList = sysUserRepository.findAll(userIds);
                 for (SysUser temp : userList) {
@@ -267,13 +285,13 @@ public class SysSecurityController {
         String routingKey = null;
         ResultMessageVO resultMessageVO = new ResultMessageVO();
 
-        if (deviceType.equals(DeviceType.SECURITY.getValue())) {
+        if (DeviceType.SECURITY.getValue().equals(deviceType)) {
             exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.dev");
             routingKey = BackgroundServiceUtil.getConfig("routingKey.dev.dictionary");
-        } else if (deviceType.equals(DeviceType.JUDGE.getValue())) {
+        } else if (DeviceType.JUDGE.getValue().equals(deviceType)) {
             exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.rem");
             routingKey = BackgroundServiceUtil.getConfig("routingKey.rem.dictionary");
-        } else if (deviceType.equals(DeviceType.MANUAL.getValue())) {
+        } else if (DeviceType.MANUAL.getValue().equals(deviceType)) {
             exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.man");
             routingKey = BackgroundServiceUtil.getConfig("routingKey.man.dictionary");
         }
@@ -402,6 +420,83 @@ public class SysSecurityController {
         messageSender.sendJudgeInfoToSecurity(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, securityRemoteModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
+    }
+
+    /**
+     * 后台服务向安检仪推送手检结论
+     *
+     * @param sendSimpleMessageModel
+     * @return resultMessage
+     */
+    @ApiOperation("4.3.1.20 后台服务向安检仪推送手检结论")
+    @PostMapping("assign-security-device")
+    public ResultMessageVO assignSecurityDevice(@RequestBody @ApiParam("请求报文定义") SendSimpleMessageModel sendSimpleMessageModel) {
+        ResultMessageVO resultMessageVO = new ResultMessageVO();
+//        SendMessageModel sendMessageModel = new SendMessageModel();
+//        sendMessageModel.setGuid(dispatchManualDeviceInfoVO.getGuid());
+//        sendMessageModel.setImageGuid(dispatchManualDeviceInfoVO.getImageGuid());
+
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.dev.manual.notice");
+
+//        boolean isSucceed = sysDeviceService.checkSecurityHandDevice(dispatchManualDeviceInfoVO.getGuid());
+//        if (isSucceed) {
+//            sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+//        } else {
+//            sendMessageModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
+//        }
+
+        // 将结果发送到rabbitmq
+        resultMessageVO.setKey(routingKey);
+        resultMessageVO.setContent(sendSimpleMessageModel);
+        messageSender.sendSysDevMessage(resultMessageVO, routingKey);
+        serMqMessageService.save(resultMessageVO, 1, sendSimpleMessageModel.getGuid(), sendSimpleMessageModel.getImageGuid(),
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+        return resultMessageVO;
+    }
+
+    @Async
+    public void checkHandDevice(String taskNumber) {
+        String key = "dev.service.image.info" + taskNumber;
+        String devSerImageInfoStr = redisUtil.get(key);
+        devSerImageInfoStr = CryptUtil.decrypt(devSerImageInfoStr);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String guid = "";
+        try {
+            DevSerImageInfoModel devSerImageInfoModel = objectMapper.readValue(devSerImageInfoStr, DevSerImageInfoModel.class);
+            guid = devSerImageInfoModel.getGuid();
+            boolean checkGender = sysDeviceService.genderCheckSecurity(devSerImageInfoModel.getImageData().getImageGender(), guid);
+            if(checkGender == false) {
+                return ;
+            }
+        } catch(Exception ex) {
+            log.error("无法保存判断结果");
+            return ;
+        }
+
+
+        String resultAssign = "";
+
+        try {
+            while(true) {
+                resultAssign = redisUtil.get(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.status.info") + taskNumber);
+                if(StringUtils.isBlank(resultAssign) == true) {
+                    //Thread.sleep(100);
+                } else {
+                    break;
+                }
+            }
+        } catch(Exception ex) {
+            log.error("后台服务向安检仪推送调度的手检站信息 报错：" + ex.getMessage());
+        }
+
+
+        if(!(DeviceDefaultType.TRUE.getValue().equals(resultAssign))) {
+            //4.3.1.20 后台服务向安检仪推送手检结论
+            SendSimpleMessageModel sendSimpleMessageModel = new SendSimpleMessageModel();
+            sendSimpleMessageModel.setGuid(guid);
+            sendSimpleMessageModel.setImageGuid(taskNumber);
+            assignSecurityDevice(sendSimpleMessageModel);
+        }
     }
 
 

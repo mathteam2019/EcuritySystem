@@ -26,11 +26,16 @@ public class RedisUtil {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+
+
     public boolean aquirePessimisticLockWithTimeout(String lockName, String identifier, int lockTimeout) {
-        if (StringUtils.isBlank(lockName) || lockTimeout <= 0)
+        if (StringUtils.isBlank(lockName) || lockTimeout < 0)
             return false;
         final String lockKey = lockName;
-
+        if(lockTimeout == 0) {
+            lockTimeout = Integer.MAX_VALUE;
+        }
+        final int lockTimeoutValue = lockTimeout;
 
             // try to acquire the lock
         if (redisTemplate.execute(new RedisCallback<Boolean>() {
@@ -41,15 +46,18 @@ public class RedisUtil {
                         redisTemplate.getStringSerializer().serialize(lockKey), redisTemplate.getStringSerializer().serialize(identifier));
             }
         })) { 	// successfully acquired the lock, set expiration of the lock
+
             redisTemplate.execute(new RedisCallback<Boolean>() {
                 @Override
                 public Boolean doInRedis(RedisConnection connection)
                         throws DataAccessException {
                     return connection.expire(redisTemplate
                                     .getStringSerializer().serialize(lockKey),
-                            lockTimeout);
+                            lockTimeoutValue);
                 }
             });
+
+
             return true;
         } else { // fail to acquire the lock
             // set expiration of the lock in case ttl is not set yet.
@@ -62,15 +70,18 @@ public class RedisUtil {
                 }
             })) {
                 // set expiration of the lock
-                redisTemplate.execute(new RedisCallback<Boolean>() {
-                    @Override
-                    public Boolean doInRedis(RedisConnection connection)
-                            throws DataAccessException {
-                        return connection.expire(redisTemplate
-                                        .getStringSerializer().serialize(lockKey),
-                                lockTimeout);
-                    }
-                });
+                if(lockTimeout > 0) {
+                    redisTemplate.execute(new RedisCallback<Boolean>() {
+                        @Override
+                        public Boolean doInRedis(RedisConnection connection)
+                                throws DataAccessException {
+                            return connection.expire(redisTemplate
+                                            .getStringSerializer().serialize(lockKey),
+                                    lockTimeoutValue);
+                        }
+                    });
+                }
+
             }
         }
         return false;
@@ -88,6 +99,21 @@ public class RedisUtil {
                 byte[] ctn = connection.get(redisTemplate
                         .getStringSerializer().serialize(lockKey));
                 if(ctn!=null && identifier.equals(redisTemplate.getStringSerializer().deserialize(ctn)))
+                    connection.del(redisTemplate.getStringSerializer().serialize(lockKey));
+                return null;
+            }
+        });
+    }
+
+    public void releasePessimisticLockWithTimeout(String lockName) {
+        if (StringUtils.isBlank(lockName))
+            return;
+        final String lockKey = lockName;
+
+        redisTemplate.execute(new RedisCallback<Void>() {
+            @Override
+            public Void doInRedis(RedisConnection connection)
+                    throws DataAccessException {
                     connection.del(redisTemplate.getStringSerializer().serialize(lockKey));
                 return null;
             }
@@ -132,7 +158,12 @@ public class RedisUtil {
     }
 
     public String get(String key) {
-        return key == null ? null : redisTemplate.opsForValue().get(key);
+        try {
+            return key == null ? null : redisTemplate.opsForValue().get(key);
+        } catch(Exception ex) {
+            return null;
+        }
+
     }
 
 }

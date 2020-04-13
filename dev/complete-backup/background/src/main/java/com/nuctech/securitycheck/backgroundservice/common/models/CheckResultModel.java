@@ -58,7 +58,13 @@ public class CheckResultModel {
     @ApiModelProperty(value = "手检提交的嫌疑框信息")
     private List<SubmitRectInfoModel> submitCartoonRects;
 
+    public void init() {
+        result = result.toUpperCase();
+        imageKeep = imageKeep.toUpperCase();
+    }
+
     public int checkValid() {
+        init();
         if(StringUtils.isBlank(imageGuid) || submitRects == null) {
             return 1;
         }

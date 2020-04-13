@@ -21,6 +21,9 @@ public class HeartBeatReplyModel {
     @ApiModelProperty(value = "结果", example = "0")
     private Integer result;
 
+    @ApiModelProperty(value = "序号", example = "0")
+    private Integer number;
+
     @ApiModelProperty(value = "发出心跳时间")
     private String heartbeatTime;
 

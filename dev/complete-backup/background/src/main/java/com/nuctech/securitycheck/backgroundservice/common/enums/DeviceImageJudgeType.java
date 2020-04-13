@@ -14,8 +14,8 @@ import lombok.Getter;
 @Getter
 public enum DeviceImageJudgeType {
 
-    MISJUDGE("0"),
-    LEAKJUDGE("1");
+    FALSE("0"),
+    TRUE("1");
 
     private final String value;
 

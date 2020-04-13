@@ -1,5 +1,7 @@
 package com.nuctech.securitycheck.backgroundservice.service;
 
+import com.nuctech.securitycheck.backgroundservice.common.entity.SerKnowledgeCase;
+import com.nuctech.securitycheck.backgroundservice.common.entity.SerKnowledgeCaseDeal;
 import com.nuctech.securitycheck.backgroundservice.common.entity.SysManualGroup;
 
 import java.util.List;
@@ -16,4 +18,10 @@ public interface ISysManualGroupService {
     List<SysManualGroup> findAll(SysManualGroup sysManualGroup);
 
     SysManualGroup findLastManualConfig(Long deviceId);
+
+    Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase, Long userId);
+
+    Long insertNewKnowledgeCaseDeal(SerKnowledgeCaseDeal knowledgeCaseDeal, Long userId);
+
+    Long updateKnowledgeCase(Long knowledgeId, SerKnowledgeCase knowledgeCase);
 }

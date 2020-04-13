@@ -22,6 +22,9 @@ public class HeartBeatModel {
     private String guid;
 
     @NotBlank
+    private Integer number;
+
+    @NotBlank
     private String heartbeatTime;
 
     public int checkValid() {

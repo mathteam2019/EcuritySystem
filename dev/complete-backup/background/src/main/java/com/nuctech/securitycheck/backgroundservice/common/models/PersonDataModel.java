@@ -55,13 +55,13 @@ public class PersonDataModel {
     }
 
     public int checkValid() {
-        if(StringUtils.isBlank(type) || StringUtils.isBlank(number) || StringUtils.isBlank(name) || StringUtils.isBlank(address)
-                || StringUtils.isBlank(face) || StringUtils.isBlank(face)) {
-            return 1;
-        }
-        if(!checkValidValue(type, false)) {
-            return 2;
-        }
+//        if(StringUtils.isBlank(type) || StringUtils.isBlank(number) || StringUtils.isBlank(name) || StringUtils.isBlank(address)
+//                || StringUtils.isBlank(face) || StringUtils.isBlank(face)) {
+//            return 1;
+//        }
+//        if(!checkValidValue(type, false)) {
+//            return 2;
+//        }
         return 0;
     }
 }

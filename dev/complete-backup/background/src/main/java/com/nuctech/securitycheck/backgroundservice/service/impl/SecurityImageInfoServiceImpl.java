@@ -11,6 +11,7 @@ import com.nuctech.securitycheck.backgroundservice.common.vo.JudgeInfoSaveResult
 import com.nuctech.securitycheck.backgroundservice.common.vo.ScanInfoSaveResultVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.TaskInfoVO;
 import com.nuctech.securitycheck.backgroundservice.controller.JudgeSysController;
+import com.nuctech.securitycheck.backgroundservice.controller.SysJudgeController;
 import com.nuctech.securitycheck.backgroundservice.repositories.*;
 import com.nuctech.securitycheck.backgroundservice.service.ISecurityImageInfoService;
 import com.nuctech.securitycheck.backgroundservice.service.ISerJudgeGraphService;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -106,7 +108,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
      *
      */
     @Override
-    public void sendInvalidResult(ScanInfoSaveResultVO scanInfoSaveResultVO, String atrResult) {
+    public void sendInvalidResult(ScanInfoSaveResultVO scanInfoSaveResultVO, String atrResult, boolean isFinished) {
 
         try {
             String taskNumber = scanInfoSaveResultVO.getTaskNumber();
@@ -149,7 +151,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             SysDevice assignedDevice = null;//new SysDevice();
             serAssign.setAssignUser(assignUser);
             serAssign.setAssignJudgeDevice(assignedDevice);
-            serAssign.setAssignTimeout(TimeDefaultType.TRUE.getValue());
+            serAssign.setAssignTimeout(TimeDefaultType.FALSE.getValue());
             serAssign.setAssignStartTime(DateUtil.getCurrentDate());
             serAssign.setAssignEndTime(DateUtil.getCurrentDate());
 
@@ -165,7 +167,11 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
 
             // 4.3.2.9 判图站向后台服务提交判图结论(超时结论)
             JudgeInfoSaveResultVO saveResult = serJudgeGraphService.saveJudgeGraphResult(judgeSerResultModel);
-            //judgeSysController.sendJudgeResultToDevice(judgeSerResultModel, saveResult);
+            if(isFinished == false) {
+                SysJudgeController sysJudgeController = SpringContextHolder.getBean(SysJudgeController.class);
+                sysJudgeController.sendJudgeResultToDevice(judgeSerResultModel, saveResult);
+            }
+
             //JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
             //judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
         } catch (Exception ex) {
@@ -190,16 +196,22 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             String guid = devSerImageInfo.getGuid();
             SysDevice deviceModel = new SysDevice();
             deviceModel.setGuid(guid);
+            Date startTime = new Date();
             Example<SysDevice> serDeviceEx = Example.of(deviceModel);
             SysDevice device = sysDeviceRepository.findOne(serDeviceEx);
             // 获取当前设备的工作模式
             SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findLatestConfig(device.getDeviceId());
+
+            scanInfoSaveResultVO.setManualSwitch(sysDeviceConfig.getManualSwitch());
+            scanInfoSaveResultVO.setAtrMode(sysDeviceConfig.getAtrSwitch());
             SysJudgeGroup sysJudgeGroup = new SysJudgeGroup();
             sysJudgeGroup.setConfigId(sysDeviceConfig.getConfigId());
             List<SysJudgeGroup> sysJudgeGroups = sysJudgeGroupRepository.findAll(Example.of(sysJudgeGroup));
             SysManualGroup sysManualGroup = new SysManualGroup();
             sysManualGroup.setConfigId(sysDeviceConfig.getConfigId());
             List<SysManualGroup> sysManualGroups = sysManualGroupRepository.findAll(Example.of(sysManualGroup));
+            Date endTime = new Date();
+            long calTime = endTime.getTime() - startTime.getTime();
             SerDeviceConfigSettingModel settingModel = new SerDeviceConfigSettingModel();
             settingModel.setDeviceConfig(sysDeviceConfig);
             settingModel.setJudgeList(sysJudgeGroups);
@@ -236,19 +248,19 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             if (isNewTask && sysUser != null) {
                 // if not exist
                 // save ser_task
-                serTask = saveSerTask(guid, device, sysWorkMode, sysWorkflow, sysDeviceConfig, taskNumber, settingModelStr, sysUser.getUserId());
+                serTask = saveSerTask(guid, device, sysWorkMode, sysWorkflow, sysDeviceConfig, taskNumber, devSerImageInfo.getImageData().getInvalidScan(), settingModelStr, sysUser.getUserId());
             } else {
                 log.error("图片GUID已存在");
                 scanInfoSaveResultVO.setIsSucceed(false);
                 return scanInfoSaveResultVO;
             }
-
+            endTime = new Date();
+            long taskTime = endTime.getTime() - startTime.getTime();
 
 
             devSerImageInfo.getImageData().setImageGuid(serTask.getTaskNumber());
 
             // 将扫描图像信息保存到数据库
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             List<DeviceImageModel> deviceImageModels = devSerImageInfo.getImageData().getDeviceImages();
             String deviceImageJsonStr = objectMapper.writeValueAsString(deviceImageModels);
             SerScan serScan = SerScan.builder()
@@ -259,8 +271,8 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                     .scanATRResult(BackgroundServiceUtil.dictConvert(devSerImageInfo.getImageData().getAtrResult()))
                     .scanInvalid(devSerImageInfo.getImageData().getInvalidScan())
                     .scanFootAlarm(BackgroundServiceUtil.dictConvert(devSerImageInfo.getImageData().getFootAlarmed()))
-                    .scanStartTime(sdf.parse(devSerImageInfo.getImageData().getScanBeginTime()))
-                    .scanEndTime(sdf.parse(devSerImageInfo.getImageData().getScanEndTime()))
+                    .scanStartTime(DateUtil.stringDateToDate(devSerImageInfo.getImageData().getScanBeginTime()))
+                    .scanEndTime(DateUtil.stringDateToDate(devSerImageInfo.getImageData().getScanEndTime()))
                     .scanPointsman(sysUser)
                     .scanAssignTimeout(TimeDefaultType.FALSE.getValue())
                     .scanOffline(Integer.valueOf(devSerImageInfo.getImageData().getOffline()))
@@ -272,8 +284,12 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                     .build();
             serScan.setCreatedBy(sysUser.getUserId());
             serScan = serScanRepository.save(serScan);
+            endTime = new Date();
+            long scanTime = endTime.getTime() - startTime.getTime();
 
             // 将图像信息保存到ser_image数据库
+            List<SerImage> saveImageList = new ArrayList<>();
+            List<SerImageProperty> saveImagePropertyList = new ArrayList<>();
             for (DeviceImageModel deviceImageModel : devSerImageInfo.getImageData().getDeviceImages()) {
                 // scan image save
                 SerImage serImage = SerImage.builder()
@@ -283,12 +299,13 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                         .imageUrl(deviceImageModel.getImage())
                         .build();
                 serImage.setCreatedBy(sysUser.getUserId());
-                serImage = serImageRepository.save(serImage);
+                saveImageList.add(serImage);
+                //serImage = serImageRepository.save(serImage);
                 for (ImageRectModel imageRectModel : deviceImageModel.getImageRects()) {
-                    saveImageProperty(serImage, "x", imageRectModel.getX().toString());
-                    saveImageProperty(serImage, "y", imageRectModel.getY().toString());
-                    saveImageProperty(serImage, "width", imageRectModel.getWidth().toString());
-                    saveImageProperty(serImage, "height", imageRectModel.getHeight().toString());
+                    saveImagePropertyList.add(saveImageProperty(serImage, "x", imageRectModel.getX().toString()));
+                    saveImagePropertyList.add(saveImageProperty(serImage, "y", imageRectModel.getY().toString()));
+                    saveImagePropertyList.add(saveImageProperty(serImage, "width", imageRectModel.getWidth().toString()));
+                    saveImagePropertyList.add(saveImageProperty(serImage, "height", imageRectModel.getHeight().toString()));
                 }
                 // scan cartoon image save
                 SerImage serCartoon = SerImage.builder()
@@ -298,17 +315,27 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                         .imageUrl(deviceImageModel.getCartoon())
                         .build();
                 serCartoon.setCreatedBy(sysUser.getUserId());
-                serCartoon = serImageRepository.save(serCartoon);
+                saveImageList.add(serCartoon);
+                //serCartoon = serImageRepository.save(serCartoon);
                 for (ImageRectModel imageRectModel : deviceImageModel.getCartoonRects()) {
-                    saveImageProperty(serCartoon, "x", imageRectModel.getX().toString());
-                    saveImageProperty(serCartoon, "y", imageRectModel.getY().toString());
-                    saveImageProperty(serCartoon, "width", imageRectModel.getWidth().toString());
-                    saveImageProperty(serCartoon, "height", imageRectModel.getHeight().toString());
+                    saveImagePropertyList.add(saveImageProperty(serImage, "x", imageRectModel.getX().toString()));
+                    saveImagePropertyList.add(saveImageProperty(serImage, "y", imageRectModel.getY().toString()));
+                    saveImagePropertyList.add(saveImageProperty(serImage, "width", imageRectModel.getWidth().toString()));
+                    saveImagePropertyList.add(saveImageProperty(serImage, "height", imageRectModel.getHeight().toString()));
                 }
             }
+            //serImageRepository.save(saveImageList);
+            //serImagePropertyRepository.save(saveImagePropertyList);
+
+
+            endTime = new Date();
+            long imageTime = endTime.getTime() - startTime.getTime();
 
             // 保存检查人员数据
             SerInspected serInspected = saveInspected(serTask, devSerImageInfo);
+
+            endTime = new Date();
+            long inspecitedTime = endTime.getTime() - startTime.getTime();
 
             // 将扫描信息保存到历史记录
             History history = History.builder()
@@ -323,16 +350,21 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                     .scanEndTime(serScan.getScanEndTime())
                     .scanPointsman(serScan.getScanPointsman())
                     .scanPointsmanName(serScan.getScanPointsman().getUserName())
+                    .scanInvalid(serScan.getScanInvalid())
+                    .taskStatus(serTask.getTaskStatus())
                     .build();
             history.setCreatedBy(sysUser.getUserId());
             historyRepository.save(history);
 
-
+            endTime = new Date();
+            long historyTime = endTime.getTime() - startTime.getTime();
 
             // 将图像数据插入Redis(insert data to redis)
             String key = "dev.service.image.info" + serTask.getTaskNumber();
             String devSerImageInfoStr = objectMapper.writeValueAsString(devSerImageInfo);
             redisUtil.set(key, CryptUtil.encrypt(devSerImageInfoStr), CommonConstant.EXPIRE_TIME.getValue());
+            endTime = new Date();
+            long utilTime = endTime.getTime() - startTime.getTime();
 
             // 使TaskInfoVO
             TaskInfoVO taskInfoVO = new TaskInfoVO();
@@ -348,6 +380,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
         } catch (Exception ex) {
             log.error("保存扫描结果");
             log.error(ex.getMessage());
+
             scanInfoSaveResultVO.setIsSucceed(false);
             return scanInfoSaveResultVO;
         }
@@ -361,9 +394,9 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
         String inspectedGender = "";
 
         // 得到性别
-        if (devSerImageInfo.getPersonData().getSex().equals(DeviceGenderType.MALE.getValue())) {
+        if (DeviceGenderType.MALE.getValue().equals(devSerImageInfo.getPersonData().getSex())) {
             inspectedGender = GenderType.MALE.getValue();
-        } else if (devSerImageInfo.getPersonData().getSex().equals(DeviceGenderType.FEMALE.getValue())) {
+        } else if (DeviceGenderType.FEMALE.getValue().equals(devSerImageInfo.getPersonData().getSex())) {
             inspectedGender = GenderType.FEMALE.getValue();
         }
         SerInspected serInspected = SerInspected.builder()
@@ -382,20 +415,21 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
     /**
      * 插入到 ser_image_property
      */
-    private void saveImageProperty(SerImage serImage, String name, String value) {
+    private SerImageProperty saveImageProperty(SerImage serImage, String name, String value) {
         SerImageProperty serImagePropertyX = SerImageProperty.builder()
                 .serImage(serImage)
                 .imagePropertyName(name)
                 .imagePropertyValue(value)
                 .build();
-        serImagePropertyRepository.save(serImagePropertyX);
+        //serImagePropertyRepository.save(serImagePropertyX);
+        return serImagePropertyX;
     }
 
     /**
      * 创建任务信息
      *
      */
-    private SerTask saveSerTask(String guid, SysDevice device, SysWorkMode sysWorkMode, SysWorkflow sysWorkflow, SysDeviceConfig sysDeviceConfig, String taskNumber, String settingModelStr, Long userId) {
+    private SerTask saveSerTask(String guid, SysDevice device, SysWorkMode sysWorkMode, SysWorkflow sysWorkflow, SysDeviceConfig sysDeviceConfig, String taskNumber, String scanInvalid, String settingModelStr, Long userId) {
         if(StringUtils.isBlank(taskNumber)) {
             taskNumber = BackgroundServiceUtil.generateTaskNumber(guid);
         }
@@ -410,13 +444,14 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
         serTask.setSysWorkMode(sysWorkMode);
         serTask.setModeConfig(settingModelStr);
         serTask.setCreatedBy(userId);
+        serTask.setScanInvalid(scanInvalid);
         if (sysWorkMode != null) {
             serTask.setSysWorkModeName(sysWorkMode.getModeName());
         }
         serTask.setTaskStatus(TaskStatusType.ASSIGN.getValue());
         serTask.setSysWorkflow(sysWorkflow);
         if (sysDeviceConfig != null) {
-            serTask.setSysField(sysDeviceConfig.getSysField());
+            serTask.setFieldId(device.getFieldId());
         }
         serTask = serTaskRepository.save(serTask);
 
@@ -430,8 +465,8 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             serTaskStepRepository.save(serTaskStepSecurity);
 
             // 检查设备类型并创建判断步骤和手册
-            if (sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE.getValue())
-                    || sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+            if (WorkModeType.SECURITY_JUDGE.getValue().equals(sysWorkMode.getModeName())
+                    || WorkModeType.SECURITY_JUDGE_MANUAL.getValue().equals(sysWorkMode.getModeName())) {
                 sysWorkflowModel.setTaskType(TaskType.JUDGE.getValue());
                 sysWorkflowEx = Example.of(sysWorkflowModel);
                 SysWorkflow sysWorkflowJudge = sysWorkflowRepository.findOne(sysWorkflowEx);
@@ -441,8 +476,8 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                         .build();
                 serTaskStepRepository.save(serTaskStepJudge);
             }
-            if (sysWorkMode.getModeName().equals(WorkModeType.SECURITY_MANUAL.getValue())
-                    || sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+            if (WorkModeType.SECURITY_MANUAL.getValue().equals(sysWorkMode.getModeName())
+                    || WorkModeType.SECURITY_JUDGE_MANUAL.getValue().equals(sysWorkMode.getModeName())) {
                 sysWorkflowModel.setTaskType(TaskType.HAND.getValue());
                 sysWorkflowEx = Example.of(sysWorkflowModel);
                 SysWorkflow sysWorkflowHand = sysWorkflowRepository.findOne(sysWorkflowEx);
@@ -511,7 +546,6 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                     isNewTask = false;
                 }
             }
-
             SysUser sysUserModel = new SysUser();
             sysUserModel.setUserAccount(devSerImageInfo.getImageData().getLoginName());
             Example<SysUser> sysUserEx = Example.of(sysUserModel);
@@ -519,14 +553,12 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             if (isNewTask && sysUser != null) {
                 // if not exist
                 // save ser_task
-                serTask = saveSerTask(guid, device, sysWorkMode, sysWorkflow, sysDeviceConfig, taskNumber, settingModelStr, sysUser.getUserId());
+                serTask = saveSerTask(guid, device, sysWorkMode, sysWorkflow, sysDeviceConfig, taskNumber, devSerImageInfo.getImageData().getInvalidScan(), settingModelStr, sysUser.getUserId());
             } else {
-                serTask = updateSerTask(serTask, device, sysWorkMode, sysWorkflow, sysDeviceConfig);
+                serTask = updateSerTask(serTask, device, sysWorkMode, sysWorkflow, sysDeviceConfig, devSerImageInfo.getImageData().getInvalidScan());
             }
-
             serTask.setTaskStatus(TaskStatusType.ALL.getValue());
             serTaskRepository.save(serTask);
-
 
             // 从具有登录名的数据库中获取用户信息
 
@@ -536,7 +568,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
 
 
             // 将扫描图像信息保存到数据库
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
             List<DeviceImageModel> deviceImageModels = devSerImageInfo.getImageData().getDeviceImages();
             String deviceImageJsonStr = objectMapper.writeValueAsString(deviceImageModels);
             // 获取ser_scan信息
@@ -544,7 +576,6 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             serScanModel.setSerTask(serTask);
             Example<SerScan> serScanEx = Example.of(serScanModel);
             SerScan serScan = serScanRepository.findOne(serScanEx);
-
             // 更新ser_scan
             if (serScan == null) {
                 // create serScan
@@ -557,8 +588,8 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                         .scanATRResult(BackgroundServiceUtil.dictConvert(devSerImageInfo.getImageData().getAtrResult()))
                         .scanInvalid((devSerImageInfo.getImageData().getInvalidScan()))
                         .scanFootAlarm(BackgroundServiceUtil.dictConvert(devSerImageInfo.getImageData().getFootAlarmed()))
-                        .scanStartTime(sdf.parse(devSerImageInfo.getImageData().getScanBeginTime()))
-                        .scanEndTime(sdf.parse(devSerImageInfo.getImageData().getScanEndTime()))
+                        .scanStartTime(DateUtil.stringDateToDate(devSerImageInfo.getImageData().getScanBeginTime()))
+                        .scanEndTime(DateUtil.stringDateToDate(devSerImageInfo.getImageData().getScanEndTime()))
                         .scanPointsman(sysUser)
                         .scanAssignTimeout(TimeDefaultType.FALSE.getValue())
                         .scanOffline(Integer.valueOf(devSerImageInfo.getImageData().getOffline()))
@@ -576,8 +607,8 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                 serScan.setScanATRResult(BackgroundServiceUtil.dictConvert(devSerImageInfo.getImageData().getAtrResult()));
                 serScan.setScanInvalid((devSerImageInfo.getImageData().getInvalidScan()));
                 serScan.setScanFootAlarm(BackgroundServiceUtil.dictConvert(devSerImageInfo.getImageData().getFootAlarmed()));
-                serScan.setScanStartTime(sdf.parse(devSerImageInfo.getImageData().getScanBeginTime()));
-                serScan.setScanEndTime(sdf.parse(devSerImageInfo.getImageData().getScanEndTime()));
+                serScan.setScanStartTime(DateUtil.stringDateToDate(devSerImageInfo.getImageData().getScanBeginTime()));
+                serScan.setScanEndTime(DateUtil.stringDateToDate(devSerImageInfo.getImageData().getScanEndTime()));
                 serScan.setScanPointsman(sysUser);
                 serScan.setScanAssignTimeout(TimeDefaultType.FALSE.getValue());
                 serScan.setScanOffline(Integer.valueOf(devSerImageInfo.getImageData().getOffline()));
@@ -589,22 +620,20 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             }
             serScan = serScanRepository.save(serScan);
 
-
             // 删除相应的图像和图像属性
             SerImage serImageModel = new SerImage();
             serImageModel.setSerScan(serScan);
             Example<SerImage> serImageEx = Example.of(serImageModel);
-            List<SerImage> serImages = serImageRepository.findAll(serImageEx);
-
-            for (SerImage item : serImages) {
-                SerImageProperty serImagePropertyModel = new SerImageProperty();
-                serImagePropertyModel.setSerImage(item);
-                Example<SerImageProperty> serImagePropertyEx = Example.of(serImagePropertyModel);
-                List<SerImageProperty> serImageProperties = serImagePropertyRepository.findAll(serImagePropertyEx);
-                serImagePropertyRepository.delete(serImageProperties);
-            }
-            serImageRepository.delete(serImages);
-
+//            List<SerImage> serImages = serImageRepository.findAll(serImageEx);
+//
+//            for (SerImage item : serImages) {
+//                SerImageProperty serImagePropertyModel = new SerImageProperty();
+//                serImagePropertyModel.setSerImage(item);
+//                Example<SerImageProperty> serImagePropertyEx = Example.of(serImagePropertyModel);
+//                List<SerImageProperty> serImageProperties = serImagePropertyRepository.findAll(serImagePropertyEx);
+//                serImagePropertyRepository.delete(serImageProperties);
+//            }
+//            serImageRepository.delete(serImages);
 
             // 创建图像和图像属性
             for (DeviceImageModel deviceImageModel : devSerImageInfo.getImageData().getDeviceImages()) {
@@ -614,26 +643,32 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                         .imageFormat(ImageFormatType.IMAGE.getValue())
                         .imageUrl(deviceImageModel.getImage())
                         .build();
-                serImage = serImageRepository.save(serImage);
-                for (ImageRectModel imageRectModel : deviceImageModel.getImageRects()) {
-                    saveImageProperty(serImage, "x", imageRectModel.getX().toString());
-                    saveImageProperty(serImage, "y", imageRectModel.getY().toString());
-                    saveImageProperty(serImage, "width", imageRectModel.getWidth().toString());
-                    saveImageProperty(serImage, "height", imageRectModel.getHeight().toString());
+                //serImage = serImageRepository.save(serImage);
+                if(deviceImageModel.getImageRects() != null) {
+                    for (ImageRectModel imageRectModel : deviceImageModel.getImageRects()) {
+                        saveImageProperty(serImage, "x", imageRectModel.getX().toString());
+                        saveImageProperty(serImage, "y", imageRectModel.getY().toString());
+                        saveImageProperty(serImage, "width", imageRectModel.getWidth().toString());
+                        saveImageProperty(serImage, "height", imageRectModel.getHeight().toString());
+                    }
                 }
+
                 SerImage serCartoon = SerImage.builder()
                         .serTask(serTask)
                         .serScan(serScan)
                         .imageFormat(ImageFormatType.CARTOON.getValue())
                         .imageUrl(deviceImageModel.getCartoon())
                         .build();
-                serCartoon = serImageRepository.save(serCartoon);
-                for (ImageRectModel imageRectModel : deviceImageModel.getCartoonRects()) {
-                    saveImageProperty(serCartoon, "x", imageRectModel.getX().toString());
-                    saveImageProperty(serCartoon, "y", imageRectModel.getY().toString());
-                    saveImageProperty(serCartoon, "width", imageRectModel.getWidth().toString());
-                    saveImageProperty(serCartoon, "height", imageRectModel.getHeight().toString());
+                //serCartoon = serImageRepository.save(serCartoon);
+                if(deviceImageModel.getCartoonRects() != null) {
+                    for (ImageRectModel imageRectModel : deviceImageModel.getCartoonRects()) {
+                        saveImageProperty(serCartoon, "x", imageRectModel.getX().toString());
+                        saveImageProperty(serCartoon, "y", imageRectModel.getY().toString());
+                        saveImageProperty(serCartoon, "width", imageRectModel.getWidth().toString());
+                        saveImageProperty(serCartoon, "height", imageRectModel.getHeight().toString());
+                    }
                 }
+
             }
 
 
@@ -644,9 +679,9 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             SerInspected serInspected = serInspectedRepository.findOne(serInspectedEx);
             // 更新检查的数据
             String inspectedGender = "";
-            if (devSerImageInfo.getPersonData().getSex().equals((DeviceGenderType.MALE.getValue()))) {
+            if (DeviceGenderType.MALE.getValue().equals(devSerImageInfo.getPersonData().getSex())) {
                 inspectedGender = GenderType.MALE.getValue();
-            } else if (devSerImageInfo.getPersonData().getSex().equals((DeviceGenderType.FEMALE.getValue()))) {
+            } else if (DeviceGenderType.FEMALE.getValue().equals(devSerImageInfo.getPersonData().getSex())) {
                 inspectedGender = GenderType.FEMALE.getValue();
             }
             // if serInspected exists then update or not exists then create
@@ -672,40 +707,6 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                 serInspected.setAddress(devSerImageInfo.getPersonData().getAddress());
             }
             serInspectedRepository.save(serInspected);
-
-
-            SerJudgeGraph serJudgeGraphModel = SerJudgeGraph.builder()
-                    .serTask(serTask)
-                    .build();
-            Example<SerJudgeGraph> serJudgeGraphEx = Example.of(serJudgeGraphModel);
-            SerJudgeGraph serJudgeGraph = serJudgeGraphRepository.findOne(serJudgeGraphEx);
-
-            sysUserModel = SysUser.builder()
-                    .userAccount(BackgroundServiceUtil.getConfig("default.user"))
-                    .build();
-            sysUserEx = Example.of(sysUserModel);
-            SysUser defaultUser = sysUserRepository.findOne(sysUserEx);
-
-            if(serJudgeGraph == null) {
-                serJudgeGraph = SerJudgeGraph.builder()
-                        .serTask(serTask)
-                        .sysWorkflow(sysWorkflow)
-                        .judgeResult(devSerImageInfo.getImageData().getAtrResult())
-                        .judgeStartTime(DateUtil.getCurrentDate())
-                        .judgeUser(defaultUser)
-                        .judgeEndTime(DateUtil.getCurrentDate())
-                        .judgeTimeout(TimeDefaultType.FALSE.getValue())
-                        .build();
-            } else {
-                serJudgeGraph.setSerTask(serTask);
-                serJudgeGraph.setSysWorkflow(sysWorkflow);
-                serJudgeGraph.setJudgeResult(devSerImageInfo.getImageData().getAtrResult());
-                serJudgeGraph.setJudgeStartTime(DateUtil.getCurrentDate());
-                serJudgeGraph.setJudgeUser(defaultUser);
-                serJudgeGraph.setJudgeEndTime(DateUtil.getCurrentDate());
-                serJudgeGraph.setJudgeTimeout(TimeDefaultType.FALSE.getValue());
-            }
-            serJudgeGraphRepository.save(serJudgeGraph);
 
 
             // 更新历史记录数据
@@ -742,38 +743,101 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                 history.setScanPointsmanName(serScan.getScanPointsman().getUserName());
             }
 
-            history.setJudgeWorkflow(sysWorkflow);
-            history.setJudgeGraph(serJudgeGraph);
-            history.setJudgeResult(serJudgeGraph.getJudgeResult());
-            history.setJudgeTimeout(serJudgeGraph.getJudgeTimeout());
-            history.setJudgeStartTime(serJudgeGraph.getJudgeStartTime());
-            history.setJudgeEndTime(serJudgeGraph.getJudgeEndTime());
-            history.setJudgeUser(serJudgeGraph.getJudgeUser());
-            historyRepository.save(history);
 
-            SerCheckResult serCheckResultModel = SerCheckResult.builder()
-                    .serTask(serTask)
-                    .build();
-            Example<SerCheckResult> serCheckResultEx = Example.of(serCheckResultModel);
-            SerCheckResult serCheckResult = serCheckResultRepository.findOne(serCheckResultEx);
-            if(serCheckResult == null) {
-                serCheckResult = SerCheckResult.builder()
-                        .serTask(serTask)
-                        .sysDevice(device)
+
+            if(DeviceDefaultType.FALSE.getValue().equals(devSerImageInfo.getImageData().getInvalidScan())) {
+                sysUserModel = SysUser.builder()
+                        .userAccount(BackgroundServiceUtil.getConfig("default.user"))
                         .build();
+                sysUserEx = Example.of(sysUserModel);
+                SysUser defaultUser = sysUserRepository.findOne(sysUserEx);
 
+
+
+                SerJudgeGraph serJudgeGraphModel = SerJudgeGraph.builder()
+                        .serTask(serTask)
+                        .build();
+                Example<SerJudgeGraph> serJudgeGraphEx = Example.of(serJudgeGraphModel);
+                SerJudgeGraph serJudgeGraph = serJudgeGraphRepository.findOne(serJudgeGraphEx);
+
+
+
+                if(serJudgeGraph == null) {
+
+                    //添加到ser_assign
+                    SerAssign serAssign = SerAssign.builder()
+                            .serTask(serTask)
+                            .sysWorkflow(sysWorkflow)
+                            .sysWorkMode(sysWorkMode)
+                            .assignStartTime(DateUtil.getCurrentDate())
+                            .build();
+                    SysDevice assignedDevice = null;//new SysDevice();
+                    serAssign.setAssignUser(defaultUser);
+                    serAssign.setAssignJudgeDevice(assignedDevice);
+                    serAssign.setAssignTimeout(TimeDefaultType.FALSE.getValue());
+                    serAssign.setAssignStartTime(DateUtil.getCurrentDate());
+                    serAssign.setAssignEndTime(DateUtil.getCurrentDate());
+
+
+                    serAssignRepository.save(serAssign);
+                    serJudgeGraph = SerJudgeGraph.builder()
+                            .serTask(serTask)
+                            .sysWorkflow(sysWorkflow)
+                            .judgeResult(devSerImageInfo.getImageData().getAtrResult())
+                            .judgeStartTime(DateUtil.getCurrentDate())
+                            .judgeUser(defaultUser)
+                            .judgeEndTime(DateUtil.getCurrentDate())
+                            .judgeTimeout(TimeDefaultType.FALSE.getValue())
+                            .build();
+                } else {
+                    serJudgeGraph.setSerTask(serTask);
+                    serJudgeGraph.setSysWorkflow(sysWorkflow);
+                    serJudgeGraph.setJudgeResult(devSerImageInfo.getImageData().getAtrResult());
+                    serJudgeGraph.setJudgeStartTime(DateUtil.getCurrentDate());
+                    serJudgeGraph.setJudgeUser(defaultUser);
+                    serJudgeGraph.setJudgeEndTime(DateUtil.getCurrentDate());
+                    serJudgeGraph.setJudgeTimeout(TimeDefaultType.FALSE.getValue());
+                }
+                serJudgeGraphRepository.save(serJudgeGraph);
+
+                history.setJudgeWorkflow(sysWorkflow);
+                history.setJudgeGraph(serJudgeGraph);
+                history.setJudgeResult(serJudgeGraph.getJudgeResult());
+                history.setJudgeTimeout(serJudgeGraph.getJudgeTimeout());
+                history.setJudgeStartTime(serJudgeGraph.getJudgeStartTime());
+                history.setJudgeEndTime(serJudgeGraph.getJudgeEndTime());
+                history.setJudgeUser(serJudgeGraph.getJudgeUser());
+                history.setTaskStatus(serTask.getTaskStatus());
+                history.setScanInvalid(serScan.getScanInvalid());
+
+
+                SerCheckResult serCheckResultModel = SerCheckResult.builder()
+                        .serTask(serTask)
+                        .build();
+                Example<SerCheckResult> serCheckResultEx = Example.of(serCheckResultModel);
+                SerCheckResult serCheckResult = serCheckResultRepository.findOne(serCheckResultEx);
+                if(serCheckResult == null) {
+                    serCheckResult = SerCheckResult.builder()
+                            .serTask(serTask)
+                            .sysDevice(device)
+                            .build();
+
+                }
+
+                serCheckResult.setConclusionType(ConclusionType.SYSTEM.getValue());
+
+                serCheckResult.setJudgeResult(serJudgeGraph.getJudgeResult());
+                serCheckResultRepository.save(serCheckResult);
             }
 
-            serCheckResult.setConclusionType(ConclusionType.SYSTEM.getValue());
-
-            serCheckResult.setJudgeResult(serJudgeGraph.getJudgeResult());
-            serCheckResultRepository.save(serCheckResult);
+            historyRepository.save(history);
 
 
             return true;
         } catch (Exception ex) {
             log.error("无法同步扫描结果");
             log.error(ex.getMessage());
+
             return false;
         }
     }
@@ -788,16 +852,16 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
      * @param sysDeviceConfig
      * @return
      */
-    private SerTask updateSerTask(SerTask serTask, SysDevice device, SysWorkMode sysWorkMode, SysWorkflow sysWorkflow, SysDeviceConfig sysDeviceConfig) {
+    private SerTask updateSerTask(SerTask serTask, SysDevice device, SysWorkMode sysWorkMode, SysWorkflow sysWorkflow, SysDeviceConfig sysDeviceConfig, String scanInvalid) {
 
         //创建任务
         serTask.setDevice(device);
         serTask.setSysWorkMode(sysWorkMode);
         serTask.setSysWorkModeName(sysWorkMode.getModeName());
         serTask.setTaskStatus(TaskStatusType.SECURITY.getValue());
-        serTask.setSysField(sysDeviceConfig.getSysField());
+        serTask.setFieldId(device.getFieldId());
+        serTask.setScanInvalid(scanInvalid);
         serTaskRepository.save(serTask);
-
         // 保存到ser_task_step
         SerTaskStep serTaskStepModel = new SerTaskStep();
         serTaskStepModel.setSerTask(serTask);
@@ -816,9 +880,10 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
 
         SysWorkflow sysWorkflowModel = new SysWorkflow();
         Example<SysWorkflow> sysWorkflowEx;
-        if (sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE.getValue())
-                || sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
-            sysWorkflowModel.setTaskType(TaskType.HAND.getValue());
+        if (WorkModeType.SECURITY_JUDGE.getValue().equals(sysWorkMode.getModeName())
+                || WorkModeType.SECURITY_JUDGE_MANUAL.getValue().equals(sysWorkMode.getModeName())) {
+            sysWorkflowModel.setTaskType(TaskType.JUDGE.getValue());
+            sysWorkflowModel.setSysWorkMode(sysWorkMode);
             sysWorkflowEx = Example.of(sysWorkflowModel);
             SysWorkflow sysWorkflowJudge = sysWorkflowRepository.findOne(sysWorkflowEx);
             serTaskStepModel.setSerTask(serTask);
@@ -835,9 +900,10 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
         }
 
 
-        if (sysWorkMode.getModeName().equals(WorkModeType.SECURITY_MANUAL.getValue())
-                || sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+        if (WorkModeType.SECURITY_MANUAL.getValue().equals(sysWorkMode.getModeName())
+                || WorkModeType.SECURITY_JUDGE_MANUAL.getValue().equals(sysWorkMode.getModeName())) {
             sysWorkflowModel.setTaskType(TaskType.HAND.getValue());
+            sysWorkflowModel.setSysWorkMode(sysWorkMode);
             sysWorkflowEx = Example.of(sysWorkflowModel);
             SysWorkflow sysWorkflowHand = sysWorkflowRepository.findOne(sysWorkflowEx);
             serTaskStepModel.setSerTask(serTask);
@@ -966,7 +1032,9 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                 DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = new DispatchManualDeviceInfoVO();
                 dispatchManualDeviceInfoVO.setAssignId(assign.getAssignId());
                 dispatchManualDeviceInfoVO.setImageGuid(taskNumber);
-                dispatchManualDeviceInfoVO.setLocalRecheck(false);
+                dispatchManualDeviceInfoVO.setLocalRecheck(true);
+
+
                 dispatchManualDeviceInfoVO.setRecheckNumber(securityDevice.getDeviceSerial());
                 dispatchManualDeviceInfoVO.setGuid(securityDevice.getGuid());
 
