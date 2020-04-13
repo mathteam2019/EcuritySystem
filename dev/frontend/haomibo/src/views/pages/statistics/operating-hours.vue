@@ -515,7 +515,7 @@
         isModalVisible: false,
 
         filter: {
-          deviceName: null,
+          deviceName: '',
           deviceType: null,
           startTime: null,
           endTime: null,
@@ -980,7 +980,7 @@
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/devicestatistics/generate`;
-        this.name = 'Statistics-OperatingHour';
+        this.name = this.$t('menu.statistics-operating-hours');
         this.isModalVisible = true;
       },
       onExport() {
@@ -1116,7 +1116,13 @@
           }
           this.allDevice = allUserStr;
 
-          this.bar3ChartOptions.xAxis.data = xAxisChart;
+          console.log(xAxisChart)
+          if(xAxisChart.length !== 0) {
+            this.bar3ChartOptions.xAxis.data = xAxisChart;
+          }
+          else {
+            this.bar3ChartOptions.series[0].data = [0];
+          }
         })
       },
       getPreviewData() {
@@ -1148,9 +1154,19 @@
           this.handData['hour'].value = (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60) % 24;
           this.handData['day'].value = (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60 - (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
 
-          this.scanData['rate'].value = Math.round(scanSeconds / totalSeconds * 100);
-          this.judgeData['rate'].value = Math.round(judgeSeconds / totalSeconds * 100);
-          this.handData['rate'].value = Math.round(handSeconds / totalSeconds * 100);
+          if(totalSeconds !== 0) {
+            this.scanData['rate'].value = Math.round(scanSeconds / totalSeconds * 100);
+            this.judgeData['rate'].value = Math.round(judgeSeconds / totalSeconds * 100);
+            this.handData['rate'].value = Math.round(handSeconds / totalSeconds * 100);
+          }
+          else {
+            this.scanData['rate'].value = 0;
+            this.judgeData['rate'].value = 0;
+            this.handData['rate'].value = 0;
+          }
+          // this.scanData['rate'].value = Math.round(scanSeconds / totalSeconds * 100);
+          // this.judgeData['rate'].value = Math.round(judgeSeconds / totalSeconds * 100);
+          // this.handData['rate'].value = Math.round(handSeconds / totalSeconds * 100);
 
           this.doublePieChartOptions.series[0].data[0].value = this.scanData['rate'].value;
           this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
@@ -1200,7 +1216,7 @@
       },
       onResetButton() {
         this.filter = {
-          deviceName: null,
+          deviceName: '',
           deviceType: null,
           statWidth: 'hour',
           startTime: null,

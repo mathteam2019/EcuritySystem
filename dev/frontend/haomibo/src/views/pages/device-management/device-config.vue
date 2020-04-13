@@ -1276,7 +1276,7 @@
           'idList': checkedIds.join()
         };
         this.link = `device-management/device-table/device/field`;
-        this.name = 'device-config';
+        this.name = this.$t('device-management.site-config');
         this.isModalVisible = true;
       },
       hideModal(modal) {

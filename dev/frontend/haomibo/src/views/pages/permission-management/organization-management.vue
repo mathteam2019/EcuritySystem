@@ -138,7 +138,7 @@
       border-radius: 0.3rem;
       position: absolute;
       top: 0;
-      width: 80%;
+      width: 100%;
       left: calculateRem(30px);
       background: wheat;
       z-index: 1;
@@ -329,8 +329,16 @@
                     @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onPaginationData"
                   >
-                    <template slot="orgNumber" slot-scope="props">
-                      <span class="cursor-p text-primary" @click="onAction('show', props.rowData)">{{ props.rowData.orgNumber }}</span>
+                    <template slot="orgNumberLabel" slot-scope="props">
+                      <div v-if="!props.rowData.orgNumberLabel.isLong">
+                        <span class="cursor-p text-primary" @click="onAction('show', props.rowData)">{{ props.rowData.orgNumberLabel.groupMember }}</span>
+                      </div>
+                      <div v-else>
+                        <div class="item-wrapper slide-right">
+                          <span class="item d-flex flex-column cursor-p text-primary" @click="onAction('show', props.rowData)">{{ props.rowData.orgNumberLabel.label }}</span>
+                          <div class="item-extra-info flex-column d-flex">{{ props.rowData.orgNumberLabel.groupMember }}</div>
+                        </div>
+                      </div>
                     </template>
                     <template slot="actions" slot-scope="props">
                       <div>
@@ -939,7 +947,7 @@
               width: '4%'
             },
             {
-              name: '__slot:orgNumber',
+              name: '__slot:orgNumberLabel',
               title: this.$t('permission-management.th-org-number'),
               sortField: 'orgNumber',
               titleClass: 'text-center',
@@ -947,11 +955,18 @@
               width: '7%'
             },
             {
-              name: 'orgName',
+              name: 'orgNameLabel',
               title: this.$t('permission-management.th-org-name'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '8%'
+              width: '8%',
+              callback: (value) => {
+                if(value === null) return '';
+                if(value.isLong === false) return value.groupMember;
+                else{
+                  return this.hoverContent(value);
+                }
+              },
             },
             {
               name: 'status',
@@ -1239,7 +1254,7 @@
           'idList': checkedIds.join()
         };
         this.link = `permission-management/organization-management/organization`;
-        this.name = 'organization';
+        this.name = this.$t('permission-management.organization-table');
         this.isModalVisible = true;
       },
 
@@ -1327,6 +1342,50 @@
         transformed.data = [];
 
         for (let i = 0; i < data.data.length; i++) {
+          if(data.data[i].orgNumber) {
+            let note = data.data[i].orgNumber.toString();
+
+            // if (note.length > 20) {
+            //   data.data[i].note = note.substr(0, 20) + "···"; // Gets the first part
+            // }
+            let isLong = false;
+            if(note.length>this.showLength/2){
+              isLong = true;
+              data.data[i].orgNumberLabel = {
+                groupMember : note,
+                label : note.substr(0, this.showLength/2) + '...',
+                isLong : isLong
+              };
+            }
+            else {
+              data.data[i].orgNumberLabel = {
+                groupMember : note,
+                isLong : isLong
+              };
+            }
+          }
+          if(data.data[i].orgName) {
+            let note = data.data[i].orgName.toString();
+
+            // if (note.length > 20) {
+            //   data.data[i].note = note.substr(0, 20) + "···"; // Gets the first part
+            // }
+            let isLong = false;
+            if(note.length>this.showLength/2){
+              isLong = true;
+              data.data[i].orgNameLabel = {
+                groupMember : note,
+                label : note.substr(0, this.showLength/2) + '...',
+                isLong : isLong
+              };
+            }
+            else {
+              data.data[i].orgNameLabel = {
+                groupMember : note,
+                isLong : isLong
+              };
+            }
+          }
           if(data.data[i].note) {
             let note = data.data[i].note.toString();
 
@@ -1856,6 +1915,7 @@
                 });
                 if (this.modifyPage != null)
                   this.modifyPage.selectedOrg.status = '1000000701';
+
                 this.$refs.vuetable.reload();
                 this.getOrgDataAll();
                 break;

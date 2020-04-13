@@ -1423,7 +1423,7 @@
                     'idList': checkedIds.join()
                 };
                 this.link = `permission-management/permission-control/role`;
-                this.name = 'role';
+                this.name = this.$t('permission-management.permission-control.role-setting');
                 // if(this.fileSelection !== null) {
                 //   downLoadFileFromServer(link, params, 'role', this.fileSelection);
                 //   this.hideModal('model-export')
@@ -1458,7 +1458,7 @@
                     'idList': checkedIds.join()
                 };
                 this.link = `permission-management/permission-control/data-group`;
-                this.name = 'Permission-DataGroup';
+                this.name = this.$t('permission-management.permission-control.data-grouping');
                 // if(this.fileSelection !== null) {
                 //   downLoadFileFromServer(link, params, 'Permission-DataGroup', this.fileSelection);
                 //   this.hideModal('model-export')
@@ -1533,7 +1533,7 @@
                             let data = response.data.data;
                             switch (message) {
                                 case responseMessages['ok']: // okay
-                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
+                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.roles-created`), {
                                         duration: 3000,
                                         permanent: false
                                     });
@@ -1621,7 +1621,7 @@
                             let data = response.data.data;
                             switch (message) {
                                 case responseMessages['ok']:
-                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
+                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.roles-modified`), {
                                         duration: 3000,
                                         permanent: false
                                     });
@@ -1669,7 +1669,7 @@
                             let data = response.data.data;
                             switch (message) {
                                 case responseMessages['ok']:
-                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-deleted`), {
+                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.roles-deleted`), {
                                         duration: 3000,
                                         permanent: false
                                     });

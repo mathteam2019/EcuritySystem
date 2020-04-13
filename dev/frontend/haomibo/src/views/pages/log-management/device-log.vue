@@ -631,14 +631,6 @@
 
     </b-tabs>
 
-<!--    <div class="item-wrapper slide-left">-->
-<!--      <div class="item d-flex flex-column">-->
-<!--      </div>-->
-<!--      <div class="item-extra-info flex-column d-flex">-->
-<!--       -->
-<!--      </div>-->
-<!--    </div>-->
-
     <b-modal  centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
@@ -1251,7 +1243,7 @@
           'idList': checkedIds.join()
         };
         this.link = `log-management/device-log`;
-        this.name = page === 'device' ? 'Security Device Log' : page === 'judge' ? 'Judge Device Log' : 'Hand Device Log';
+        this.name = page === 'device' ? this.$t('log-management.device-log.security-log') : page === 'judge' ? this.$t('log-management.device-log.decision-log') : this.$t('log-management.device-log.hand-check-log');
         this.isModalVisible = true;
         // downLoadFileFromServer(link, params, 'device-log');
       },

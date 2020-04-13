@@ -1115,7 +1115,7 @@
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/preview/generate`;
-        this.name = 'Statistics-Preview';
+        this.name = this.$t('menu.statistics-view');
         this.isModalVisible = true;
       },
       onExport() {

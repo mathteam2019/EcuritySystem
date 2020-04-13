@@ -1409,7 +1409,7 @@
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/judge/generate`;
-        this.name = 'Statistics-Judge';
+        this.name = this.$t('menu.statistics-monitors');
         this.isModalVisible = true;
       },
       onExport() {

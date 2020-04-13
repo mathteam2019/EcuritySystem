@@ -634,7 +634,7 @@
           'idList': checkedIds.join()
         };
         this.link = `device-management/document-management/archive`;
-        this.name = 'document';
+        this.name = this.$t('menu.document-management');
         this.isModalVisible = true;
       },
       onExport(){

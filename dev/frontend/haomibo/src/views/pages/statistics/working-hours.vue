@@ -502,7 +502,7 @@
 
         filter: {
           modeId: null,
-          userName: null,
+          userName: '',
           startTime: null,
           endTime: null,
           statWidth: 'hour',
@@ -807,7 +807,7 @@
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/userstatistics/generate`;
-        this.name = 'Statistics-WorkingHour';
+        this.name = this.$t('menu.statistics-working-hours');
         this.isModalVisible = true;
       },
       onExport() {
@@ -972,7 +972,13 @@
           }
           this.allUser=allUserStr;
 
-          this.bar3ChartOptions.xAxis.data = xAxisChart;
+          //this.bar3ChartOptions.xAxis.data = xAxisChart;
+          if(xAxisChart.length !== 0) {
+            this.bar3ChartOptions.xAxis.data = xAxisChart;
+          }
+          else {
+            this.bar3ChartOptions.series[0].data = [0];
+          }
         })
       },
 
@@ -1005,9 +1011,16 @@
           this.handData['hour'].value = (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60) % 24;
           this.handData['day'].value = (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60 - (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
 
-          this.scanData['rate'].value = Math.round(scanSeconds / totalSeconds * 100);
-          this.judgeData['rate'].value = Math.round(judgeSeconds / totalSeconds * 100);
-          this.handData['rate'].value = Math.round(handSeconds / totalSeconds * 100);
+          if(totalSeconds !== 0) {
+            this.scanData['rate'].value = Math.round(scanSeconds / totalSeconds * 100);
+            this.judgeData['rate'].value = Math.round(judgeSeconds / totalSeconds * 100);
+            this.handData['rate'].value = Math.round(handSeconds / totalSeconds * 100);
+          }
+          else {
+            this.scanData['rate'].value = 0;
+            this.judgeData['rate'].value = 0;
+            this.handData['rate'].value = 0;
+          }
 
           this.doublePieChartOptions.series[0].data[0].value = this.scanData['rate'].value;
           this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
@@ -1053,14 +1066,12 @@
         this.getGraphData();
         this.getPreviewData();
         this.setPeriodLabel(this.filter.statWidth);
-        this.$refs.taskVuetable.refresh();
+        this.$refs.taskVuetable.reload();
       },
       onResetButton() {
         this.filter = {
-          fieldId: null,
-          deviceId: null,
-          userCategory: null,
-          userName: null,
+          modeId: null,
+          userName: '',
           startTime: null,
           endTime: null,
           statWidth: 'hour',

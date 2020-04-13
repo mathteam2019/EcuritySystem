@@ -1019,7 +1019,7 @@
           'idList': checkedIds.join()
         };
         this.link = `device-management/device-table/device`;
-        this.name = 'device';
+        this.name = this.$t('menu.device-table');
         this.isModalVisible = true;
       },
       onExport() {

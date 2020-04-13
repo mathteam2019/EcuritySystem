@@ -1392,7 +1392,7 @@
     },
 
     created() {
-      this.timer = setInterval(this.autoUpdate, 20000)
+      //this.timer = setInterval(this.autoUpdate, 20000)
     },
     beforeDestroy() {
       clearInterval(this.timer)
@@ -1406,9 +1406,9 @@
 
       pageStatus(newval) {
         if (newval === 'show') {
-          clearInterval(this.timer);
+          //clearInterval(this.timer);
         } else {
-          this.timer = setInterval(() => this.autoUpdate(), 20000);
+          //this.timer = setInterval(() => this.autoUpdate(), 20000);
         }
       },
 
@@ -1875,7 +1875,7 @@
         };
         this.link = `task/history-task/generate`;
         this.imgUrl = `task/history-task/generate/image`;
-        this.name = 'History-Task';
+        this.name = this.$t('menu.history-task');
         this.isModalVisible = true;
       },
       onExport() {
@@ -2037,8 +2037,8 @@
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 248 / deviceImage[i].width :0,
-                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 521 / deviceImage[i].height :0,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 1 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 1 / deviceImage[i].height :0,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour,
@@ -2052,8 +2052,8 @@
 
 
                       this.cartoonsInfo.push({
-                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 205 / deviceImage[i].width :0,
-                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ?  426 / deviceImage[i].height :0,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 1 / deviceImage[i].width :0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ?  1 / deviceImage[i].height :0,
                         imageUrl: deviceImage[i].image,
                         imageRect: deviceImage[i].imageRects,
                         colorRect: colourInfo.scanRecogniseColour,

@@ -732,7 +732,7 @@
           'idList': checkedIds.join()
         };
         this.link = `device-management/document-template/archive-template`;
-        this.name = 'document-template';
+        this.name = this.$t('menu.document-template');
         this.isModalVisible = true;
       },
       onExport() {
