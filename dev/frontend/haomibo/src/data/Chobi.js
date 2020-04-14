@@ -449,7 +449,8 @@ var Chobi = function(elem, isToggled, left){
             ctx.strokeStyle = "red";
           }
           //console.log(rectInfo);
-          ctx.rect(rectInfo[i].x, rectInfo[i].y, rectInfo[i].width, rectInfo[i].height);
+          console.log(this.image.width, this.image.height);
+          ctx.rect(this.image.width * rectInfo[i].x, this.image.height * rectInfo[i].y, this.image.width * rectInfo[i].width, this.image.height * rectInfo[i].height);
           ctx.stroke();
         }
 				return true;

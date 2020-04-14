@@ -1182,7 +1182,7 @@
               }
             },
             {
-              name: 'roles',
+              name: 'rolesLabel',
               title: this.$t('permission-management.assign-permission-management.group.role'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -2233,14 +2233,14 @@
           let isLong = false;
           if(groupMember.length>20){
             isLong = true;
-            temp.roles = {
+            temp.rolesLabel = {
               groupMember : groupMember,
               label : groupMember.substr(0, 19) + '...',
               isLong : isLong
             };
           }
           else {
-            temp.roles = {
+            temp.rolesLabel = {
               groupMember : groupMember,
               isLong : isLong
             };
