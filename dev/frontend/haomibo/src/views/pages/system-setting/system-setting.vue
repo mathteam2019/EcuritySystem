@@ -1063,14 +1063,14 @@
 
       },
       onChange() {
-        //console.log(this.platFormData.scanRecogniseColour, this.platFormData.judgeRecogniseColour, this.platFormData.displayDeleteSuspicionColour)
+
         // this.isEmptyScan = this.platFormData.scanRecogniseColour === '#';
         // this.isEmptyJudge = this.platFormData.judgeRecogniseColour === '#';
         // this.isEmptyDelete = this.platFormData.displayDeleteSuspicionColour === '#';
 
       },
       onInput() {
-       //console.log(this.platFormData.scanRecogniseColour, this.platFormData.judgeRecogniseColour, this.platFormData.displayDeleteSuspicionColour)
+
         // this.isEmptyScan = this.platFormData.scanRecogniseColour === '#';
         // this.isEmptyJudge = this.platFormData.judgeRecogniseColour === '#';
         // this.isEmptyDelete = this.platFormData.displayDeleteSuspicionColour === '#';
@@ -1424,7 +1424,7 @@
         //save platform main data
         if (this.tabIndex === 0) {
           this.$v.platFormData.$touch();
-          console.log(this.platFormData.scanRecogniseColour, this.platFormData.judgeRecogniseColour, this.platFormData.displayDeleteSuspicionColour);
+
           if (this.$v.platFormData.$invalid) {
             if(this.$v.platFormData.scanRecogniseColour.$invalid){
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.atr-suspect-box-color-format`), {

@@ -1009,7 +1009,7 @@
           case responseMessages['ok']:
             this.orgData = data;
             this.orgTreeData = nest(this.orgData, rootOrgId);
-            console.log(this.orgTreeData);
+
               this.orgNameSelectData = [];
             indentData(this.orgTreeData, 0);
               this.orgNameFilterData = [];
@@ -1496,6 +1496,7 @@
         checkAllButton.checked = value;
       },
       selectNone(){
+        this.$refs.userVuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.userVuetable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = false;
@@ -1833,7 +1834,6 @@
       },
 
       onUserNameClicked(userWithRole) {
-        console.log(userWithRole);
         this.showForm.orgId = userWithRole.org.orgId;
         this.showForm.orgName = userWithRole.org.orgName;
         this.showForm.userId = userWithRole.userId;

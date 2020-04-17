@@ -1066,7 +1066,7 @@
     methods: {
       handleWindowResize(event) {
         const windowWidth = window.innerWidth;
-        console.log(windowWidth);
+
         if(windowWidth<=1280) {
           this.showLength = 10;
         }
@@ -1089,6 +1089,7 @@
         checkAllButton.checked = value;
       },
       selectNone(){
+        this.$refs.securityLogTable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.securityLogTable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = false;

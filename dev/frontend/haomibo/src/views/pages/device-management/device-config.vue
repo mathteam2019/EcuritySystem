@@ -999,6 +999,7 @@
         checkAllButton.checked = value;
       },
       selectNone(){
+        this.$refs.configListTable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.configListTable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = false;
@@ -1381,7 +1382,6 @@
                 });
                 if (this.configForm.configId > 0)
                   this.configForm.status = statusValue;
-                console.log(this.configForm)
 
                 this.$refs.pendingListTable.reload();
                 break;

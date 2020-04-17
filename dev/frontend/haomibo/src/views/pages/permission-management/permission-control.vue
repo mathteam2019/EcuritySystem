@@ -903,10 +903,12 @@
                 }
                 if (newVal) {
                     if (newVal.users.length === this.userList.length) {
-                        this.isSelectedAllResourcesForRoleForm = true;
+                        this.isSelectedAllUsersForDataGroup = true;
+                        console.log("=", this.isSelectedAllUsersForDataGroup);
                     }
                     else {
-                        this.isSelectedAllResourcesForRoleForm = false;
+                      console.log("=!", this.isSelectedAllUsersForDataGroup);
+                        this.isSelectedAllUsersForDataGroup = false;
                     }
                     let dataGroupUserIds = [];
                     newVal.users.forEach((user) => {
@@ -967,6 +969,7 @@
 
             },
             selectNone() {
+              this.$refs.roleVuetable.isCheckAllStatus=false;
                 let checkBoxId = "vuetable-check-header-2-" + this.$refs.roleVuetable.uuid;
                 let checkAllButton = document.getElementById(checkBoxId);
                 checkAllButton.checked = false;
@@ -1007,6 +1010,7 @@
                 checkAllButton.checked = value;
             },
             selectNoneGroup() {
+              this.$refs.dataGroupVuetable.isCheckAllStatus = false;
                 let checkBoxId = "vuetable-check-header-2-" + this.$refs.dataGroupVuetable.uuid;
                 let checkAllButton = document.getElementById(checkBoxId);
                 checkAllButton.checked = false;
@@ -1431,8 +1435,6 @@
                     });
 
                     let resources = resourceName.join(',');
-
-                    console.log(resources);
 
                     let isLong = false;
                     if (resources.length > this.showLength) {

@@ -897,6 +897,7 @@
         checkAllButton.checked = value;
       },
       selectNone() {
+        this.$refs.taskVuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
         let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = false;
@@ -1115,7 +1116,6 @@
             }
           }
           this.allDevice = allUserStr;
-          //console.log(xAxisChart)
           if(xAxisChart.length !== 0) {
             this.bar3ChartOptions.xAxis.data = xAxisChart;
           }
@@ -1177,7 +1177,6 @@
           for(let i = 0; i < this.initialFields.length; i++){
             this.taskVuetableItems.fields.push(this.initialFields[i]);
           }
-          //console.log(this.tableWidth);
           if(keyData.length>3){
             for (let i = 3; i < keyData.length; i++) {
 
@@ -1191,7 +1190,6 @@
                 width: this.tableWidth
               });
             }
-            //console.log(this.taskVuetableItems.fields);
           }
 
         }).catch((error) => {
@@ -1301,20 +1299,18 @@
             temp.time = j +  this.$t('statistics.year');
           }
 
-          //console.log(temp);
 
           temp.total = data.detailedStatistics[j].detailedStatistics[0].workingTime + data.detailedStatistics[j].detailedStatistics[1].workingTime + data.detailedStatistics[j].detailedStatistics[2].workingTime;
           temp.scan = data.detailedStatistics[j].detailedStatistics[0].workingTime;
           temp.judge = data.detailedStatistics[j].detailedStatistics[1].workingTime;
           temp.hand = data.detailedStatistics[j].detailedStatistics[2].workingTime;
-          //console.log(temp);
+
           for(let k=3; k<transformed.fKey.length; k++) {
             let l = transformed.fKey[k];
             let key = data.detailedStatistics[j].detailedStatistics[l].userName;
-            //console.log(data.detailedStatistics[j].detailedStatistics[l].workingTime);
+
             temp[key] = data.detailedStatistics[j].detailedStatistics[l].workingTime;
           }
-          //console.log(temp);
           //temp = data.detailedStatistics[j];
           //this.renderedCheckList.push(data.detailedStatistics[j].id);
           transformed.data.push(temp);

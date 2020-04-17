@@ -308,24 +308,6 @@
                   <label class="input-label">{{archiveForm.templateName}}</label>
                 </b-form-group>
               </b-col>
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify')}}<span
-                    class="text-danger">*</span>
-                  </template>
-                  <label class="input-label">{{archiveForm.category}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.manufacture')">
-                  <label class="input-label">{{archiveForm.manufacturer}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.origin-model')">
-                  <label class="input-label">{{archiveForm.originalModel}}</label>
-                </b-form-group>
-              </b-col>
             </b-row>
             <b-row class="mb-5" v-if="mainForm.archiveId>0">
               <b-col cols="12" class="d-flex align-items-center">
@@ -1011,6 +993,7 @@
         checkAllButton.checked = value;
       },
       selectNone(){
+        this.$refs.vuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = false;

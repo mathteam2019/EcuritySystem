@@ -1499,6 +1499,7 @@
         checkAllButton.checked = value;
       },
       selectNone(){
+        this.$refs.taskVuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = false;
@@ -2089,7 +2090,6 @@
                         }
                       }
                       for (let i = 0; i < this.imagesInfo[0].rectsDel.length; i++) {
-                        console.log(this.imagesInfo[0].rectsDel);
                         let isDeleted = false;
                         for (let j = 0; j < this.imagesInfo[0].imageRect.length; j++) {
                           if(this.imagesInfo[0].rectsDel[i].x === this.imagesInfo[0].imageRect[j].x && this.imagesInfo[0].rectsDel[i].y === this.imagesInfo[0].imageRect[j].y && this.imagesInfo[0].rectsDel[i].width === this.imagesInfo[0].imageRect[j].width && this.imagesInfo[0].rectsDel[i].height === this.imagesInfo[0].imageRect[j].height) {

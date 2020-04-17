@@ -139,7 +139,7 @@
                 }
                 this.menuItems = tmp;
                 this.currentUrl = (this.$route.path.split('/').filter(x => x !== '')[1]).toLowerCase();
-                console.log(this.currentUrl);
+
             },
 
             selectMenu() {

@@ -371,7 +371,7 @@
             <div class="text-center">
               <vue2-org-tree
                 :data="treeData"
-                :horizontal="false"
+                :horizontal="true"
                 :collapsable="false"
                 :label-class-name="treeLabelClass"
                 :render-content="renderTreeContent"
@@ -537,11 +537,10 @@
               label: `<div class="org-content-top"><span>${depth}</span>${nameLabel(item.fieldSerial)}</div><div class="org-content-bottom">${item.fieldDesignation}</div>`
             }));
         let nameLabel = (orgNumber) => {
-          //console.log(orgNumber)
           if(orgNumber.toString().length>7) {
             orgNumber = orgNumber.substring(0, 7) + '...';
           }
-          //console.log(orgNumber);
+
           return orgNumber;
         }
         this.treeData = nest(newVal)[0];
@@ -775,7 +774,6 @@
     methods: {
       handleWindowResize(event) {
         const windowWidth = window.innerWidth;
-        console.log(windowWidth);
         if(windowWidth<=1280) {
           this.showLength = 10;
         }
@@ -801,6 +799,7 @@
         checkAllButton.checked = value;
       },
       selectNone(){
+        this.$refs.vuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = false;
