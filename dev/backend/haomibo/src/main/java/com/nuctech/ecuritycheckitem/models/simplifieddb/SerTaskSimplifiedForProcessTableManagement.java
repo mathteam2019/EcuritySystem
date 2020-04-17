@@ -53,6 +53,9 @@ public class SerTaskSimplifiedForProcessTableManagement extends BaseEntity imple
     @Column(name = "TASK_STATUS", length = 10)
     private String taskStatus;
 
+    @Column(name = "SCAN_INVALID", length = 10)
+    private String scanInvalid;
+
 
     @OneToOne()
     @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
@@ -74,10 +77,10 @@ public class SerTaskSimplifiedForProcessTableManagement extends BaseEntity imple
 //    @NotFound(action = NotFoundAction.IGNORE)
 //    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)

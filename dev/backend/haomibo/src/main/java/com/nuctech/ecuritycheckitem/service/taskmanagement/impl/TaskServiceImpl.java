@@ -122,8 +122,8 @@ public class TaskServiceImpl implements TaskService {
 
         QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
-        predicate.and(builder.serCheckResultList.isEmpty());
+        predicate.and(builder.scanInvalid.eq(SerScan.Invalid.FALSE));
+        predicate.and(builder.taskStatus.ne(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ALL));
         //predicate.and(builder.serCheckResult.checkResultId.isNull());
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
@@ -139,7 +139,7 @@ public class TaskServiceImpl implements TaskService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("serScan.scanStartTime").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("taskId").descending());
         }
         Date start = new Date();
 
@@ -220,8 +220,8 @@ public class TaskServiceImpl implements TaskService {
 
         QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
-        predicate.and(builder.serCheckResultList.isEmpty());
+        predicate.and(builder.scanInvalid.eq(SerScan.Invalid.FALSE));
+        predicate.and(builder.taskStatus.ne(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ALL));
         //predicate.and(builder.serCheckResult.checkResultId.isNull());
         //predicate.and(builder.serCheckResultList.size().eq(0));
         String[] splits = idList.split(",");
@@ -312,7 +312,7 @@ public class TaskServiceImpl implements TaskService {
 
         QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
+        predicate.and(builder.scanInvalid.eq(SerScan.Invalid.TRUE));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -327,12 +327,16 @@ public class TaskServiceImpl implements TaskService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("serScan.scanStartTime").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("taskId").descending());
         }
 
+        Date startDate = new Date();
         long total = serTaskTableRepository.count(predicate);
+        Date endDate = new Date();
+        long diff = endDate.getTime() - startDate.getTime();
         List<SerTaskSimplifiedForProcessTableManagement> data = serTaskTableRepository.findAll(predicate, pageRequest).getContent();
-
+        endDate = new Date();
+        long diff1 = endDate.getTime() - startDate.getTime();
         return new PageResult<SerTaskSimplifiedForProcessTableManagement>(total, data);
 
     }
@@ -404,7 +408,7 @@ public class TaskServiceImpl implements TaskService {
 
         QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
+        predicate.and(builder.scanInvalid.eq(SerScan.Invalid.TRUE));
         String[] splits = idList.split(",");
         List<Long> taskIdList = new ArrayList<>();
         for(String idStr: splits) {

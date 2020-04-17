@@ -13,20 +13,24 @@
 
 package com.nuctech.ecuritycheckitem.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
+import com.nuctech.ecuritycheckitem.models.redis.SerSecurityDeviceDetailModel;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
 import com.nuctech.ecuritycheckitem.models.reusables.User;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceConfigService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
 import com.nuctech.ecuritycheckitem.utils.CryptUtil;
+import com.nuctech.ecuritycheckitem.utils.RedisUtil;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -52,8 +56,29 @@ public class AsyncController extends BaseController {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    DeviceConfigService deviceConfigService;
+
+    @Autowired
+    RedisUtil redisUtil;
+
     @Async
     public void uploadCategoryToRedis() {
         authService.uploadCategoryUserListRedis();
+    }
+
+
+    @Async
+    public void updateSecurityDeviceDetail(String guid) {
+        SerSecurityDeviceDetailModel detailModel = deviceConfigService.getSecurityInfoFromDatabase(guid);
+        String redisKey = "sys.device.security.info";
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String dataStr = objectMapper.writeValueAsString(detailModel);
+            String key = redisKey + guid;
+            redisUtil.set(key, CryptUtil.encrypt(dataStr), Constants.EXPIRE_TIME);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

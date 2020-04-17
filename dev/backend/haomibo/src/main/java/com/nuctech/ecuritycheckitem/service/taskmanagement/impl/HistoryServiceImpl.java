@@ -40,6 +40,8 @@ import java.util.stream.StreamSupport;
 @Service
 public class HistoryServiceImpl implements HistoryService {
 
+
+
     @Autowired
     HistoryRepository historyRepository;
 
@@ -92,7 +94,11 @@ public class HistoryServiceImpl implements HistoryService {
             predicate.and(builder.scanStartTime.before(endTime));
         }
 
-        predicate.and(builder.serCheckResultList.isNotEmpty());
+        predicate.and(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ALL));
+        predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.FALSE));
+
+
+        //predicate.and(builder.serCheckResultList.isNotEmpty());
 //        CategoryUser categoryUser = authService.getDataCategoryUserList();
 //        if(categoryUser.isAll() == false) {
 //            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
@@ -132,7 +138,7 @@ public class HistoryServiceImpl implements HistoryService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("historyId").descending());
         }
 
 

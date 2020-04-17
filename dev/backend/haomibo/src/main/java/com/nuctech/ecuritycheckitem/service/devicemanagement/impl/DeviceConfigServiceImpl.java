@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
+import com.nuctech.ecuritycheckitem.models.redis.*;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
@@ -436,4 +437,94 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .stream(sysJudgeDeviceRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public SerSecurityDeviceDetailModel getSecurityInfoFromDatabase(String guid) {
+        SysDevice deviceModel = new SysDevice();
+        deviceModel.setGuid(guid);
+        // 获取当前设备的工作模式
+        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig.device.guid.eq(guid)).
+                get();
+        SysDevice device = sysDeviceConfig.getDevice();
+        SysJudgeGroup sysJudgeGroup = new SysJudgeGroup();
+        sysJudgeGroup.setConfigId(sysDeviceConfig.getConfigId());
+        List<SysJudgeGroup> sysJudgeGroups = StreamSupport
+                .stream(sysJudgeGroupRepository.findAll(QSysJudgeGroup.sysJudgeGroup.configId.eq(sysDeviceConfig.getConfigId())).spliterator(), false)
+                .collect(Collectors.toList());sysDeviceConfig.getJudgeGroupList();
+        List<SysManualGroup> sysManualGroups = StreamSupport
+                .stream(sysManualGroupRepository.findAll(QSysManualGroup.sysManualGroup.configId.eq(sysDeviceConfig.getConfigId())).spliterator(), false)
+                .collect(Collectors.toList());sysDeviceConfig.getJudgeGroupList();
+
+        List<SysJudgeGroupSimple> judgeGroupSimpleList = new ArrayList<>();
+        List<SysManualGroupSimple> manualGroupSimpleList = new ArrayList<>();
+
+        for(int i = 0; i < sysJudgeGroups.size(); i ++) {
+            SysJudgeGroupSimple groupSimple = SysJudgeGroupSimple.builder()
+                    .configId(sysJudgeGroups.get(i).getConfigId())
+                    .judgeDeviceId(sysJudgeGroups.get(i).getJudgeDeviceId())
+                    .judgeGroupId(sysJudgeGroups.get(i).getJudgeGroupId())
+                    .build();
+            judgeGroupSimpleList.add(groupSimple);
+        }
+
+        for(int i = 0; i < sysManualGroups.size(); i ++) {
+            SysManualGroupSimple groupSimple = SysManualGroupSimple.builder()
+                    .configId(sysManualGroups.get(i).getConfigId())
+                    .manualDeviceId(sysManualGroups.get(i).getManualDeviceId())
+                    .manualGroupId(sysManualGroups.get(i).getManualGroupId())
+                    .build();
+            manualGroupSimpleList.add(groupSimple);
+        }
+
+        SerSecurityDeviceDetailModel model = new SerSecurityDeviceDetailModel();
+        SysDeviceRedis sysDeviceSimple = SysDeviceRedis.builder()
+                .deviceId(device.getDeviceId())
+                .guid(device.getGuid())
+                .deviceName(device.getDeviceName())
+                .deviceType(device.getDeviceType())
+                .deviceSerial(device.getDeviceSerial())
+                .originalFactoryNumber(device.getOriginalFactoryNumber())
+                .manufacturerDate(device.getManufacturerDate())
+                .purchaseDate(device.getPurchaseDate())
+                .supplier(device.getSupplier())
+                .contacts(device.getContacts())
+                .mobile(device.getMobile())
+                .registrationNumber(device.getRegistrationNumber())
+                .imageUrl(device.getImageUrl())
+                .fieldId(device.getFieldId())
+                .archiveId(device.getArchiveId())
+                .categoryId(device.getCategoryId())
+                .deviceIP(device.getDeviceIp())
+                .status(device.getStatus())
+                .currentStatus(device.getCurrentStatus())
+                .workStatus(device.getWorkStatus())
+                .softwareVersion(device.getSoftwareVersion())
+                .algorithmVersion(device.getAlgorithmVersion())
+                .build();
+
+        SysWorkModeSimple sysWorkMode = SysWorkModeSimple.builder()
+                .modeId(sysDeviceConfig.getModeId())
+                .build();
+        SysDeviceConfigSimple deviceConfigSimple = SysDeviceConfigSimple.builder()
+                .configId(sysDeviceConfig.getConfigId())
+                .atrSwitch(sysDeviceConfig.getAtrSwitch())
+                .manualSwitch(sysDeviceConfig.getManualSwitch())
+                .manDeviceGender(sysDeviceConfig.getManDeviceGender())
+                .manManualGender(sysDeviceConfig.getManManualGender())
+                .manRemoteGender(sysDeviceConfig.getManRemoteGender())
+                .womanDeviceGender(sysDeviceConfig.getWomanDeviceGender())
+                .womanManualGender(sysDeviceConfig.getWomanManualGender())
+                .womanRemoteGender(sysDeviceConfig.getWomanRemoteGender())
+                .sysDevice(sysDeviceSimple)
+                .sysWorkMode(sysWorkMode)
+                .build();
+
+        model.setDeviceConfig(deviceConfigSimple);
+
+        model.setJudgeGroups(judgeGroupSimpleList);
+        model.setManualGroups(manualGroupSimpleList);
+        return model;
+    }
+
+
 }

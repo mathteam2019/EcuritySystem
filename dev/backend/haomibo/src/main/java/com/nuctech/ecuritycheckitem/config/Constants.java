@@ -40,6 +40,7 @@ public class Constants {
     public static final int DEFAULT_STORAGE_PERCENT = 80;
     public static final String CHINESE_LOCALE = "zh";
     public static final String ENGLISH_LOCALE = "en";
+    public static final int EXPIRE_TIME = 24 * 60 * 60;
 
     public static final String[] EXCLUDE_URL_PATTERNS = {
             "/",
@@ -89,7 +90,6 @@ public class Constants {
         public static final String DESC = "desc";
     }
 
-    public static long EXPIRE_TIME = 8 * 60 * 60;
 
 
 

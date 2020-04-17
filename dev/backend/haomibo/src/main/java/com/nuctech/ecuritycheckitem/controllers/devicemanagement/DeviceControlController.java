@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.controllers.AsyncController;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -67,6 +68,9 @@ public class DeviceControlController extends BaseController {
 
     @Autowired
     public MessageSource messageSource;
+
+    @Autowired
+    AsyncController asyncController;
 
 
 
@@ -887,6 +891,8 @@ public class DeviceControlController extends BaseController {
         }
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.createDevice(sysDevice, requestBody.getImageUrl());
+
+        asyncController.updateSecurityDeviceDetail(requestBody.getGuid());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -944,6 +950,8 @@ public class DeviceControlController extends BaseController {
 
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.modifyDevice(sysDevice, requestBody.getImageUrl());
+
+        asyncController.updateSecurityDeviceDetail(requestBody.getGuid());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

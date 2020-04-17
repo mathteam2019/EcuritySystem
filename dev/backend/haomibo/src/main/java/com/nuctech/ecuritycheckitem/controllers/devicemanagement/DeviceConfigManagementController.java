@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.controllers.AsyncController;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -70,6 +71,9 @@ public class DeviceConfigManagementController extends BaseController {
 
     @Autowired
     public MessageSource messageSource;
+
+    @Autowired
+    AsyncController asyncController;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -312,6 +316,8 @@ public class DeviceConfigManagementController extends BaseController {
         sysDeviceConfig.setWomanDeviceGender(requestBody.getWomanDeviceGender());
 
         deviceConfigService.modifyDeviceConfig(sysDeviceConfig, manualDeviceIdList, judgeDeviceIdList, configDeviceIdList);
+
+        asyncController.updateSecurityDeviceDetail(sysDeviceConfig.getDevice().getGuid());
         //updateRedisValue(requestBody.getConfigId());
         return new CommonResponseBody(ResponseMessage.OK);
     }

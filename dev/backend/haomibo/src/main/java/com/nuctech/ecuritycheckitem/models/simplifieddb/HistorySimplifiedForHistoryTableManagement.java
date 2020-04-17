@@ -38,6 +38,20 @@ import java.util.List;
 @Table(name = "history")
 public class HistorySimplifiedForHistoryTableManagement implements Serializable {
 
+
+    public static class TaskStatusType {
+        public static final String ALL = "1000001101";
+        public static final String ASSIGN = "1000001102";
+        public static final String JUDGE = "1000001103";
+        public static final String HAND = "1000001104";
+        public static final String SECURITY = "1000001106";
+    }
+
+    public static class InvalidType {
+        public static final String TRUE = "TRUE";
+        public static final String FALSE = "FALSE";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HISTORY_ID", length = 20)
@@ -55,6 +69,12 @@ public class HistorySimplifiedForHistoryTableManagement implements Serializable 
 
     @Column(name = "HAND_TASK_RESULT", length = 10)
     private String handTaskResult;
+
+    @Column(name = "TASK_STATUS", length = 10)
+    private String taskStatus;
+
+    @Column(name = "SCAN_INVALID", length = 10)
+    private String scanInvalid;
 
 
 
@@ -84,10 +104,10 @@ public class HistorySimplifiedForHistoryTableManagement implements Serializable 
 //    @NotFound(action = NotFoundAction.IGNORE)
 //    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
 
 //    @OneToOne(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)

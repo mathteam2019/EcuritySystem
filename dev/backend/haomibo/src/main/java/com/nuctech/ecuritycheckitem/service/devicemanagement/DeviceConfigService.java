@@ -16,6 +16,7 @@ import com.nuctech.ecuritycheckitem.models.db.SysDeviceConfig;
 import com.nuctech.ecuritycheckitem.models.db.SysJudgeDevice;
 import com.nuctech.ecuritycheckitem.models.db.SysManualDevice;
 import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
+import com.nuctech.ecuritycheckitem.models.redis.SerSecurityDeviceDetailModel;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 import java.util.List;
@@ -101,5 +102,12 @@ public interface DeviceConfigService {
      * @return
      */
     List<SysJudgeDevice> findAllJudgeDevice();
+
+    /**
+     * get all config information
+     * @param guid
+     * @return
+     */
+    SerSecurityDeviceDetailModel getSecurityInfoFromDatabase(String guid);
 
 }

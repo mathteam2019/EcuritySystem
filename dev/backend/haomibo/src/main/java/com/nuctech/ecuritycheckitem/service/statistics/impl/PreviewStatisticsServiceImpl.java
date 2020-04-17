@@ -515,8 +515,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( SCAN_ID ) AS totalScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS validScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalidScan,\n" +
+                "\t\tsum( IF ( s.SCAN_INVALID LIKE '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS validScan,\n" +
+                "\t\tsum( IF ( s.SCAN_INVALID LIKE '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalidScan,\n" +
                 "\t\tsum( IF ( SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScan,\n" +
                 "\t\tsum( IF ( SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScan,\n" +
                 "\t\t:scanGroupBy AS q1 \n" +
