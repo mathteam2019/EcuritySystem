@@ -1321,7 +1321,7 @@
         this.filter = {
           orgName: '',
           status: null,
-          parentOrgName: ''
+          parentOrgId: null
         };
       },
       transform(response) {

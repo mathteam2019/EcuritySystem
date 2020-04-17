@@ -413,7 +413,7 @@
           <div class="item-wrapper" v-for="(item, index) in items"
                :class="index%4===0?(index===0?'pl-0':'pl-0'):index%4===3?(index>4?'slide-left':'slide-left'):(index>4?'':'')">
             <div class="item d-flex flex-column" @click="onDetailClick(item.statusId, index)">
-              <div :style="item.deviceOnline === 0 && item.device.currentStatus !=='1000002002'?'border-bottom: solid 2px #74dc21;':'border-bottom: solid 2px #c6c6c6;'" class="item-header">
+              <div :style="item.device.currentStatus !=='1000002002'?'border-bottom: solid 2px #74dc21;':'border-bottom: solid 2px #c6c6c6;'" class="item-header">
                 <div class="label">{{item.deviceNumber}}</div>
                 <div class="action-list">
                   <img v-if="item.device.deviceType === '1000001901' && item.maxScanCount > item.deviceTrafficHigh && item.device.currentStatus !=='1000002002'"
@@ -425,7 +425,7 @@
                     v-if="(item.device.deviceType === '1000001901' && item.plcStatus === '0' && item.slaveCardStatus === '0' && item.masterCardStatus === '0' && item.footWarning === '0' && item.footWarning === '0') || (item.device.deviceType === '1000001901' && item.device.currentStatus ==='1000002002')"
                     src="../../../assets/img/icon_bell_disabled.png">
                   <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_bell.png">
-                  <img v-if="item.deviceOnline === 0 && item.device.currentStatus !=='1000002002'" src="../../../assets/img/icon_link.png">
+                  <img v-if="item.device.currentStatus !=='1000002002'" src="../../../assets/img/icon_link.png">
                   <img v-else src="../../../assets/img/icon_link_disabled.png">
                 </div>
               </div>
@@ -433,9 +433,9 @@
                 <b-row class="h-100">
                   <b-col cols="4" class="left-side d-flex flex-column align-items-center justify-content-between">
                     <div class="action d-flex flex-column">
-                      <b-button v-if="item.device.deviceType === '1000001901' && item.deviceLoginTime !== null && item.device.currentStatus !=='1000002002'" variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
+                      <b-button v-if="item.device.deviceType === '1000001901' && item.device.currentStatus !=='1000002002'" variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
                       <b-button v-else variant="info skyblue default" size="xs" style="opacity: 0"> {{item.currentWorkFlowName}}</b-button>
-                      <b-button v-if="item.device.deviceType === '1000001901' && item.deviceLoginTime !== null && item.device.currentStatus !=='1000002002'" class="default" size="xs" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
+                      <b-button v-if="item.device.deviceType === '1000001901' && item.device.currentStatus !=='1000002002'" class="default" size="xs" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
                       ['2','3','4'].includes(item.currentStatus)?'success':
                       ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
                       <b-button v-else class="default" size="xs" style="opacity: 0" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
@@ -449,7 +449,7 @@
                     </div>
                   </b-col>
                   <b-col cols="8" class="right-side d-flex flex-column" style="padding-left: 0; padding-right: 2px;">
-                    <label v-if="(item.deviceOnline === 0 && item.device.status === '1000000701' && item.device.currentStatus !=='1000002002')" class="text-top">{{$t('device-management.device-monitoring.running-time')}}
+                    <label v-if="(item.device.status === '1000000701' && item.device.currentStatus !=='1000002002')" class="text-top">{{$t('device-management.device-monitoring.running-time')}}
                       {{item.runningTimeValue}}</label>
                     <label v-else class="text-top" style="opacity: 0">{{$t('device-management.device-monitoring.running-time')}}</label>
                     <div class="flex-grow-1 d-flex content flex-column justify-content-end">
@@ -459,15 +459,15 @@
                       </div>
                       <div class="w-100">
                         <label>IP:</label>
-                        <label v-if="item.deviceOnline === 0 && item.device.status === '1000000701' && item.device.currentStatus !=='1000002002'">{{item.ipAddress}}</label>
+                        <label v-if="item.device.currentStatus !=='1000002002'">{{item.ipAddress}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.number')}}:</label>
-                        <label v-if="item.deviceOnline === 0 && item.device.status === '1000000701' && item.device.currentStatus !=='1000002002'">{{item.account}}</label>
+                        <label v-if="(item.device.currentStatus ==='1000002003' || item.device.currentStatus ==='1000002005')">{{item.account}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.device-monitoring.landing-time')}}:</label>
-                        <label v-if="item.deviceOnline === 0 && item.device.status === '1000000701' && (item.device.currentStatus ==='1000002003' || item.device.currentStatus ==='1000002005')">{{item.landTime}}</label>
+                        <label v-if="(item.device.currentStatus ==='1000002003' || item.device.currentStatus ==='1000002005')">{{item.landTime}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.classify')}}:</label>
@@ -482,7 +482,7 @@
                         <label>{{item.device.archive.archiveTemplate.originalModel}}</label></div>
                       <div class="w-100" :style="{opacity:item.device.deviceType === '1000001901'?1:0}">
                         <label>{{$t('device-management.device-monitoring.disk-space')}}:</label>
-                        <label v-if="item.deviceOnline === 0 && item.device.status === '1000000701'">{{item.diskSpace}}(GB)</label>
+                        <label v-if="item.device.currentStatus !=='1000002002' && item.device.status === '1000000701'">{{item.diskSpace}}(GB)</label>
                       </div>
                     </div>
                   </b-col>
@@ -662,14 +662,15 @@
     },
     created() {
       //this.onSearchButton();
-      this.timer = setInterval(this.autoUpdate, 8000);
+
 
       //this.timer = setInterval(() => this.onTaskVuetableChangePage(this.httpOption.params.page), 15000);
       //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
 
     },
     beforeDestroy() {
-      clearInterval(this.timer)
+      clearInterval(this.timer);
+      clearInterval(this.timerDetail);
     },
     mounted() {
       this.getCategoryData();
@@ -693,8 +694,8 @@
           {text: "未知", value: "-1"},
         ],
         stopStatusDicData: [
-          {text: "急停按下", value: "0"},
-          {text: "急停弹起", value: "1"},
+          {text: "急停按下", value: "1"},
+          {text: "急停弹起", value: "0"},
           {text: "未知", value: "-1"},
         ],
         servoStatusDicData: [
@@ -737,6 +738,7 @@
         },
         direction: getDirection().direction,
         items: [],
+        guidList: [],
         lineChartOption :[],
         chartOption: {
           tooltip: {
@@ -801,60 +803,66 @@
       autoUpdate() {
         this.getDataFetchRefresh();
         if(this.selectedId!== null){
-          this.onDetailClick(this.selectedId, this.selectdeIndex);
+          //this.onDetailClick(this.selectedId, this.selectdeIndex);
         }
       },
-      onDetailClick(statusId, index){
+        getDetailInformation(statusId, index) {
+            getApiManagerError().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-id`, {
+                statusId: statusId
+            }).then((response) => {
+                let message = response.data.message;
+                let data = response.data.data;
+                switch (message) {
+                    case responseMessages['ok']:
+                        this.lineChartOption = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
+                        //this.items[index].lineChartOptions = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
+                        //this.items[index].lineChartOptions = this.chartOption;
+                        this.items[index].maxScanCount = Math.max.apply(Math, data.record.countList);
+                        //this.items[index].deviceNumber = data.device.deviceName;
 
+                        //this.items[index].fieldName = data.device && data.device.field ? data.device.field.fieldDesignation : '';
+                        //this.items[index].landTime = getDateTimeWithFormat(data.loginTime, 'monitor');
+                        //this.items[index].category = data.device.category ? data.device.category.categoryName : '';
+                        //this.items[index].manufacturerName = data.device.archive && data.device.archive.archiveTemplate ? findDicTextData(this.manufacturerDicData, data.device.archive.archiveTemplate.manufacturer):'';
+                        //this.items[index].currentWorkFlowName = findDicTextData(this.currentFlowDicData, data.currentWorkFlow);
+                        //this.items[index].currentStatusName = findDicTextData(this.currentStatusDicData, data.currentStatus);
+                        //this.items[index].imageUrl = data.device && data.device.imageUrl ? data.device.imageUrl : null;
+
+
+
+                        // this.items[index].device = data.device;
+                        // this.items[index].plcStatusName = findDicTextData(this.deviceStatusDicData, data.plcStatus);
+                        // this.items[index].masterCardStatusName = findDicTextData(this.deviceStatusDicData, data.masterCardStatus);
+                        // this.items[index].slaveCardStatusName = findDicTextData(this.deviceStatusDicData, data.slaveCardStatus);
+                        // this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
+                        // //this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
+                        // this.items[index].emergencyStopName = findDicTextData(this.stopStatusDicData, data.emergencyStop);
+                        // this.items[index].footWarningName = findDicTextData(this.footStatusDicData, data.footWarning);
+                        //
+                        // //this.items[index].runningTimeValue = getDateTimeWithFormat(data.loginTime, 'monitor-diff', this.$i18n.locale);
+                        // //this.items[index].deviceTrafficHigh = data.deviceTrafficHigh;
+                        // //this.items[index].deviceStorageAlarm = data.deviceStorageAlarm;
+                        // this.items[index].plcStatus = data.plcStatus;
+                        // this.items[index].slaveCardStatus = data.slaveCardStatus;
+                        // this.items[index].masterCardStatus = data.masterCardStatus;
+                        // this.items[index].footWarning = data.footWarning;
+                        // //this.items[index].deviceOnline = data.deviceOnline;
+                        // this.items[index].servo = data.servo;
+                        //this.items[index].slidePosition = data.slidePosition;
+                        // this.items[index].emergencyStop = data.emergencyStop;
+
+                        break;
+                }
+            });
+        },
+      onDetailClick(statusId, index){
+        clearInterval(this.timerDetail);
         this.selectedId = statusId;
         this.selectdeIndex = index;
-
+        clearInterval(this.timerDetail);
+        this.getDetailInformation(statusId, index);
+        this.timerDetail = setInterval(() => this.getDetailInformation(this.selectedId, this.selectdeIndex), 1000 * 60 * 5);
         //this.items[index].detailStatus = true;
-
-        getApiManagerError().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-id`, {
-          statusId: statusId
-        }).then((response) => {
-          let message = response.data.message;
-          let data = response.data.data;
-          switch (message) {
-            case responseMessages['ok']:
-              this.lineChartOption = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
-              //this.items[index].lineChartOptions = this.generateChartData(data.record, data.deviceTrafficHigh, data.deviceTrafficMiddle);
-              //this.items[index].lineChartOptions = this.chartOption;
-              //this.items[index].maxScanCount = Math.max.apply(Math, data.record.countList);
-              //this.items[index].deviceNumber = data.device.deviceName;
-              this.items[index].device = data.device;
-              //this.items[index].fieldName = data.device && data.device.field ? data.device.field.fieldDesignation : '';
-              //this.items[index].landTime = getDateTimeWithFormat(data.loginTime, 'monitor');
-              //this.items[index].category = data.device.category ? data.device.category.categoryName : '';
-              //this.items[index].manufacturerName = data.device.archive && data.device.archive.archiveTemplate ? findDicTextData(this.manufacturerDicData, data.device.archive.archiveTemplate.manufacturer):'';
-              //this.items[index].currentWorkFlowName = findDicTextData(this.currentFlowDicData, data.currentWorkFlow);
-              //this.items[index].currentStatusName = findDicTextData(this.currentStatusDicData, data.currentStatus);
-              //this.items[index].imageUrl = data.device && data.device.imageUrl ? data.device.imageUrl : null;
-              this.items[index].plcStatusName = findDicTextData(this.deviceStatusDicData, data.plcStatus);
-              this.items[index].masterCardStatusName = findDicTextData(this.deviceStatusDicData, data.masterCardStatus);
-              this.items[index].slaveCardStatusName = findDicTextData(this.deviceStatusDicData, data.slaveCardStatus);
-              this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
-              //this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
-              this.items[index].emergencyStopName = findDicTextData(this.stopStatusDicData, data.emergencyStop);
-              this.items[index].footWarningName = findDicTextData(this.footStatusDicData, data.footWarning);
-
-              //this.items[index].runningTimeValue = getDateTimeWithFormat(data.loginTime, 'monitor-diff', this.$i18n.locale);
-              //this.items[index].deviceTrafficHigh = data.deviceTrafficHigh;
-              //this.items[index].deviceStorageAlarm = data.deviceStorageAlarm;
-              this.items[index].plcStatus = data.plcStatus;
-              this.items[index].slaveCardStatus = data.slaveCardStatus;
-              this.items[index].masterCardStatus = data.masterCardStatus;
-              this.items[index].footWarning = data.footWarning;
-              //this.items[index].deviceOnline = data.deviceOnline;
-              this.items[index].servo = data.servo;
-              this.items[index].slidePosition = data.slidePosition;
-              this.items[index].emergencyStop = data.emergencyStop;
-
-              break;
-          }
-        });
-
       },
       getDeviceDicData() {
         this.manufacturerDicData = getDicDataByDicIdForOptions(9);
@@ -911,7 +919,10 @@
         });
       },
       onSearchButton() {
-        this.selectedId = null;
+        this.saveFilter.fieldId = this.filter.fieldId;
+        this.saveFilter.categoryId = this.filter.categoryId;
+        this.saveFilter.deviceName = this.filter.deviceName;
+        this.pagination.currentPage = 1;
         this.getDataFetch();
       },
       onResetButton() {
@@ -919,6 +930,11 @@
           fieldId: null,
           categoryId: null,
           deviceName: null
+        };
+        this.saveFilter = {
+            fieldId: null,
+            categoryId: null,
+            deviceName: null
         };
       },
       transformData(data) {
@@ -931,10 +947,12 @@
         else {
           this.isExist = true;
           let temp;
+          this.guidList = [];
           for (let i = 0; i < data.data.length; i++) {
             temp = data.data[i];
             if (temp.device == null)
               continue;
+            this.guidList.push(temp.device.guid);
             temp.deviceNumber = temp.device ? temp.device.deviceName : 'Unknown';
             temp.fieldName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
             temp.landTime = getDateTimeWithFormat(temp.loginTime, 'monitor');
@@ -959,38 +977,16 @@
             result.push(temp);
           }
           this.items = result;
+          this.timer = setInterval(() => this.autoUpdate(), 1000);
         }
       },
-      getDataFetch(isCurrentPage=false) { // customize data loading for table from server
+      getDataFetch() { // customize data loading for table from server
         this.selectedId = null;
-        this.saveFilter.fieldId = this.filter.fieldId;
-        this.saveFilter.categoryId = this.filter.categoryId;
-        this.saveFilter.deviceName = this.filter.deviceName;
+        clearInterval(this.timer);
+        clearInterval(this.timerDetail);
+
         //this.isLoading = true;
         //let current = false;
-        if((this.filter.categoryId !== null || this.filter.fieldId !== null || this.filter.deviceName !== null) && !isCurrentPage) {
-          this.pagination.currentPage = 1;
-        }
-        getApiManager().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-filter-and-page`,
-          {
-            currentPage: this.pagination.currentPage,
-            perPage: this.pagination.perPage,
-            filter: this.filter
-          }).then((response) => {
-          let message = response.data.message;
-          let data = response.data.data;
-          switch (message) {
-            case responseMessages['ok']:
-              this.transformData(data);
-              //this.isLoading = false;
-
-              break;
-          }
-          //this.isLoading = false;
-        });
-        //this.isLoading = false;
-      },
-      getDataFetchRefresh() { // customize data loading for table from server
         getApiManager().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-filter-and-page`,
           {
             currentPage: this.pagination.currentPage,
@@ -1002,6 +998,97 @@
           switch (message) {
             case responseMessages['ok']:
               this.transformData(data);
+              //this.isLoading = false;
+              break;
+          }
+          //this.isLoading = false;
+        });
+        //this.isLoading = false;
+      },
+      findIndex(guid) {
+        for (let i = 0; i < this.items.length; i++) {
+            if(this.items[i].device.guid == guid) {
+                return i;
+            }
+        }
+        return -1;
+      },
+      changeDetailData(index, data) {
+        if(data.device != null) {
+            this.items[index].device.currentStatus = data.device.currentStatus;
+        }
+
+        if(data.ipAddress != null) {
+            this.items[index].ipAddress = data.ipAddress;
+        }
+        if(data.account != null) {
+            this.items[index].account = data.account;
+        }
+        if(data.loginTime != null) {
+            this.items[index].landTime = getDateTimeWithFormat(data.loginTime, 'monitor');
+        }
+        if(data.deviceLoginTime != null) {
+            this.items[index].runningTimeValue = getDateTimeWithFormat(data.deviceLoginTime, 'monitor-diff', this.$i18n.locale);
+        }
+        if(data.diskSpace != null) {
+            this.items[index].diskSpace = data.diskSpace;
+        }
+        if(data.currentWorkFlow != null) {
+            this.items[index].currentWorkFlowName = findDicTextData(this.currentFlowDicData, data.currentWorkFlow);
+        }
+        if(data.currentStatus != null) {
+            this.items[index].currentStatusName = findDicTextData(this.currentStatusDicData, data.currentStatus);
+        }
+
+        if(data.plcStatus != null) {
+            this.items[index].plcStatusName = findDicTextData(this.deviceStatusDicData, data.plcStatus);
+            this.items[index].plcStatus = data.plcStatus;
+        }
+        if(data.masterCardStatus != null) {
+            this.items[index].masterCardStatusName = findDicTextData(this.deviceStatusDicData, data.masterCardStatus);
+            this.items[index].masterCardStatus = data.masterCardStatus;
+        }
+
+        if(data.slaveCardStatus != null) {
+            this.items[index].slaveCardStatusName = findDicTextData(this.deviceStatusDicData, data.slaveCardStatus);
+            this.items[index].slaveCardStatus = data.slaveCardStatus;
+        }
+
+        if(data.servo != null) {
+            this.items[index].servoName = findDicTextData(this.servoStatusDicData, data.servo);
+            this.items[index].servo = data.servo;
+        }
+
+        if(data.emergencyStop != null) {
+            this.items[index].emergencyStopName = findDicTextData(this.stopStatusDicData, data.emergencyStop);
+            this.items[index].emergencyStop = data.emergencyStop;
+        }
+
+        if(data.footWarning != null) {
+            this.items[index].footWarningName = findDicTextData(this.footStatusDicData, data.footWarning);
+            this.items[index].footWarning = data.footWarning;
+        }
+
+
+      },
+      getDataFetchRefresh() { // customize data loading for table from server
+          getApiManagerError().post(`${apiBaseUrl}/device-management/condition-monitoring/get-detail-by-id`,
+          {
+            guidList: this.guidList.join(),
+          }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              for (let i = 0; i < data.length; i++) {
+                let dataInfo = data[i];
+                let index = this.findIndex(dataInfo.guid);
+                if(index != -1) {
+                    this.changeDetailData(index, dataInfo);
+                }
+              }
+              console.log(this.items);
+              //this.transformData(data);
               //this.getDataFetchRefresh();
               //this.isLoading = false;
               break;
@@ -1045,7 +1132,7 @@
     },
     watch: {
       'pagination.currentPage': function (newVal, oldVal) {
-        this.getDataFetch(true);
+        this.getDataFetch();
       },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 

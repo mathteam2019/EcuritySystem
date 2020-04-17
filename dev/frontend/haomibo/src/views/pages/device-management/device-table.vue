@@ -278,6 +278,71 @@
               </b-col>
 
             </b-row>
+
+            <b-row class="mb-5" v-if="mainForm.archiveId>0">
+              <b-col cols="12" class="d-flex align-items-center">
+                <label class="pr-2 m-0 "
+                       style="color: #bdbaba">{{$t('device-management.device-table.archive-info')}}</label>
+                <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+              </b-col>
+            </b-row>
+            <b-row v-if="mainForm.archiveId>0">
+              <b-col cols="4">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.file-no')}}<span class="text-danger">*</span>
+                  </template>
+                  <label class="input-label">{{archiveForm.number}}</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="4">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.filename')}}<span class="text-danger">*</span>
+                  </template>
+                  <label class="input-label">{{archiveForm.name}}</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="4">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.template-name')}}<span class="text-danger">*</span>
+                  </template>
+                  <label class="input-label">{{archiveForm.templateName}}</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="4">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify')}}<span
+                    class="text-danger">*</span>
+                  </template>
+                  <label class="input-label">{{archiveForm.category}}</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="4">
+                <b-form-group :label="$t('device-management.manufacture')">
+                  <label class="input-label">{{archiveForm.manufacturer}}</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="4">
+                <b-form-group :label="$t('device-management.origin-model')">
+                  <label class="input-label">{{archiveForm.originalModel}}</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-5" v-if="mainForm.archiveId>0">
+              <b-col cols="12" class="d-flex align-items-center">
+                <label class="pr-2 m-0 "
+                       style="color: #bdbaba">{{$t('device-management.archive.technical-indicator')}}</label>
+                <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+              </b-col>
+            </b-row>
+            <b-row v-if="mainForm.archiveId>0">
+              <b-col cols="4" v-for="item in archiveDetailData">
+                <b-form-group :label="item.indicatorsName">
+                  <label class="input-label">{{item.value?item.value:''}}</label>
+                </b-form-group>
+              </b-col>
+
+            </b-row>
+
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
             <div class="img-wrapper">
@@ -1101,7 +1166,7 @@
             this.archiveForm.category = item.archiveTemplate.deviceCategory.categoryName;
             this.archiveForm.manufacturer = getManufacturerName(this.manufacturerOptions, item.archiveTemplate.manufacturer);
             this.archiveForm.originalModel = item.archiveTemplate.originalModel;
-            if (this.pageStatus === 'show' || this.pageStatus === 'edit') {
+            if (this.pageStatus === 'show' || this.pageStatus === 'edit' || this.pageStatus === 'create') {
               this.archiveDetailData = item.archiveTemplate.archiveIndicatorsList;
               this.archiveDetailData.forEach((item1) => {
                 for (let v of item.archiveValueList) {
