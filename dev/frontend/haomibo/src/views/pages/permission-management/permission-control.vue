@@ -1427,7 +1427,7 @@
 
                     let resourceName = [];
                     temp.resources.forEach(resources => {
-                        resourceName.push(resources.resourceCaption);
+                        resourceName.push( this.getParentResourceCaption(resources.parentResourceId) + '-' + resources.resourceCaption);
                     });
 
                     let resources = resourceName.join(',');
@@ -1456,6 +1456,14 @@
                 return transformed
 
             },
+
+          getParentResourceCaption(parentId){
+              for(let i = 0; i < this.resourceList.length; i++) {
+                if(this.resourceList[i].resourceId === parentId){
+                  return this.resourceList[i].resourceCaption;
+                }
+              }
+          },
             onRolePaginationData(paginationData) {
                 this.$refs.rolePagination.setPaginationData(paginationData);
                 this.changeCheckAllStatus();

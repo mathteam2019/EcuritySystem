@@ -771,36 +771,36 @@
           {
             name: 'time',
             title:  this.setPeriodLabel,
-            titleClass: 'text-center',
-            dataClass: 'text-center',
+            titleClass: 'text-center min-width',
+            dataClass: 'text-center min-width',
             width : '10%'
           },
           {
             name: 'total',
             title: this.$t('statistics.view.total-statistics'),
-            titleClass: 'text-center',
-            dataClass: 'text-center',
+            titleClass: 'text-center min-width',
+            dataClass: 'text-center min-width',
             width : this.tableWidth
           },
           {
             name: 'scan',
             title: this.$t('statistics.view.scan-statistics'),
-            titleClass: 'text-center',
-            dataClass: 'text-center',
+            titleClass: 'text-center min-width',
+            dataClass: 'text-center min-width',
             width : this.tableWidth
           },
           {
             name: 'judge',
             title: this.$t('statistics.view.judge-statistics'),
-            titleClass: 'text-center',
-            dataClass: 'text-center',
+            titleClass: 'text-center min-width',
+            dataClass: 'text-center min-width',
             width : this.tableWidth
           },
           {
             name: 'hand',
             title: this.$t('statistics.view.hand-statistics'),
-            titleClass: 'text-center',
-            dataClass: 'text-center',
+            titleClass: 'text-center min-width',
+            dataClass: 'text-center min-width',
             width : this.tableWidth
           }
         ],
@@ -1075,7 +1075,7 @@
           let xAxisChart = [];
           let allUserStr = "";
 
-          if(keyData.length>18){
+          if(keyData.length>13){
             this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
           }
           else{
@@ -1115,8 +1115,7 @@
             }
           }
           this.allDevice = allUserStr;
-
-          console.log(xAxisChart)
+          //console.log(xAxisChart)
           if(xAxisChart.length !== 0) {
             this.bar3ChartOptions.xAxis.data = xAxisChart;
           }
@@ -1170,12 +1169,15 @@
 
           this.doublePieChartOptions.series[0].data[0].value = this.scanData['rate'].value;
           this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
-          this.doublePieChartOptions.series[0].data[2].value = this.handData['rate'].value;
+          this.doublePieChartOptions.series[0].data[2].value = 100 - this.scanData['rate'].value - this.judgeData['rate'].value;
 
           let keyData = Object.keys(this.preViewData.totalStatistics.detailedStatistics);
           this.tableWidth = 80/keyData.length + '%';
-          this.taskVuetableItems.fields = this.initialFields;
-          console.log(this.tableWidth);
+          //this.taskVuetableItems.fields = this.initialFields;
+          for(let i = 0; i < this.initialFields.length; i++){
+            this.taskVuetableItems.fields.push(this.initialFields[i]);
+          }
+          //console.log(this.tableWidth);
           if(keyData.length>3){
             for (let i = 3; i < keyData.length; i++) {
 
@@ -1184,12 +1186,12 @@
               this.taskVuetableItems.fields.push({
                 name: this.preViewData.totalStatistics.detailedStatistics[i].userName,
                 title: this.preViewData.totalStatistics.detailedStatistics[i].userName,
-                titleClass: 'text-center',
-                dataClass: 'text-center',
+                titleClass: 'text-center min-width',
+                dataClass: 'text-center min-width',
                 width: this.tableWidth
               });
             }
-            console.log(this.taskVuetableItems.fields);
+            //console.log(this.taskVuetableItems.fields);
           }
 
         }).catch((error) => {
@@ -1309,10 +1311,10 @@
           for(let k=3; k<transformed.fKey.length; k++) {
             let l = transformed.fKey[k];
             let key = data.detailedStatistics[j].detailedStatistics[l].userName;
-            console.log(data.detailedStatistics[j].detailedStatistics[l].workingTime);
+            //console.log(data.detailedStatistics[j].detailedStatistics[l].workingTime);
             temp[key] = data.detailedStatistics[j].detailedStatistics[l].workingTime;
           }
-          console.log(temp);
+          //console.log(temp);
           //temp = data.detailedStatistics[j];
           //this.renderedCheckList.push(data.detailedStatistics[j].id);
           transformed.data.push(temp);
@@ -1338,6 +1340,9 @@
 </script>
 
 <style lang="scss">
+  .min-width {
+    min-width: 100px !important;
+  }
   .col-form-label {
     margin-bottom: 1px;
   }
