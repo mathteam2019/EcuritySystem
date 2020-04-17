@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping("/device-management/condition-monitoring")
@@ -81,6 +82,16 @@ public class DeviceStatusController extends BaseController {
     private static class DeviceStatusGetByIdRequestBody {
         @NotNull
         Long statusId;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceDetailGetByIdRequestBody {
+        @NotNull
+        String guidList;
     }
 
     /**
@@ -157,6 +168,32 @@ public class DeviceStatusController extends BaseController {
                 .addFilter(ModelJsonFilters.FILTER_SER_DEVICE_STATUS, SimpleBeanPropertyFilter.serializeAllExcept("serScanParamList", "scanList"))   //return all fields except specified fields from SysDevice model
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));  //return all fields except parent from SysField model
 
+
+        value.setFilters(filters);
+
+        return value;
+    }
+
+    /**
+     * Device datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/get-detail-by-id", method = RequestMethod.POST)
+    public Object deviceDetailGetById(
+            @RequestBody @Valid DeviceDetailGetByIdRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        List<SerDeviceStatus> statusList = deviceStatusService.getDeviceDetailByGuidList(requestBody.getGuidList());
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, statusList));
+        // Set filters.
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters();
 
         value.setFilters(filters);
 

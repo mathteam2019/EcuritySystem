@@ -515,10 +515,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( SCAN_ID ) AS totalScan,\n" +
-                "\t\tsum( IF ( s.SCAN_INVALID LIKE '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS validScan,\n" +
-                "\t\tsum( IF ( s.SCAN_INVALID LIKE '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalidScan,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScan,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScan,\n" +
+                "\t\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS validScan,\n" +
+                "\t\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalidScan,\n" +
+                "\t\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' AND SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScan,\n" +
+                "\t\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' AND SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScan,\n" +
                 "\t\t:scanGroupBy AS q1 \n" +
                 "\tFROM\n" +
                 "\t\tser_scan s \n" +
@@ -538,8 +538,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( judge_id ) AS totalJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudge,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
                 "\t\t:judgeGroupBy AS q2 \n" +
                 "\tFROM\n" +
                 "\t\tser_judge_graph j \n" +
@@ -559,8 +559,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( HAND_EXAMINATION_ID ) AS totalHand,\n" +
-                "\t\tsum( IF ( HAND_RESULT LIKE '" + SerHandExamination.Result.TRUE + "', 1, 0 ) ) AS seizureHand,\n" +
-                "\t\tsum( IF ( HAND_RESULT LIKE '" + SerHandExamination.Result.FALSE + "', 1, 0 ) ) AS noSeizureHand,\n" +
+                "\t\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.TRUE + "', 1, 0 ) ) AS seizureHand,\n" +
+                "\t\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.FALSE + "', 1, 0 ) ) AS noSeizureHand,\n" +
                 "\t\t:handGroupBy AS q3 \n" +
                 "\tFROM\n" +
                 "\t\tser_hand_examination h \n" +

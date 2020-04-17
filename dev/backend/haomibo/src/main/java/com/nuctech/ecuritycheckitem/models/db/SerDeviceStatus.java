@@ -178,4 +178,7 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     @javax.persistence.Transient
     private MonitorRecord record;
 
+    @javax.persistence.Transient
+    private String guid;
+
 }

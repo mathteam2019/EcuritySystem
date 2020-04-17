@@ -311,6 +311,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (isAll == false) {
             predicate.and(builder.status.eq(SysOrg.Status.ACTIVE));
         }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> userIdList = categoryUser.getUserIdList();
+            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+        }
 
         return StreamSupport
                 .stream(sysOrgRepository.findAll(predicate).spliterator(), false)

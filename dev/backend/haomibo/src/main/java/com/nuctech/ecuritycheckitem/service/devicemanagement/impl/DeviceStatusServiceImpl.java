@@ -12,14 +12,19 @@
 
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
+import com.nuctech.ecuritycheckitem.models.redis.HardwareStatusModel;
+import com.nuctech.ecuritycheckitem.models.redis.SerDeviceStatusModel;
+import com.nuctech.ecuritycheckitem.models.redis.SysMonitoringDeviceStatusInfoVO;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceStatusService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.RedisUtil;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +56,9 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    RedisUtil redisUtil;
 
     public static String defaultStatusSort = "device.deviceSerial";
 
@@ -243,5 +251,73 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             deviceStatus.setDeviceStorageAlarm(storageAlarm);
         }
         return deviceStatus;
+    }
+
+    @Override
+    public List<SerDeviceStatus> getDeviceDetailByGuidList(String guidListStr) {
+        List<SerDeviceStatus> statusList = new ArrayList<>();
+        List<HardwareStatusModel> hardwareList = new ArrayList<>();
+        try {
+
+            String redisKey = "sys.device.hardware.info";
+            String dataStr = redisUtil.get(redisKey);
+            JSONArray dataContent = JSONArray.parseArray(dataStr);
+            hardwareList = dataContent.toJavaList(HardwareStatusModel.class);
+        } catch (Exception ex) {}
+        List<SerDeviceStatusModel> statusModelList = new ArrayList<>();
+        try {
+            String redisKey = "sys.device.current.info";
+            String dataStr = redisUtil.get(redisKey);
+            JSONArray dataContent = JSONArray.parseArray(dataStr);
+            statusModelList = dataContent.toJavaList(SerDeviceStatusModel.class);
+        } catch (Exception ex) {}
+        List<SysMonitoringDeviceStatusInfoVO> monitorList = new ArrayList<>();
+        try {
+            String dataStr = redisUtil.get(("sys.monitoring.device.status.info"));
+            JSONArray dataContent = JSONArray.parseArray(dataStr);
+            monitorList = dataContent.toJavaList(SysMonitoringDeviceStatusInfoVO.class);
+        } catch (Exception ex) {}
+        try {
+            String[] guidList = guidListStr.split(",");
+            for(String guid: guidList) {
+                SerDeviceStatus serDeviceStatus = SerDeviceStatus.builder().build();
+                serDeviceStatus.setGuid(guid);
+                for(HardwareStatusModel hardwareStatusModel: hardwareList) {
+                    if(hardwareStatusModel.getGuid().equals(guid)) {
+                        serDeviceStatus.setPlcStatus(hardwareStatusModel.getPLC());
+                        serDeviceStatus.setMasterCardStatus(hardwareStatusModel.getCaptureCardMainStatus());
+                        serDeviceStatus.setSlaveCardStatus(hardwareStatusModel.getCaptureCardSecondStatus());
+                        serDeviceStatus.setServo(hardwareStatusModel.getServoStatus());
+                        serDeviceStatus.setEmergencyStop(hardwareStatusModel.getEmergencyStop());
+                        serDeviceStatus.setFootWarning(hardwareStatusModel.getFootAlarmOnLine());
+                    }
+                }
+                for(SerDeviceStatusModel statusModel: statusModelList) {
+                    if(statusModel.getGuid().equals(guid)) {
+                        serDeviceStatus.setCurrentWorkFlow(statusModel.getFlowName());
+                        serDeviceStatus.setCurrentStatus(statusModel.getFlowStatus());
+                        serDeviceStatus.setDiskSpace(statusModel.getDiskSpace());
+                    }
+                }
+
+                for(SysMonitoringDeviceStatusInfoVO monitor: monitorList) {
+                    if(monitor.getGuid().equals(guid)) {
+                        serDeviceStatus.setIpAddress(monitor.getIpAddress());
+                        serDeviceStatus.setLoginTime(monitor.getLoginTime());
+                        serDeviceStatus.setDeviceLoginTime(monitor.getDeviceLoginTime());
+                        if(monitor.getLoginUser() != null) {
+                            serDeviceStatus.setAccount(monitor.getLoginUser().getUserAccount());
+                        }
+                        SysDevice device = SysDevice.builder().build();
+                        device.setCurrentStatus(monitor.getCurrentStatus());
+                        serDeviceStatus.setDevice(device);
+                    }
+                }
+                statusList.add(serDeviceStatus);
+            }
+        } catch (Exception ex) {
+
+        }
+        return statusList;
     }
 }

@@ -91,7 +91,7 @@ public class AccessLogServiceImpl implements AccessLogService {
         }
 
         if (!StringUtils.isEmpty(action)) {
-            predicate.and(builder.action.contains(action));
+            predicate.and(builder.action.eq(action));
         }
 
         if (!StringUtils.isEmpty(operateResult)) {

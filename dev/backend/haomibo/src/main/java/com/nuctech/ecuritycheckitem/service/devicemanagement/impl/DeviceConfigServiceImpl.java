@@ -502,8 +502,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .algorithmVersion(device.getAlgorithmVersion())
                 .build();
 
-        SysWorkModeSimple sysWorkMode = SysWorkModeSimple.builder()
-                .modeId(sysDeviceConfig.getModeId())
+        SysWorkMode sysWorkMode = sysWorkModeRepository.findOne(QSysWorkMode.sysWorkMode.modeId.eq(sysDeviceConfig.getModeId())).get();
+
+        SysWorkModeSimple sysWorkModeSimple = SysWorkModeSimple.builder()
+                .modeId(sysWorkMode.getModeId())
+                .modeName(sysWorkMode.getModeName())
                 .build();
         SysDeviceConfigSimple deviceConfigSimple = SysDeviceConfigSimple.builder()
                 .configId(sysDeviceConfig.getConfigId())
@@ -516,7 +519,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .womanManualGender(sysDeviceConfig.getWomanManualGender())
                 .womanRemoteGender(sysDeviceConfig.getWomanRemoteGender())
                 .sysDevice(sysDeviceSimple)
-                .sysWorkMode(sysWorkMode)
+                .sysWorkMode(sysWorkModeSimple)
                 .build();
 
         model.setDeviceConfig(deviceConfigSimple);

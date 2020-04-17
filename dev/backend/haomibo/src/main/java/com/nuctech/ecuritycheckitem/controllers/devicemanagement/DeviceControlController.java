@@ -892,7 +892,7 @@ public class DeviceControlController extends BaseController {
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.createDevice(sysDevice, requestBody.getImageUrl());
 
-        asyncController.updateSecurityDeviceDetail(requestBody.getGuid());
+        //asyncController.updateSecurityDeviceDetail(requestBody.getGuid());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -951,7 +951,7 @@ public class DeviceControlController extends BaseController {
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.modifyDevice(sysDevice, requestBody.getImageUrl());
 
-        asyncController.updateSecurityDeviceDetail(requestBody.getGuid());
+        //asyncController.updateSecurityDeviceDetail(requestBody.getGuid());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

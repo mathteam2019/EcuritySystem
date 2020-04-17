@@ -15,6 +15,8 @@ package com.nuctech.ecuritycheckitem.service.devicemanagement;
 import com.nuctech.ecuritycheckitem.models.db.SerDeviceStatus;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
+import java.util.List;
+
 public interface DeviceStatusService {
 
     /**
@@ -29,4 +31,6 @@ public interface DeviceStatusService {
     PageResult<SerDeviceStatus> getDeviceStatusByFilter(Long fieldId, String deviceName, Long categoryId, int currentPage, int perPage);
 
     SerDeviceStatus getDeviceStatusById(Long statusId);
+
+    List<SerDeviceStatus> getDeviceDetailByGuidList(String guid);
 }
