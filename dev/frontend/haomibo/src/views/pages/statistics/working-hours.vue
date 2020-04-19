@@ -158,7 +158,7 @@
                     </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">{{handData['rate'].value}}%</div>
+                    <div class="value">{{100-scanData['rate'].value-judgeData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       {{$t('statistics.working-hours.hand-time') }}
@@ -437,8 +437,8 @@
               show: true
             },
             axisLabel: {
-              interval:0,
-              rotate: 90
+              interval:'auto',
+              rotate: 0
             },
             axisTick: {
               show: false
@@ -936,12 +936,12 @@
           let xAxisChart = [];
           let allUserStr = "";
 
-          if(keyData.length>13){
-            this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
-          }
-          else{
-            this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
-          }
+          // if(keyData.length>13){
+          //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
+          // }
+          // else{
+          //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
+          // }
 
           if(keyData.length > 3) {
             for (let i = 3; i < keyData.length; i++) {

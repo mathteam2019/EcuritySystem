@@ -157,7 +157,7 @@
                     </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">{{handData['rate'].value}}%</div>
+                    <div class="value">{{100-scanData['rate'].value-judgeData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       {{$t('statistics.operating-hours.hand-time') }}
@@ -451,7 +451,7 @@
             },
             axisLabel: {
               rotate:0,
-              interval: 0
+              interval: 'auto'
             },
             axisTick: {
               show: false,
@@ -1076,12 +1076,12 @@
           let xAxisChart = [];
           let allUserStr = "";
 
-          if(keyData.length>13){
-            this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
-          }
-          else{
-            this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
-          }
+          // if(keyData.length>13){
+          //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
+          // }
+          // else{
+          //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
+          // }
 
           // for(let i = 0; i < 3; i++) {
           //   let key = keyData[i];
@@ -1130,6 +1130,7 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
+          this.taskVuetableItems.fields = [];
 
           let totalSeconds = this.preViewData.totalStatistics.detailedStatistics[0].workingTime + this.preViewData.totalStatistics.detailedStatistics[1].workingTime + this.preViewData.totalStatistics.detailedStatistics[2].workingTime;
           let scanSeconds = this.preViewData.totalStatistics.detailedStatistics[0].workingTime;

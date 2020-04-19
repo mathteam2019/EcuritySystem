@@ -312,10 +312,11 @@ const downLoadImageFromUrl = (url) => {
 };
 
 function isPhoneValid(value) {
-  if(value === "" || value ===null)
-    return true;
-  let phoneNumber = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
-  return !!value.match(phoneNumber);
+  return true;
+  // if(value === "" || value ===null)
+  //   return true;
+  // let phoneNumber = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
+  // return !!value.match(phoneNumber);
 }
 
 function isGuidValid(value) {
@@ -379,6 +380,14 @@ function isColorValid(value) {
 }
 
 function isAccountValid(value) {
+  let accountReg =/^[A-Za-z0-9]+$/;
+  if(value === null || !accountReg.test(value)) {
+    return false;
+  }
+  return true;
+}
+
+function isPasswordValid(value) {
   let accountReg = /^[A-Za-z0-9._-]+$/;
   let arrReg = [/^[A-Z]+$/, /^[a-z]+$/, /^[0-9]+$/, /^[._-]+$/];
   let regId=0;
@@ -412,4 +421,4 @@ function isAccountValid(value) {
 // }
 
 
-export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isDataCodeValid, isGuidValid, isColorValid, isGroupNumberValid, isRoleNumberValid, isSpaceContain, isDataGroupNumberValid};
+export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isPasswordValid, isDataCodeValid, isGuidValid, isColorValid, isGroupNumberValid, isRoleNumberValid, isSpaceContain, isDataGroupNumberValid};

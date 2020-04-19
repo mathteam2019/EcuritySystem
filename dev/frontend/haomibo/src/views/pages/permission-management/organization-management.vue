@@ -1196,7 +1196,6 @@
         this.$refs.vuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
         let checkAllButton = document.getElementById(checkBoxId);
-        console.log(checkAllButton);
         checkAllButton.checked = false;
       },
       changeCheckAllStatus() {
