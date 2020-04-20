@@ -147,7 +147,6 @@ var Chobi = function(elem, isToggled, left){
 			drawArea.width = img.width;
 			drawArea.height = img.height;
 			ctx.drawImage(img,0,0,img.width,img.height);
-			//console.log(img.width, img.height);
 
 			this.imageData = ctx.getImageData(0,0,img.width,img.height);
 			return this.imageData;
@@ -448,8 +447,6 @@ var Chobi = function(elem, isToggled, left){
           }else {
             ctx.strokeStyle = "red";
           }
-          //console.log(rectInfo);
-          console.log(this.image.width, this.image.height);
           ctx.rect(this.image.width * rectInfo[i].x, this.image.height * rectInfo[i].y, this.image.width * rectInfo[i].width, this.image.height * rectInfo[i].height);
           ctx.stroke();
         }

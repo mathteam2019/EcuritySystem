@@ -490,8 +490,6 @@
                   return;
                 }
 
-                console.log(data.permission)
-
                 saveLoginInfo(data, this.account);
                 savePermissionInfo(data.permission);
                 savePermissionInfoId(data.permission);

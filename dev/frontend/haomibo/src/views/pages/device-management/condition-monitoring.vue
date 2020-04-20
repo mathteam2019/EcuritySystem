@@ -1087,7 +1087,6 @@
                     this.changeDetailData(index, dataInfo);
                 }
               }
-              console.log(this.items);
               //this.transformData(data);
               //this.getDataFetchRefresh();
               //this.isLoading = false;

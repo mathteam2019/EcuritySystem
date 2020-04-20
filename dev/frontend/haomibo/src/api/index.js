@@ -188,8 +188,6 @@ const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
   let ext2 =  ['docx','pdf','xlsx'];
   let ext1 = [];
 
-  console.log(ext);
-
   let extension = ext.shift();
 
 
@@ -208,7 +206,7 @@ const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
         })
         .then((response) => {
           let status = response.status;
-          console.log(status);
+
           if (status === 200) {
             let fileURL = window.URL.createObjectURL(new Blob([response.data]));
             let fileLink = document.createElement('a');
@@ -217,7 +215,7 @@ const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
             document.body.appendChild(fileLink);
             fileLink.click();
             fileLink.parentNode.removeChild(fileLink);
-            console.log(ext);
+
             downLoadFileFromServer(link, params, name, ext);
           } else if (status === 403) {
 
@@ -251,7 +249,7 @@ const printFileFromServer = (link,params) => {
       })
       .then((response) => {
         let status = response.status;
-        console.log(response);
+
         if (status === 200) {
           let els = document.querySelectorAll('body>iframe');
           els.forEach(item => {
@@ -273,7 +271,6 @@ const printFileFromServer = (link,params) => {
         }
       })
       .catch(error => {
-        console.log(Error(error));
         throw new Error(error);
       });
   }
@@ -315,10 +312,11 @@ const downLoadImageFromUrl = (url) => {
 };
 
 function isPhoneValid(value) {
-  if(value === "" || value ===null)
-    return true;
-  let phoneNumber = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
-  return !!value.match(phoneNumber);
+  return true;
+  // if(value === "" || value ===null)
+  //   return true;
+  // let phoneNumber = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
+  // return !!value.match(phoneNumber);
 }
 
 function isGuidValid(value) {
@@ -382,6 +380,14 @@ function isColorValid(value) {
 }
 
 function isAccountValid(value) {
+  let accountReg =/^[A-Za-z0-9]+$/;
+  if(value === null || !accountReg.test(value)) {
+    return false;
+  }
+  return true;
+}
+
+function isPasswordValid(value) {
   let accountReg = /^[A-Za-z0-9._-]+$/;
   let arrReg = [/^[A-Z]+$/, /^[a-z]+$/, /^[0-9]+$/, /^[._-]+$/];
   let regId=0;
@@ -415,4 +421,4 @@ function isAccountValid(value) {
 // }
 
 
-export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isDataCodeValid, isGuidValid, isColorValid, isGroupNumberValid, isRoleNumberValid, isSpaceContain, isDataGroupNumberValid};
+export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isPasswordValid, isDataCodeValid, isGuidValid, isColorValid, isGroupNumberValid, isRoleNumberValid, isSpaceContain, isDataGroupNumberValid};

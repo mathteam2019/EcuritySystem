@@ -949,6 +949,7 @@
         checkAllButton.checked = value;
       },
       selectNone(){
+        this.$refs.taskVuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = false;

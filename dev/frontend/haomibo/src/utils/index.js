@@ -285,6 +285,11 @@ export const savePermissionInfoId = (info) => {
   localStorage.setItem('permInfoId', JSON.stringify(data));
 };
 
+export const getPermissionInfoId = () => {
+  let data = localStorage.getItem('permInfoId');
+  return data;
+};
+
 export const checkPermissionItemById = (item) => {
   let data = localStorage.getItem('permInfoId');
   if (data === null)

@@ -735,7 +735,7 @@
                 </h3>
                 <vue2-org-tree
                   :data="treeData"
-                  :horizontal="false"
+                  :horizontal="true"
                   :collapsable="false"
                   :label-class-name="treeLabelClass"
                   :render-content="renderTreeContent"
@@ -1090,11 +1090,11 @@
             }));
 
         let nameLabel = (orgNumber) => {
-          //console.log(orgNumber)
+
           if(orgNumber.toString().length>7) {
             orgNumber = orgNumber.substring(0, 7) + '...';
           }
-          //console.log(orgNumber);
+
           return orgNumber;
         }
 
@@ -1169,7 +1169,6 @@
     methods: {
       handleWindowResize(event) {
         const windowWidth = window.innerWidth;
-        //console.log(windowWidth);
         if(windowWidth<=1280) {
           this.showLength = 10;
         }
@@ -1192,12 +1191,11 @@
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
         let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = value;
-        console.log(checkAllButton);
       },
       selectNone() {
+        this.$refs.vuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
         let checkAllButton = document.getElementById(checkBoxId);
-        console.log(checkAllButton);
         checkAllButton.checked = false;
       },
       changeCheckAllStatus() {
@@ -1227,7 +1225,6 @@
 
       },
       onCheckStatusChange(isChecked) {
-        console.log(isChecked);
         if (isChecked) {
           this.changeCheckAllStatus();
         } else {

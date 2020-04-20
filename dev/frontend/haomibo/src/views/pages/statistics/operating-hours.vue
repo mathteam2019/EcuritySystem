@@ -157,7 +157,7 @@
                     </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">{{handData['rate'].value}}%</div>
+                    <div class="value">{{100-scanData['rate'].value-judgeData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       {{$t('statistics.operating-hours.hand-time') }}
@@ -451,7 +451,7 @@
             },
             axisLabel: {
               rotate:0,
-              interval: 0
+              interval: 'auto'
             },
             axisTick: {
               show: false,
@@ -897,6 +897,7 @@
         checkAllButton.checked = value;
       },
       selectNone() {
+        this.$refs.taskVuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
         let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = false;
@@ -1075,12 +1076,12 @@
           let xAxisChart = [];
           let allUserStr = "";
 
-          if(keyData.length>13){
-            this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
-          }
-          else{
-            this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
-          }
+          // if(keyData.length>13){
+          //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
+          // }
+          // else{
+          //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
+          // }
 
           // for(let i = 0; i < 3; i++) {
           //   let key = keyData[i];
@@ -1115,7 +1116,6 @@
             }
           }
           this.allDevice = allUserStr;
-          //console.log(xAxisChart)
           if(xAxisChart.length !== 0) {
             this.bar3ChartOptions.xAxis.data = xAxisChart;
           }
@@ -1130,6 +1130,7 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
+          this.taskVuetableItems.fields = [];
 
           let totalSeconds = this.preViewData.totalStatistics.detailedStatistics[0].workingTime + this.preViewData.totalStatistics.detailedStatistics[1].workingTime + this.preViewData.totalStatistics.detailedStatistics[2].workingTime;
           let scanSeconds = this.preViewData.totalStatistics.detailedStatistics[0].workingTime;
@@ -1177,7 +1178,6 @@
           for(let i = 0; i < this.initialFields.length; i++){
             this.taskVuetableItems.fields.push(this.initialFields[i]);
           }
-          //console.log(this.tableWidth);
           if(keyData.length>3){
             for (let i = 3; i < keyData.length; i++) {
 
@@ -1191,7 +1191,6 @@
                 width: this.tableWidth
               });
             }
-            //console.log(this.taskVuetableItems.fields);
           }
 
         }).catch((error) => {
@@ -1301,20 +1300,18 @@
             temp.time = j +  this.$t('statistics.year');
           }
 
-          //console.log(temp);
 
           temp.total = data.detailedStatistics[j].detailedStatistics[0].workingTime + data.detailedStatistics[j].detailedStatistics[1].workingTime + data.detailedStatistics[j].detailedStatistics[2].workingTime;
           temp.scan = data.detailedStatistics[j].detailedStatistics[0].workingTime;
           temp.judge = data.detailedStatistics[j].detailedStatistics[1].workingTime;
           temp.hand = data.detailedStatistics[j].detailedStatistics[2].workingTime;
-          //console.log(temp);
+
           for(let k=3; k<transformed.fKey.length; k++) {
             let l = transformed.fKey[k];
             let key = data.detailedStatistics[j].detailedStatistics[l].userName;
-            //console.log(data.detailedStatistics[j].detailedStatistics[l].workingTime);
+
             temp[key] = data.detailedStatistics[j].detailedStatistics[l].workingTime;
           }
-          //console.log(temp);
           //temp = data.detailedStatistics[j];
           //this.renderedCheckList.push(data.detailedStatistics[j].id);
           transformed.data.push(temp);

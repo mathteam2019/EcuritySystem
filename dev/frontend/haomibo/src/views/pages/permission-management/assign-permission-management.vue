@@ -908,7 +908,14 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
-  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
+  import {
+    checkPermissionItem,
+    getDirection,
+    getLocale,
+    getPermissionInfoId,
+    savePermissionInfo,
+    savePermissionInfoId
+  } from "../../../utils";
   import {validationMixin} from 'vuelidate';
   import {downLoadFileFromServer, getApiManager, getApiManagerError, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
@@ -1009,7 +1016,7 @@
           case responseMessages['ok']:
             this.orgData = data;
             this.orgTreeData = nest(this.orgData, rootOrgId);
-            console.log(this.orgTreeData);
+
               this.orgNameSelectData = [];
             indentData(this.orgTreeData, 0);
               this.orgNameFilterData = [];
@@ -1496,6 +1503,7 @@
         checkAllButton.checked = value;
       },
       selectNone(){
+        this.$refs.userVuetable.isCheckAllStatus=false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.userVuetable.uuid;
         let checkAllButton =  document.getElementById(checkBoxId);
         checkAllButton.checked = false;
@@ -1690,10 +1698,30 @@
         // hide modal
         this.$refs[modal].hide();
       },
+      isReload(oldPermInfoId, newPermInfoId){
+
+        let data = [];
+        newPermInfoId.forEach(item => {
+          if (item.resourceId != null)
+            data.push(item.resourceId);
+        });
+
+
+        data.sort((a,b) => a-b);
+        let oldData = [];
+        // oldData = oldPermInfoId;
+        oldData = JSON.parse(oldPermInfoId);
+        oldData.sort((a,b) => a-b);
+
+        if(JSON.stringify(oldData) !== JSON.stringify(data)){
+          window.location.reload();
+        }
+      },
       onUserActionGroup(value) {
         switch (value) {
           case 'modify-item':
             if (this.pageStatus === 'modify') {
+              let permInfoId = getPermissionInfoId();
               getApiManager()
                 .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/modify/assign-role-and-data-range`, {
                   userId: this.showForm.userId,
@@ -1706,6 +1734,9 @@
                 switch (message) {
                   case responseMessages['ok']:
 
+                    savePermissionInfo(response.data.data);
+                    savePermissionInfoId(response.data.data);
+                    this.isReload(permInfoId, response.data.data);
                     this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
                       duration: 3000,
                       permanent: false
@@ -1757,6 +1788,7 @@
             if (!this.$v.userForm.userId.$invalid && (this.userForm.dataRangeCategory !== '1000000505' || !this.$v.userForm.selectedDataGroupId.$invalid)) {
               this.isLoading = true;
               if (this.pageStatus === 'create') {
+                let permInfoId = getPermissionInfoId();
                 getApiManager()
                   .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/create/assign-role-and-data-range`, {
                     userId: this.userForm.userId,
@@ -1768,6 +1800,9 @@
                   let data = response.data.data;
                   switch (message) {
                     case responseMessages['ok']:
+                      savePermissionInfo(response.data.data);
+                      savePermissionInfoId(response.data.data);
+                      this.isReload(permInfoId, response.data.data);
 
                       this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
                         duration: 3000,
@@ -1790,6 +1825,7 @@
                 });
               }
               if (this.pageStatus === 'modify') {
+                let permInfoId = getPermissionInfoId();
                 getApiManager()
                   .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/modify/assign-role-and-data-range`, {
                     userId: this.userForm.userId,
@@ -1802,6 +1838,9 @@
                   switch (message) {
                     case responseMessages['ok']:
 
+                      savePermissionInfo(response.data.data);
+                      savePermissionInfoId(response.data.data);
+                      this.isReload(permInfoId, response.data.data);
                       this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
                         duration: 3000,
                         permanent: false
@@ -1833,7 +1872,6 @@
       },
 
       onUserNameClicked(userWithRole) {
-        console.log(userWithRole);
         this.showForm.orgId = userWithRole.org.orgId;
         this.showForm.orgName = userWithRole.org.orgName;
         this.showForm.userId = userWithRole.userId;
@@ -1887,6 +1925,7 @@
         this.hideModal('modal-user-role-delete');
 
         if (this.selectedUserId) {
+          let permInfoId = getPermissionInfoId();
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/modify/assign-role-and-data-range`, {
               userId: this.selectedUserId,
@@ -1898,6 +1937,10 @@
             let data = response.data.data;
             switch (message) {
               case responseMessages['ok']:
+
+                savePermissionInfo(response.data.data);
+                savePermissionInfoId(response.data.data);
+                this.isReload(permInfoId, response.data.data);
                 this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-deleted`), {
                   duration: 3000,
                   permanent: false
@@ -2064,6 +2107,7 @@
       fnDeleteUserGroupItem() {
         if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
           this.$refs['modal-prompt-group'].hide();
+          let permInfoId = getPermissionInfoId();
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/modify/assign-role-and-data-range`, {
               userGroupId: this.selectedUserGroupItem.userGroupId,
@@ -2076,6 +2120,9 @@
               let data = response.data.data;
               switch (message) {
                 case responseMessages['ok']: // okay
+                  savePermissionInfo(response.data.data);
+                  savePermissionInfoId(response.data.data);
+                  this.isReload(permInfoId, response.data.data);
                   this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.assign-permission-management.group.group-assigned-removed-successfully`), {
                     duration: 3000,
                     permanent: false
@@ -2127,6 +2174,7 @@
         });
         this.isLoading = true;
         if(this.groupPageStatus==='create') {
+          let permInfoId = getPermissionInfoId();
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/create/assign-role-and-data-range`, {
               userGroupId: this.groupForm.userGroup,
@@ -2143,7 +2191,9 @@
                     duration: 3000,
                     permanent: false
                   });
-
+                  savePermissionInfo(response.data.data);
+                  savePermissionInfoId(response.data.data);
+                  this.isReload(permInfoId, response.data.data);
                   this.$refs.userGroupTable.reload();
                   this.selectedUserGroupItem = null;
 
@@ -2165,6 +2215,7 @@
             });
         }
         if(this.groupPageStatus==='edit') {
+          let permInfoId = getPermissionInfoId();
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/modify/assign-role-and-data-range`, {
               userGroupId: this.groupForm.userGroup,
@@ -2177,6 +2228,9 @@
               let data = response.data.data;
               switch (message) {
                 case responseMessages['ok']: // okay
+                  savePermissionInfo(response.data.data);
+                  savePermissionInfoId(response.data.data);
+                  this.isReload(permInfoId, response.data.data);
                   this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.assign-permission-management.group.group-assigned-successfully`), {
                     duration: 3000,
                     permanent: false
