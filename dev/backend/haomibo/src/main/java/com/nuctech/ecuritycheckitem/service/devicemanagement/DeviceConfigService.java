@@ -105,9 +105,9 @@ public interface DeviceConfigService {
 
     /**
      * get all config information
-     * @param guid
+     * @param deviceId
      * @return
      */
-    SerSecurityDeviceDetailModel getSecurityInfoFromDatabase(String guid);
+    SerSecurityDeviceDetailModel getSecurityInfoFromDatabase(Long deviceId);
 
 }

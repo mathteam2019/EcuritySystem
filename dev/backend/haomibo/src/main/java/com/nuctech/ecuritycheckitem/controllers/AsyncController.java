@@ -69,8 +69,9 @@ public class AsyncController extends BaseController {
 
 
     @Async
-    public void updateSecurityDeviceDetail(String guid) {
-        SerSecurityDeviceDetailModel detailModel = deviceConfigService.getSecurityInfoFromDatabase(guid);
+    public void updateSecurityDeviceDetail(Long deviceId) {
+        SerSecurityDeviceDetailModel detailModel = deviceConfigService.getSecurityInfoFromDatabase(deviceId);
+        String guid = detailModel.getDeviceConfig().getSysDevice().getGuid();
         String redisKey = "sys.device.security.info";
         ObjectMapper objectMapper = new ObjectMapper();
         try {

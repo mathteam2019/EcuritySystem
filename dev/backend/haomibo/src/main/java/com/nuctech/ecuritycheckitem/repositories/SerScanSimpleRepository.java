@@ -13,8 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.repositories;
 
-import com.nuctech.ecuritycheckitem.models.db.SerScan;
-import com.nuctech.ecuritycheckitem.models.db.SerScanSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerScanSimple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;

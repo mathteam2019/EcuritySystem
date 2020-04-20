@@ -149,7 +149,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     public boolean createRole(SysRole role, List<Long> resourceIdList) {
-        role.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        role.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         SysRole sysRole = sysRoleRepository.save(role);
 
         // Get resource Id list from request.
@@ -197,7 +197,7 @@ public class PermissionServiceImpl implements PermissionService {
                                 .roleId(sysRole.getRoleId())
                                 .resourceId(sysResource.getResourceId())
                                 .build()
-                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                                .addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal())
                 )
                 .collect(Collectors.toList());
         sysRoleResourceRepository.saveAll(relationList);
@@ -367,57 +367,44 @@ public class PermissionServiceImpl implements PermissionService {
 
 
         // Get valid resource list from request resource id list.
-        List<SysResource> sysResourceList = Lists.newArrayList(sysResourceRepository.findAll(QSysResource.sysResource.resourceId.in(resourceIdList)));
 
-        if (sysResourceList.size() == 0) {
-            sysRoleResourceRepository.deleteAll(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));
+        List<SysRoleResource> roleResourceList = Lists.newArrayList(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));
 
-            return true;
-        }
-
-        // The category will be gained from the first resource.
-        String category = sysResourceList.get(0).getResourceCategory();
-
-        // if category value is neither 'admin' nor 'user', this is invalid request.
-        if (!(SysResource.Category.ADMIN.equals(category) || SysResource.Category.USER.equals(category))) {
-            return false;
-        }
-
-        // Check if all the resource has same category.
-        boolean hasInvalidResource = false;
-        for (SysResource iterator : sysResourceList) {
-            if (!category.equals(iterator.getResourceCategory())) {
-                hasInvalidResource = true;
-                break;
+        List<SysRoleResource> removeList = new ArrayList<>();
+        List<Long> remainList = new ArrayList<>();
+        for(SysRoleResource roleResource: roleResourceList) {
+            if(resourceIdList.contains(roleResource.getResourceId())) {
+                remainList.add(roleResource.getResourceId());
+            } else {
+                removeList.add(roleResource);
             }
         }
-
-
         // Delete all relations.
-        sysRoleResourceRepository.deleteAll(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));
+        sysRoleResourceRepository.deleteAll(removeList);
+
 
         // Save relation.
-        List<SysRoleResource> relationList = sysResourceList.stream()
-                .map(
-                        sysResource -> (SysRoleResource) SysRoleResource
-                                .builder()
-                                .roleId(sysRole.getRoleId())
-                                .resourceId(sysResource.getResourceId())
-                                .build()
-                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-                )
-                .collect(Collectors.toList());
+        List<SysRoleResource> relationList = new ArrayList<>();
+        for(Long resourceId: resourceIdList) {
+            if(remainList.contains(resourceId)) {
+                continue;
+            }
+            SysRoleResource roleResource = SysRoleResource.builder()
+                    .resourceId(resourceId)
+                    .roleId(roleId)
+                    .build();
+            roleResource.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
+            relationList.add(roleResource);
+        }
 
         sysRoleResourceRepository.saveAll(relationList);
-
         // Add edited info.
         sysRole.setRoleName(roleName);
-        sysRole.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysRole.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         sysRoleRepository.save(sysRole);
         String valueAfter = getJsonFromRole(sysRole);
         auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("Role", null, currentLocale), "", sysRole.getRoleId().toString(), null, true, valueBefore, valueAfter);
-
         return true;
     }
 
@@ -539,7 +526,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     public boolean createDataGroup(SysDataGroup dataGroup, List<Long> userIdList) {
-        dataGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        dataGroup.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         SysDataGroup sysDataGroup = sysDataGroupRepository.save(dataGroup);
 
 
@@ -554,7 +541,7 @@ public class PermissionServiceImpl implements PermissionService {
                                 .dataGroupId(sysDataGroup.getDataGroupId())
                                 .userId(sysUser.getUserId())
                                 .build()
-                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                                .addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal())
                 )
                 .collect(Collectors.toList());
 
@@ -728,29 +715,38 @@ public class PermissionServiceImpl implements PermissionService {
         SysDataGroup sysDataGroup = optionalSysDataGroup.get();
         String valueBefore = getJsonFromDataGroup(sysDataGroup);
 
-        sysDataGroupUserRepository.deleteAll(sysDataGroupUserRepository.findAll(QSysDataGroupUser.sysDataGroupUser.dataGroupId.eq(sysDataGroup.getDataGroupId())));
+        List<SysDataGroupUser> dataGroupUserList = Lists.newArrayList(
+                sysDataGroupUserRepository.findAll(QSysDataGroupUser.sysDataGroupUser.dataGroupId.eq(sysDataGroup.getDataGroupId())));
+        List<SysDataGroupUser> removeUserList = new ArrayList<>();
+        List<Long> remainList = new ArrayList<>();
+        for(SysDataGroupUser dataGroupUser: dataGroupUserList) {
+            if(userIdList.contains(dataGroupUser.getUserId())) {
+                remainList.add(dataGroupUser.getUserId());
+            } else {
+                removeUserList.add(dataGroupUser);
+            }
+        }
+        sysDataGroupUserRepository.deleteAll(removeUserList);
 
         // Generate relation list with valid UserIds which are filtered by comparing to database.
-        List<SysDataGroupUser> relationList = StreamSupport.stream(
-                sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
-                false
-        )
-                .map(
-                        sysUser -> (SysDataGroupUser) SysDataGroupUser
-                                .builder()
-                                .dataGroupId(sysDataGroup.getDataGroupId())
-                                .userId(sysUser.getUserId())
-                                .build()
-                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-                )
-                .collect(Collectors.toList());
+        List<SysDataGroupUser> relationList = new ArrayList<>();
+        for(Long userId: userIdList) {
+            if(!remainList.contains(userId)) {
+                SysDataGroupUser dataGroupUser = SysDataGroupUser.builder()
+                        .dataGroupId(dataGroupId)
+                        .userId(userId)
+                        .build();
+                dataGroupUser.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
+                relationList.add(dataGroupUser);
+            }
+        }
 
         // Save.
         sysDataGroupUserRepository.saveAll(relationList);
 
         // Add edited info.
         sysDataGroup.setDataGroupName(dataGroupName);
-        sysDataGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDataGroup.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         sysDataGroupRepository.save(sysDataGroup);
         String valueAfter = getJsonFromDataGroup(sysDataGroup);
         auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),

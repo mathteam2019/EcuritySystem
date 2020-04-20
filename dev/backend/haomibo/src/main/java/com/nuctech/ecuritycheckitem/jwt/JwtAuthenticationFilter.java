@@ -21,12 +21,14 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.ForbiddenTokenRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserSimpleRepository;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -50,6 +52,7 @@ import java.util.stream.Collectors;
  * The filter class which will check all the requests.
  * This will be added before UsernamePasswordAuthenticationFilter.
  */
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -57,6 +60,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private SysUserRepository sysUserRepository;
+
+    @Autowired
+    private SysUserSimpleRepository sysUserSimpleRepository;
 
     @Autowired
     ForbiddenTokenRepository forbiddenTokenRepository;
@@ -100,17 +106,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         ForbiddenToken forbiddenToken = forbiddenTokenData.get();
+        Date endTime = new Date();
+        long dif_fotbi_get = endTime.getTime() - startTime.getTime();
 
         Date curDate = new Date();
         long diffInMillies = Math.abs(curDate.getTime() - forbiddenToken.getEditedTime().getTime());
         long diff = diffInMillies / 1000;
         int jwt_validity_second;
         try {
-            SerPlatformOtherParams serPlatformOtherParams = serPlatformOtherParamRepository.findAll().get(0);
+            SerPlatformOtherParams serPlatformOtherParams = serPlatformOtherParamRepository
+                    .findOne(QSerPlatformOtherParams.serPlatformOtherParams.id.isNotNull()).get();
             jwt_validity_second = serPlatformOtherParams.getOperatingTimeLimit() * 60;
         } catch(Exception ex) {
             jwt_validity_second = Constants.DEFAULT_JWT_VALIDITY_SECONDS;
         }
+
 
 
         if(jwt_validity_second > 0 && diff > jwt_validity_second) {
@@ -118,6 +128,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             utils.writeResponse(response, ResponseMessage.TOKEN_EXPIRED);
             return;
         }
+
+
 
         Claims claims;
         try {
@@ -137,10 +149,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
-        Date endTime = new Date();
-        long dif_claim = endTime.getTime() - startTime.getTime();
-
-
 
         if (!claims.containsKey("userId")) {
             // If claims have not key "userId", this token is invalid.
@@ -158,16 +166,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
+        endTime = new Date();
+        long dif_Claim = endTime.getTime() - startTime.getTime();
 
         // Find user from the database.
-        Optional<SysUser> optionalSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId));
-
-        if (!optionalSysUser.isPresent()) {
-            // If we can't get user from the token, this token is invalid.
-            utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
-            return;
-        }
-        SysUser sysUser = optionalSysUser.get();
+//        Optional<SysUser> optionalSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId));
+//
+//        if (!optionalSysUser.isPresent()) {
+//            // If we can't get user from the token, this token is invalid.
+//            utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
+//            return;
+//        }
+//        SysUser sysUser = optionalSysUser.get();
         forbiddenToken.setEditedTime(new Date());
         forbiddenTokenRepository.save(forbiddenToken);
         endTime = new Date();
@@ -177,8 +187,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Get all available resources for user.
         List<SysResource> availableSysResourceList = new ArrayList<>();//authService.getAvailableSysResourceList(sysUser);
-        endTime = new Date();
-        long dif_forbi_available = endTime.getTime() - startTime.getTime();
 
         // Generate roles for this user.
         List<GrantedAuthority> roles = availableSysResourceList
@@ -187,8 +195,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-        endTime = new Date();
-        long dif_roles = endTime.getTime() - startTime.getTime();
 
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         if(StringUtils.isEmpty(ipAddress)) {
@@ -199,13 +205,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         // Generate authentication.
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(sysUser, null, roles);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, roles);
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         // Set as authenticated.
         SecurityContextHolder.getContext().setAuthentication(authentication);
         endTime = new Date();
         long differennce = endTime.getTime() - startTime.getTime();
+        //log.error("JWT time take " + differennce);
         // Continue to next filter.
         filterChain.doFilter(request, response);
     }

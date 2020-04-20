@@ -262,7 +262,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         serArchiveTemplate.setStatus(status);
 
         // Add edited info.
-        serArchiveTemplate.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serArchiveTemplate.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         String valueAfter = getJsonFromArchiveTemplate(serArchiveTemplate);
 
         serArchiveTemplateRepository.save(serArchiveTemplate);
@@ -277,7 +277,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
     @Override
     @Transactional
     public void createArchiveIndicator(SerArchiveIndicators archiveIndicators) {
-        archiveIndicators.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        archiveIndicators.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         serArchiveIndicatorsRepository.save(archiveIndicators);
         auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("ArchiveIndicator", null, currentLocale), "", archiveIndicators.getIndicatorsId().toString(), null,
@@ -313,7 +313,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         serArchiveIndicators.setIsNull(isNull);
 
         // Add edited info.
-        serArchiveIndicators.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serArchiveIndicators.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         String valueAfter = getJsonFromArchiveIndicator(serArchiveIndicators);
 
         serArchiveIndicatorsRepository.save(serArchiveIndicators);
@@ -332,7 +332,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
     public void createSerArchiveTemplate(SerArchiveTemplate serArchiveTemplate) {
 
         // Add createdInfo.
-        serArchiveTemplate.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serArchiveTemplate.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         serArchiveTemplateRepository.save(serArchiveTemplate);
 
@@ -340,7 +340,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
             for (int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i++) {
                 SerArchiveIndicators archiveIndicators = serArchiveTemplate.getArchiveIndicatorsList().get(i);
                 archiveIndicators.setArchivesTemplateId(serArchiveTemplate.getArchivesTemplateId());
-                archiveIndicators.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                archiveIndicators.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                 serArchiveIndicatorsRepository.save(serArchiveTemplate.getArchiveIndicatorsList().get(i));
             }
         }
@@ -366,7 +366,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
 
 
         // Add editInfo.
-        serArchiveTemplate.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serArchiveTemplate.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         serArchiveTemplateRepository.save(serArchiveTemplate);
 
@@ -378,7 +378,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
                         .indicatorsId.eq(archiveIndicators.getIndicatorsId())).orElse(null);
                 if (oldArchiveIndicators != null) {
                     oldArchiveIndicators.setArchivesTemplateId(serArchiveTemplate.getArchivesTemplateId());
-                    oldArchiveIndicators.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    oldArchiveIndicators.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                     serArchiveIndicatorsRepository.save(oldArchiveIndicators);
                 }
 

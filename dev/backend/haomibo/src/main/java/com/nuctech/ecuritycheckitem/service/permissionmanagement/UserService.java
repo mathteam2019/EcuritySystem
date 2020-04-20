@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.service.permissionmanagement;
 import com.nuctech.ecuritycheckitem.models.db.SysResource;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -167,7 +168,7 @@ public interface UserService {
      * find all user
      * @return
      */
-    List<SysUser> findAllUser();
+    List<SysUserSimplifiedOnlyHasName> findAllUser();
 
     /**
      * create user group

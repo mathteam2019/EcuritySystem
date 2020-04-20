@@ -153,7 +153,7 @@ public class DictionaryServiceImpl implements DictionaryService {
      */
     @Override
     public void createDictionary(SysDictionary sysDictionary) {
-        sysDictionary.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDictionary.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         String valueAfter = getJsonFromDictionary(sysDictionary);
         sysDictionaryRepository.save(sysDictionary);
         auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
@@ -166,7 +166,7 @@ public class DictionaryServiceImpl implements DictionaryService {
      */
     @Override
     public void createDictionaryData(SysDictionaryData sysDictionaryData) {
-        sysDictionaryData.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDictionaryData.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         sysDictionaryDataRepository.save(sysDictionaryData);
         String valueAfter = getJsonFromDictionaryData(sysDictionaryData);
         auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
@@ -186,7 +186,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         sysDictionary.setCreatedTime(oldSysDictionary.getCreatedTime());
 
         // Add edited info.
-        sysDictionary.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDictionary.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         String valueAfter = getJsonFromDictionary(sysDictionary);
         sysDictionaryRepository.save(sysDictionary);
         auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
@@ -206,7 +206,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         sysDictionaryData.setCreatedTime(oldSysDictionaryData.getCreatedTime());
 
         // Add edited info.
-        sysDictionaryData.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDictionaryData.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDictionaryDataRepository.save(sysDictionaryData);
         String valueAfter = getJsonFromDictionaryData(sysDictionaryData);

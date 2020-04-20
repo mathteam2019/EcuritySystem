@@ -19,6 +19,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysAuditLogDetailRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysAuditLogRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
@@ -40,6 +41,9 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     @Autowired
     SysAuditLogRepository sysAuditLogRepository;
+
+    @Autowired
+    SysUserRepository sysUserRepository;
 
     @Autowired
     SysAuditLogDetailRepository sysAuditLogDetailRepository;
@@ -252,7 +256,8 @@ public class AuditLogServiceImpl implements AuditLogService {
      */
     @Override
     public boolean saveAudioLog(String action, String result, String content, String fieldName, String reason, String object, Long onlineTime, boolean isSuccess, String valueBefore, String valueAfter) {
-        SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        SysUser user = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId)).get();
         if(isSuccess) {
             result = "1";
         } else {
@@ -270,7 +275,7 @@ public class AuditLogServiceImpl implements AuditLogService {
                 .operateTime(new Date())
                 .operateObject(fieldName)
                 .build();
-        auditLog.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        auditLog.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         sysAuditLogRepository.save(auditLog);
         if(isSuccess) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -309,7 +314,7 @@ public class AuditLogServiceImpl implements AuditLogService {
                         .valueBefore(strDifferentBefore)
                         .valueAfter(strDifferentAfter)
                         .build();
-                auditLogDetail.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                auditLogDetail.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                 sysAuditLogDetailRepository.save(auditLogDetail);
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -330,7 +335,8 @@ public class AuditLogServiceImpl implements AuditLogService {
      */
     //@Override
     public boolean saveAudioLog(String action, String result, String content, String reason, String object, Long onlineTime) {
-        SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        SysUser user = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId)).get();
         SysAuditLog auditLog = SysAuditLog.builder()
                 .clientIp(utils.ipAddress)
                 .action(action)
@@ -343,7 +349,7 @@ public class AuditLogServiceImpl implements AuditLogService {
                 .operateTime(new Date())
                 .operateObject(object)
                 .build();
-        auditLog.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        auditLog.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         sysAuditLogRepository.save(auditLog);
         return true;
     }

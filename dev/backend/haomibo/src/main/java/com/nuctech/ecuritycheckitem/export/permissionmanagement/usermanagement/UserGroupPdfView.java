@@ -23,6 +23,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -68,7 +69,7 @@ public class UserGroupPdfView extends BasePdfView {
                 addTableCell(table, userGroup.getGroupNumber());
                 addTableCell(table, userGroup.getGroupName());
                 List<String> userNames = new ArrayList<>();
-                for(SysUser user: userGroup.getUsers()) {
+                for(SysUserSimplifiedOnlyHasName user: userGroup.getUsers()) {
                     userNames.add(user.getUserName());
                 }
                 String userName = StringUtils.join(userNames, ",");

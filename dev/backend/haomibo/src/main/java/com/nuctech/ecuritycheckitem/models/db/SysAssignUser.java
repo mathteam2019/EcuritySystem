@@ -14,6 +14,8 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysDataGroupSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysRoleSimple;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
@@ -139,7 +141,7 @@ public class SysAssignUser extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
-    private Set<SysRole> roles; // Relation to SysRole table.
+    private Set<SysRoleSimple> roles; // Relation to SysRole table.
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -147,7 +149,7 @@ public class SysAssignUser extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
             inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
     )
-    private Set<SysDataGroup> dataGroups;
+    private Set<SysDataGroupSimple> dataGroups;
 
 
 }

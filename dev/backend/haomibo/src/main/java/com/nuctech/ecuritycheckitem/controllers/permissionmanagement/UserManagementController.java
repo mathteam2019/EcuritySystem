@@ -25,6 +25,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
@@ -52,10 +53,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/permission-management/user-management")
@@ -881,7 +879,7 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysUser> sysUserList = userService.findAllUser();
+        List<SysUserSimplifiedOnlyHasName> sysUserList = userService.findAllUser();
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysUserList));
         String type = requestBody.getType();
         // Set filters.
@@ -941,7 +939,7 @@ public class UserManagementController extends BaseController {
                 .dataRangeCategory(SysUserGroup.DataRangeCategory.PERSON.getValue())
                 .note(requestBody.getNote())
                 .build()
-                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                .addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         List<Long> userIdList = requestBody.getUserIdList();
         userService.createUserGroup(userGroup, userIdList);
         return new CommonResponseBody(ResponseMessage.OK);
@@ -1178,6 +1176,7 @@ public class UserManagementController extends BaseController {
     public Object userGroupModify(@RequestBody @Valid UserGroupModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
+        Date startTime = new Date();
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("UserGroup", null, currentLocale),
@@ -1199,8 +1198,19 @@ public class UserManagementController extends BaseController {
 
             return new CommonResponseBody(ResponseMessage.USED_USER_GROUP_NAME);
         }
+        Date endTime = new Date();
+        long difCheck = endTime.getTime() - startTime.getTime();
         userService.modifyUserGroup(requestBody.getUserGroupId(), requestBody.getGroupName(), requestBody.getUserIdList());
-        return new CommonResponseBody(ResponseMessage.OK);
+        endTime = new Date();
+        long difFinish = endTime.getTime() - startTime.getTime();
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        List<SysResource> permission = userService.getResourceList(userId);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified params from SysResource model
+        value.setFilters(filters);
+        return value;
     }
 
     /**
@@ -1246,6 +1256,13 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_ROLES);
         }
         userService.removeUserGroup(requestBody.getUserGroupId()); // Delete.
-        return new CommonResponseBody(ResponseMessage.OK);
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        List<SysResource> permission = userService.getResourceList(userId);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified params from SysResource model
+        value.setFilters(filters);
+        return value;
     }
 }

@@ -13,6 +13,9 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysDataGroupSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysRoleSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -79,30 +82,30 @@ public class SysUserGroup extends BaseEntity implements Serializable {
     @Column(name = "GROUP_FLAG", length = 10)
     private String groupFlag;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "sys_user_group_user",
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
-    private Set<SysUser> users; // Relation to sysUser table.
+    private Set<SysUserSimplifiedOnlyHasName> users; // Relation to sysUser table.
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "sys_user_group_role",
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
-    private Set<SysRole> roles; // Relation to SysRole table.
+    private Set<SysRoleSimple> roles; // Relation to SysRole table.
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "sys_user_group_lookup",
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
     )
-    private Set<SysDataGroup> dataGroups;
+    private Set<SysDataGroupSimple> dataGroups;
 
 }
 

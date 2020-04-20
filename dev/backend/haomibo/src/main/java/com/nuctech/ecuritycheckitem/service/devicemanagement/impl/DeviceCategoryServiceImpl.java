@@ -182,7 +182,7 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
         sysDeviceCategory.setStatus(status);
 
         // Add edited info.
-        sysDeviceCategory.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDeviceCategory.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceCategoryRepository.save(sysDeviceCategory);
     }
@@ -200,7 +200,7 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
         }
 
         // Add createdInfo.
-        deviceCategory.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        deviceCategory.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceCategoryRepository.save(deviceCategory);
     }
@@ -216,7 +216,7 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
         SysDeviceCategory oldSysDeviceCategory = sysDeviceCategoryRepository.findOne(QSysDeviceCategory.sysDeviceCategory
                 .categoryId.eq(deviceCategory.getCategoryId())).orElse(null);
 
-        deviceCategory.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        deviceCategory.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         deviceCategory.setCreatedBy(oldSysDeviceCategory.getCreatedBy());
         deviceCategory.setCreatedTime(oldSysDeviceCategory.getCreatedTime());
 

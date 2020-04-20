@@ -254,7 +254,7 @@ public class ArchiveServiceImpl implements ArchiveService {
         serArchive.setStatus(status);
 
         // Add edited info.
-        serArchive.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serArchive.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         serArchiveRepository.save(serArchive);
         String valueAfter = getJsonFromArchive(serArchive);
@@ -269,7 +269,7 @@ public class ArchiveServiceImpl implements ArchiveService {
      */
     private void createArchiveValue(String json, SerArchive serArchive) {
         ObjectMapper mapper = new ObjectMapper();
-        serArchive.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serArchive.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         serArchiveRepository.save(serArchive);
         try {
             SerArchive jsonArchive = mapper.readValue(json, SerArchive.class);
@@ -277,7 +277,7 @@ public class ArchiveServiceImpl implements ArchiveService {
             if(archiveValueList != null) {
                 for(int i = 0; i < archiveValueList.size(); i ++) {
                     SerArchiveValue archiveValue = archiveValueList.get(i);
-                    archiveValue.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    archiveValue.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                     archiveValue.setArchiveId(serArchive.getArchiveId());
                     serArchiveValueRepository.save(archiveValue);
                 }
@@ -305,7 +305,7 @@ public class ArchiveServiceImpl implements ArchiveService {
         serArchive.setImageUrl(utils.saveImageFile(portraitFile));
 
         // Add created info.
-        serArchive.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serArchive.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         serArchiveRepository.save(serArchive);
 
@@ -329,7 +329,7 @@ public class ArchiveServiceImpl implements ArchiveService {
 
 
         // Add edit info.
-        serArchive.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serArchive.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         SerArchive oldSerArchive = serArchiveRepository.findOne(QSerArchive.serArchive
                 .archiveId.eq(serArchive.getArchiveId())).orElse(null);

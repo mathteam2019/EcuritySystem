@@ -449,7 +449,7 @@ public class DeviceServiceImpl implements DeviceService {
         //check device config exist or not
         if(sysDeviceConfig != null) {
             sysDeviceConfig.setStatus(SysDeviceConfig.Status.INACTIVE);
-            sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysDeviceConfig.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
             sysDeviceConfigRepository.save(sysDeviceConfig);
         }
 
@@ -460,12 +460,12 @@ public class DeviceServiceImpl implements DeviceService {
         if(scanParam != null) {
             //change status of scan param
             scanParam.setStatus(SerScanParam.Status.INACTIVE);
-            scanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            scanParam.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
             serScanParamRepository.save(scanParam);
         }
 
         // Add edited info.
-        sysDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDevice.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
         String valueAfter = getJsonFromDevice(sysDevice);
@@ -500,7 +500,7 @@ public class DeviceServiceImpl implements DeviceService {
 
 
         // Add created info.
-        sysDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDevice.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
 
@@ -509,14 +509,14 @@ public class DeviceServiceImpl implements DeviceService {
                     .judgeDeviceId(sysDevice.getDeviceId())
                     .deviceStatus(SysDevice.DeviceStatus.UNREGISTER)
                     .build();
-            sysJudgeDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysJudgeDevice.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
             sysJudgeDeviceRepository.save(sysJudgeDevice);
         } else if(category.getCategoryId() == Constants.MANUAL_CATEGORY_ID) {
             SysManualDevice sysManualDevice = SysManualDevice.builder()
                     .manualDeviceId(sysDevice.getDeviceId())
                     .deviceStatus(SysDevice.DeviceStatus.UNREGISTER)
                     .build();
-            sysManualDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysManualDevice.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
             sysManualDeviceRepository.save(sysManualDevice);
         } else if(category.getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
             SysDeviceConfig deviceConfig = SysDeviceConfig.builder()
@@ -528,7 +528,7 @@ public class DeviceServiceImpl implements DeviceService {
                     .womanDeviceGender(GenderType.FEMALE.getValue())
                     .status(SysDeviceConfig.Status.INACTIVE)
                     .build();
-            deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            deviceConfig.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
             sysDeviceConfigRepository.save(deviceConfig);
 
             SerScanParam scanParam = SerScanParam.builder()
@@ -553,7 +553,7 @@ public class DeviceServiceImpl implements DeviceService {
                     .deviceStorageAlarmPercent(Constants.DEFAULT_STORAGE_PERCENT)
                     .status(SerScanParam.Status.INACTIVE)
                     .build();
-            scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            scanParam.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
             serScanParamRepository.save(scanParam);
         }
         String valueAfter = getJsonFromDevice(sysDevice);
@@ -587,7 +587,7 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         // Add edited info.
-        sysDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDevice.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
         String valueAfter = getJsonFromDevice(sysDevice);
@@ -669,7 +669,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(realDevice != null) {
                 String valueBefore = getJsonFromDevice(realDevice);
                 realDevice.setFieldId(device.getFieldId());
-                realDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                realDevice.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                 sysDeviceRepository.save(realDevice);
                 String valueAfter = getJsonFromDevice(realDevice);
                 auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),

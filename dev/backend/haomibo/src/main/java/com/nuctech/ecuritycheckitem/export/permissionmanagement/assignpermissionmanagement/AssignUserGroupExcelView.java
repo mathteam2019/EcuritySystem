@@ -18,6 +18,8 @@ import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysRoleSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -91,7 +93,7 @@ public class AssignUserGroupExcelView  extends BaseExcelView {
                 row.createCell(0).setCellValue(String.valueOf(++ number));
                 row.createCell(1).setCellValue(userGroup.getGroupName());
                 String strMember = "";
-                List<SysUser> sysUserList = new ArrayList<>();
+                List<SysUserSimplifiedOnlyHasName> sysUserList = new ArrayList<>();
                 userGroup.getUsers().forEach(sysUser -> {
                     sysUserList.add(sysUser);
                 });
@@ -103,7 +105,7 @@ public class AssignUserGroupExcelView  extends BaseExcelView {
                 }
                 row.createCell(2).setCellValue(strMember);
                 String strRole = "";
-                List<SysRole> sysRoleList = new ArrayList<>();
+                List<SysRoleSimple> sysRoleList = new ArrayList<>();
                 userGroup.getRoles().forEach(sysRole -> {
                     sysRoleList.add(sysRole);
                 });

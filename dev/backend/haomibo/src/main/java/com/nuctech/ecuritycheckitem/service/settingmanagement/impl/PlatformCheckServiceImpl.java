@@ -87,10 +87,10 @@ public class PlatformCheckServiceImpl implements PlatformCheckService {
     public void modifyPlatform(SerPlatformCheckParams serPlatformCheckParams, boolean isCreate) {
         String valueBefore = "";
         if(isCreate == true) {
-            serPlatformCheckParams.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            serPlatformCheckParams.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         } else {
             valueBefore = getJsonFromPlatform(findAll().get(0));
-            serPlatformCheckParams.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            serPlatformCheckParams.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         }
         serPlatformCheckParamRepository.save(serPlatformCheckParams);
         String valueAfter = getJsonFromPlatform(serPlatformCheckParams);

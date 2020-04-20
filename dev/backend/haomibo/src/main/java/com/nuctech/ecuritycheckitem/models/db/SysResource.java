@@ -14,19 +14,17 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysResourceSimple;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.Builder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -80,6 +78,12 @@ public class SysResource implements Serializable {
 
     @Column(name = "NOTE", length = 500, nullable = false)
     private String note;
+
+//    @ToString.Exclude
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "PARENT_RESOURCE_ID", referencedColumnName = "RESOURCE_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SysResourceSimple parent;
 
 
 }

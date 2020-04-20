@@ -25,6 +25,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserGroupSimple;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.AssignPermissionService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
@@ -278,8 +279,8 @@ public class AssignPermissionManagementController extends BaseController {
 
         if (assignPermissionService.userAssignRoleAndDataRange(requestBody.getUserId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
 
-            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
+            Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+            List<SysResource> permission = userService.getResourceList(userId);
 
             MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
@@ -320,8 +321,8 @@ public class AssignPermissionManagementController extends BaseController {
 
         if (assignPermissionService.userAssignRoleAndDataRange(requestBody.getUserId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
 
-            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
+            Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+            List<SysResource> permission = userService.getResourceList(userId);
 
             MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
@@ -329,7 +330,7 @@ public class AssignPermissionManagementController extends BaseController {
             value.setFilters(filters);
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                     "", messageSource.getMessage("AssignUser", null, currentLocale),
-                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+                    messageSource.getMessage("Success", null, currentLocale), "", null, false, "", "");
             return value;
         } else {
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
@@ -369,8 +370,8 @@ public class AssignPermissionManagementController extends BaseController {
 
         if (assignPermissionService.userGroupAssignRoleAndDataRange(requestBody.getUserGroupId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
 
-            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
+            Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+            List<SysResource> permission = userService.getResourceList(userId);
 
             MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
@@ -412,8 +413,8 @@ public class AssignPermissionManagementController extends BaseController {
 
         if (assignPermissionService.userGroupAssignRoleAndDataRange(requestBody.getUserGroupId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
 
-            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
+            Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+            List<SysResource> permission = userService.getResourceList(userId);
 
             MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
@@ -459,7 +460,7 @@ public class AssignPermissionManagementController extends BaseController {
     @RequestMapping(value = "/user-group/get-all", method = RequestMethod.POST)
     public Object userGroupGetAll() {
 
-        List<SysUserGroup> sysUserGroupList = assignPermissionService.userGroupGetAll(); // Get all sys user group list from DB.
+        List<SysUserGroupSimple> sysUserGroupList = assignPermissionService.userGroupGetAll(); // Get all sys user group list from DB.
 
         // Set filter for response json.
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysUserGroupList));

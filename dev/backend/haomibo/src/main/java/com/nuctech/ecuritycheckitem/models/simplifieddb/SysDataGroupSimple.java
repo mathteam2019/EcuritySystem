@@ -10,28 +10,15 @@
  * 日期：	2019/10/24
  */
 
-package com.nuctech.ecuritycheckitem.models.db;
+package com.nuctech.ecuritycheckitem.models.simplifieddb;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -44,7 +31,7 @@ import java.util.Set;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP)
 @Table(name = "sys_data_group")
-public class SysDataGroup extends BaseEntity implements Serializable {
+public class SysDataGroupSimple extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,14 +52,6 @@ public class SysDataGroup extends BaseEntity implements Serializable {
 
     @Column(name = "STATUS", length = 10)
     private String status;
-
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "sys_data_group_user",
-            joinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
-    )
-    private Set<SysUserSimplifiedOnlyHasName> users;
 
 
 }

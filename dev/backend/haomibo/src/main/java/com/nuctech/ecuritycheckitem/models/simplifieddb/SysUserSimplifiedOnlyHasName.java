@@ -57,4 +57,7 @@ public class SysUserSimplifiedOnlyHasName implements Serializable {
     @Column(name = "USER_NUMBER", length = 50)
     private String userNumber;
 
+    @Column(name = "STATUS", length = 10)
+    private String status;
+
 }

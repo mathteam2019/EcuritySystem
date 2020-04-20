@@ -317,7 +317,10 @@ public class DeviceConfigManagementController extends BaseController {
 
         deviceConfigService.modifyDeviceConfig(sysDeviceConfig, manualDeviceIdList, judgeDeviceIdList, configDeviceIdList);
 
-        asyncController.updateSecurityDeviceDetail(sysDeviceConfig.getDevice().getGuid());
+        asyncController.updateSecurityDeviceDetail(sysDeviceConfig.getDevice().getDeviceId());
+        for(Long deviceId: configDeviceIdList) {
+            asyncController.updateSecurityDeviceDetail(deviceId);
+        }
         //updateRedisValue(requestBody.getConfigId());
         return new CommonResponseBody(ResponseMessage.OK);
     }

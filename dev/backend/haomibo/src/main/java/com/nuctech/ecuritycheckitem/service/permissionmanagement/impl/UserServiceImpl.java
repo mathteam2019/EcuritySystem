@@ -19,6 +19,8 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.QSysUserSimplifiedOnlyHasName;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
@@ -83,6 +85,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     AuditLogService auditLogService;
+
+    @Autowired
+    SysUserSimpleRepository sysUserSimpleRepository;
 
     @Autowired
     public MessageSource messageSource;
@@ -292,7 +297,7 @@ public class UserServiceImpl implements UserService {
 
 
         // Add created info.
-        user.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        user.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(user);
         String valueAfter = getJsonFromUser(user);
@@ -333,7 +338,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // Add edited info.
-        user.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        user.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(user);
         String valueAfter = getJsonFromUser(user);
@@ -520,7 +525,7 @@ public class UserServiceImpl implements UserService {
         sysUser.setStatus(status);
 
         // Add edited info.
-        sysUser.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysUser.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(sysUser);
         String valueAfter = getJsonFromUser(sysUser);
@@ -543,7 +548,7 @@ public class UserServiceImpl implements UserService {
             String valueBefore = getJsonFromUser(sysUser);
             sysUser.setStatus(SysUser.Status.ACTIVE);
             sysUser.setPassword(CryptUtil.encode(password));
-            sysUser.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysUser.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
             sysUserRepository.save(sysUser);
             String valueAfter = getJsonFromUser(sysUser);
@@ -560,8 +565,8 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public List<SysUser> findAllUser() {
-        QSysUser builder = QSysUser.sysUser;
+    public List<SysUserSimplifiedOnlyHasName> findAllUser() {
+        QSysUserSimplifiedOnlyHasName builder = QSysUserSimplifiedOnlyHasName.sysUserSimplifiedOnlyHasName;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
@@ -569,7 +574,7 @@ public class UserServiceImpl implements UserService {
         predicate.and(builder.status.in(list));
 
         return StreamSupport
-                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
+                .stream(sysUserSimpleRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
     }
 
@@ -591,7 +596,7 @@ public class UserServiceImpl implements UserService {
                         .userGroupId(userGroup.getUserGroupId())
                         .userId(sysUser.getUserId())
                         .build()
-                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                        .addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal())
                 )
                 .collect(Collectors.toList());
 
@@ -775,40 +780,58 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean modifyUserGroup(long userGroupId, String groupName, List<Long> userIdList) {
+        Date startTime = new Date();
         Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(userGroupId));
-
+        Date endTime = new Date();
+        long difGet = endTime.getTime() - startTime.getTime();
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
         String valueBefore = getJsonFromUserGroup(sysUserGroup);
 
         // Delete all existing relation.
         Iterable<SysUserGroupUser> userGroupList = sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(sysUserGroup.getUserGroupId()));
-        List<SysUserGroupUser> listTest = StreamSupport.stream(userGroupList.spliterator(), false).collect(Collectors.toList());
+        List<SysUserGroupUser> listUserGroup = StreamSupport.stream(userGroupList.spliterator(), false).collect(Collectors.toList());
         Collectors.toList();
-        sysUserGroupUserRepository.deleteAll(userGroupList);
+        List<SysUserGroupUser> removeList = new ArrayList<>();
+        List<Long> remainIdList = new ArrayList<>();
+        for(SysUserGroupUser userGroupUser: listUserGroup) {
+            if(userIdList.contains(userGroupUser.getUserId())) {
+                remainIdList.add(userGroupUser.getUserId());
+                continue;
+            }
+            removeList.add(userGroupUser);
+        }
+        sysUserGroupUserRepository.deleteAll(removeList);
+        endTime = new Date();
+        long difDelete = endTime.getTime() - startTime.getTime();
 
         // Build relation array which are valid only.
-        List<SysUserGroupUser> relationList = StreamSupport.stream(
-                sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
-                false)
-                .map(sysUser -> (SysUserGroupUser) SysUserGroupUser
-                        .builder()
-                        .userGroupId(sysUserGroup.getUserGroupId())
-                        .userId(sysUser.getUserId())
-                        .build()
-                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-                )
-                .collect(Collectors.toList());
+        List<SysUserGroupUser> relationList = new ArrayList<>();
+        for(int i = 0; i < userIdList.size(); i ++) {
+            if(remainIdList.contains(userIdList.get(i))) {
+                continue;
+            }
+            SysUserGroupUser groupUser = SysUserGroupUser
+                    .builder()
+                    .userGroupId(sysUserGroup.getUserGroupId())
+                    .userId(userIdList.get(i))
+                    .build();
+            groupUser.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
+            relationList.add(groupUser);
+        }
 
         // Save.
         sysUserGroupUserRepository.saveAll(relationList);
-
+        endTime = new Date();
+        long difMdodify = endTime.getTime() - startTime.getTime();
         // Add edited info.
         sysUserGroup.setGroupName(groupName);
-        sysUserGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysUserGroup.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         sysUserGroupRepository.save(sysUserGroup);
         String valueAfter = getJsonFromUserGroup(sysUserGroup);
         auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("UserGroup", null, currentLocale), "", sysUserGroup.getUserGroupId().toString(), null, true, valueBefore, valueAfter);
+        endTime = new Date();
+        long difSuccess = endTime.getTime() - startTime.getTime();
         return true;
     }
 

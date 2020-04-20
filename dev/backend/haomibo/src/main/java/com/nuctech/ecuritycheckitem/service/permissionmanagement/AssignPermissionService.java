@@ -16,6 +16,7 @@ import com.nuctech.ecuritycheckitem.models.db.SysAssignUser;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserGroupSimple;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 import java.util.List;
@@ -66,7 +67,7 @@ public interface AssignPermissionService {
      * Get all UserGroup
      * @return
      */
-    List<SysUserGroup> userGroupGetAll();
+    List<SysUserGroupSimple> userGroupGetAll();
 
     /**
      * Get paginated user list by filter

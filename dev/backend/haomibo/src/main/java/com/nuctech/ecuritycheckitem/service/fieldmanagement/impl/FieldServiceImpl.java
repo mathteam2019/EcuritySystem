@@ -99,7 +99,7 @@ public class FieldServiceImpl implements FieldService {
             sysField.setStatus(SysField.Status.ACTIVE);
         }
         // Add createdInfo.
-        sysField.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysField.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysFieldRepository.save(sysField);
         String valueAfter = getJsonFromField(sysField);
@@ -182,7 +182,7 @@ public class FieldServiceImpl implements FieldService {
         sysField.setStatus(oldSysField.getStatus());
 
         // Add edited info.
-        sysField.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysField.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysFieldRepository.save(sysField);
         String valueAfter = getJsonFromField(sysField);
@@ -223,7 +223,7 @@ public class FieldServiceImpl implements FieldService {
         sysField.setStatus(status);
 
         // Add edited info.
-        sysField.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysField.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysFieldRepository.save(sysField);
         String valueAfter = getJsonFromField(sysField);

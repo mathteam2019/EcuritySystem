@@ -340,7 +340,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         serKnowledgeCase.setCaseStatus(status);
 
         // Add edited info.
-        serKnowledgeCase.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serKnowledgeCase.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         serKnowledgeCaseRepository.save(serKnowledgeCase);
         String valueAfter = getJsonFromKnowledge(serKnowledgeCase);
@@ -362,14 +362,14 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         if (existKnowledgeCase == null) {
 
             existKnowledgeCase = knowledgeCase;
-            existKnowledgeCase.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            existKnowledgeCase.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         }
         else {
 
             Long knowledgeCaseId = existKnowledgeCase.getCaseId();
             knowledgeCase.setCaseId(knowledgeCaseId);
             existKnowledgeCase = knowledgeCase;
-            existKnowledgeCase.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            existKnowledgeCase.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
             Iterable<SerTaskTag> taskTagList = serTaskTagRepository.findAll(QSerTaskTag.serTaskTag.taskId.eq(knowledgeCase.getTaskId()));
             serTaskTagRepository.deleteAll(taskTagList);
         }
@@ -379,7 +379,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
                 SerTaskTag taskTag = new SerTaskTag();
                 taskTag.setTaskId(knowledgeCase.getTaskId());
                 taskTag.setTagId(tagList.get(i));
-                taskTag.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                taskTag.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                 taskTagList.add(taskTag);
             }
             serTaskTagRepository.saveAll(taskTagList);
@@ -414,7 +414,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      */
     public Long insertNewKnowledgeCaseDeal(SerKnowledgeCaseDeal knowledgeCaseDeal) {
 
-        knowledgeCaseDeal.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        knowledgeCaseDeal.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         SerKnowledgeCaseDeal serKnowledgeCaseDeal = serKnowledgeCaseDealRepository.save(knowledgeCaseDeal);
         if (serKnowledgeCaseDeal != null) {
             return serKnowledgeCaseDeal.getCaseDealId();
@@ -430,7 +430,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      */
     public Long updateKnowledgeCase(Long knowledgeId, SerKnowledgeCase knowledgeCase) {
 
-        knowledgeCase.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        knowledgeCase.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseRepository.save(knowledgeCase);
         if (serKnowledgeCase != null) {
             return serKnowledgeCase.getCaseId();

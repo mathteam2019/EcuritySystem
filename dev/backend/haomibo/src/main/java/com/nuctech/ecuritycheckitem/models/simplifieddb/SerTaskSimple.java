@@ -10,10 +10,12 @@
  * 日期：	2019/11/21
  */
 
-package com.nuctech.ecuritycheckitem.models.db;
+package com.nuctech.ecuritycheckitem.models.simplifieddb;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
+import com.nuctech.ecuritycheckitem.models.db.SysField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;

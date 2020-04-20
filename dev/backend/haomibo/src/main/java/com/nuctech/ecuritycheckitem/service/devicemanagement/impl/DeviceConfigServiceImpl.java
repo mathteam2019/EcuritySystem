@@ -158,7 +158,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         SysDeviceConfig sysDeviceConfig = sysDeviceConfigData.get();
         String valueBefore = getJsonFromDeviceConfig(sysDeviceConfig);
         sysDeviceConfig.setStatus(status);
-        sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDeviceConfig.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         sysDeviceConfigRepository.save(sysDeviceConfig);
         String valueAfter = getJsonFromDeviceConfig(sysDeviceConfig);
         auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
@@ -234,7 +234,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 QSysDeviceConfig.sysDeviceConfig.configId.eq(sysDeviceConfig.getConfigId()));
         SysDeviceConfig oldSysDeviceConfig = sysDeviceConfigData.get();
         String valueBefore = getJsonFromDeviceConfig(oldSysDeviceConfig);
-        sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDeviceConfig.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         List<SysDeviceConfig> deviceConfigList = new ArrayList<>();
         if (configDeviceIdList != null && configDeviceIdList.size() > 0) {
             deviceConfigList = StreamSupport
@@ -248,14 +248,14 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 for (int j = 0; j < deviceConfigList.size(); j++) {
                     if (deviceConfigList.get(j).getDeviceId().equals(configDeviceIdList.get(i))) {
                         deviceConfig = deviceConfigList.get(j);
-                        deviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                        deviceConfig.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                         isExist = true;
                         break;
                     }
                 }
                 if (isExist == false) {
                     deviceConfig = SysDeviceConfig.builder().deviceId(configDeviceIdList.get(i)).build();
-                    deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    deviceConfig.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                     deviceConfigList.add(deviceConfig);
                 }
                 deviceConfig.setModeId(sysDeviceConfig.getModeId());
@@ -305,7 +305,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                             .configId(deviceConfigList.get(i).getConfigId())
                             .manualDeviceId(manualDeviceIdList.get(j))
                             .build();
-                    manualGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    manualGroup.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                     manualGroups.add(manualGroup);
                 }
             }
@@ -316,7 +316,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                             .configId(deviceConfigList.get(i).getConfigId())
                             .judgeDeviceId(judgeDeviceIdList.get(j))
                             .build();
-                    judgeGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    judgeGroup.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                     judgeGroups.add(judgeGroup);
                 }
             }
@@ -326,7 +326,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                         .deviceId(deviceConfigList.get(i).getDeviceId())
                         .fromDeviceId(sysDeviceConfig.getDeviceId())
                         .build();
-                configIdVal.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                configIdVal.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                 configList.add(configIdVal);
             }
         }
@@ -439,11 +439,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
 
     @Override
-    public SerSecurityDeviceDetailModel getSecurityInfoFromDatabase(String guid) {
-        SysDevice deviceModel = new SysDevice();
-        deviceModel.setGuid(guid);
+    public SerSecurityDeviceDetailModel getSecurityInfoFromDatabase(Long deviceId) {
         // 获取当前设备的工作模式
-        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig.device.guid.eq(guid)).
+        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig.device.deviceId.eq(deviceId)).
                 get();
         SysDevice device = sysDeviceConfig.getDevice();
         SysJudgeGroup sysJudgeGroup = new SysJudgeGroup();

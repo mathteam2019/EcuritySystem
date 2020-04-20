@@ -14,17 +14,18 @@ package com.nuctech.ecuritycheckitem.service.auth.impl;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.QSysUserSimplifiedOnlyHasName;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserGroupSimple;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
-import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.RedisUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
@@ -76,6 +77,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     SysOrgRepository sysOrgRepository;
+
+    @Autowired
+    SysRoleResourceRepository sysRoleResourceRepository;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -183,13 +187,10 @@ public class AuthServiceImpl implements AuthService {
     public List<SysResource> getAvailableSysResourceList(SysUser sysUser) {
 
         List<SysResource> allResources = sysResourceRepository.findAll();
-
-
-
-
         List<SysResource> availableSysResourceListPre = new ArrayList<>();
+        List<Long> roleIdList = new ArrayList<>();
         sysUser.getRoles().forEach(sysRole -> {
-            availableSysResourceListPre.addAll(sysRole.getResources());
+            roleIdList.add(sysRole.getRoleId());
         });
 
         QSysUserGroupUserDetail builder = QSysUserGroupUserDetail.sysUserGroupUserDetail;
@@ -210,9 +211,25 @@ public class AuthServiceImpl implements AuthService {
                 continue;
             }
             userGroupList.getRoles().forEach(sysRole -> {
-                availableSysResourceListPre.addAll(sysRole.getResources());
+                roleIdList.add(sysRole.getRoleId());
             });
         }
+
+
+
+        List<SysRoleResource> roleResourceList = Lists.newArrayList(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.in(roleIdList)));
+
+        List<Long> resourceIdList = new ArrayList<>();
+        roleResourceList.forEach(roleResource -> {
+            if(!resourceIdList.contains(roleResource.getResourceId())) {
+                resourceIdList.add(roleResource.getResourceId());
+            }
+        });
+
+        List<SysResource> userAvalialbleResource = Lists.newArrayList(sysResourceRepository.findAll(QSysResource.sysResource.resourceId.in(resourceIdList)));
+        availableSysResourceListPre.addAll(userAvalialbleResource);
+
+
         List<SysResource> availableSysResourceList = new ArrayList<>();
         for(int i = 0; i < availableSysResourceListPre.size(); i ++) {
             boolean isExist = false;
@@ -253,15 +270,14 @@ public class AuthServiceImpl implements AuthService {
                 }
             }
             startIndex ++;
-
         }
         return availableSysResourceList;
     }
 
     private CategoryUser getDataCategoryUserListPre() {
         Date startTime = new Date();
-        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-        SysUserSimplifiedOnlyHasName sysUserSimple = sysUserSimpleRepository.findOne(QSysUserSimplifiedOnlyHasName.sysUserSimplifiedOnlyHasName.userId.eq(sysUser.getUserId())).get();
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        SysUserSimplifiedOnlyHasName sysUserSimple = sysUserSimpleRepository.findOne(QSysUserSimplifiedOnlyHasName.sysUserSimplifiedOnlyHasName.userId.eq(userId)).get();
         Date endTime = new Date();
         long userTime = endTime.getTime() - startTime.getTime();
         QSysUserGroupUserDetail builder = QSysUserGroupUserDetail.sysUserGroupUserDetail;
@@ -290,7 +306,7 @@ public class AuthServiceImpl implements AuthService {
         if(levelUser.equals(SysUser.DataRangeCategory.SPECIFIED.getValue())) {
             levelUser = "";
             List<SysUserLookup> lookupList = StreamSupport
-                    .stream(sysUserLookupRepository.findAll(QSysUserLookup.sysUserLookup.userId.eq(sysUser.getUserId())).spliterator(), false)
+                    .stream(sysUserLookupRepository.findAll(QSysUserLookup.sysUserLookup.userId.eq(userId)).spliterator(), false)
                     .collect(Collectors.toList());
             for(int i = 0; i < lookupList.size(); i ++) {
                 relateDataGroupIdList.add(lookupList.get(i).getDataGroupId());
@@ -356,7 +372,7 @@ public class AuthServiceImpl implements AuthService {
                     .collect(Collectors.toList());
             for(int i = 0; i < dataGroupList.size(); i ++) {
                 SysDataGroup dataGroup = dataGroupList.get(i);
-                for(SysUser user: dataGroup.getUsers()) {
+                for(SysUserSimplifiedOnlyHasName user: dataGroup.getUsers()) {
                     relateUserList.add(user.getUserId());
                 }
             }
@@ -365,10 +381,15 @@ public class AuthServiceImpl implements AuthService {
         long dataGroupUserTime = endTime.getTime() - startTime.getTime();
         List<Long> relateOrgIdList = new ArrayList<>();
         if(levelUser.equals(SysUser.DataRangeCategory.ORG.getValue())) {
-            relateOrgIdList.add(sysUser.getOrg().getOrgId());
+            relateOrgIdList.add(sysUserSimple.getOrgId());
         } else if(levelUser.equals(SysUser.DataRangeCategory.ORG_DESC.getValue())) {
-            SysOrg parentOrg = sysUser.getOrg();
+            SysOrg parentOrg = null;
             List<SysOrg> allOrg = sysOrgRepository.findAll();
+            for(SysOrg org: allOrg){
+                if(org.getOrgId().equals(sysUserSimple.getOrgId())) {
+                    parentOrg = org;
+                }
+            }
             Queue<SysOrg> queue = new LinkedList<>();
 
             queue.add(parentOrg);
@@ -386,7 +407,7 @@ public class AuthServiceImpl implements AuthService {
                 relateOrgIdList.add(allOrg.get(i).getOrgId());
             }
         } else {
-            relateUserList.add(sysUser.getUserId());
+            relateUserList.add(userId);
         }
         endTime = new Date();
         long orgTime = endTime.getTime() - startTime.getTime();
@@ -423,8 +444,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void uploadCategoryUserListRedis() {
         CategoryUser categoryUser = getDataCategoryUserListPre();
-        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-        Long userId = sysUser.getUserId();
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
         ObjectMapper objectMapper = new ObjectMapper();
         String categoryUserStr = "";
         try {
@@ -439,7 +459,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public CategoryUser getDataCategoryUserList() {
-//        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+//        SysUser sysUser = (Long) authenticationFacade.getAuthentication().getPrincipal();
 //        Long userId = sysUser.getUserId();
 //        try {
 //            String categoryUserStr = redisUtil.get(Constants.REDIS_CATEGORY_USER_INFO + "_" + userId);
@@ -450,6 +470,11 @@ public class AuthServiceImpl implements AuthService {
 //        }
 //        return null;
         return getDataCategoryUserListPre();
+    }
+
+    @Override
+    public SysUser getUserById(Long userId) {
+        return sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId)).get();
     }
 
 }

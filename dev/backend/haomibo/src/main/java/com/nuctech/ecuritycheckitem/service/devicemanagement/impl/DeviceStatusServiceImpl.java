@@ -13,19 +13,21 @@
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 import com.alibaba.fastjson.JSONArray;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.redis.HardwareStatusModel;
 import com.nuctech.ecuritycheckitem.models.redis.SerDeviceStatusModel;
 import com.nuctech.ecuritycheckitem.models.redis.SysMonitoringDeviceStatusInfoVO;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerScanParamSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerScanSimple;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceStatusService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.RedisUtil;
 import com.querydsl.core.BooleanBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +41,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+
 @Service
+@Slf4j
 public class DeviceStatusServiceImpl implements DeviceStatusService {
 
     @Autowired
@@ -257,6 +261,7 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
     public List<SerDeviceStatus> getDeviceDetailByGuidList(String guidListStr) {
         List<SerDeviceStatus> statusList = new ArrayList<>();
         List<HardwareStatusModel> hardwareList = new ArrayList<>();
+        Date startDate = new Date();
         try {
 
             String redisKey = "sys.device.hardware.info";
@@ -264,6 +269,9 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             JSONArray dataContent = JSONArray.parseArray(dataStr);
             hardwareList = dataContent.toJavaList(HardwareStatusModel.class);
         } catch (Exception ex) {}
+        Date endDate = new Date();
+        long difHardware = endDate.getTime() - startDate.getTime();
+        //log.error("Redis hardware time is " + difHardware);
         List<SerDeviceStatusModel> statusModelList = new ArrayList<>();
         try {
             String redisKey = "sys.device.current.info";
@@ -271,12 +279,18 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             JSONArray dataContent = JSONArray.parseArray(dataStr);
             statusModelList = dataContent.toJavaList(SerDeviceStatusModel.class);
         } catch (Exception ex) {}
+        endDate = new Date();
+        long difCurrent = endDate.getTime() - startDate.getTime();
+        //log.error("Redis current time is " + difCurrent);
         List<SysMonitoringDeviceStatusInfoVO> monitorList = new ArrayList<>();
         try {
             String dataStr = redisUtil.get(("sys.monitoring.device.status.info"));
             JSONArray dataContent = JSONArray.parseArray(dataStr);
             monitorList = dataContent.toJavaList(SysMonitoringDeviceStatusInfoVO.class);
         } catch (Exception ex) {}
+        endDate = new Date();
+        long difMonitoring = endDate.getTime() - startDate.getTime();
+        //log.error("Redis monitoring time is " + difMonitoring);
         try {
             String[] guidList = guidListStr.split(",");
             for(String guid: guidList) {
@@ -318,6 +332,9 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         } catch (Exception ex) {
 
         }
+        endDate = new Date();
+        long difComplte = endDate.getTime() - startDate.getTime();
+        //log.error("Complete device status time is " + difComplte);
         return statusList;
     }
 }

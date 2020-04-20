@@ -19,6 +19,8 @@ import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysRoleSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -102,7 +104,7 @@ public class AssignUserGroupWordView extends BaseWordView {
                 tableRow.getCell(0).setText(String.valueOf(++ number));
                 tableRow.getCell(1).setText(userGroup.getGroupName());
                 String strMember = "";
-                List<SysUser> sysUserList = new ArrayList<>();
+                List<SysUserSimplifiedOnlyHasName> sysUserList = new ArrayList<>();
                 userGroup.getUsers().forEach(sysUser -> {
                     sysUserList.add(sysUser);
                 });
@@ -114,7 +116,7 @@ public class AssignUserGroupWordView extends BaseWordView {
                 }
                 tableRow.getCell(2).setText(strMember);
                 String strRole = "";
-                List<SysRole> sysRoleList = new ArrayList<>();
+                List<SysRoleSimple> sysRoleList = new ArrayList<>();
                 userGroup.getRoles().forEach(sysRole -> {
                     sysRoleList.add(sysRole);
                 });

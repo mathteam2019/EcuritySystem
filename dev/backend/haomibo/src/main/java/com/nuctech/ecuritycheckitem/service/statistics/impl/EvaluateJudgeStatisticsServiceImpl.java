@@ -166,7 +166,9 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
      * @return
      */
     private EvaluateJudgeResponseModel getTotalStatistics(String query) {
-        Query jpaQueryTotal = entityManager.createNativeQuery(query);
+        String queryReplace = query.replace("(h.HAND_START_TIME)", "( '0000:01:01' )");
+        Query jpaQueryTotal = entityManager.createNativeQuery(queryReplace);
+
         EvaluateJudgeResponseModel record = new EvaluateJudgeResponseModel();
 
         List<Object> resultTotal = jpaQueryTotal.getResultList();

@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -184,6 +185,7 @@ public class DeviceStatusController extends BaseController {
     public Object deviceDetailGetById(
             @RequestBody @Valid DeviceDetailGetByIdRequestBody requestBody,
             BindingResult bindingResult) {
+        Date startDate = new Date();
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -196,6 +198,8 @@ public class DeviceStatusController extends BaseController {
                 .getDefaultFilters();
 
         value.setFilters(filters);
+        Date endDate = new Date();
+        long dif = endDate.getTime() - startDate.getTime();
 
         return value;
     }

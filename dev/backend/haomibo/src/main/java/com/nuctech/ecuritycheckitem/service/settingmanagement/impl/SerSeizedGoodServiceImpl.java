@@ -94,7 +94,7 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
      */
     @Override
     public void createGood(SerSeizedGood serSeizedGood) {
-        serSeizedGood.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serSeizedGood.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         serSeizedGoodRepository.save(serSeizedGood);
         String valueAfter = getJsonFromSeized(serSeizedGood);
         auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
@@ -114,7 +114,7 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
         serSeizedGood.setCreatedTime(oldSerSeizedGood.getCreatedTime());
 
         // Add edited info.
-        serSeizedGood.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serSeizedGood.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         serSeizedGoodRepository.save(serSeizedGood);
         String valueAfter = getJsonFromSeized(serSeizedGood);

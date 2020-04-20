@@ -277,8 +277,8 @@ public class AuthController extends BaseController {
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public Object logout(
             @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
-        SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        SysUser user = authService.getUserById(userId);
 
         forbiddenTokenRepository.deleteAll(forbiddenTokenRepository.findAll(QForbiddenToken.forbiddenToken.token.eq(authToken)));
 
@@ -299,7 +299,8 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        SysUser sysUser = authService.getUserById(userId);
         String password = sysUser.getPassword();
         if(password.equals(Constants.DEFAULT_PASSWORD_FOR_NEW_SYS_USER)) {
             password = platformOtherService.findAll().get(0).getInitialPassword();
@@ -372,7 +373,8 @@ public class AuthController extends BaseController {
     public Object refreshToken(
             @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
 
-        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        SysUser sysUser = authService.getUserById(userId);
 
         SerPlatformOtherParams serPlatformOtherParams = null;
         try {

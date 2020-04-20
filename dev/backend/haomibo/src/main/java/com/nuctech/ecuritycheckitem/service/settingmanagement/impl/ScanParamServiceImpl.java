@@ -160,7 +160,7 @@ public class ScanParamServiceImpl implements ScanParamService {
         SerScanParam serScanParam = optionalSerScanParam.get();
         String valueBefore = getJsonFromScanParam(serScanParam);
         serScanParam.setStatus(status);
-        serScanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serScanParam.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         serScanParamRepository.save(serScanParam);
         String valueAfter = getJsonFromScanParam(serScanParam);
         auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
@@ -250,7 +250,7 @@ public class ScanParamServiceImpl implements ScanParamService {
             serScanParamsFromRepository.deleteAll(fromParams);
         }
         // Add edited info.
-        serScanParamNew.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serScanParamNew.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         serScanParamNew.setStatus(serScanParam.getStatus());
         serScanParamNew.setCreatedBy(serScanParam.getCreatedBy());
         serScanParamNew.setCreatedTime(serScanParam.getCreatedTime());
@@ -270,14 +270,14 @@ public class ScanParamServiceImpl implements ScanParamService {
                 for (int j = 0; j < serScanParamList.size(); j++) {
                     if (serScanParamList.get(j).getDeviceId().equals(paramDeviceIdList.get(i))) {
                         scanParam = serScanParamList.get(j);
-                        scanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                        scanParam.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                         isExist = true;
                         break;
                     }
                 }
                 if (isExist == false) {
                     scanParam = SerScanParam.builder().deviceId(paramDeviceIdList.get(i)).build();
-                    scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    scanParam.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                     serScanParamList.add(scanParam);
                 }
                 scanParam.setAirCaliWarnTime(serScanParamNew.getAirCaliWarnTime());
@@ -306,7 +306,7 @@ public class ScanParamServiceImpl implements ScanParamService {
                         .fromDeviceId(serScanParam.getDeviceId())
                         .scanParamsId(serScanParam.getScanParamsId())
                         .build();
-                paramsFrom.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                paramsFrom.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
                 serScanParamsFromList.add(paramsFrom);
             }
             serScanParamRepository.saveAll(serScanParamList);

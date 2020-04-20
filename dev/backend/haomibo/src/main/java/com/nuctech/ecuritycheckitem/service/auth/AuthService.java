@@ -67,4 +67,6 @@ public interface AuthService {
     void uploadCategoryUserListRedis();
 
     CategoryUser getDataCategoryUserList();
+
+    SysUser getUserById(Long userId);
 }

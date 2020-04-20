@@ -25,6 +25,7 @@ import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysAssignUser;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysRoleSimple;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -73,7 +74,7 @@ public class AssignUserPdfView extends BasePdfView {
 
                 addTableCell(table, user.getOrg().getOrgName());
 
-                List<SysRole> sysRoleList = new ArrayList<>();
+                List<SysRoleSimple> sysRoleList = new ArrayList<>();
                 user.getRoles().forEach(sysRole -> {
                     sysRoleList.add(sysRole);
                 });

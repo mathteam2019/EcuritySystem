@@ -16,6 +16,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserGroupSimple;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
@@ -61,6 +62,9 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     @Autowired
     SysUserGroupLookupRepository sysUserGroupLookupRepository;
+
+    @Autowired
+    SysUserGroupSimpleRepository sysUserGroupSimpleRepository;
 
     @Autowired
     SysRoleRepository sysRoleRepository;
@@ -128,7 +132,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
                                 .roleId(roleId)
                                 .userId(sysUser.getUserId())
                                 .build()
-                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                                .addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal())
                 )
                 .collect(Collectors.toList());
 
@@ -137,7 +141,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
         // Set and save data range category for user.
         sysUser.setDataRangeCategory(dataRangeCategory);
-        sysUser.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysUser.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(sysUser);
 
@@ -152,7 +156,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
                             .userId(sysUser.getUserId())
                             .dataGroupId(selectedDataGroupId)
                             .build()
-                            .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                            .addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal())
             );
         }
 
@@ -211,7 +215,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
                                 .roleId(roleId)
                                 .userGroupId(sysUserGroup.getUserGroupId())
                                 .build()
-                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                                .addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal())
                 )
                 .collect(Collectors.toList());
 
@@ -220,7 +224,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
         // Set and save data range category for user.
         sysUserGroup.setDataRangeCategory(dataRangeCategory);
-        sysUserGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysUserGroup.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserGroupRepository.save(sysUserGroup);
 
@@ -235,7 +239,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
                             .userGroupId(sysUserGroup.getUserGroupId())
                             .dataGroupId(selectedDataGroupId)
                             .build()
-                            .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                            .addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal())
             );
         }
 
@@ -257,8 +261,9 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      *
      * @return
      */
-    public List<SysUserGroup> userGroupGetAll() {
-        return sysUserGroupRepository.findAll();
+    public List<SysUserGroupSimple> userGroupGetAll() {
+
+        return sysUserGroupSimpleRepository.findAll();
     }
 
     /**

@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontr
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -89,7 +90,7 @@ public class DataGroupExcelView extends BaseExcelView {
                 row.createCell(1).setCellValue(dataGroup.getDataGroupNumber());
                 row.createCell(2).setCellValue(dataGroup.getDataGroupName());
                 List<String> userNames = new ArrayList<>();
-                for(SysUser user: dataGroup.getUsers()) {
+                for(SysUserSimplifiedOnlyHasName user: dataGroup.getUsers()) {
                     userNames.add(user.getUserName());
                 }
                 String userName = StringUtils.join(userNames, ",");

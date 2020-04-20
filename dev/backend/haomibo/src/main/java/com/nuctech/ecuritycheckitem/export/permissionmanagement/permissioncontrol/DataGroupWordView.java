@@ -17,6 +17,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -104,7 +105,7 @@ public class DataGroupWordView extends BaseWordView {
                 tableRow.getCell(1).setText(dataGroup.getDataGroupNumber());
                 tableRow.getCell(2).setText(dataGroup.getDataGroupName());
                 List<String> userNames = new ArrayList<>();
-                for(SysUser user: dataGroup.getUsers()) {
+                for(SysUserSimplifiedOnlyHasName user: dataGroup.getUsers()) {
                     userNames.add(user.getUserName());
                 }
                 String userName = StringUtils.join(userNames, ",");

@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.models.db;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerScanSimplifiedForTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimple;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
@@ -23,7 +24,6 @@ import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 @Getter
 @Setter

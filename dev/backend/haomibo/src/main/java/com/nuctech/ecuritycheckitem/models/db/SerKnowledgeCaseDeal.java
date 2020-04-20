@@ -15,7 +15,8 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SerScanSimplifiedForTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysDeviceSimple;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;

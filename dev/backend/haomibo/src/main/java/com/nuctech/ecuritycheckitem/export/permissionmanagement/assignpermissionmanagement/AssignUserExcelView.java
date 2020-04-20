@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysAssignUser;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysRoleSimple;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -99,7 +100,7 @@ public class AssignUserExcelView extends BaseExcelView {
                 row.createCell(2).setCellValue(ConstantDictionary.getDataValue(user.getGender()));
                 row.createCell(3).setCellValue(user.getUserAccount());
                 row.createCell(4).setCellValue(user.getOrg().getOrgName());
-                List<SysRole> sysRoleList = new ArrayList<>();
+                List<SysRoleSimple> sysRoleList = new ArrayList<>();
                 user.getRoles().forEach(sysRole -> {
                     sysRoleList.add(sysRole);
                 });

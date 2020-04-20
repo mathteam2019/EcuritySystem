@@ -17,6 +17,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -101,7 +102,7 @@ public class UserGroupWordView extends BaseWordView {
                 tableRow.getCell(1).setText(userGroup.getGroupNumber());
                 tableRow.getCell(2).setText(userGroup.getGroupName());
                 List<String> userNames = new ArrayList<>();
-                for(SysUser user: userGroup.getUsers()) {
+                for(SysUserSimplifiedOnlyHasName user: userGroup.getUsers()) {
                     userNames.add(user.getUserName());
                 }
                 String userName = StringUtils.join(userNames, ",");

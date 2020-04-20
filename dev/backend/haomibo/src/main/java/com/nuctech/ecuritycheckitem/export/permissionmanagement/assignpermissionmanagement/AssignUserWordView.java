@@ -20,6 +20,7 @@ import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAssignUser;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysRoleSimple;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -107,7 +108,7 @@ public class AssignUserWordView extends BaseWordView {
                 tableRow.getCell(2).setText(ConstantDictionary.getDataValue(user.getGender()));
                 tableRow.getCell(3).setText(user.getUserAccount());
                 tableRow.getCell(4).setText(user.getOrg().getOrgName());
-                List<SysRole> sysRoleList = new ArrayList<>();
+                List<SysRoleSimple> sysRoleList = new ArrayList<>();
                 user.getRoles().forEach(sysRole -> {
                     sysRoleList.add(sysRole);
                 });

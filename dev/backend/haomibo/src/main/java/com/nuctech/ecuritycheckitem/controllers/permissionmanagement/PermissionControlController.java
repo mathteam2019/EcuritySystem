@@ -57,10 +57,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Permission control controller.
@@ -627,6 +624,7 @@ public class PermissionControlController extends BaseController {
         }
 
         boolean result = permissionService.modifyRole(requestBody.getRoleId(), requestBody.getRoleName(), requestBody.getResourceIdList()); // Get role from database.
+
         if(result == false) {
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("Role", null, currentLocale),
@@ -635,14 +633,13 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-        List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        List<SysResource> permission = userService.getResourceList(userId);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified params from SysResource model
         value.setFilters(filters);
-
         return value;
     }
 
@@ -687,8 +684,8 @@ public class PermissionControlController extends BaseController {
         }
         permissionService.removeRole(requestBody.getRoleId());
 
-        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-        List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
+        Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
+        List<SysResource> permission = userService.getResourceList(userId);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();

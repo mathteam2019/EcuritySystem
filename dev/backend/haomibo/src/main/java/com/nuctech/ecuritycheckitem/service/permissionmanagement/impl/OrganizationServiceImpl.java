@@ -203,7 +203,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
 
         // Add createdInfo.
-        sysOrg.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysOrg.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
         String valueAfter = getJsonFromOrg(sysOrg);
@@ -240,7 +240,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         sysOrg.setStatus(oldSysOrg.getStatus());
 
         // Add edited info.
-        sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysOrg.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
         String valueAfter = getJsonFromOrg(sysOrg);
@@ -289,7 +289,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         sysOrg.setStatus(status);
 
         // Add edited info.
-        sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysOrg.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
         String valueAfter = getJsonFromOrg(sysOrg);
@@ -311,11 +311,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (isAll == false) {
             predicate.and(builder.status.eq(SysOrg.Status.ACTIVE));
         }
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> userIdList = categoryUser.getUserIdList();
-            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
-        }
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            List<Long> userIdList = categoryUser.getUserIdList();
+//            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+//        }
 
         return StreamSupport
                 .stream(sysOrgRepository.findAll(predicate).spliterator(), false)

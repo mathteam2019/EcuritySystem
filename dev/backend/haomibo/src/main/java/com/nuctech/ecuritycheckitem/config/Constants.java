@@ -49,6 +49,7 @@ public class Constants {
             "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**",
             "/auth/login",
             "/auth/register",
+//            "/device-management/condition-monitoring/get-detail-by-id",
             Constants.PORTRAIT_FILE_SERVING_BASE_URL + "**"
     };
 

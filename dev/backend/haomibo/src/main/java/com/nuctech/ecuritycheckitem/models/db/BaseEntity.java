@@ -51,11 +51,11 @@ public class BaseEntity {
     /**
      * Adds created info.
      *
-     * @param sysUser Represents editor's information
+     * @param userId Represents editor's information
      * @return itself
      */
-    public BaseEntity addCreatedInfo(SysUser sysUser) {
-        this.createdBy = sysUser.getUserId();
+    public BaseEntity addCreatedInfo(Long userId) {
+        this.createdBy = userId;
         this.createdTime = new Date();
         return this;
     }
@@ -63,11 +63,11 @@ public class BaseEntity {
     /**
      * Adds Edited info
      *
-     * @param sysUser Represents editor's information
+     * @param userId Represents editor's information
      * @return itself
      */
-    public BaseEntity addEditedInfo(SysUser sysUser) {
-        this.editedBy = sysUser.getUserId();
+    public BaseEntity addEditedInfo(Long userId) {
+        this.editedBy = userId;
         this.editedTime = new Date();
         return this;
     }
