@@ -380,7 +380,7 @@ function isColorValid(value) {
 }
 
 function isAccountValid(value) {
-  let accountReg =/^[A-Za-z0-9]+$/;
+  let accountReg =/^[A-Za-z0-9._-]+$/;
   if(value === null || !accountReg.test(value)) {
     return false;
   }

@@ -84,7 +84,7 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.total}}</span>
+                  <span v-if="preViewData.total!=null">{{preViewData.total}}</span>
                   <span v-else>0</span>
                 </div>
                 <div><span>{{$t('maintenance-management.process-task.hand')}}</span></div>
@@ -99,7 +99,7 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.missingReport}}</span>
+                <div><span v-if="preViewData.missingReport!=null">{{preViewData.missingReport}}</span>
                   <span v-else>0</span></div>
                 <div><span>{{$t('statistics.evaluate-monitors.missing-report')}}</span></div>
               </div>
@@ -114,8 +114,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-if="preViewData.total==null">0%</span>
+                  <span v-else-if="preViewData.total!==0">{{Math.round(preViewData.missingReport/preViewData.total * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>{{$t('statistics.evaluate-monitors.missing-report-rate')}}</span></div>
@@ -130,7 +130,7 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.mistakeReport}}</span>
+                <div><span v-if="preViewData.mistakeReport!=null">{{preViewData.mistakeReport}}</span>
                   <span v-else>0</span></div>
                 <div><span>{{$t('statistics.evaluate-monitors.mistake-report')}}</span></div>
               </div>
@@ -145,8 +145,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-if="preViewData.total==null">0%</span>
+                  <span v-else-if="preViewData.total!==0">{{Math.round(preViewData.mistakeReport/preViewData.total * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>{{$t('statistics.evaluate-monitors.mistake-report-rate')}}</span></div>
@@ -164,7 +164,7 @@
               </div>
               <div>
                 <div><span
-                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</span>
+                  v-if="preViewData.artificialJudge!=null">{{preViewData.artificialJudge}}</span>
                   <span v-else>0</span></div>
                 <div><span>{{$t('statistics.evaluate-monitors.artificial-judge')}}</span></div>
               </div>
@@ -178,7 +178,7 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudgeMissing}}</span>
+                <div><span v-if="preViewData.artificialJudgeMissing!=null">{{preViewData.artificialJudgeMissing}}</span>
                   <span v-else>0</span></div>
                 <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-missing')}}</span></div>
               </div>
@@ -193,8 +193,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-if="preViewData.artificialJudge==null">0%</span>
+                  <span v-else-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMissing/preViewData.artificialJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-missing-rate')}}</span></div>
@@ -209,7 +209,7 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudgeMistake}}</span>
+                <div><span v-if="preViewData.artificialJudgeMistake!=null">{{preViewData.artificialJudgeMistake}}</span>
                   <span v-else>0</span></div>
                 <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-mistake')}}</span></div>
               </div>
@@ -224,8 +224,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-if="preViewData.artificialJudge==null">0%</span>
+                  <span v-else-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMistake/preViewData.artificialJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-mistake-rate')}}</span></div>
@@ -243,7 +243,7 @@
               </div>
               <div>
                 <div><span
-                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.intelligenceJudge}}</span>
+                  v-if="preViewData.intelligenceJudge!=null">{{preViewData.intelligenceJudge}}</span>
                   <span v-else>0</span></div>
                 <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge')}}</span></div>
               </div>
@@ -257,7 +257,7 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.intelligenceJudgeMissing}}</span>
+                <div><span v-if="preViewData.intelligenceJudgeMissing!=null">{{preViewData.intelligenceJudgeMissing}}</span>
                   <span v-else>0</span></div>
                 <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-missing')}}</span></div>
               </div>
@@ -272,8 +272,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-if="preViewData.intelligenceJudge==null">0%</span>
+                  <span v-else-if="preViewData.intelligenceJudge!==0">{{Math.round(preViewData.intelligenceJudgeMissing/preViewData.intelligenceJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-missing-rate')}}</span></div>
@@ -288,7 +288,7 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.intelligenceJudgeMistake}}</span>
+                <div><span v-if="preViewData.intelligenceJudgeMistake!=null">{{preViewData.intelligenceJudgeMistake}}</span>
                   <span v-else>0</span></div>
                 <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-mistake')}}</span></div>
               </div>
@@ -303,8 +303,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-if="preViewData.intelligenceJudge==null">0%</span>
+                  <span v-else-if="preViewData.intelligenceJudge!==0">{{Math.round(preViewData.intelligenceJudgeMistake/preViewData.intelligenceJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-mistake-rate')}}</span></div>
@@ -341,11 +341,11 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)"
+                  <radial-progress-bar v-if="preViewData.total!=null" :diameter="156" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.missingReport/preViewData.total * 100)"
                                        :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span class="chart percent clearfix" v-if="preViewData.total==null">0%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.total!==0">{{Math.round(preViewData.missingReport/preViewData.total * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     {{$t('statistics.evaluate-monitors.missing-report')}}
                   </radial-progress-bar>
@@ -355,11 +355,11 @@
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)"
+                  <radial-progress-bar v-if="preViewData.total!=null" :diameter="172" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.mistakeReport/preViewData.total * 100)"
                                        :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span class="chart percent clearfix" v-if="preViewData.total==null">0%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.total!==0">{{Math.round(preViewData.mistakeReport/preViewData.total * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     {{$t('statistics.evaluate-monitors.mistake-report')}}
                   </radial-progress-bar>
@@ -393,11 +393,11 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)"
+                  <radial-progress-bar v-if="preViewData.artificialJudge!=null" :diameter="156" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.artificialJudgeMissing/preViewData.artificialJudge * 100)"
                                        :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                    <span class="chart percent clearfix" v-if="preViewData.artificialJudge==null">0%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMissing/preViewData.artificialJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     {{$t('statistics.evaluate-monitors.missing-report')}}
                   </radial-progress-bar>
@@ -407,10 +407,10 @@
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)"
+                  <radial-progress-bar v-if="preViewData.artificialJudge!=null" :diameter="172" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.artificialJudgeMistake/preViewData.artificialJudge * 100)"
                                        :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                    <span class="chart percent clearfix" v-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMistake/preViewData.artificialJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     {{$t('statistics.evaluate-monitors.mistake-report')}}
                   </radial-progress-bar>
@@ -444,10 +444,10 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)"
+                  <radial-progress-bar v-if="preViewData.intelligenceJudge!=null" :diameter="156" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.intelligenceJudgeMissing/preViewData.intelligenceJudge * 100)"
                                        :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                    <span class="chart percent clearfix" v-if="preViewData.intelligenceJudge!==0">{{Math.round(preViewData.intelligenceJudgeMissing/preViewData.intelligenceJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     {{$t('statistics.evaluate-monitors.missing-report')}}
                   </radial-progress-bar>
@@ -457,19 +457,19 @@
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.totalStatistics==null" :diameter="156" :strokeWidth="8"
+                  <radial-progress-bar v-if="preViewData.intelligenceJudge==null" :diameter="156" :strokeWidth="8"
                                        :completed-steps="0" :total-steps=100>
                     <span class="chart percent clearfix">0%</span>
                     {{$t('statistics.evaluate-monitors.mistake-report')}}
                   </radial-progress-bar>
-                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge!==0" :diameter="172"
+                  <radial-progress-bar v-else-if="preViewData.intelligenceJudge!==0" :diameter="172"
                                        :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)"
+                                       :completed-steps="Math.round(preViewData.intelligenceJudgeMistake/preViewData.intelligenceJudge * 100)"
                                        :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                    <span class="chart percent clearfix">{{Math.round(preViewData.intelligenceJudgeMistake/preViewData.intelligenceJudge * 100)}}%</span>
                     {{$t('statistics.evaluate-monitors.mistake-report')}}
                   </radial-progress-bar>
-                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge===0" :diameter="172"
+                  <radial-progress-bar v-else-if="preViewData.intelligenceJudge===0" :diameter="172"
                                        :strokeWidth="8" :completed-steps="0" :total-steps=100>
                     <span class="chart percent clearfix">0%</span>
                     {{$t('statistics.evaluate-monitors.mistake-report')}}
@@ -554,10 +554,8 @@
                   :fields="taskVuetableItems.fields"
                   :http-fetch="taskVuetableHttpFetch"
                   :per-page="taskVuetableItems.perPage"
-                  track-by="id"
                   pagination-path="pagination"
                   class="table-hover"
-                  @vuetable:checkbox-toggled="onCheckStatusChange"
                   @vuetable:pagination-data="onTaskVuetablePaginationData"
                 >
                 </vuetable>
@@ -660,6 +658,7 @@
       this.getSiteOption();
       this.getManualDeviceData();
       this.getPreviewData();
+      this.getChartData();
       this.setPeriodLabel('hour');
     },
     data() {
@@ -831,8 +830,8 @@
         xQuarter: ['1', '2', '3', '4'],
         xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         monthLabel: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        xWeek: ['1', '2', '3', '4', '5'],
-        xDay: [],
+        xWeek: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52'],
+        xDay: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31'],
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
         isExpanded: false,
@@ -906,13 +905,8 @@
 
         periodLabel: '期间(時)',
         taskVuetableItems: {
-          apiUrl: `${apiBaseUrl}/task/statistics/get-evaluatejudge-statistics`,
+          apiUrl: `${apiBaseUrl}/task/statistics/get-evaluatejudge-statistics/detail`,
           fields: [
-            {
-              name: '__checkbox',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
             {
               name: '__sequence',
               title: this.$t('knowledge-base.th-no'),
@@ -1044,7 +1038,6 @@
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
-        this.changeCheckAllStatus();
       },
       siteData: function (newVal, oldVal) {
 
@@ -1137,52 +1130,6 @@
         return this.periodLabel;
 
       },
-      selectAll(value) {
-        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.taskVuetable.isCheckAllStatus = value;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton = document.getElementById(checkBoxId);
-        checkAllButton.checked = value;
-      },
-      selectNone() {
-        this.$refs.taskVuetable.isCheckAllStatus=false;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton = document.getElementById(checkBoxId);
-        checkAllButton.checked = false;
-      },
-      changeCheckAllStatus() {
-        let selectList = this.$refs.taskVuetable.selectedTo;
-        let renderedList = this.renderedCheckList;
-        if (selectList.length >= renderedList.length) {
-          let isEqual = false;
-          for (let i = 0; i < renderedList.length; i++) {
-            isEqual = false;
-            for (let j = 0; j < selectList.length; j++) {
-              if (renderedList[i] === selectList[j]) {
-                j = selectList.length;
-                isEqual = true
-              }
-            }
-            if (isEqual === false) {
-              this.selectNone();
-              break;
-            }
-            if (i === renderedList.length - 1) {
-              this.selectAll(true);
-            }
-          }
-        } else {
-          this.selectNone();
-        }
-
-      },
-      onCheckStatusChange(isChecked) {
-        if (isChecked) {
-          this.changeCheckAllStatus();
-        } else {
-          this.selectNone();
-        }
-      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -1245,22 +1192,11 @@
       },
 
       onExportButton() {
-        // this.fileSelection = [];
-        // this.$refs['model-export'].show();
-        let checkedAll, checkedIds;
-        if (this.showTable === false) {
-          checkedAll = true;
-          checkedIds = "";
-        } else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
 
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.showTable === false ? checkedAll : true,
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.showTable === false ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/evaluatejudge/generate`;
         this.name = this.$t('menu.statistics-evaluate-monitors');
@@ -1296,27 +1232,16 @@
       },
 
       onPrintButton() {
-        let checkedAll, checkedIds;
-        if (this.showTable === false) {
-          checkedAll = true;
-          checkedIds = "";
-        } else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
 
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.showTable === false ? checkedAll : true,
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.showTable === false ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/evaluatejudge/generate`;
-        if (this.showTable !== false && checkedIds.length === 0) {
 
-        } else {
           printFileFromServer(link, params);
-        }
+
 
       },
 
@@ -1347,7 +1272,7 @@
       },
 
       getPreviewData() {
-        getApiManager().post(`${apiBaseUrl}/task/statistics/get-evaluatejudge-statistics`, {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-evaluatejudge-statistics/total`, {
           filter: this.filter
         }).then((response) => {
           let message = response.data.message;
@@ -1377,6 +1302,84 @@
           //}
         });
       },
+      getChartData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-evaluatejudge-statistics/chart`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          let chartData = response.data.data.detailedStatistics;
+
+          switch (this.filter.statWidth) {
+            case "hour":
+              this.lineChart1Options.xAxis.data = this.xHour;
+              this.lineChart2Options.xAxis.data = this.xHour;
+              this.lineChart3Options.xAxis.data = this.xHour;
+              break;
+            case "day":
+              this.lineChart1Options.xAxis.data = this.xDay;
+              this.lineChart2Options.xAxis.data = this.xDay;
+              this.lineChart3Options.xAxis.data = this.xDay;
+              break;
+            case "week":
+              this.lineChart1Options.xAxis.data = this.xWeek;
+              this.lineChart2Options.xAxis.data = this.xWeek;
+              this.lineChart3Options.xAxis.data = this.xWeek;
+              break;
+            case "month":
+              this.lineChart1Options.xAxis.data = this.xMonth;
+              this.lineChart2Options.xAxis.data = this.xMonth;
+              this.lineChart3Options.xAxis.data = this.xMonth;
+              break;
+            case "quarter":
+              this.lineChart1Options.xAxis.data = this.xQuarter;
+              this.lineChart2Options.xAxis.data = this.xQuarter;
+              this.lineChart3Options.xAxis.data = this.xQuarter;
+              break;
+            case "year":
+              this.lineChart1Options.xAxis.data = this.xYear;
+              this.lineChart2Options.xAxis.data = this.xYear;
+              this.lineChart3Options.xAxis.data = this.xYear;
+              break;
+
+          }
+
+          //this.line3ChartOptions.xAxis.data = this.xDay;
+          if (this.filter.statWidth !== 'year') {
+            for (let i = 0; i < this.lineChart1Options.xAxis.data.length; i++) {
+              let key = this.lineChart1Options.xAxis.data[i];
+              this.lineChart1Options.series[0].data[i] = 0;
+              this.lineChart1Options.series[1].data[i] = 0;
+              this.lineChart2Options.series[0].data[i] = 0;
+              this.lineChart2Options.series[1].data[i] = 0;
+              this.lineChart3Options.series[0].data[i] = 0;
+              this.lineChart3Options.series[1].data[i] = 0;
+              for (let j = 0; j < chartData.length; j++) {
+                if (key === chartData[j].time) {
+                  this.lineChart1Options.series[0].data[i] = chartData[j].missingReport;
+                  this.lineChart1Options.series[1].data[i] = chartData[j].mistakeReport;
+                  this.lineChart2Options.series[0].data[i] = chartData[j].artificialJudgeMissing;
+                  this.lineChart2Options.series[1].data[i] = chartData[j].artificialJudgeMistake;
+                  this.lineChart3Options.series[0].data[i] = chartData[j].intelligenceJudgeMissing;
+                  this.lineChart3Options.series[1].data[i] = chartData[j].intelligenceJudgeMistake;
+                }
+
+              }
+            }
+          } else {
+            for (let j = 0; j < chartData.length; j++) {
+              this.lineChart1Options.xAxis.data.push(chartData[j].time);
+              this.lineChart1Options.series[0].data[j] = chartData[j].missingReport;
+              this.lineChart1Options.series[1].data[j] = chartData[j].mistakeReport;
+              this.lineChart2Options.series[0].data[j] = chartData[j].artificialJudgeMissing;
+              this.lineChart2Options.series[1].data[j] = chartData[j].artificialJudgeMistake;
+              this.lineChart3Options.series[0].data[j] = chartData[j].intelligenceJudgeMissing;
+              this.lineChart3Options.series[1].data[j] = chartData[j].intelligenceJudgeMistake;
+            }
+          }
+
+        }).catch((error) => {
+        });
+      },
 
       onSearchButton() {
         if(this.filter.startTime !== null && this.filter.endTime !== null) {
@@ -1392,6 +1395,7 @@
         }
 
         this.getPreviewData();
+        this.getChartData();
         this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
@@ -1404,18 +1408,13 @@
           startTime: null,
           endTime: null
         };
-        //this.getPreviewData();
-        //this.$refs.taskVuetable.refresh();
-
       },
 
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page);
-        this.changeCheckAllStatus();
       },
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData);
-        this.changeCheckAllStatus();
       },
 
       onDisplaceButton() {
@@ -1450,39 +1449,7 @@
           let j = transformed.tKey[i - 1];
 
           temp = data.detailedStatistics[j];
-          temp.id = temp.time;
-          this.renderedCheckList.push(data.detailedStatistics[j].time);
 
-          if(this.filter.statWidth === 'hour') {
-            if (temp.time < 9) {
-              temp.time = '0' + temp.time + ' : 00 ~ 0' + (temp.time + 1) + ': 00';
-            }
-            else if(temp.time === 9){
-              temp.time = '09 :00 ~ 10 : 00';
-            }
-            else {
-              temp.time = temp.time + ' : 00 ~ ' + (temp.time + 1) + ': 00';
-            }
-          }
-          if(this.filter.statWidth === 'day' && getLocale() === 'zh') {
-            temp.time = temp.time + '日';
-          }
-          if(this.filter.statWidth === 'week' && getLocale() === 'zh') {
-            temp.time = temp.time + '周';
-          }
-          if(this.filter.statWidth === 'month') {
-            if(getLocale() === 'zh') {
-              temp.time = temp.time + '月';
-            }else {
-              temp.time = this.monthLabel[temp.time-1];
-            }
-          }
-          if(this.filter.statWidth === 'quarter') {
-            temp.time = temp.time + this.$t('statistics.quarter');
-          }
-          if(this.filter.statWidth === 'year') {
-            temp.time = temp.time +  this.$t('statistics.year');
-          }
           transformed.data.push(temp);
         }
 
@@ -1490,7 +1457,6 @@
 
       },
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        this.renderedCheckList = [];
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,

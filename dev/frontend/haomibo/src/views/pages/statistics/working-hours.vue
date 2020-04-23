@@ -248,10 +248,8 @@
               :fields="taskVuetableItems.fields"
               :http-fetch="taskVuetableHttpFetch"
               :per-page="taskVuetableItems.perPage"
-              track-by="id"
               pagination-path="pagination"
               class="table-hover"
-                      @vuetable:checkbox-toggled="onCheckStatusChange"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
             >
             </vuetable>
@@ -354,7 +352,7 @@
       this.getManualDeviceData();
       this.getSiteOption();
       this.getPreviewData();
-      this.getGraphData();
+      //this.getGraphData();
       this.setPeriodLabel('hour');
     },
     data() {
@@ -432,7 +430,7 @@
           },
           xAxis: {
             type: 'category',
-            data: [],
+            data: [0],
             axisLine: {
               show: true
             },
@@ -607,12 +605,6 @@
         tableWidth : '',
         initialFields: [
           {
-            name: '__checkbox',
-            titleClass: 'text-center',
-            dataClass: 'text-center',
-            width : '5%'
-          },
-          {
             name: '__sequence',
             title: this.$t('knowledge-base.th-no'),
             titleClass: 'text-center',
@@ -657,7 +649,7 @@
         ],
 
         taskVuetableItems: {
-          apiUrl: `${apiBaseUrl}/task/statistics/get-statistics-filter-by-user`,
+          apiUrl: `${apiBaseUrl}/task/statistics/get-statistics-filter-by-user/detail`,
           fields: [],
           perPage: 10,
         },
@@ -667,10 +659,6 @@
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
-        this.changeCheckAllStatus();
-      },
-      'operatingLogTableItems.perPage': function (newVal) {
-        this.$refs.operatingLogTable.refresh();
       }
     },
     methods: {
@@ -722,51 +710,7 @@
         return this.periodLabel;
 
       },
-       selectAll(value){
-        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.taskVuetable.isCheckAllStatus=value;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
-        checkAllButton.checked = value;
-      },
-      selectNone(){
-        this.$refs.taskVuetable.isCheckAllStatus=false;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
-        checkAllButton.checked = false;
-      },
-      changeCheckAllStatus(){
-        let selectList = this.$refs.taskVuetable.selectedTo;
-        let renderedList = this.renderedCheckList;
-        if(selectList.length>=renderedList.length){
-          let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
-            isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
-            }
-            if(isEqual===false){
-              this.selectNone();
-              break;
-            }
-            if(i===renderedList.length-1){
-              this.selectAll(true);
-            }
-          }
-        }
-        else {
-          this.selectNone();
-        }
 
-      },
-      onCheckStatusChange(isChecked){
-        if(isChecked){
-          this.changeCheckAllStatus();
-        }
-        else {
-          this.selectNone();
-        }
-      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -790,22 +734,11 @@
       },
 
       onExportButton() {
-        // this.fileSelection = [];
-        // this.$refs['model-export'].show();
-        let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        } else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
 
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/userstatistics/generate`;
         this.name = this.$t('menu.statistics-working-hours');
@@ -841,27 +774,16 @@
       },
 
       onPrintButton() {
-        let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        } else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
 
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/userstatistics/generate`;
-        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        } else {
           printFileFromServer(link, params);
-        }
+
       },
 
 
@@ -932,7 +854,7 @@
           this.graphData = response.data.data;
           this.bar3ChartOptions.xAxis.data=[];
           this.bar3ChartOptions.series[0].data = [];
-          let keyData = Object.keys(this.graphData.totalStatistics.detailedStatistics);
+          let keyData = Object.keys(this.graphData.detailedStatistics);
           let xAxisChart = [];
           let allUserStr = "";
 
@@ -943,32 +865,22 @@
           //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
           // }
 
-          if(keyData.length > 3) {
-            for (let i = 3; i < keyData.length; i++) {
+          if(keyData.length > 4) {
+            for (let i = 4; i < keyData.length; i++) {
 
             let key = keyData[i];
-              if (i === 3) {
-                allUserStr = allUserStr + this.graphData.totalStatistics.detailedStatistics[i].userName;
+              if (i === 4) {
+                allUserStr = allUserStr + this.graphData.detailedStatistics[i].userName;
             }else {
-                allUserStr = allUserStr + ", " + this.graphData.totalStatistics.detailedStatistics[i].userName;
+                allUserStr = allUserStr + ", " + this.graphData.detailedStatistics[i].userName;
             }
 
-              xAxisChart[i - 3] = this.graphData.totalStatistics.detailedStatistics[i].userName;
-              if (this.graphData.totalStatistics.detailedStatistics[i] != null) {
-                this.bar3ChartOptions.series[0].data[i - 3] = this.graphData.totalStatistics.detailedStatistics[i].workingTime;
+              xAxisChart[i - 4] = this.graphData.detailedStatistics[i].userName;
+              if (this.graphData.detailedStatistics[i] != null) {
+                this.bar3ChartOptions.series[0].data[i - 4] = this.graphData.detailedStatistics[i].workingTime;
               } else {
-                this.bar3ChartOptions.series[0].data[i - 3] = 0;
+                this.bar3ChartOptions.series[0].data[i - 4] = 0;
               }
-              // if (this.graphData.totalStatistics.detailedStatistics[i] != null) {
-              //   this.bar3ChartOptions.series[1].data[i-3] = this.graphData.totalStatistics.detailedStatistics[i].workingTime;
-              // } else {
-              //   this.bar3ChartOptions.series[1].data[i-3] = 0;
-              // }
-              // if (this.graphData.totalStatistics.detailedStatistics[i] != null) {
-              //   this.bar3ChartOptions.series[2].data[i-3] = this.graphData.totalStatistics.detailedStatistics[i].workingTime;
-              // } else {
-              //   this.bar3ChartOptions.series[2].data[i-3] = 0;
-              // }
             }
           }
           this.allUser=allUserStr;
@@ -991,10 +903,10 @@
           this.preViewData = response.data.data;
           this.taskVuetableItems.fields = [];
 
-          let totalSeconds = this.preViewData.totalStatistics.detailedStatistics[0].workingTime + this.preViewData.totalStatistics.detailedStatistics[1].workingTime + this.preViewData.totalStatistics.detailedStatistics[2].workingTime;
-          let scanSeconds = this.preViewData.totalStatistics.detailedStatistics[0].workingTime;
-          let judgeSeconds = this.preViewData.totalStatistics.detailedStatistics[1].workingTime;
-          let handSeconds = this.preViewData.totalStatistics.detailedStatistics[2].workingTime;
+          let totalSeconds = this.preViewData.detailedStatistics[0].workingTime;
+          let scanSeconds = this.preViewData.detailedStatistics[1].workingTime;
+          let judgeSeconds = this.preViewData.detailedStatistics[2].workingTime;
+          let handSeconds = this.preViewData.detailedStatistics[3].workingTime;
 
           this.totalData['second'].value = totalSeconds % 60;
           this.totalData['minute'].value = ((totalSeconds - totalSeconds % 60) / 60) % 60;
@@ -1028,7 +940,7 @@
           this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
           this.doublePieChartOptions.series[0].data[2].value = 100 - this.scanData['rate'].value - this.judgeData['rate'].value;
 
-          let keyData = Object.keys(this.preViewData.totalStatistics.detailedStatistics);
+          let keyData = Object.keys(this.preViewData.detailedStatistics);
           this.tableWidth = 80/keyData.length + '%';
           //this.taskVuetableItems.fields = this.initialFields;
 
@@ -1036,20 +948,62 @@
             this.taskVuetableItems.fields.push(this.initialFields[i]);
           }
 
-          if(keyData.length>3){
-            for (let i = 3; i < keyData.length; i++) {
+          if(keyData.length>4){
+            for (let i = 4; i < keyData.length; i++) {
 
               let key = keyData[i];
 
               this.taskVuetableItems.fields.push({
-                name: this.preViewData.totalStatistics.detailedStatistics[i].userName,
-                title: this.preViewData.totalStatistics.detailedStatistics[i].userName,
+                name: this.preViewData.detailedStatistics[i].userName,
+                title: this.preViewData.detailedStatistics[i].userName,
                 titleClass: 'text-center min-width',
                 dataClass: 'text-center min-width',
                 width: this.tableWidth
               });
             }
 
+          }
+
+          this.graphData = response.data.data;
+          this.bar3ChartOptions.xAxis.data=[];
+          this.bar3ChartOptions.series[0].data = [];
+          //let keyData = Object.keys(this.graphData.detailedStatistics);
+          let xAxisChart = [];
+          let allUserStr = "";
+
+          // if(keyData.length>13){
+          //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 45;
+          // }
+          // else{
+          //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
+          // }
+
+          if(keyData.length > 4) {
+            for (let i = 4; i < keyData.length; i++) {
+
+              let key = keyData[i];
+              if (i === 4) {
+                allUserStr = allUserStr + this.graphData.detailedStatistics[i].userName;
+              }else {
+                allUserStr = allUserStr + ", " + this.graphData.detailedStatistics[i].userName;
+              }
+
+              xAxisChart[i - 4] = this.graphData.detailedStatistics[i].userName;
+              if (this.graphData.detailedStatistics[i] != null) {
+                this.bar3ChartOptions.series[0].data[i - 4] = this.graphData.detailedStatistics[i].workingTime;
+              } else {
+                this.bar3ChartOptions.series[0].data[i - 4] = 0;
+              }
+            }
+          }
+          this.allUser=allUserStr;
+
+          //this.bar3ChartOptions.xAxis.data = xAxisChart;
+          if(xAxisChart.length !== 0) {
+            this.bar3ChartOptions.xAxis.data = xAxisChart;
+          }
+          else {
+            this.bar3ChartOptions.series[0].data = [0];
           }
 
         }).catch((error) => {
@@ -1069,10 +1023,10 @@
 
         }
 
-        this.getGraphData();
+        //this.getGraphData();
         this.getPreviewData();
         this.setPeriodLabel(this.filter.statWidth);
-        this.$refs.taskVuetable.reload();
+        this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
         this.filter = {
@@ -1088,11 +1042,9 @@
       },
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData);
-        this.changeCheckAllStatus();
       },
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page);
-        this.changeCheckAllStatus();
       },
       onDisplaceButton() {
         if (this.pageStatus === 'charts') {
@@ -1100,6 +1052,24 @@
         } else {
           this.pageStatus = 'charts';
         }
+      },
+      convertTime(value) {
+        if(value == null || value === 0){
+          return 0;
+        }
+        let msec = value;
+
+        let hh = Math.floor(msec / 60 / 60);
+        let dd = Math.floor(hh / 24);
+        let h = hh%24;
+        msec -= hh * 60 * 60;
+        let mm = Math.floor(msec / 60);
+        msec -= mm * 60;
+        let ss = Math.floor(msec);
+        msec -= ss;
+        console.log(value);
+        let diffString = 'D' + dd + ' ' + h + ':' + mm + ':' + ss;
+        return diffString;
       },
       transform(response) {
 
@@ -1116,63 +1086,27 @@
           to: data.to
         };
 
-
-
         transformed.tKey = Object.keys(data.detailedStatistics);
-        transformed.fKey = Object.keys(data.totalStatistics.detailedStatistics);
+        transformed.fKey = Object.keys(data.detailedStatistics[0].detailedStatistics);
         transformed.data = [];
         let temp;
-        //
-
-
 
         for (let i = 0; i < Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i];
           //temp = data.detailedStatistics[j];
           temp = {};
-          temp.id = j;
+          temp.time = data.detailedStatistics[j].time;
 
-          if(this.filter.statWidth === 'hour') {
-            if (j < 9) {
-              temp.time = '0' + j + ' : 00 ~ 0' + (toInt(j) + 1) + ': 00';
-            }
-            else if(toInt(j) === 9){
-              temp.time = '09 :00 ~ 10 : 00';
-            }
-            else {
-              temp.time = j + ' : 00 ~ ' + (toInt(j) + 1) + ': 00';
-            }
-          }
-          if(this.filter.statWidth === 'day' && getLocale() === 'zh') {
-            temp.time = j + '日';
-          }
-          if(this.filter.statWidth === 'week' && getLocale() === 'zh') {
-            temp.time = j + '周';
-          }
-          if(this.filter.statWidth === 'month') {
-            if(getLocale() === 'zh') {
-              temp.time = j + '月';
-            }else {
-              temp.time = this.monthLabel[j-1];
-            }
-          }
-          if(this.filter.statWidth === 'quarter') {
-            temp.time = j + this.$t('statistics.quarter');
-          }
-          if(this.filter.statWidth === 'year') {
-            temp.time = j +  this.$t('statistics.year');
-          }
+          temp.total = this.convertTime(data.detailedStatistics[j].detailedStatistics[0].workingTime);
+          temp.scan = this.convertTime(data.detailedStatistics[j].detailedStatistics[1].workingTime);
+          temp.judge = this.convertTime(data.detailedStatistics[j].detailedStatistics[2].workingTime);
+          temp.hand = this.convertTime(data.detailedStatistics[j].detailedStatistics[3].workingTime);
 
-          temp.total = data.detailedStatistics[j].detailedStatistics[0].workingTime + data.detailedStatistics[j].detailedStatistics[1].workingTime + data.detailedStatistics[j].detailedStatistics[2].workingTime;
-          temp.scan = data.detailedStatistics[j].detailedStatistics[0].workingTime;
-          temp.judge = data.detailedStatistics[j].detailedStatistics[1].workingTime;
-          temp.hand = data.detailedStatistics[j].detailedStatistics[2].workingTime;
-
-          for(let k=3; k<transformed.fKey.length; k++) {
+          for(let k=4; k<transformed.fKey.length; k++) {
             let l = transformed.fKey[k];
             let key = data.detailedStatistics[j].detailedStatistics[l].userName;
 
-            temp[key] = data.detailedStatistics[j].detailedStatistics[l].workingTime;
+            temp[key] = this.convertTime(data.detailedStatistics[j].detailedStatistics[l].workingTime);
           }
 
           //temp = data.detailedStatistics[j];
@@ -1183,7 +1117,6 @@
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.taskVuetableItems.perPage,

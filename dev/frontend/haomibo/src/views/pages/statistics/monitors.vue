@@ -90,7 +90,7 @@
               <b-img src="/assets/img/picture.svg"/>
             </div>
             <div>
-              <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.total}}</span>
+              <span v-if="preViewData.total!=null">{{preViewData.total}}</span>
               <span v-else>0</span>
             </div>
             <div><span>{{$t('maintenance-management.process-task.judge')}}</span></div>
@@ -108,7 +108,7 @@
                 <div>
                   <div>
                     <span
-                      v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</span>
+                      v-if="preViewData.artificialJudge!=null">{{preViewData.artificialJudge}}</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.artificial-result')}}</span></div>
@@ -124,7 +124,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.assignTimeout}}</span>
+                    <span v-if="preViewData.assignTimeout!=null">{{preViewData.assignTimeout}}</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.assign-timeout')}}</span></div>
@@ -140,7 +140,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeTimeout}}</span>
+                    <span v-if="preViewData.judgeTimeout!=null">{{preViewData.judgeTimeout}}</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.judge-timeout')}}</span></div>
@@ -156,7 +156,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.atrResult}}</span>
+                    <span v-if="preViewData.atrResult!=null">{{preViewData.atrResult}}</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.atr-result')}}</span></div>
@@ -174,7 +174,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.noSuspiction}}</span>
+                    <span v-if="preViewData.noSuspiction!=null">{{preViewData.noSuspiction}}</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('knowledge-base.no-suspect')}}</span></div>
@@ -191,7 +191,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.noSuspictionRate)}}%</span>
+                    <span v-if="preViewData.noSuspictionRate!=null">{{Math.round(preViewData.noSuspictionRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.view.no-suspiction-judge-rate')}}</span></div>
@@ -208,7 +208,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.suspiction}}</span>
+                    <span v-if="preViewData.suspiction!=null">{{preViewData.suspiction}}</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.suspiction-judge')}}</span></div>
@@ -225,7 +225,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.suspictionRate)}}%</span>
+                    <span v-if="preViewData.suspictionRate!=null">{{Math.round(preViewData.suspictionRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.suspiction-judge-rate')}}</span></div>
@@ -243,7 +243,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.limitedArtificialDuration}}s</span>
+                    <span v-if="preViewData.limitedArtificialDuration!=null">{{preViewData.limitedArtificialDuration}}s</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.limited-artificial-time')}}</span></div>
@@ -259,7 +259,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.avgArtificialJudgeDuration)}}s</span>
+                    <span v-if="preViewData.avgArtificialJudgeDuration!=null">{{Math.round(preViewData.avgArtificialJudgeDuration)}}s</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.avg-artificial-time')}}</span></div>
@@ -275,7 +275,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.maxArtificialJudgeDuration)}}s</span>
+                    <span v-if="preViewData.maxArtificialJudgeDuration!=null">{{Math.round(preViewData.maxArtificialJudgeDuration)}}s</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.max-artificial-time')}}</span></div>
@@ -291,7 +291,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.minArtificialJudgeDuration)}}s</span>
+                    <span v-if="preViewData.minArtificialJudgeDuration!=null">{{Math.round(preViewData.minArtificialJudgeDuration)}}s</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.monitors.min-artificial-time')}}</span></div>
@@ -343,30 +343,30 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.monitors.artificial-judge')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.artificialJudge}}
+                      <div class="value" v-if="preViewData.artificialJudge!=null">
+                        {{preViewData.artificialJudge}}
                       </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.monitors.assign')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.assignTimeout}}
+                      <div class="value" v-if="preViewData.assignTimeout!=null">
+                        {{preViewData.assignTimeout}}
                       </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.monitors.judge')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.judgeTimeout}}
+                      <div class="value" v-if="preViewData.judgeTimeout!=null">
+                        {{preViewData.judgeTimeout}}
                       </div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">ATR</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.atrResult}}
+                      <div class="value" v-if="preViewData.atrResult!=null">
+                        {{preViewData.atrResult}}
                       </div>
                     </div>
                   </div>
@@ -408,15 +408,15 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.monitors.suspiction-judge')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.suspiction}}
+                      <div class="value" v-if="preViewData.suspiction!=null">
+                        {{preViewData.suspiction}}
                       </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('knowledge-base.no-suspect')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.noSuspiction}}
+                      <div class="value" v-if="preViewData.noSuspiction!=null">
+                        {{preViewData.noSuspiction}}
                       </div>
                     </div>
                   </div>
@@ -526,10 +526,8 @@
                       :fields="taskVuetableItems.fields"
                       :http-fetch="taskVuetableHttpFetch"
                       :per-page="taskVuetableItems.perPage"
-                      track-by="id"
                       pagination-path="pagination"
                       class="table-hover"
-                      @vuetable:checkbox-toggled="onCheckStatusChange"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
                     >
 
@@ -636,6 +634,7 @@
       this.getSiteOption();
       this.getManualDeviceData();
       this.getPreviewData();
+      this.getChartData();
       this.setPeriodLabel('hour');
     },
     data() {
@@ -740,7 +739,7 @@
               },
               data: [
                 {value: 0, name: this.$t('statistics.monitors.suspiction-judge')},
-                {value: 0, name:  this.$t('knowledge-base.no-suspect')}
+                {value: 0, name: this.$t('knowledge-base.no-suspect')}
               ]
             },
 
@@ -754,7 +753,7 @@
             }
           },
           legend: {
-            data: [this.$t('maintenance-management.process-task.artificial'), this.$t('statistics.monitors.assign'),  this.$t('statistics.monitors.judge'), 'ATR'],
+            data: [this.$t('maintenance-management.process-task.artificial'), this.$t('statistics.monitors.assign'), this.$t('statistics.monitors.judge'), 'ATR'],
             icon: 'rect',
             right: 25
           },
@@ -988,8 +987,8 @@
         xQuarter: ['1', '2', '3', '4'],
         xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         monthLabel: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        xWeek: ['1', '2', '3', '4', '5'],
-        xDay: [],
+        xWeek: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52'],
+        xDay: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31'],
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
         onSiteOptions: [
@@ -1023,13 +1022,8 @@
         periodLabel: '期间(時)',
 
         taskVuetableItems: {
-          apiUrl: `${apiBaseUrl}/task/statistics/get-judge-statistics`,
+          apiUrl: `${apiBaseUrl}/task/statistics/get-judge-statistics/detail`,
           fields: [
-            {
-              name: '__checkbox',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
             {
               name: '__sequence',
               title: this.$t('knowledge-base.th-no'),
@@ -1057,7 +1051,7 @@
             },
             {
               name: 'artificialResultRate',
-              title:  this.$t('statistics.monitors.artificial-result-rate'),
+              title: this.$t('statistics.monitors.artificial-result-rate'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (artificialResultRate) => {
@@ -1083,7 +1077,7 @@
             },
             {
               name: 'judgeTimeout',
-              title:this.$t('statistics.monitors.judge-timeout-amount'),
+              title: this.$t('statistics.monitors.judge-timeout-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -1173,60 +1167,58 @@
           ],
           perPage: 10,
         },
-
       }
     },
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
-        this.changeCheckAllStatus();
       },
 
       siteData: function (newVal, oldVal) {
 
-          this.onSiteOption = [];
-          let nest = (newVal, id = 0, depth = 1) =>
-              newVal
-                  .filter(item => item.parentFieldId == id)
-                  .map(item => ({
-                      data: {fieldId: item.fieldId},
-                      children: nest(newVal, item.fieldId, depth + 1),
-                      text: item.fieldDesignation
-                  }));
-          let treeData = nest(newVal);
+        this.onSiteOption = [];
+        let nest = (newVal, id = 0, depth = 1) =>
+          newVal
+            .filter(item => item.parentFieldId == id)
+            .map(item => ({
+              data: {fieldId: item.fieldId},
+              children: nest(newVal, item.fieldId, depth + 1),
+              text: item.fieldDesignation
+            }));
+        let treeData = nest(newVal);
 
-          let generateSpace = (count) => {
-              let string = '';
-              while (count--) {
-                  string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-              }
-              return string;
-          };
+        let generateSpace = (count) => {
+          let string = '';
+          while (count--) {
+            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+          }
+          return string;
+        };
 
-          let changeFieldTree = (treeData, index) => {
-              if (!treeData || treeData.length === 0) {
-                  return;
-              }
-              let tmp = treeData;
-              for (let i = 0; i < tmp.length; i++) {
-                  changeFieldTree(tmp[i].children, index + 1);
-                  this.onSiteOption.unshift({
-                      value: tmp[i].data.fieldId,
-                      html: `${generateSpace(index)}${tmp[i].text}`
-                  });
-              }
-          };
+        let changeFieldTree = (treeData, index) => {
+          if (!treeData || treeData.length === 0) {
+            return;
+          }
+          let tmp = treeData;
+          for (let i = 0; i < tmp.length; i++) {
+            changeFieldTree(tmp[i].children, index + 1);
+            this.onSiteOption.unshift({
+              value: tmp[i].data.fieldId,
+              html: `${generateSpace(index)}${tmp[i].text}`
+            });
+          }
+        };
 
-          changeFieldTree(treeData, 1);
-          this.onSiteOption.unshift({
-              value: null,
-              html: `${this.$t('permission-management.all')}`
-          });
+        changeFieldTree(treeData, 1);
+        this.onSiteOption.unshift({
+          value: null,
+          html: `${this.$t('permission-management.all')}`
+        });
       }
     },
     methods: {
-      setPeriodLabel (newVal) {
-        if(getLocale() === 'zh') {
+      setPeriodLabel(newVal) {
+        if (getLocale() === 'zh') {
           //this.periodLabel = '时间段';
           switch (newVal) {
             case 'hour':
@@ -1248,7 +1240,7 @@
               this.periodLabel = '年';
               break;
           }
-        }else{
+        } else {
           switch (newVal) {
             case 'hour':
               this.periodLabel = 'Periods(hour)';
@@ -1272,52 +1264,6 @@
         }
         return this.periodLabel;
 
-      },
-      selectAll(value) {
-        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.taskVuetable.isCheckAllStatus = value;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton = document.getElementById(checkBoxId);
-        checkAllButton.checked = value;
-      },
-      selectNone() {
-        this.$refs.taskVuetable.isCheckAllStatus=false;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton = document.getElementById(checkBoxId);
-        checkAllButton.checked = false;
-      },
-      changeCheckAllStatus() {
-        let selectList = this.$refs.taskVuetable.selectedTo;
-        let renderedList = this.renderedCheckList;
-        if (selectList.length >= renderedList.length) {
-          let isEqual = false;
-          for (let i = 0; i < renderedList.length; i++) {
-            isEqual = false;
-            for (let j = 0; j < selectList.length; j++) {
-              if (renderedList[i] === selectList[j]) {
-                j = selectList.length;
-                isEqual = true
-              }
-            }
-            if (isEqual === false) {
-              this.selectNone();
-              break;
-            }
-            if (i === renderedList.length - 1) {
-              this.selectAll(true);
-            }
-          }
-        } else {
-          this.selectNone();
-        }
-
-      },
-      onCheckStatusChange(isChecked) {
-        if (isChecked) {
-          this.changeCheckAllStatus();
-        } else {
-          this.selectNone();
-        }
       },
       getSiteLabel(value) {
         if (value === null || this.onSiteOption === null) return "";
@@ -1392,22 +1338,11 @@
       },
 
       onExportButton() {
-        // this.fileSelection = [];
-        // this.$refs['model-export'].show();
-        let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        } else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
 
         this.params = {
-          'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
+          'locale': getLocale(),
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/judge/generate`;
         this.name = this.$t('menu.statistics-monitors');
@@ -1424,7 +1359,7 @@
         }
 
         let params = {
-          'locale' : getLocale(),
+          'locale': getLocale(),
           'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
           'filter': {'filter': this.filter},
           'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
@@ -1443,27 +1378,16 @@
       },
 
       onPrintButton() {
-        let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        } else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
 
         let params = {
-          'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
+          'locale': getLocale(),
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/judge/generate`;
-        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        } else {
           printFileFromServer(link, params);
-        }
+
       },
 
 
@@ -1494,49 +1418,117 @@
 
       },
       getPreviewData() {
-        getApiManager().post(`${apiBaseUrl}/task/statistics/get-judge-statistics`, {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-judge-statistics/total`, {
           filter: this.filter
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
-          if (this.preViewData.totalStatistics != null) {
+          if (this.preViewData != null) {
 
-            this.pieChart1Options.series[0].data[0].value = this.preViewData.totalStatistics.artificialJudge;
-            this.pieChart1Options.series[0].data[1].value = this.preViewData.totalStatistics.assignTimeout;
-            this.pieChart1Options.series[0].data[2].value = this.preViewData.totalStatistics.judgeTimeout;
-            this.pieChart1Options.series[0].data[3].value = this.preViewData.totalStatistics.atrResult;
-            this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.suspiction;
-            this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSuspiction;
+            this.pieChart1Options.series[0].data[0].value = this.preViewData.artificialJudge;
+            this.pieChart1Options.series[0].data[1].value = this.preViewData.assignTimeout;
+            this.pieChart1Options.series[0].data[2].value = this.preViewData.judgeTimeout;
+            this.pieChart1Options.series[0].data[3].value = this.preViewData.atrResult;
+            this.pieChart2Options.series[0].data[0].value = this.preViewData.suspiction;
+            this.pieChart2Options.series[0].data[1].value = this.preViewData.noSuspiction;
           }
-          // if (this.filter.statWidth === 'year') {
-          //   this.bar3ChartOptions.xAxis.data = this.xHour;
-          // } else {
-          this.xDay = Object.keys(this.preViewData.detailedStatistics);
+        });
+      },
 
-          this.barChart1Options.xAxis.data = this.xDay;
-          this.barChart2Options.xAxis.data = this.xDay;
-          this.barChart3Options.xAxis.data = this.xDay;
-          for (let i = 0; i < this.xDay.length; i++) {
-            let key = this.xDay[i];
+      getChartData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-judge-statistics/chart`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          let chartData = response.data.data.detailedStatistics;
 
-            if (this.preViewData.detailedStatistics[key] != null) {
-              this.barChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[key].artificialJudge;
-              this.barChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[key].assignTimeout;
-              this.barChart1Options.series[2].data[i] = this.preViewData.detailedStatistics[key].judgeTimeout;
-              this.barChart1Options.series[3].data[i] = this.preViewData.detailedStatistics[key].atrResult;
-              this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].suspiction;
-              this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].noSuspiction;
-              this.barChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[key].avgArtificialJudgeDuration;
-              this.barChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[key].maxArtificialJudgeDuration;
-              this.barChart3Options.series[2].data[i] = this.preViewData.detailedStatistics[key].minArtificialJudgeDuration;
+          let keyData = [];
+
+          //this.xDay = Object.keys(chartData);
+
+          switch (this.filter.statWidth) {
+            case "hour":
+              this.barChart1Options.xAxis.data = this.xHour;
+              this.barChart2Options.xAxis.data = this.xHour;
+              this.barChart3Options.xAxis.data = this.xHour;
+              break;
+            case "day":
+              this.barChart1Options.xAxis.data = this.xDay;
+              this.barChart2Options.xAxis.data = this.xDay;
+              this.barChart3Options.xAxis.data = this.xDay;
+              break;
+            case "week":
+              this.barChart1Options.xAxis.data = this.xWeek;
+              this.barChart2Options.xAxis.data = this.xWeek;
+              this.barChart3Options.xAxis.data = this.xWeek;
+              break;
+            case "month":
+              this.barChart1Options.xAxis.data = this.xMonth;
+              this.barChart2Options.xAxis.data = this.xMonth;
+              this.barChart3Options.xAxis.data = this.xMonth;
+              break;
+            case "quarter":
+              this.barChart1Options.xAxis.data = this.xQuarter;
+              this.barChart2Options.xAxis.data = this.xQuarter;
+              this.barChart3Options.xAxis.data = this.xQuarter;
+              break;
+            case "year":
+              this.barChart1Options.xAxis.data = this.xYear;
+              this.barChart2Options.xAxis.data = this.xYear;
+              this.barChart3Options.xAxis.data = this.xYear;
+              break;
+
+          }
+
+          //this.bar3ChartOptions.xAxis.data = this.xDay;
+          if (this.filter.statWidth !== 'year') {
+            for (let i = 0; i < this.barChart1Options.xAxis.data.length; i++) {
+              let key = this.barChart1Options.xAxis.data[i];
+              this.barChart1Options.series[0].data[i] = 0;
+              this.barChart1Options.series[1].data[i] = 0;
+              this.barChart1Options.series[2].data[i] = 0;
+              this.barChart1Options.series[3].data[i] = 0;
+              this.barChart2Options.series[0].data[i] = 0;
+              this.barChart2Options.series[1].data[i] = 0;
+              this.barChart3Options.series[0].data[i] = 0;
+              this.barChart3Options.series[1].data[i] = 0;
+              this.barChart3Options.series[2].data[i] = 0;
+              for (let j = 0; j < chartData.length; j++) {
+                if (key === chartData[j].time) {
+                  this.barChart1Options.series[0].data[i] = chartData[j].artificialJudge;
+                  this.barChart1Options.series[1].data[i] = chartData[j].assignTimeout;
+                  this.barChart1Options.series[2].data[i] = chartData[j].judgeTimeout;
+                  this.barChart1Options.series[3].data[i] = chartData[j].atrResult;
+                  this.barChart2Options.series[0].data[i] = chartData[j].suspiction;
+                  this.barChart2Options.series[1].data[i] = chartData[j].noSuspiction;
+                  this.barChart3Options.series[0].data[i] = chartData[j].avgArtificialJudgeDuration;
+                  this.barChart3Options.series[1].data[i] = chartData[j].maxArtificialJudgeDuration;
+                  this.barChart3Options.series[2].data[i] = chartData[j].minArtificialJudgeDuration;
+                }
+
+              }
+            }
+          } else {
+            for (let j = 0; j < chartData.length; j++) {
+              this.barChart1Options.xAxis.data.push(chartData[j].time);
+              this.barChart1Options.series[0].data[j] = chartData[j].artificialJudge;
+              this.barChart1Options.series[1].data[j] = chartData[j].assignTimeout;
+              this.barChart1Options.series[2].data[j] = chartData[j].judgeTimeout;
+              this.barChart1Options.series[3].data[j] = chartData[j].atrResult;
+              this.barChart2Options.series[0].data[j] = chartData[j].suspiction;
+              this.barChart2Options.series[1].data[j] = chartData[j].noSuspiction;
+              this.barChart3Options.series[0].data[j] = chartData[j].avgArtificialJudgeDuration;
+              this.barChart3Options.series[1].data[j] = chartData[j].maxArtificialJudgeDuration;
+              this.barChart3Options.series[2].data[j] = chartData[j].minArtificialJudgeDuration;
             }
           }
-          //}
+
+        }).catch((error) => {
         });
       },
 
       onSearchButton() {
-        if(this.filter.startTime !== null && this.filter.endTime !== null) {
+        if (this.filter.startTime !== null && this.filter.endTime !== null) {
 
           if (this.filter.startTime >= this.filter.endTime) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`maintenance-management.process-task.time-select`), {
@@ -1545,10 +1537,10 @@
             });
             return;
           }
-
         }
 
         this.getPreviewData();
+        this.getChartData();
         this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
@@ -1564,11 +1556,11 @@
       },
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData);
-        this.changeCheckAllStatus();
+
       },
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page);
-        this.changeCheckAllStatus();
+
       },
       onDisplaceButton() {
         if (this.pageStatus === 'charts') {
@@ -1600,39 +1592,6 @@
           let j = transformed.tKey[i];
 
           temp = data.detailedStatistics[j];
-          temp.id = temp.time;
-          this.renderedCheckList.push(data.detailedStatistics[j].time);
-
-          if(this.filter.statWidth === 'hour') {
-            if (temp.time < 9) {
-              temp.time = '0' + temp.time + ' : 00 ~ 0' + (temp.time + 1) + ': 00';
-            }
-            else if(temp.time === 9){
-              temp.time = '09 :00 ~ 10 : 00';
-            }
-            else {
-              temp.time = temp.time + ' : 00 ~ ' + (temp.time + 1) + ': 00';
-            }
-          }
-          if(this.filter.statWidth === 'day' && getLocale() === 'zh') {
-            temp.time = temp.time + '日';
-          }
-          if(this.filter.statWidth === 'week' && getLocale() === 'zh') {
-            temp.time = temp.time + '周';
-          }
-          if(this.filter.statWidth === 'month') {
-            if(getLocale() === 'zh') {
-              temp.time = temp.time + '月';
-            }else {
-              temp.time = this.monthLabel[temp.time-1];
-            }
-          }
-          if(this.filter.statWidth === 'quarter') {
-            temp.time = temp.time + this.$t('statistics.quarter');
-          }
-          if(this.filter.statWidth === 'year') {
-            temp.time = temp.time +  this.$t('statistics.year');
-          }
           transformed.data.push(temp);
         }
 
@@ -1641,7 +1600,7 @@
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        this.renderedCheckList = [];
+
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.taskVuetableItems.perPage,
@@ -1658,6 +1617,7 @@
   .col-form-label {
     margin-bottom: 1px;
   }
+
   .statistics-monitors {
 
     display: flex;

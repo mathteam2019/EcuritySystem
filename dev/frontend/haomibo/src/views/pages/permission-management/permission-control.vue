@@ -107,10 +107,7 @@
                       {{$t('permission-management.permission-control.role-number')}}
                       <span class="text-danger">*</span>
                     </template>
-                    <b-form-input
-                      v-model="roleForm.roleNumber"
-                      :state="!$v.roleForm.roleNumber.$invalid"
-                      :placeholder="$t('permission-management.permission-control.enter-role-number')"/>
+                    <label>{{roleForm.roleNumber}}</label>
                   </b-form-group>
 
                   <b-form-group>
@@ -341,9 +338,7 @@
                     {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input
-                    v-model="dataGroupForm.dataGroupNumber"
-                    :state="!$v.dataGroupForm.dataGroupNumber.$invalid"/>
+                  <label>{{dataGroupForm.dataGroupNumber}}</label>
                 </b-form-group>
 
                 <b-form-group>

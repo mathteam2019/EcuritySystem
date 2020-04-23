@@ -96,8 +96,8 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.totalScan}}</span>
-                <span v-else>0</span>
+              <span v-if="preViewData.totalScan!=null">{{preViewData.totalScan}}</span>
+              <span v-else>0</span>
             </div>
             <div><span>{{this.$t('statistics.view.scan-total')}}</span></div>
           </div>
@@ -113,7 +113,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.validScan}}</span>
+                    <span v-if="preViewData.validScan!=null">{{preViewData.validScan}}</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.view.valid-scan')}}</span></div>
@@ -129,7 +129,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.validScanRate)}}%</span>
+                    <span v-if="preViewData.validScanRate!=null">{{Math.round(preViewData.validScanRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.view.valid-scan-rate')}}</span></div>
@@ -145,8 +145,8 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.invalidScan}}</span>
-                <span v-else>0</span>
+                    <span v-if="preViewData.invalidScan!=null">{{preViewData.invalidScan}}</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.view.invalid-scan')}}</span></div>
                 </div>
@@ -161,7 +161,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.invalidScanRate)}}%</span>
+                    <span v-if="preViewData.invalidScanRate!=null">{{Math.round(preViewData.invalidScanRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.view.invalid-scan-rate')}}</span></div>
@@ -179,8 +179,8 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.passedScan}}</span>
-                <span v-else>0</span>
+                    <span v-if="preViewData.passedScan!=null">{{preViewData.passedScan}}</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>{{$t('permission-management.permission-control.pending-success')}}</span></div>
                 </div>
@@ -195,8 +195,8 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.passedScanRate)}}%</span>
-                <span v-else>0</span>
+                    <span v-if="preViewData.passedScanRate!=null">{{Math.round(preViewData.passedScanRate)}}%</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.view.passed-scan-rate')}}</span></div>
                 </div>
@@ -211,8 +211,8 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.alarmScan}}</span>
-                <span v-else>0</span>
+                    <span v-if="preViewData.alarmScan!=null">{{preViewData.alarmScan}}</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.view.alarm-scan')}}</span></div>
                 </div>
@@ -227,8 +227,8 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.alarmScanRate)}}%</span>
-                <span v-else>0</span>
+                    <span v-if="preViewData.alarmScanRate!=null">{{Math.round(preViewData.alarmScanRate)}}%</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>{{$t('statistics.view.alarm-scan-rate')}}</span></div>
                 </div>
@@ -246,10 +246,12 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('scan_statistics_export')" @click="onExportButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('scan_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('scan_statistics_print')" @click="onPrintButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('scan_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -277,23 +279,23 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.view.invalid-scan')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.invalidScan}}</div>
+                      <div class="value" v-if="preViewData!=null">{{preViewData.invalidScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.view.valid-scan')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.validScan}}</div>
+                      <div class="value" v-if="preViewData!=null">{{preViewData.validScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.view.alarm-scan')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.alarmScan}}</div>
+                      <div class="value" v-if="preViewData!=null">{{preViewData.alarmScan}}</div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('permission-management.permission-control.pending-success')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.passedScan}}</div>
+                      <div class="value" v-if="preViewData!=null">{{preViewData.passedScan}}</div>
                     </div>
                   </div>
                 </div>
@@ -383,10 +385,8 @@
                       :fields="taskVuetableItems.fields"
                       :http-fetch="taskVuetableHttpFetch"
                       :per-page="taskVuetableItems.perPage"
-                      track-by="id"
                       pagination-path="pagination"
                       class="table-hover"
-                      @vuetable:checkbox-toggled="onCheckStatusChange"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
                     >
 
@@ -410,10 +410,11 @@
 
       </b-col>
     </b-row>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -466,7 +467,7 @@
   import vSelect from 'vue-select';
   import 'vue-select/dist/vue-select.css'
 
-  import {checkPermissionItem, getDirection,getLocale} from "../../../utils";
+  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
   import {validationMixin} from "vuelidate";
   import Modal from '../../../components/Modal/modal'
 
@@ -492,6 +493,7 @@
       this.getSiteOption();
       this.getManualDeviceData();
       this.getPreviewData();
+      this.getChartData();
       this.setPeriodLabel('hour');
     },
     data() {
@@ -592,7 +594,10 @@
               },
               data: [
                 {value: doublePieChartData['报警'].value, name: this.$t('statistics.view.alarm-scan')},
-                {value: doublePieChartData['通过'].value, name: this.$t('permission-management.permission-control.pending-success')},
+                {
+                  value: doublePieChartData['通过'].value,
+                  name: this.$t('permission-management.permission-control.pending-success')
+                },
               ]
             }
           ]
@@ -669,23 +674,23 @@
         isExpanded: false,
         isCheckAll: false,
         pageStatus: 'charts',
-	link: '',
+        link: '',
         params: {},
         name: '',
 
         fileSelection: [],
-        renderedCheckList:[],
+        renderedCheckList: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-	isModalVisible: false,
+        isModalVisible: false,
 
         filter: {
           fieldId: null,
-          workMode : null,
+          workMode: null,
           deviceId: null,
           userCategory: null,
           userName: null,
@@ -696,7 +701,7 @@
 
         siteData: [],
         allField: '',
-        allDevice:'',
+        allDevice: '',
         preViewData: [],
         manualDeviceOptions: [],
 
@@ -704,8 +709,8 @@
         xQuarter: ['1', '2', '3', '4'],
         xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         monthLabel: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        xWeek: ['1', '2', '3', '4', '5'],
-        xDay: [],
+        xWeek: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52'],
+        xDay: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31'],
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
         onSiteOptions: [
@@ -742,16 +747,11 @@
           {value: 'year', text: this.$t('statistics.year')},
         ],
 
-        periodLabel : '期间(時)',
+        periodLabel: '期间(時)',
 
         taskVuetableItems: {
-          apiUrl: `${apiBaseUrl}/task/statistics/scan`,
+          apiUrl: `${apiBaseUrl}/task/statistics/scan/detail`,
           fields: [
-            {
-              name: '__checkbox',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
             {
               name: '__sequence',
               title: this.$t('knowledge-base.th-no'),
@@ -761,7 +761,7 @@
             },
             {
               name: 'time',
-              title : this.setPeriodLabel,
+              title: this.setPeriodLabel,
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -847,54 +847,53 @@
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
-        this.changeCheckAllStatus();
       },
 
       siteData: function (newVal, oldVal) {
 
-          this.onSiteOption = [];
-          let nest = (newVal, id = 0, depth = 1) =>
-              newVal
-                  .filter(item => item.parentFieldId == id)
-                  .map(item => ({
-                      data: {fieldId: item.fieldId},
-                      children: nest(newVal, item.fieldId, depth + 1),
-                      text: item.fieldDesignation
-                  }));
-          let treeData = nest(newVal);
+        this.onSiteOption = [];
+        let nest = (newVal, id = 0, depth = 1) =>
+          newVal
+            .filter(item => item.parentFieldId == id)
+            .map(item => ({
+              data: {fieldId: item.fieldId},
+              children: nest(newVal, item.fieldId, depth + 1),
+              text: item.fieldDesignation
+            }));
+        let treeData = nest(newVal);
 
-          let generateSpace = (count) => {
-              let string = '';
-              while (count--) {
-                  string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-              }
-              return string;
-          };
+        let generateSpace = (count) => {
+          let string = '';
+          while (count--) {
+            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+          }
+          return string;
+        };
 
-          let changeFieldTree = (treeData, index) => {
-              if (!treeData || treeData.length === 0) {
-                  return;
-              }
-              let tmp = treeData;
-              for (let i = 0; i < tmp.length; i++) {
-                  changeFieldTree(tmp[i].children, index + 1);
-                  this.onSiteOption.unshift({
-                      value: tmp[i].data.fieldId,
-                      html: `${generateSpace(index)}${tmp[i].text}`
-                  });
-              }
-          };
+        let changeFieldTree = (treeData, index) => {
+          if (!treeData || treeData.length === 0) {
+            return;
+          }
+          let tmp = treeData;
+          for (let i = 0; i < tmp.length; i++) {
+            changeFieldTree(tmp[i].children, index + 1);
+            this.onSiteOption.unshift({
+              value: tmp[i].data.fieldId,
+              html: `${generateSpace(index)}${tmp[i].text}`
+            });
+          }
+        };
 
-          changeFieldTree(treeData, 1);
-          this.onSiteOption.unshift({
-              value: null,
-              html: `${this.$t('permission-management.all')}`
-          });
+        changeFieldTree(treeData, 1);
+        this.onSiteOption.unshift({
+          value: null,
+          html: `${this.$t('permission-management.all')}`
+        });
       }
     },
     methods: {
-      setPeriodLabel (newVal) {
-        if(getLocale() === 'zh') {
+      setPeriodLabel(newVal) {
+        if (getLocale() === 'zh') {
           //this.periodLabel = '时间段';
           switch (newVal) {
             case 'hour':
@@ -916,7 +915,7 @@
               this.periodLabel = '年';
               break;
           }
-        }else{
+        } else {
           switch (newVal) {
             case 'hour':
               this.periodLabel = 'Periods(hour)';
@@ -941,51 +940,7 @@
         return this.periodLabel;
 
       },
-      selectAll(value){
-        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.taskVuetable.isCheckAllStatus=value;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
-        checkAllButton.checked = value;
-      },
-      selectNone(){
-        this.$refs.taskVuetable.isCheckAllStatus=false;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
-        checkAllButton.checked = false;
-      },
-      changeCheckAllStatus(){
-        let selectList = this.$refs.taskVuetable.selectedTo;
-        let renderedList = this.renderedCheckList;
-        if(selectList.length>=renderedList.length){
-          let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
-            isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
-            }
-            if(isEqual===false){
-              this.selectNone();
-              break;
-            }
-            if(i===renderedList.length-1){
-              this.selectAll(true);
-            }
-          }
-        }
-        else {
-          this.selectNone();
-        }
 
-      },
-      onCheckStatusChange(isChecked){
-        if(isChecked){
-          this.changeCheckAllStatus();
-        }
-        else {
-          this.selectNone();
-        }
-      },
       getSiteLabel(value) {
         if (value === null || this.onSiteOption === null) return "";
         else {
@@ -995,20 +950,20 @@
           }
         }
       },
-      getDeviceLabel(value){
-        if(value===null||this.manualDeviceOptions===null) return "";
-        else{
-          for(let i=0; i<this.manualDeviceOptions.length; i++){
-            if(this.manualDeviceOptions[i].value===value)
+      getDeviceLabel(value) {
+        if (value === null || this.manualDeviceOptions === null) return "";
+        else {
+          for (let i = 0; i < this.manualDeviceOptions.length; i++) {
+            if (this.manualDeviceOptions[i].value === value)
               return this.manualDeviceOptions[i].text;
           }
         }
       },
-      getCategoryLabel(value){
-        if(value===null||this.operatorTypeOptions===null) return "";
-        else{
-          for(let i=0; i<this.operatorTypeOptions.length; i++){
-            if(this.operatorTypeOptions[i].value===value)
+      getCategoryLabel(value) {
+        if (value === null || this.operatorTypeOptions === null) return "";
+        else {
+          for (let i = 0; i < this.operatorTypeOptions.length; i++) {
+            if (this.operatorTypeOptions[i].value === value)
               return this.operatorTypeOptions[i].text;
           }
         }
@@ -1054,57 +1009,41 @@
       },
 
       getDateTimeFormat(dataTime) {
-        if(dataTime==null)return '';
+        if (dataTime == null) return '';
         return getDateTimeWithFormat(dataTime, 'monitor');
       },
 
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
-       let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        }
-        else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
+        // let checkedAll, checkedIds;
+        // if (this.pageStatus === 'charts') {
+        //   checkedAll = true;
+        //   checkedIds = "";
+        // } else {
+        //   checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        //   checkedIds = this.$refs.taskVuetable.selectedTo;
+        // }
 
         this.params = {
-          'locale' : getLocale(),
-          'isAll': checkedIds.length > 0  || this.pageStatus==='charts' ? checkedAll : true,
+          'locale': getLocale(),
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         this.link = `task/statistics/scan/generate`;
         this.name = this.$t('menu.statistics-scan-devices');
         this.isModalVisible = true;
       },
-      onExport(){
-        let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        }
-        else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
-
+      onExport() {
         let params = {
-          'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : true,
+          'locale': getLocale(),
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/scan/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
-
-        }else {
-        downLoadFileFromServer(link, params, 'Statistics-Scan', this.fileSelection);
+          downLoadFileFromServer(link, params, 'Statistics-Scan', this.fileSelection);
           this.hideModal('model-export')
-        }
+
       },
 
       hideModal(modal) {
@@ -1112,28 +1051,16 @@
       },
 
       onPrintButton() {
-        let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        }
-        else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
 
         let params = {
-          'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : true,
+          'locale': getLocale(),
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/scan/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
 
-        }else {
-        printFileFromServer(link, params);
-        }
+          printFileFromServer(link, params);
+
       },
 
 
@@ -1165,48 +1092,91 @@
       },
 
       getPreviewData() {
-        getApiManager().post(`${apiBaseUrl}/task/statistics/scan`, {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/scan/total`, {
           filter: this.filter
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
-          if(this.preViewData.totalStatistics!=null) {
+          if (this.preViewData != null) {
 
-          this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.invalidScan;
-          this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.validScan;
-          this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.alarmScan;
-          this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.passedScan;
-}
-          else {
+            this.doublePieChartOptions.series[0].data[0].value = this.preViewData.invalidScan;
+            this.doublePieChartOptions.series[0].data[1].value = this.preViewData.validScan;
+            this.doublePieChartOptions.series[1].data[0].value = this.preViewData.alarmScan;
+            this.doublePieChartOptions.series[1].data[1].value = this.preViewData.passedScan;
+          } else {
             this.doublePieChartOptions.series[0].data[0].value = 0;
             this.doublePieChartOptions.series[0].data[1].value = 0;
             this.doublePieChartOptions.series[1].data[0].value = 0;
             this.doublePieChartOptions.series[1].data[1].value = 0;
           }
 
-          // if (this.filter.statWidth === 'year') {
-          //   this.bar3ChartOptions.xAxis.data = this.xHour;
-          // } else {
-            this.xDay = Object.keys(this.preViewData.detailedStatistics);
+        });
+      },
 
-            this.bar3ChartOptions.xAxis.data = this.xDay;
-            for (let i = 0; i < this.xDay.length; i++) {
-               let key = this.xDay[i];
+      getChartData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/scan/chart`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          let chartData = response.data.data.detailedStatistics;
 
-              if (this.preViewData.detailedStatistics[key] != null) {
-                this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[key].passedScan;
-                this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[key].alarmScan;
-                this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[key].invalidScan;
+          let keyData = [];
+
+          //this.xDay = Object.keys(chartData);
+
+          switch (this.filter.statWidth) {
+            case "hour":
+              this.bar3ChartOptions.xAxis.data = this.xHour;
+              break;
+            case "day":
+              this.bar3ChartOptions.xAxis.data = this.xDay;
+              break;
+            case "week":
+              this.bar3ChartOptions.xAxis.data = this.xWeek;
+              break;
+            case "month":
+              this.bar3ChartOptions.xAxis.data = this.xMonth;
+              break;
+            case "quarter":
+              this.bar3ChartOptions.xAxis.data = this.xQuarter;
+              break;
+            case "year":
+              this.bar3ChartOptions.xAxis.data = this.xYear;
+              break;
+
+          }
+
+          //this.bar3ChartOptions.xAxis.data = this.xDay;
+          if (this.filter.statWidth !== 'year') {
+            for (let i = 0; i < this.bar3ChartOptions.xAxis.data.length; i++) {
+              let key = this.bar3ChartOptions.xAxis.data[i];
+              this.bar3ChartOptions.series[0].data[i] = 0;
+              this.bar3ChartOptions.series[1].data[i] = 0;
+              this.bar3ChartOptions.series[2].data[i] = 0;
+              for (let j = 0; j < chartData.length; j++) {
+                if (key === chartData[j].time) {
+                  this.bar3ChartOptions.series[0].data[i] = chartData[j].passedScan;
+                  this.bar3ChartOptions.series[1].data[i] = chartData[j].alarmScan;
+                  this.bar3ChartOptions.series[2].data[i] = chartData[j].invalidScan;
+                }
+
               }
             }
-          //}
+          } else {
+            for (let j = 0; j < chartData.length; j++) {
+              this.bar3ChartOptions.xAxis.data.push(chartData[j].time);
+              this.bar3ChartOptions.series[0].data[j] = chartData[j].passedScan;
+              this.bar3ChartOptions.series[1].data[j] = chartData[j].alarmScan;
+              this.bar3ChartOptions.series[2].data[j] = chartData[j].invalidScan;
+            }
+          }
 
-
+        }).catch((error) => {
         });
       },
 
       onSearchButton() {
-        if(this.filter.startTime !== null && this.filter.endTime !== null) {
+        if (this.filter.startTime !== null && this.filter.endTime !== null) {
 
           if (this.filter.startTime >= this.filter.endTime) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`maintenance-management.process-task.time-select`), {
@@ -1215,10 +1185,9 @@
             });
             return;
           }
-
         }
-
         this.getPreviewData();
+        this.getChartData();
         this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
 
@@ -1238,11 +1207,9 @@
 
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData);
-        this.changeCheckAllStatus();
       },
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page);
-        this.changeCheckAllStatus();
       },
       onDisplaceButton() {
         if (this.pageStatus === 'charts') {
@@ -1273,38 +1240,7 @@
         for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i - 1];
           temp = data.detailedStatistics[j];
-          temp.id = temp.time;
-          this.renderedCheckList.push(data.detailedStatistics[j].time);
-          if(this.filter.statWidth === 'hour') {
-            if (temp.time < 9) {
-              temp.time = '0' + temp.time + ' : 00 ~ 0' + (temp.time + 1) + ': 00';
-            }
-            else if(temp.time === 9){
-              temp.time = '09 :00 ~ 10 : 00';
-            }
-            else {
-              temp.time = temp.time + ' : 00 ~ ' + (temp.time + 1) + ': 00';
-            }
-          }
-          if(this.filter.statWidth === 'day' && getLocale() === 'zh') {
-            temp.time = temp.time + '日';
-          }
-          if(this.filter.statWidth === 'week' && getLocale() === 'zh') {
-            temp.time = temp.time + '周';
-          }
-          if(this.filter.statWidth === 'month') {
-            if(getLocale() === 'zh') {
-              temp.time = temp.time + '月';
-            }else {
-              temp.time = this.monthLabel[temp.time-1];
-            }
-          }
-          if(this.filter.statWidth === 'quarter') {
-            temp.time = temp.time + this.$t('statistics.quarter');
-          }
-          if(this.filter.statWidth === 'year') {
-            temp.time = temp.time +  this.$t('statistics.year');
-          }
+
           transformed.data.push(temp);
         }
 
@@ -1314,7 +1250,7 @@
 
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        this.renderedCheckList = [];
+
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.taskVuetableItems.perPage,
@@ -1331,6 +1267,7 @@
   .col-form-label {
     margin-bottom: 1px;
   }
+
   .statistics-scan-devices {
 
     display: flex;

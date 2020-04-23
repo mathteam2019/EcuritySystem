@@ -94,7 +94,7 @@
             <div>
               <div>
                 <span
-                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.totalScan}}</span>
+                  v-if="preViewData.scanStatistics!=null">{{preViewData.scanStatistics.totalScan}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('maintenance-management.process-task.scan')}}</span></div>
@@ -111,7 +111,7 @@
             <div>
               <div>
                 <span
-                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.validScan}}</span>
+                  v-if="preViewData.scanStatistics!=null">{{preViewData.scanStatistics.validScan}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('statistics.view.valid-scan')}}</span></div>
@@ -128,7 +128,7 @@
             <div>
               <div>
                 <span
-                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.passedScan}}</span>
+                  v-if="preViewData.scanStatistics!=null">{{preViewData.scanStatistics.passedScan}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('permission-management.permission-control.pending-success')}}</span></div>
@@ -145,7 +145,7 @@
             <div>
               <div>
                 <span
-                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</span>
+                  v-if="preViewData.scanStatistics!=null">{{preViewData.scanStatistics.alarmScan}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('statistics.view.alarm-scan')}}</span></div>
@@ -161,7 +161,7 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.invalidScan}}</span>
+                <span v-if="preViewData.scanStatistics!=null">{{preViewData.scanStatistics.invalidScan}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('statistics.view.invalid-scan')}}</span></div>
@@ -180,7 +180,7 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.totalJudge}}</span>
+                <span v-if="preViewData.judgeStatistics!=null">{{preViewData.judgeStatistics.totalJudge}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('maintenance-management.process-task.judge')}}</span></div>
@@ -196,7 +196,7 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.noSuspictionJudge}}</span>
+                <span v-if="preViewData.judgeStatistics!=null">{{preViewData.judgeStatistics.noSuspictionJudge}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('knowledge-base.no-suspect')}}</span></div>
@@ -212,7 +212,7 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.totalHandExamination}}</span>
+                <span v-if="preViewData.handExaminationStatistics!=null">{{preViewData.handExaminationStatistics.totalHandExamination}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('maintenance-management.process-task.hand')}}</span></div>
@@ -228,7 +228,7 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.noSeizureHandExamination}}</span>
+                <span v-if="preViewData.handExaminationStatistics!=null">{{preViewData.handExaminationStatistics.noSeizureHandExamination}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('knowledge-base.no-seized')}}</span></div>
@@ -244,7 +244,7 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.seizureHandExamination}}</span>
+                <span v-if="preViewData.handExaminationStatistics!=null">{{preViewData.handExaminationStatistics.seizureHandExamination}}</span>
                 <span v-else>0</span>
               </div>
               <div><span>{{$t('knowledge-base.seized')}}</span></div>
@@ -293,30 +293,30 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.view.invalid-scan')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.scanStatistics.invalidScan}}
+                      <div class="value" v-if="preViewData.scanStatistics!=null">
+                        {{preViewData.scanStatistics.invalidScan}}
                       </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.view.valid-scan')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.scanStatistics.validScan}}
+                      <div class="value" v-if="preViewData.scanStatistics!=null">
+                        {{preViewData.scanStatistics.validScan}}
                       </div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('statistics.view.alarm-scan')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.scanStatistics.alarmScan}}
+                      <div class="value" v-if="preViewData.scanStatistics!=null">
+                        {{preViewData.scanStatistics.alarmScan}}
                       </div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">{{$t('permission-management.permission-control.pending-success')}}</div>
-                      <div class="value" v-if="preViewData.totalStatistics!=null">
-                        {{preViewData.totalStatistics.scanStatistics.passedScan}}
+                      <div class="value" v-if="preViewData.scanStatistics!=null">
+                        {{preViewData.scanStatistics.passedScan}}
                       </div>
                     </div>
                   </div>
@@ -410,10 +410,8 @@
                       :fields="taskVuetableItems.fields"
                       :http-fetch="taskVuetableHttpFetch"
                       :per-page="taskVuetableItems.perPage"
-                      track-by="id"
                       pagination-path="pagination"
                       class="table-hover"
-                      @vuetable:checkbox-toggled="onCheckStatusChange"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
                     >
                     </vuetable>
@@ -517,6 +515,7 @@
       this.getSiteOption();
       this.getManualDeviceData();
       this.getPreviewData();
+      this.getChartData();
       this.setPeriodLabel('hour');
     },
     data() {
@@ -709,8 +708,8 @@
         xQuarter: ['1', '2', '3', '4'],
         xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         monthLabel: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        xWeek: ['1', '2', '3', '4', '5'],
-        xDay: [],
+        xWeek: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52'],
+        xDay: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31'],
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
         onSiteOptions: [
@@ -744,13 +743,8 @@
         periodLabel : '期间(時)',
 
         taskVuetableItems: {
-          apiUrl: `${apiBaseUrl}/task/statistics/preview`,
+          apiUrl: `${apiBaseUrl}/task/statistics/preview/detail`,
           fields: [
-            {
-              name: '__checkbox',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
             {
               name: '__sequence',
               title: this.$t('knowledge-base.th-no'),
@@ -977,54 +971,7 @@
         return this.periodLabel;
 
       },
-      // getPeriodLabel () {
-      //   return this.periodLabel;
-      // },
-      selectAll(value){
-        this.$refs.taskVuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.taskVuetable.isCheckAllStatus=value;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
-        checkAllButton.checked = value;
-      },
-      selectNone(){
-        this.$refs.taskVuetable.isCheckAllStatus=false;
-        let checkBoxId = "vuetable-check-header-2-" + this.$refs.taskVuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
-        checkAllButton.checked = false;
-      },
-      changeCheckAllStatus(){
-        let selectList = this.$refs.taskVuetable.selectedTo;
-        let renderedList = this.renderedCheckList;
-        if(selectList.length>=renderedList.length){
-          let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
-            isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
-            }
-            if(isEqual===false){
-              this.selectNone();
-              break;
-            }
-            if(i===renderedList.length-1){
-              this.selectAll(true);
-            }
-          }
-        }
-        else {
-          this.selectNone();
-        }
 
-      },
-      onCheckStatusChange(isChecked){
-        if(isChecked){
-          this.changeCheckAllStatus();
-        }
-        else {
-          this.selectNone();
-        }
-      },
       getSiteLabel(value) {
         if (value === null || this.onSiteOption === null) return "";
         else {
@@ -1100,40 +1047,38 @@
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
-        let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        } else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
+        // let checkedAll, checkedIds;
+        // if (this.pageStatus === 'charts') {
+        //   checkedAll = true;
+        //   checkedIds = "";
+        // } else {
+        //   checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        //   checkedIds = this.$refs.taskVuetable.selectedTo;
+        // }
 
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/preview/generate`;
         this.name = this.$t('menu.statistics-view');
         this.isModalVisible = true;
       },
       onExport() {
-        let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        } else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
+        // let checkedAll, checkedIds;
+        // if (this.pageStatus === 'charts') {
+        //   checkedAll = true;
+        //   checkedIds = "";
+        // } else {
+        //   checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        //   checkedIds = this.$refs.taskVuetable.selectedTo;
+        // }
 
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/preview/generate`;
         if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
@@ -1149,27 +1094,24 @@
       },
 
       onPrintButton() {
-        let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
-          checkedAll = true;
-          checkedIds = "";
-        } else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
-        }
+        // let checkedAll, checkedIds;
+        // if (this.pageStatus === 'charts') {
+        //   checkedAll = true;
+        //   checkedIds = "";
+        // } else {
+        //   checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        //   checkedIds = this.$refs.taskVuetable.selectedTo;
+        // }
 
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : true,
+          'isAll': true,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/preview/generate`;
-        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        } else {
           printFileFromServer(link, params);
-        }
+
       },
 
       getSiteOption() {
@@ -1201,17 +1143,17 @@
 
       getPreviewData() {
 
-        getApiManager().post(`${apiBaseUrl}/task/statistics/preview`, {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/preview/total`, {
           filter: this.filter
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
-          if (this.preViewData.totalStatistics != null && this.preViewData.totalStatistics.scanStatistics != null) {
+          if (this.preViewData != null && this.preViewData.scanStatistics != null) {
 
-            this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.scanStatistics.invalidScan;
-            this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.scanStatistics.validScan;
-            this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.scanStatistics.alarmScan;
-            this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
+            this.doublePieChartOptions.series[0].data[0].value = this.preViewData.scanStatistics.invalidScan;
+            this.doublePieChartOptions.series[0].data[1].value = this.preViewData.scanStatistics.validScan;
+            this.doublePieChartOptions.series[1].data[0].value = this.preViewData.scanStatistics.alarmScan;
+            this.doublePieChartOptions.series[1].data[1].value = this.preViewData.scanStatistics.passedScan;
 
           } else {
             this.doublePieChartOptions.series[0].data[0].value = 0;
@@ -1219,27 +1161,79 @@
             this.doublePieChartOptions.series[1].data[0].value = 0;
             this.doublePieChartOptions.series[1].data[1].value = 0;
           }
+        }).catch((error) => {
+        });
 
-          // if (this.filter.statWidth === 'year') {
-          //   this.bar3ChartOptions.xAxis.data = this.xHour;
-          // } else {
-          this.xDay = Object.keys(this.preViewData.detailedStatistics);
+      },
 
-          this.bar3ChartOptions.xAxis.data = this.xDay;
-          for (let i = 0; i < this.xDay.length; i++) {
-            let key = this.xDay[i];
+      getChartData(){
+        getApiManager().post(`${apiBaseUrl}/task/statistics/preview/chart`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          let chartData = response.data.data.detailedStatistics;
 
-            if (this.preViewData.detailedStatistics[key] != null && this.preViewData.detailedStatistics[key].scanStatistics != null) {
-              this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.passedScan;
-              this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.alarmScan;
-              this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.invalidScan;
-            } else {
+          let keyData = [];
+
+          //this.xDay = Object.keys(chartData);
+
+          switch (this.filter.statWidth) {
+            case "hour":
+              this.bar3ChartOptions.xAxis.data = this.xHour;
+              break;
+            case "day":
+              this.bar3ChartOptions.xAxis.data = this.xDay;
+              break;
+            case "week":
+              this.bar3ChartOptions.xAxis.data = this.xWeek;
+              break;
+            case "month":
+              this.bar3ChartOptions.xAxis.data = this.xMonth;
+              break;
+            case "quarter":
+              this.bar3ChartOptions.xAxis.data = this.xQuarter;
+              break;
+            case "year":
+              this.bar3ChartOptions.xAxis.data = this.xYear;
+              break;
+
+          }
+
+          //this.bar3ChartOptions.xAxis.data = this.xDay;
+          if(this.filter.statWidth !== 'year') {
+            for (let i = 0; i < this.bar3ChartOptions.xAxis.data.length; i++) {
+              let key = this.bar3ChartOptions.xAxis.data[i];
               this.bar3ChartOptions.series[0].data[i] = 0;
               this.bar3ChartOptions.series[1].data[i] = 0;
               this.bar3ChartOptions.series[2].data[i] = 0;
+              for (let j = 0; j < chartData.length; j++) {
+                if (key === chartData[j].time) {
+                  this.bar3ChartOptions.series[0].data[i] = chartData[j].scanStatistics.passedScan;
+                  this.bar3ChartOptions.series[1].data[i] = chartData[j].scanStatistics.alarmScan;
+                  this.bar3ChartOptions.series[2].data[i] = chartData[j].scanStatistics.invalidScan;
+                }
+
+              }
+              //if()
+
+              // if (chartData[key] != null && chartData[key].scanStatistics != null) {
+              //   this.bar3ChartOptions.series[0].data[i] = chartData[key].scanStatistics.passedScan;
+              //   this.bar3ChartOptions.series[1].data[i] = chartData[key].scanStatistics.alarmScan;
+              //   this.bar3ChartOptions.series[2].data[i] = chartData[key].scanStatistics.invalidScan;
+              // } else {
+              //   this.bar3ChartOptions.series[0].data[i] = 0;
+              //   this.bar3ChartOptions.series[1].data[i] = 0;
+              //   this.bar3ChartOptions.series[2].data[i] = 0;
+              // }
+            }
+          } else {
+            for (let j = 0; j < chartData.length; j++) {
+              this.bar3ChartOptions.xAxis.data.push(chartData[j].time);
+              this.bar3ChartOptions.series[0].data[j] = chartData[j].scanStatistics.passedScan;
+              this.bar3ChartOptions.series[1].data[j] = chartData[j].scanStatistics.alarmScan;
+              this.bar3ChartOptions.series[2].data[j] = chartData[j].scanStatistics.invalidScan;
             }
           }
-          //}
 
         }).catch((error) => {
         });
@@ -1258,6 +1252,7 @@
 
         }
         this.getPreviewData();
+        this.getChartData();
         this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
@@ -1275,11 +1270,9 @@
 
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData);
-        this.changeCheckAllStatus();
       },
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page);
-        this.changeCheckAllStatus();
       },
       onDisplaceButton() {
         if (this.pageStatus === 'charts') {
@@ -1306,39 +1299,7 @@
           let j = transformed.tKey[i];
 
           temp = data.detailedStatistics[j];
-          temp.id = temp.time;
-          this.renderedCheckList.push(data.detailedStatistics[j].time);
 
-          if(this.filter.statWidth === 'hour') {
-            if (temp.time < 9) {
-              temp.time = '0' + temp.time + ' : 00 ~ 0' + (temp.time + 1) + ': 00';
-            }
-            else if(temp.time === 9){
-              temp.time = '09 :00 ~ 10 : 00';
-            }
-            else {
-              temp.time = temp.time + ' : 00 ~ ' + (temp.time + 1) + ': 00';
-            }
-          }
-          if(this.filter.statWidth === 'day' && getLocale() === 'zh') {
-            temp.time = temp.time + '日';
-          }
-          if(this.filter.statWidth === 'week' && getLocale() === 'zh') {
-            temp.time = temp.time + '周';
-          }
-          if(this.filter.statWidth === 'month') {
-            if(getLocale() === 'zh') {
-              temp.time = temp.time + '月';
-            }else {
-              temp.time = this.monthLabel[temp.time-1];
-            }
-          }
-          if(this.filter.statWidth === 'quarter') {
-            temp.time = temp.time + this.$t('statistics.quarter');
-          }
-          if(this.filter.statWidth === 'year') {
-            temp.time = temp.time +  this.$t('statistics.year');
-          }
           transformed.data.push(temp);
         }
         return transformed
@@ -1346,7 +1307,6 @@
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
-        this.renderedCheckList = [];
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.taskVuetableItems.perPage,

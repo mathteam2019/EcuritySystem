@@ -222,7 +222,7 @@
                   <template slot="label">{{$t('device-management.device-table.guid')}}<span
                     class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="mainForm.guid"
+                  <b-form-input v-model="mainForm.guid" :disabled="true"
                                 :state="(!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid) && invalidGuid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.mainForm.guid.required) ?
@@ -421,7 +421,7 @@
                       <template slot="label">{{$t('device-management.device-table.guid')}}<span
                         class="text-danger">*</span>
                       </template>
-                      <b-form-input v-model="mainForm.guid"
+                      <b-form-input v-model="mainForm.guid" :disabled="true"
                                     :state="!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid"/>
                       <div v-if="pageStatus === 'edit'" class="invalid-feedback d-block">
                         {{ (submitted && !$v.mainForm.guid.required) ?
