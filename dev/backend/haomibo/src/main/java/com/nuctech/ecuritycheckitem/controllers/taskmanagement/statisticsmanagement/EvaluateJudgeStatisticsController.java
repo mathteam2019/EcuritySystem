@@ -109,7 +109,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @RequestMapping(value = "/get-evaluatejudge-statistics", method = RequestMethod.POST)
+    @RequestMapping(value = "/get-evaluatejudge-statistics/detail", method = RequestMethod.POST)
     public Object getEvaluateJudgeSummary(
             @RequestBody @Valid StatisticsRequestBody requestBody,
             BindingResult bindingResult) {
@@ -149,6 +149,75 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     }
 
     /**
+     * request body to get Evaluate Judge Statistics
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/get-evaluatejudge-statistics/chart", method = RequestMethod.POST)
+    public Object getEvaluateJudgeSummaryChart(
+            @RequestBody @Valid StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
+
+        //get statistics from database through evaluateJudgeStatisticsService
+        response = evaluateJudgeStatisticsService.getChartStatistics(
+                requestBody.getFilter().getFieldId(), //get field id from input parameter
+                requestBody.getFilter().getDeviceId(), //get device id from input parameter
+                requestBody.getFilter().getUserCategory(), //get user category id from input parameter
+                requestBody.getFilter().getUserName(), //get user name from input parameter
+                requestBody.getFilter().getStartTime(), //get start time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                requestBody.getFilter().getStatWidth() //get statistics width from input parameter
+                ); //get per page count from input parameter
+
+        return new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
+    /**
+     * request body to get Evaluate Judge Statistics
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/get-evaluatejudge-statistics/total", method = RequestMethod.POST)
+    public Object getEvaluateJudgeSummaryTotal(
+            @RequestBody @Valid StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+
+        EvaluateJudgeResponseModel response = new EvaluateJudgeResponseModel();
+
+        //get statistics from database through evaluateJudgeStatisticsService
+        response = evaluateJudgeStatisticsService.getTotalStatistics(
+                requestBody.getFilter().getFieldId(), //get field id from input parameter
+                requestBody.getFilter().getDeviceId(), //get device id from input parameter
+                requestBody.getFilter().getUserCategory(), //get user category id from input parameter
+                requestBody.getFilter().getUserName(), //get user name from input parameter
+                requestBody.getFilter().getStartTime(), //get start time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                requestBody.getFilter().getStatWidth() //get statistics width from input parameter
+                ); //get per page count from input parameter
+
+        return new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
+    /**
      * Evaluate Statistics generate pdf file request.
      */
     @RequestMapping(value = "/evaluatejudge/generate/pdf", method = RequestMethod.POST)
@@ -171,19 +240,33 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             }
         }
 
+        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
+
         //get statistics from database through evaluateJudgeStatisticsService
-        TreeMap<Integer, EvaluateJudgeResponseModel> totalStatistics = evaluateJudgeStatisticsService.getStatistics(sortBy, order,
+        response = evaluateJudgeStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(), //get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter
-                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getFilter().getUserCategory(), //get user category id from input parameter
                 requestBody.getFilter().getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(), //get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+                1, //get current page no from input parameter
+                Integer.MAX_VALUE); //get per page count from input parameter
 
-        TreeMap<Integer, EvaluateJudgeResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //get statistics from database through evaluateJudgeStatisticsService
+//        TreeMap<Integer, EvaluateJudgeResponseModel> totalStatistics = evaluateJudgeStatisticsService.getStatistics(sortBy, order,
+//                requestBody.getFilter().getFilter().getFieldId(), //get field id from input parameter
+//                requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter
+//                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
+//                requestBody.getFilter().getFilter().getUserName(), //get user name from input parameter
+//                requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
+//                requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
+//                requestBody.getFilter().getFilter().getStatWidth(), //get statistics width from input parameter
+//                null,
+//                null).getDetailedStatistics();
+
+        //TreeMap<Integer, EvaluateJudgeResponseModel> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         EvaluateJudgeStatisticsPdfView.setResource(getFontResource()); //set header font
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         EvaluateJudgeStatisticsPdfView.setMessageSource(messageSource);
@@ -192,7 +275,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
         } else {
             EvaluateJudgeStatisticsPdfView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = EvaluateJudgeStatisticsPdfView.buildPDFDocument(exportList); //make inputstream of data to be printed
+        InputStream inputStream = EvaluateJudgeStatisticsPdfView.buildPDFDocument(response.getDetailedStatistics()); //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=evaluateJudgeStatistics.pdf"); //set filename
@@ -227,18 +310,21 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             }
         }
 
-        TreeMap<Integer, EvaluateJudgeResponseModel> totalStatistics = evaluateJudgeStatisticsService.getStatistics(sortBy, order,
-                requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
-                requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
-                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
-                requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
-                requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
-                requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
-                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
 
-        TreeMap<Integer, EvaluateJudgeResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //get statistics from database through evaluateJudgeStatisticsService
+        response = evaluateJudgeStatisticsService.getStatistics(sortBy, order,
+                requestBody.getFilter().getFilter().getFieldId(), //get field id from input parameter
+                requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter
+                requestBody.getFilter().getFilter().getUserCategory(), //get user category id from input parameter
+                requestBody.getFilter().getFilter().getUserName(), //get user name from input parameter
+                requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
+                requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
+                requestBody.getFilter().getFilter().getStatWidth(), //get statistics width from input parameter
+                1, //get current page no from input parameter
+                Integer.MAX_VALUE); //get per page count from input parameter
+
+        //TreeMap<Integer, EvaluateJudgeResponseModel> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         EvaluateJudgeStatisticsExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -246,7 +332,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
         } else {
             EvaluateJudgeStatisticsExcelView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = EvaluateJudgeStatisticsExcelView.buildExcelDocument(exportList); //make inputstream of data to be exported
+        InputStream inputStream = EvaluateJudgeStatisticsExcelView.buildExcelDocument(response.getDetailedStatistics()); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=evaluateJudgeStatistics.xlsx"); //set filename
@@ -281,19 +367,21 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             }
         }
 
-        //get statistics from database through evaluateJudgeStatisticsService
-        TreeMap<Integer, EvaluateJudgeResponseModel> totalStatistics = evaluateJudgeStatisticsService.getStatistics(sortBy, order,
-                requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
-                requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
-                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
-                requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
-                requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
-                requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
-                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
 
-        TreeMap<Integer, EvaluateJudgeResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //get statistics from database through evaluateJudgeStatisticsService
+        response = evaluateJudgeStatisticsService.getStatistics(sortBy, order,
+                requestBody.getFilter().getFilter().getFieldId(), //get field id from input parameter
+                requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter
+                requestBody.getFilter().getFilter().getUserCategory(), //get user category id from input parameter
+                requestBody.getFilter().getFilter().getUserName(), //get user name from input parameter
+                requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
+                requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
+                requestBody.getFilter().getFilter().getStatWidth(), //get statistics width from input parameter
+                1, //get current page no from input parameter
+                Integer.MAX_VALUE); //get per page count from input parameter
+
+        //TreeMap<Integer, EvaluateJudgeResponseModel> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         EvaluateJudgeStatisticsWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -301,7 +389,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
         } else {
             EvaluateJudgeStatisticsWordView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = EvaluateJudgeStatisticsWordView.buildWordDocument(exportList); //make input stream of data to be exported
+        InputStream inputStream = EvaluateJudgeStatisticsWordView.buildWordDocument(response.getDetailedStatistics()); //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=evaluateJudgeStatistics.docx"); //set filename
@@ -329,7 +417,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 EvaluateJudgeResponseModel record = entry.getValue();
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(Long.toString(record.getTime()))) { //if specified id is contained idList
+                    if (splits[j].equals(record.getTime())) { //if specified id is contained idList
                         isExist = true;
                         break;
                     }

@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -38,7 +39,7 @@ public class PreviewStatisticsPdfView extends BasePdfView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildPDFDocument(TreeMap<Long, TotalStatistics> detailedStatistics) {
+    public static InputStream buildPDFDocument(List<TotalStatistics> detailedStatistics) {
 
         Document document = new Document();
 
@@ -67,14 +68,13 @@ public class PreviewStatisticsPdfView extends BasePdfView {
 
             long index = 1;
 
-            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
+            for (TotalStatistics record : detailedStatistics) {
 
-                TotalStatistics record = entry.getValue();
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 addTableCell(table, Long.toString(index ++));
-                addTableCell(table, Long.toString(record.getTime()));
+                addTableCell(table, record.getTime());
                 addTableCell(table, Long.toString(record.getScanStatistics().getTotalScan()));
                 addTableCell(table, Long.toString(record.getScanStatistics().getInvalidScan()));
                 addTableCell(table, df.format(record.getScanStatistics().getInvalidScanRate()));

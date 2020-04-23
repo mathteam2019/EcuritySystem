@@ -59,6 +59,16 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     private String relateUserIdListStr;
 
+    @Override
+    public TotalStatistics getTotalStatistics(Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth) {
+        String strQuery = makeQuery().replace(":whereScan", getWhereCauseScan(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
+        strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
+        strQuery = strQuery.replace(":whereHand", getWhereCauseHand(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
+        strQuery = strQuery.replace(":selectQuery", getMainSelect());
+
+        TotalStatistics totalStatistics = getTotalStatistics(strQuery);
+        return totalStatistics;
+    }
 
     /**
      * get judge statistcs
@@ -81,8 +91,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         if(userCategory != null) {
             List<Long> relateUserIdList = userService.getUserListByResource(Constants.userCategory.get(userCategory));
             relateUserIdListStr = StringUtils.join(relateUserIdList, ",");
-
         }
+
 
 
         //.... Get Total Statistics
@@ -90,34 +100,107 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
         strQuery = strQuery.replace(":whereHand", getWhereCauseHand(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
 
-        TotalStatistics totalStatistics = getTotalStatistics(strQuery);
-        response.setTotalStatistics(totalStatistics);
+
+        List<String> timeKeyList = Utils.getTimeKeyByStatistics(statWidth);
+
+        String groupBy = timeKeyList.get(0) + "(groupby)";
+        if(timeKeyList.size() > 1) {
+            for(int i = 1; i < timeKeyList.size(); i ++) {
+                groupBy = groupBy + ", SPACE(1)," +  "LPAD(" + timeKeyList.get(i) + "(groupby), 2, 0)";
+            }
+            groupBy = "CONCAT(" + groupBy + ")";
+        }
+
+        String scanGroupBy = groupBy.replace("groupby", "SCAN_START_TIME");
+        String judgeGroupBy = groupBy.replace("groupby", "JUDGE_START_TIME");
+        String handGroupBy = groupBy.replace("groupby", "HAND_START_TIME");
+
+
+        String temp = strQuery;
+        temp = temp.replace(":scanGroupBy", scanGroupBy);
+        temp = temp.replace(":judgeGroupBy", judgeGroupBy);
+        temp = temp.replace(":handGroupBy", handGroupBy);
+
+        temp = temp + " WHERE (IFNULL(totalScan, 0) + IFNULL(validScan, 0) + IFNULL(passedScan, 0) + " +
+                "IFNULL(alarmScan, 0) + IFNULL(totalJudge, 0) + IFNULL(suspictionJudge, 0) + " +
+                "IFNULL(noSuspictionJudge, 0) + IFNULL(totalHand, 0) + " +
+                "IFNULL(seizureHand, 0) + IFNULL(noSeizureHand, 0)) > 0";
+
+        String tempCount = temp.replace(":selectQuery", "\tcount(q)\n");
+        Query countQuery = entityManager.createNativeQuery(tempCount);
+        List<Object> countResult = countQuery.getResultList();
+
+        Long count = Utils.parseLong(countResult.get(0).toString());
+
+        currentPage = currentPage - 1;
+        //.... Get Detailed Statistics
+        List<TotalStatistics> detailedStatistics = getDetailedStatistics(temp, statWidth, currentPage, perPage, false);
+
+        response.setDetailedStatistics(detailedStatistics);
+        response.setTotal(count);
+        response.setCurrent_page(currentPage + 1);
+        response.setPer_page(perPage);
+        response.setLast_page((int) Math.ceil(((double) count) / perPage));
+        response.setFrom(perPage * currentPage + 1);
+        response.setTo(perPage * currentPage + detailedStatistics.size());
+
+
+        return response;
+
+    }
+
+    /**
+     * get judge statistcs
+     *
+     * @param fieldId      : scene id
+     * @param deviceId     : device id
+     * @param userCategory : user category
+     * @param userName     : user name
+     * @param startTime    : start time
+     * @param endTime      : end time
+     * @param statWidth    : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    @Override
+    public TotalStatisticsResponse getChartStatistics(String sortBy, String order, Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+
+        TotalStatisticsResponse response = new TotalStatisticsResponse();
+        //categoryUser = authService.getDataCategoryUserList();
+
+        if(userCategory != null) {
+            List<Long> relateUserIdList = userService.getUserListByResource(Constants.userCategory.get(userCategory));
+            relateUserIdListStr = StringUtils.join(relateUserIdList, ",");
+        }
+
+
+
+        //.... Get Total Statistics
+        String strQuery = makeQuery().replace(":whereScan", getWhereCauseScan(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
+        strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
+        strQuery = strQuery.replace(":whereHand", getWhereCauseHand(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
+
+        String groupBy = statWidth + "(groupby)";
+
+        String scanGroupBy = groupBy.replace("groupby", "SCAN_START_TIME");
+        String judgeGroupBy = groupBy.replace("groupby", "JUDGE_START_TIME");
+        String handGroupBy = groupBy.replace("groupby", "HAND_START_TIME");
+
+
+        String temp = strQuery;
+        temp = temp.replace(":scanGroupBy", scanGroupBy);
+        temp = temp.replace(":judgeGroupBy", judgeGroupBy);
+        temp = temp.replace(":handGroupBy", handGroupBy);
+
+        temp = temp + " WHERE (IFNULL(totalScan, 0) + IFNULL(validScan, 0) + IFNULL(passedScan, 0) + " +
+                "IFNULL(alarmScan, 0) + IFNULL(totalJudge, 0) + IFNULL(suspictionJudge, 0) + " +
+                "IFNULL(noSuspictionJudge, 0) + IFNULL(totalHand, 0) + " +
+                "IFNULL(seizureHand, 0) + IFNULL(noSeizureHand, 0)) > 0";
+
 
         //.... Get Detailed Statistics
-        TreeMap<Long, TotalStatistics> detailedStatistics = getDetailedStatistics(strQuery, statWidth, startTime, endTime);
+        List<TotalStatistics> detailedStatistics = getDetailedStatistics(temp, statWidth, currentPage, perPage, true);
 
-        try {
-            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Long, TotalStatistics>) paginatedResult.get("list"));
-        } catch (Exception e) {
-            response.setDetailedStatistics(detailedStatistics);
-        }
-
-        if (perPage != null && currentPage != null) {
-            response.setPer_page(perPage);
-            response.setCurrent_page(currentPage);
-            try {
-                response.setTotal(detailedStatistics.size());
-                if (response.getTotal() % response.getPer_page() == 0) {
-                    response.setLast_page(response.getTotal() / response.getPer_page());
-                } else {
-                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-                }
-            } catch (Exception e) {
-            }
-        }
+        response.setDetailedStatistics(detailedStatistics);
 
         return response;
 
@@ -151,49 +234,39 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
      * Get statistics by statistics width
      *
      * @param query
-     * @param statisticsWidth : (hour, day, week, month, quarter, year)
-     * @param startTime       : start time
-     * @param endTime         : endtime
      * @return
      */
-    private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query, String statisticsWidth, Date startTime, Date endTime) {
+    private List<TotalStatistics> getDetailedStatistics(String query, String statWidth, Integer currentPage, Integer perPage, boolean isChart) {
 
-        String groupBy = "hour";
-        if (statisticsWidth != null && !statisticsWidth.isEmpty()) {
-            groupBy = statisticsWidth;
-        }
 
         String temp = query;
-        temp = temp.replace(":scanGroupBy", groupBy + "(SCAN_START_TIME)");
-        temp = temp.replace(":judgeGroupBy", groupBy + "(JUDGE_START_TIME)");
-        temp = temp.replace(":handGroupBy", groupBy + "(HAND_START_TIME)");
+
+        temp = temp + " ORDER BY t0.q";
+        if(isChart == false) {
+            int start = currentPage * perPage;
+            temp = temp + " LIMIT " + start +", " + perPage;
+        }
+
+
+
+        temp = temp.replace(":selectQuery", getMainSelect());
+
 
         Query jpaQuery = entityManager.createNativeQuery(temp);
         List<Object> result = jpaQuery.getResultList();
-        TreeMap<Long, TotalStatistics> data = new TreeMap<>();
+        List<TotalStatistics> data = new ArrayList<>();
 
-        Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = Utils.getKeyValuesforStatistics(statisticsWidth, startTime, endTime);
-        try {
-            keyValueMin = keyValues.get(0);
-            keyValueMax = keyValues.get(1);
-        } catch (Exception e) {
-        }
 
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-            TotalStatistics item = new TotalStatistics();
-            item.setScanStatistics(new ScanStatistics());
-            item.setJudgeStatistics(new JudgeStatisticsModelForPreview());
-            item.setHandExaminationStatistics(new HandExaminationStatisticsForPreview());
-            item.setTime(i);
-            data.put((long) i, item);
-        }
 
         for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
             TotalStatistics record = initModelFromObject(item);
-            data.put(record.getTime(), record);
+            if(isChart == false) {
+                record.setTime(Utils.formatDateByStatisticWidth(statWidth, record.getTime()));
+            }
+
+            data.add(record);
         }
 
         return data;
@@ -463,6 +536,14 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     }
 
+    private String getMainSelect() {
+        return "\tq,\n" +
+                "\tIFNULL(totalScan, 0) as totalScan,\n" + "\tIFNULL(validScan, 0) as validScan,\n" + "\tIFNULL(invalidScan, 0) as invalidScan,\n"
+                + "\tIFNULL(passedScan, 0) as passedScan,\n" + "\tIFNULL(alarmScan, 0) as alarmScan,\n" +
+                "\tIFNULL(totalJudge, 0) as totalJudge,\n" + "\tIFNULL(suspictionJudge, 0) as suspictionJudge,\n" + "\tIFNULL(noSuspictionJudge, 0) as noSuspictionJudge,\n" +
+                "\tIFNULL(totalHand, 0) as totalHand,\n" + "\tIFNULL(seizureHand, 0) as seizureHand,\n" + "\tIFNULL(noSeizureHand, 0) as noSeizureHand\n";
+    }
+
     /**
      * query of select part
      *
@@ -471,10 +552,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     private String getSelectQuery() {
 
         return "SELECT\n" +
-                "\tq,\n" +
-                "\tIFNULL(totalScan, 0),\n" + "\tIFNULL(validScan, 0),\n" + "\tIFNULL(invalidScan, 0),\n" + "\tIFNULL(passedScan, 0),\n" + "\tIFNULL(alarmScan, 0),\n" +
-                "\tIFNULL(totalJudge, 0),\n" + "\tIFNULL(suspictionJudge, 0),\n" + "\tIFNULL(noSuspictionJudge, 0),\n" +
-                "\tIFNULL(totalHand, 0),\n" + "\tIFNULL(seizureHand, 0),\n" + "\tIFNULL(noSeizureHand, 0) \n" +
+                ":selectQuery" +
                 "\tFROM\n" + "\t(\n" +
                 "\tSELECT\n" + "\t\tq \n" + "\tFROM\n" +
                 "\t\t(\n" +
@@ -580,7 +658,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
         TotalStatistics record = new TotalStatistics();
         try {
-            record.setTime(Utils.parseInt(item[0].toString()));
+            record.setTime(item[0].toString());
             ScanStatistics scanStat = new ScanStatistics();
             JudgeStatisticsModelForPreview judgeStat = new JudgeStatisticsModelForPreview();
             HandExaminationStatisticsForPreview handStat = new HandExaminationStatisticsForPreview();

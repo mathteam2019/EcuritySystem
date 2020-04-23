@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -82,7 +83,7 @@ public class SuspictionHandgoodsStatisticsWordView extends BaseWordView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildWordDocument(TreeMap<Integer, TreeMap<String, Long>> detailedStatistics) {
+    public static InputStream buildWordDocument(List<TreeMap<String, String>> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -98,20 +99,18 @@ public class SuspictionHandgoodsStatisticsWordView extends BaseWordView {
 
             long index = 1;
 
-            for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
-
-                TreeMap<String, Long> record = entry.getValue();
+            for (TreeMap<String, String> record : detailedStatistics) {
 
                 XWPFTableRow tableRow = table.createRow();
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 tableRow.getCell(0).setText(Long.toString(index ++));
-                tableRow.getCell(1).setText(record.get("time").toString());
+                tableRow.getCell(1).setText(record.get("time"));
 
                 for (int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
 
-                    tableRow.getCell(i + 2).setText(record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)).toString());
+                    tableRow.getCell(i + 2).setText(record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)));
 
                 }
 

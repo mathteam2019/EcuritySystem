@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -88,7 +89,7 @@ public class PreviewStatisticsWordView extends BaseWordView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildWordDocument(TreeMap<Long, TotalStatistics> detailedStatistics) {
+    public static InputStream buildWordDocument(List<TotalStatistics> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -104,16 +105,15 @@ public class PreviewStatisticsWordView extends BaseWordView {
 
             long index = 1;
 
-            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
+            for (TotalStatistics record : detailedStatistics) {
 
-                TotalStatistics record = entry.getValue();
 
                 XWPFTableRow tableRow = table.createRow();
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 tableRow.getCell(0).setText(Long.toString(index ++));
-                tableRow.getCell(1).setText(Long.toString(record.getTime()));
+                tableRow.getCell(1).setText(record.getTime());
                 tableRow.getCell(2).setText(Long.toString(record.getScanStatistics().getTotalScan()));
                 tableRow.getCell(3).setText(Long.toString(record.getScanStatistics().getInvalidScan()));
                 tableRow.getCell(4).setText(df.format(record.getScanStatistics().getInvalidScanRate()));

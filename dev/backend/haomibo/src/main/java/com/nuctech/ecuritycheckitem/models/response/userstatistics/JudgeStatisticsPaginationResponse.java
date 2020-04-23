@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.models.response.userstatistics;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.TreeMap;
 
 @Getter
@@ -28,8 +29,7 @@ public class JudgeStatisticsPaginationResponse {
     long from; //start index of current page
     long to; //end index of current page
 
-    JudgeStatisticsResponseModel totalStatistics; //total statistics
-    TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics; //detailed statistics
+    List<JudgeStatisticsResponseModel> detailedStatistics; //detailed statistics
 
 }
 

@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -39,7 +40,7 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildPDFDocument(TreeMap<Integer, EvaluateJudgeResponseModel> detailedStatistics) {
+    public static InputStream buildPDFDocument(List<EvaluateJudgeResponseModel> detailedStatistics) {
 
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -55,7 +56,7 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
             PdfPTable table = new PdfPTable(17);
 
             table.setWidthPercentage(99);
-            Stream.of("ID", "StatWidth", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge", "IntelligenceJudgeMistake", "IntelligenceJudgeMistakeRate", "IntelligenceJudgeMissing", "IntelligenceJudgeMissingRate")
+            Stream.of("ID", "StatWidth", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "IntelligenceJudgeMissing", "IntelligenceJudgeMissingRate", "ArtificialJudgeMistakeRate", "IntelligenceJudge", "IntelligenceJudgeMistake", "IntelligenceJudgeMistakeRate")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
                         header.setBorderWidth(2);
@@ -65,28 +66,29 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
 
             long index = 1;
 
-            for (Map.Entry<Integer, EvaluateJudgeResponseModel> entry : detailedStatistics.entrySet()) {
+            for(EvaluateJudgeResponseModel record: detailedStatistics) {
 
-                EvaluateJudgeResponseModel record = entry.getValue();
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 addTableCell(table, Long.toString(index++));
-                addTableCell(table, Long.toString(record.getTime()));
+                addTableCell(table, record.getTime());
                 addTableCell(table, Long.toString(record.getTotal()));
-                addTableCell(table, Long.toString(record.getMistakeReport()));
-                addTableCell(table, df.format(record.getMistakeReportRate()));
                 addTableCell(table, Long.toString(record.getMissingReport()));
                 addTableCell(table, df.format(record.getMissingReportRate()));
+                addTableCell(table, Long.toString(record.getMistakeReport()));
+                addTableCell(table, df.format(record.getMistakeReportRate()));
+
                 addTableCell(table, Long.toString(record.getArtificialJudge()));
                 addTableCell(table, Long.toString(record.getArtificialJudgeMistake()));
                 addTableCell(table, df.format(record.getArtificialJudgeMistakeRate()));
                 addTableCell(table, Long.toString(record.getArtificialJudgeMissing()));
                 addTableCell(table, df.format(record.getArtificialJudgeMissingRate()));
                 addTableCell(table, Long.toString(record.getIntelligenceJudge()));
-                addTableCell(table, df.format(record.getIntelligenceJudgeMistake()));
-                addTableCell(table, df.format(record.getIntelligenceJudgeMistakeRate()));
                 addTableCell(table, df.format(record.getIntelligenceJudgeMissing()));
                 addTableCell(table, df.format(record.getIntelligenceJudgeMissingRate()));
+                addTableCell(table, df.format(record.getIntelligenceJudgeMistake()));
+                addTableCell(table, df.format(record.getIntelligenceJudgeMistakeRate()));
+
             }
             document.add(table);
             document.close();

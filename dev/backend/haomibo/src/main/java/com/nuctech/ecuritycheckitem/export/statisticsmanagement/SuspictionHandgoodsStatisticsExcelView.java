@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -57,7 +58,7 @@ public class SuspictionHandgoodsStatisticsExcelView extends BaseExcelView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildExcelDocument(TreeMap<Integer, TreeMap<String, Long>> detailedStatistics) {
+    public static InputStream buildExcelDocument(List<TreeMap<String, String>> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -82,16 +83,15 @@ public class SuspictionHandgoodsStatisticsExcelView extends BaseExcelView {
 
             long index = 1;
 
-            for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
+            for (TreeMap<String, String> record : detailedStatistics) {
 
-                TreeMap<String, Long> record = entry.getValue();
                 Row row = sheet.createRow(counter ++);
                 DecimalFormat df = new DecimalFormat("0.00");
                 row.createCell(0).setCellValue(index ++);
-                row.createCell(1).setCellValue(record.get("time").toString());
+                row.createCell(1).setCellValue(record.get("time"));
 
                 for (int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
-                    row.createCell(i + 2).setCellValue(record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)).toString());
+                    row.createCell(i + 2).setCellValue(record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)));
                 }
             }
 

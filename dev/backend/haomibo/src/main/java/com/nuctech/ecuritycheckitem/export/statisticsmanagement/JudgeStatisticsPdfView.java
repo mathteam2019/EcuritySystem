@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -38,7 +39,7 @@ public class JudgeStatisticsPdfView extends BasePdfView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildPDFDocument(TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics) {
+    public static InputStream buildPDFDocument(List<JudgeStatisticsResponseModel> detailedStatistics) {
 
         Document document = new Document();
 
@@ -66,14 +67,13 @@ public class JudgeStatisticsPdfView extends BasePdfView {
 
             long index = 1;
 
-            for (Map.Entry<Integer, JudgeStatisticsResponseModel> entry : detailedStatistics.entrySet()) {
+            for (JudgeStatisticsResponseModel record: detailedStatistics) {
 
-                JudgeStatisticsResponseModel record = entry.getValue();
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 addTableCell(table, Long.toString(index ++));
-                addTableCell(table, Long.toString(record.getTime()));
+                addTableCell(table, record.getTime());
                 addTableCell(table, Long.toString(record.getTotal()));
                 addTableCell(table, Long.toString(record.getArtificialResult()));
                 addTableCell(table, df.format(record.getArtificialResultRate()));

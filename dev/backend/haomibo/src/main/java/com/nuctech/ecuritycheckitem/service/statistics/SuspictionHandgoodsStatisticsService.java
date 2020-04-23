@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.service.statistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
 
 import java.util.Date;
+import java.util.TreeMap;
 
 public interface SuspictionHandgoodsStatisticsService {
 
@@ -32,5 +33,7 @@ public interface SuspictionHandgoodsStatisticsService {
      * @return
      */
     SuspicionHandGoodsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
+
+    TreeMap<String, Long> getChartStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth);
 
 }

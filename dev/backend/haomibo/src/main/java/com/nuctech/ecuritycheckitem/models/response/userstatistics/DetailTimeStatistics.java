@@ -19,8 +19,9 @@ import lombok.Setter;
 @Setter
 public class DetailTimeStatistics {
 
-    int time;
+    String time;
     long workingTime;
     String userName;
+    String deviceType;
 
 }

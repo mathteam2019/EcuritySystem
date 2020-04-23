@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -79,10 +80,11 @@ public class EvaluateJudgeStatisticsWordView extends BaseWordView {
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMistake", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMistakeRate", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudge", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMistake", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMistakeRate", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMissing", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMissingRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMistake", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMistakeRate", null, currentLocale));
+
 
 
     }
@@ -92,7 +94,7 @@ public class EvaluateJudgeStatisticsWordView extends BaseWordView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildWordDocument(TreeMap<Integer, EvaluateJudgeResponseModel> detailedStatistics) {
+    public static InputStream buildWordDocument(List<EvaluateJudgeResponseModel> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -105,29 +107,31 @@ public class EvaluateJudgeStatisticsWordView extends BaseWordView {
 
             long index = 1;
 
-            for (Map.Entry<Integer, EvaluateJudgeResponseModel> entry : detailedStatistics.entrySet()) {
+            for (EvaluateJudgeResponseModel record: detailedStatistics) {
 
-                EvaluateJudgeResponseModel record = entry.getValue();
                 XWPFTableRow tableRow = table.createRow();
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 tableRow.getCell(0).setText(Long.toString(index++));
-                tableRow.getCell(1).setText(Long.toString(record.getTime()));
+                tableRow.getCell(1).setText(record.getTime());
                 tableRow.getCell(2).setText(Long.toString(record.getTotal()));
-                tableRow.getCell(3).setText(Long.toString(record.getMistakeReport()));
-                tableRow.getCell(4).setText(df.format(record.getMistakeReportRate()));
-                tableRow.getCell(5).setText(Long.toString(record.getMissingReport()));
-                tableRow.getCell(6).setText(df.format(record.getMissingReportRate()));
+                tableRow.getCell(3).setText(Long.toString(record.getMissingReport()));
+                tableRow.getCell(4).setText(df.format(record.getMissingReportRate()));
+                tableRow.getCell(5).setText(Long.toString(record.getMistakeReport()));
+                tableRow.getCell(6).setText(df.format(record.getMistakeReportRate()));
+
+
                 tableRow.getCell(7).setText(Long.toString(record.getArtificialJudge()));
                 tableRow.getCell(8).setText(Long.toString(record.getArtificialJudgeMistake()));
                 tableRow.getCell(9).setText(df.format(record.getArtificialJudgeMistakeRate()));
                 tableRow.getCell(10).setText(Long.toString(record.getArtificialJudgeMissing()));
                 tableRow.getCell(11).setText(df.format(record.getArtificialJudgeMissingRate()));
                 tableRow.getCell(12).setText(Long.toString(record.getIntelligenceJudge()));
-                tableRow.getCell(13).setText(df.format(record.getIntelligenceJudgeMistake()));
-                tableRow.getCell(14).setText(df.format(record.getIntelligenceJudgeMistakeRate()));
-                tableRow.getCell(15).setText(df.format(record.getIntelligenceJudgeMissing()));
-                tableRow.getCell(16).setText(df.format(record.getIntelligenceJudgeMissingRate()));
+                tableRow.getCell(13).setText(df.format(record.getIntelligenceJudgeMissing()));
+                tableRow.getCell(14).setText(df.format(record.getIntelligenceJudgeMissingRate()));
+                tableRow.getCell(15).setText(df.format(record.getIntelligenceJudgeMistake()));
+                tableRow.getCell(16).setText(df.format(record.getIntelligenceJudgeMistakeRate()));
+
             }
 
             setWidth(table, document);

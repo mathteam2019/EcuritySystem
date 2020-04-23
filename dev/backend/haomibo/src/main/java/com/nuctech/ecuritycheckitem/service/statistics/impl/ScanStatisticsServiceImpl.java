@@ -58,6 +58,103 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
     public ScanStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, String workMode,
                                                 Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
+
+
+        String groupBy = "hour";
+        if (statWidth != null && !statWidth.isEmpty()) {
+            groupBy = statWidth;
+        }
+
+        List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, workMode, startTime, endTime, statWidth);
+
+        StringBuilder queryBuilderCount = new StringBuilder();
+        queryBuilderCount.append(getCountSelectQuery(statWidth) + "\tFROM\n" + getJoinQuery());
+
+        if (!whereCause.isEmpty()) {
+            queryBuilderCount.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+        queryBuilderCount.append(" GROUP BY time ");
+        String preCountQuery = queryBuilderCount.toString();
+        String countQueryStr = "SELECT count(time) FROM (" + preCountQuery + ") as t";
+        Query countQuery = entityManager.createNativeQuery(countQueryStr);
+        List<Object> countResult = countQuery.getResultList();
+
+        Long count = Utils.parseLong(countResult.get(0).toString());
+
+        StringBuilder queryBuilder = new StringBuilder();
+        ScanStatisticsResponse response = new ScanStatisticsResponse();
+
+        //.... Get Total Statistics
+        queryBuilder.append(getDetailSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
+
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        //.... Get Detailed Statistics
+        queryBuilder.append(" GROUP BY time ");
+
+
+        currentPage = currentPage - 1;
+        int start = currentPage * perPage;
+        queryBuilder.append(" LIMIT " + start + ", " + perPage);
+        List<ScanStatistics> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, false);
+        response.setDetailedStatistics(detailedStatistics);
+        response.setTotal(count);
+        response.setCurrent_page(currentPage + 1);
+        response.setPer_page(perPage);
+        response.setLast_page((int) Math.ceil(((double) count) / perPage));
+        response.setFrom(perPage * currentPage + 1);
+        response.setTo(perPage * currentPage + detailedStatistics.size());
+
+        return response;
+
+    }
+
+    /**
+     * get hand statistcs
+     * @param fieldId : scene id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    @Override
+    public ScanStatisticsResponse getChartStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, String workMode,
+                                                Date startTime, Date endTime, String statWidth) {
+
+        StringBuilder queryBuilder = new StringBuilder();
+
+        String groupBy = "hour";
+        if (statWidth != null && !statWidth.isEmpty()) {
+            groupBy = statWidth;
+        }
+
+        ScanStatisticsResponse response = new ScanStatisticsResponse();
+
+        //.... Get Total Statistics
+        queryBuilder.append(getSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
+        List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, workMode, startTime, endTime, statWidth);
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        //.... Get Detailed Statistics
+        queryBuilder.append(" GROUP BY " + groupBy + "(s.SCAN_START_TIME)");
+        List<ScanStatistics> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, true);
+        response.setDetailedStatistics(detailedStatistics);
+
+
+        return response;
+
+    }
+
+    @Override
+    public ScanStatistics getTotalStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, String workMode,
+                                      Date startTime, Date endTime, String statWidth) {
         StringBuilder queryBuilder = new StringBuilder();
 
         String groupBy = "hour";
@@ -74,37 +171,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
         ScanStatistics totalStatistics = getTotalStatistics(queryBuilder.toString());
-        response.setTotalStatistics(totalStatistics);
-
-        //.... Get Detailed Statistics
-        queryBuilder.append(" GROUP BY  " + groupBy + "(s.SCAN_START_TIME)");
-        TreeMap<Integer, ScanStatistics> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, startTime, endTime);
-
-        try {
-            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Integer, ScanStatistics>)paginatedResult.get("list"));
-        }
-        catch (Exception e) {
-            response.setDetailedStatistics(detailedStatistics);
-        }
-
-        if (perPage != null && currentPage != null) {
-            response.setPer_page(perPage);
-            response.setCurrent_page(currentPage);
-            try {
-                response.setTotal(detailedStatistics.size());
-                if (response.getTotal() % response.getPer_page() == 0) {
-                    response.setLast_page(response.getTotal() / response.getPer_page());
-                } else {
-                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-                }
-            } catch (Exception e) { }
-        }
-
-        return response;
-
+        return totalStatistics;
     }
 
     /**
@@ -130,36 +197,24 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
      * Get statistics by statistics width
      * @param query
      * @param statWidth : (hour, day, week, month, quarter, year)
-     * @param startTime : start time
-     * @param endTime : endtime
+     * @param isChart : start time
+     *
      * @return
      */
-    private TreeMap<Integer, ScanStatistics> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
+    private List<ScanStatistics> getDetailedStatistics(String query, String statWidth, boolean isChart) {
         Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> result = jpaQuery.getResultList();
-        TreeMap<Integer, ScanStatistics> data = new TreeMap<>();
-
-        Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = Utils.getKeyValuesforStatistics(statWidth, startTime, endTime);
-        try {
-            keyValueMin = keyValues.get(0);
-            keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
-
-
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-            ScanStatistics item = new ScanStatistics();
-            item.setTime(i);
-            data.put(i, item);
-        }
+        List<ScanStatistics> data = new ArrayList<>();
 
         for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
             ScanStatistics record = initModelFromObject(item);
-            data.put((int)record.getTime(), record);
+            if(isChart == false) {
+                record.setTime(Utils.formatDateByStatisticWidth(statWidth, record.getTime()));
+            }
+            data.add(record);
         }
-
         return  data;
     }
 
@@ -219,10 +274,42 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
                 groupBy +
                 "\n (s.SCAN_START_TIME)," +
                 "\tcount( s.SCAN_ID ) AS total,\n" +
-                "\tsum( IF ( s.scan_invalid LIKE '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS valid,\n" +
-                "\tsum( IF ( s.scan_invalid LIKE '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalid,\n" +
-                "\tsum( IF ( s.scan_invalid LIKE '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passed,\n" +
-                "\tsum( IF ( s.scan_invalid LIKE '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result LIKE '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarm\n";
+                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS valid,\n" +
+                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalid,\n" +
+                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passed,\n" +
+                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarm\n";
+
+    }
+
+
+    /**
+     * query of select part
+     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private String getDetailSelectQuery(String statWidth) {
+        String groupBy = Utils.getGroupByTime(statWidth);
+        String scanGroupBy = groupBy.replace("groupby", "s.SCAN_START_TIME");
+        return "SELECT " +
+                scanGroupBy + " as time " +
+                "\t, count( s.SCAN_ID ) AS total,\n" +
+                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS valid,\n" +
+                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalid,\n" +
+                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passed,\n" +
+                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarm\n";
+
+    }
+
+    /**
+     * query of select part
+     * @param  : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private String getCountSelectQuery(String statWidth) {
+        String groupBy = Utils.getGroupByTime(statWidth);
+        String scanGroupBy = groupBy.replace("groupby", "s.SCAN_START_TIME");
+        return "SELECT " +
+                scanGroupBy + " as time ";
 
     }
 
@@ -263,7 +350,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
         if (workMode != null && !workMode.isEmpty()) {
-            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+            //whereCause.add("t.MODE_NAME like '%" + workMode + "%' ");
         }
         if (startTime != null) {
             Date date = startTime;
@@ -286,6 +373,8 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         return whereCause;
     }
 
+
+
     /**
      * return a scan statistics record from a record of a query
      * @param item
@@ -296,7 +385,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         ScanStatistics record = new ScanStatistics();
 
         try {
-            record.setTime(Utils.parseInt(item[0].toString()));
+            record.setTime(item[0].toString());
             record.setTotalScan(Utils.parseLong(item[1].toString()));
             record.setValidScan(Utils.parseLong(item[2].toString()));
             record.setInvalidScan(Utils.parseLong(item[3].toString()));

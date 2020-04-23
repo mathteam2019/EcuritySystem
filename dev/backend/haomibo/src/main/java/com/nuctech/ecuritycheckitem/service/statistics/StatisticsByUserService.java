@@ -14,6 +14,7 @@
 package com.nuctech.ecuritycheckitem.service.statistics;
 
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatisticsResponse;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatisticsResponse;
 
 import java.util.Date;
@@ -31,5 +32,7 @@ public interface StatisticsByUserService {
      * @return
      */
     TotalTimeStatisticsResponse getStatistics(String sortBy, String order, String modeId, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
+
+    TotalTimeStatistics getChartStatistics(String modeId, String userName, Date startTime, Date endTime, String statWidth);
 
 }

@@ -62,105 +62,48 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
     @Override
     public TotalTimeStatisticsResponse getStatistics(String sortBy, String order, String deviceType, String deviceName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
+        Long count = getCount(deviceType, deviceName, startTime, endTime, statWidth);
+
+        String strQueryTime = getCountSelectQuery() + getJoinQuery();
+
+        strQueryTime = strQueryTime +  " " + getWhereCause(deviceType, deviceName, startTime, endTime);
+        strQueryTime = strQueryTime + " GROUP BY startTime ORDER BY startTime";
+        String groupBy = Utils.getGroupByTime(statWidth);
+        String timeGroupBy = groupBy.replace("groupby", "r.REGISTER_TIME");
+        strQueryTime = strQueryTime.replace(":timeInfo", timeGroupBy + " as startTime");
+        currentPage = currentPage - 1;
+        int start = currentPage * perPage;
+        strQueryTime = strQueryTime + " LIMIT " + start + ", " + perPage;
+
+        String strQueryDetail = makeQuery(deviceType, deviceName, startTime, endTime, statWidth);
+        List<DetailTimeStatistics> detailTimeStatistics = getDetailedStatistics(strQueryTime, strQueryDetail, statWidth, currentPage, perPage);
+
+        List<TotalTimeStatistics> totalTimeStatisticsList = Utils.convertTimeStatistcis(detailTimeStatistics);
+        for(int i = 0; i < totalTimeStatisticsList.size(); i ++) {
+            TotalTimeStatistics totalTimeStatistics = totalTimeStatisticsList.get(i);
+            totalTimeStatistics.setTime(Utils.formatDateByStatisticWidth(statWidth, totalTimeStatistics.getTime()));
+        }
         TotalTimeStatisticsResponse response = new TotalTimeStatisticsResponse();
+        response.setDetailedStatistics(totalTimeStatisticsList);
+        response.setTotal(count);
+        response.setCurrent_page(currentPage + 1);
+        response.setPer_page(perPage);
+        response.setLast_page((int) Math.ceil(((double) count) / perPage));
+        response.setFrom(perPage * currentPage + 1);
+        response.setTo(perPage * currentPage + totalTimeStatisticsList.size());
+        return response;
+
+    }
+
+    @Override
+    public TotalTimeStatistics getChartStatistics(String modeId, String userName, Date startTime, Date endTime, String statWidth) {
         //categoryUser = authService.getDataCategoryUserList();
         //.... Get Total Statistics
-        String strQuery = makeQuery(deviceType, deviceName, startTime, endTime, statWidth);
-        TotalTimeStatistics mainTimeStatics = getTotalStatistics(strQuery);
+        String strQuery = makeQuery(modeId, userName, startTime, endTime, statWidth);
+        List<DetailTimeStatistics> detailTimeStatistics = getTotalStatistics(strQuery);
 
-        //.... Get Detailed Statistics
-        TotalTimeStatistics detailTimeStatics = getDetailedStatistics(strQuery, startTime, endTime);
-        TreeMap<Long, TotalTimeStatistics> data = new TreeMap<>();
-        List<String> nameList = new ArrayList<>();
-        List<Integer> timeList = new ArrayList<>();
-        List<DetailTimeStatistics> statisticsList = mainTimeStatics.getDetailedStatistics();
-        List<DetailTimeStatistics> detailStatisticsList = detailTimeStatics.getDetailedStatistics();
-        for(int i = 0; i < detailStatisticsList.size(); i ++) {
-            statisticsList.add(detailStatisticsList.get(i));
-        }
-        int max = -1;
-        for(int i = 0; i < statisticsList.size(); i ++) {
-            String name = statisticsList.get(i).getUserName();
-            int time = statisticsList.get(i).getTime();
-            if(!nameList.contains(name)) {
-                nameList.add(name);
-            }
-            if(max < time) {
-                max = time;
-            }
-        }
-        for(int i = 0; i <= max; i ++) {
-            timeList.add(i);
-        }
-        nameList.remove(SysDevice.DeviceType.SECURITY);
-        nameList.remove(SysDevice.DeviceType.JUDGE);
-        nameList.remove(SysDevice.DeviceType.MANUAL);
-        nameList.add(0, SysDevice.DeviceType.MANUAL);
-        nameList.add(0, SysDevice.DeviceType.JUDGE);
-        nameList.add(0, SysDevice.DeviceType.SECURITY);
-
-        List<DetailTimeStatistics> totalStatistics = new ArrayList<>();
-        for(int i = 0; i < nameList.size(); i ++) {
-            DetailTimeStatistics statistics = new DetailTimeStatistics();
-            statistics.setUserName(nameList.get(i));
-            long workingTime = 0;
-            for(int j = 0; j < statisticsList.size(); j ++) {
-                if(nameList.get(i).equals(statisticsList.get(j).getUserName())) {
-                    workingTime += statisticsList.get(j).getWorkingTime();
-                }
-            }
-            statistics.setWorkingTime(workingTime);
-            totalStatistics.add(statistics);
-        }
-        TotalTimeStatistics totalTimeStatistics = new TotalTimeStatistics();
-        totalTimeStatistics.setDetailedStatistics(totalStatistics);
-        response.setTotalStatistics(totalTimeStatistics);
-
-        for(int id = 0; id < timeList.size(); id ++) {
-            long time = timeList.get(id);
-            List<DetailTimeStatistics> detailTimeStatistics = new ArrayList<>();
-            for(int i = 0; i < nameList.size(); i ++) {
-                DetailTimeStatistics statistics = new DetailTimeStatistics();
-                statistics.setUserName(nameList.get(i));
-                long workingTime = 0;
-                for(int j = 0; j < statisticsList.size(); j ++) {
-                    if(nameList.get(i).equals(statisticsList.get(j).getUserName()) && time == statisticsList.get(j).getTime()) {
-                        workingTime += statisticsList.get(j).getWorkingTime();
-                    }
-                }
-                statistics.setWorkingTime(workingTime);
-                detailTimeStatistics.add(statistics);
-            }
-            TotalTimeStatistics subTotalStatistics = new TotalTimeStatistics();
-            subTotalStatistics.setDetailedStatistics(detailTimeStatistics);
-            data.put(time, subTotalStatistics);
-
-        }
-        try {
-            Map<String, Object> paginatedResult = getPaginatedList(data, currentPage, perPage);
-            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Long, TotalTimeStatistics>) paginatedResult.get("list"));
-        } catch (Exception e) {
-            response.setDetailedStatistics(data);
-        }
-
-        if (perPage != null && currentPage != null) {
-            response.setPer_page(perPage);
-            response.setCurrent_page(currentPage);
-            try {
-                response.setTotal(data.size());
-                if (response.getTotal() % response.getPer_page() == 0) {
-                    response.setLast_page(response.getTotal() / response.getPer_page());
-                } else {
-                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-                }
-            } catch (Exception e) { }
-        }
-
-
-
-        return response;
+        List<TotalTimeStatistics> totalTimeStatisticsList = Utils.convertTimeStatistcis(detailTimeStatistics);
+        return totalTimeStatisticsList.get(0);
     }
 
     /**
@@ -168,21 +111,21 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
      * @param query
      * @return
      */
-    private TotalTimeStatistics getTotalStatistics(String query) {
+    private List<DetailTimeStatistics> getTotalStatistics(String query) {
 
         String temp = query;
-        temp = temp + ", (d.DEVICE_TYPE)";
-        temp = temp.replace(":detail", "d.DEVICE_TYPE");
+        temp = temp + " GROUP BY d.DEVICE_NAME, d.DEVICE_TYPE";
+        temp = temp + " ORDER BY d.DEVICE_NAME";
+        temp = temp.replace(":detail", "d.DEVICE_TYPE, d.DEVICE_NAME ");
+        temp = temp.replace(":timeInfo", "1 as startTime");
 
-        temp = temp + " ORDER BY d.DEVICE_TYPE ASC ";
+
 
         Query jpaQuery = entityManager.createNativeQuery(temp);
         List<Object> resultTotal = jpaQuery.getResultList();
 
         TotalTimeStatistics record = new TotalTimeStatistics();
         List<DetailTimeStatistics> detailTimeStatistics = new ArrayList<>();
-
-
 
         for (int i = 0; i < resultTotal.size(); i++) {
             Object[] item = (Object[]) resultTotal.get(i);
@@ -191,37 +134,39 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 detailTimeStatistics.add(timeStatistics);
             }
         }
-        record.setDetailedStatistics(detailTimeStatistics);
-        return record;
+        return detailTimeStatistics;
     }
+
 
     /**
      * Get statistics by statistics width
      * @param query
-     * @param startTime : start time
-     * @param endTime   : endtime
      * @return
      */
-    private TotalTimeStatistics getDetailedStatistics(String query, Date startTime, Date endTime) {
+    private List<DetailTimeStatistics> getDetailedStatistics(String queryTime, String query, String statWidth, Integer currentPage, int perPage) {
 
         String temp = query;
-        temp = temp + ", (r.DEVICE_ID)";
-        temp = temp.replace(":detail", "d.DEVICE_NAME");
-        temp = temp + " ORDER BY d.DEVICE_NAME ASC ";
+        temp = temp + " GROUP BY startTime, d.DEVICE_NAME, d.DEVICE_TYPE";
+        temp = temp + " ORDER BY d.DEVICE_NAME";
+        temp = temp.replace(":detail", "d.DEVICE_TYPE, d.DEVICE_NAME ");
 
-        Query jpaQuery = entityManager.createNativeQuery(temp);
+        String groupBy = Utils.getGroupByTime(statWidth);
+        String timeGroupBy = groupBy.replace("groupby", "r.REGISTER_TIME");
+
+        temp = temp.replace(":timeInfo", timeGroupBy + " as startTime");
+
+        String completeQuery = "SELECT t1.* FROM (" + queryTime + ") as t LEFT JOIN (\n" + temp + ") as t1 ON t.startTime = t1.startTime";
+
+        Query jpaQuery = entityManager.createNativeQuery(completeQuery);
         List<Object> result = jpaQuery.getResultList();
-        TotalTimeStatistics record = new TotalTimeStatistics();
-        record.setDetailedStatistics(new ArrayList<>());
+        List<DetailTimeStatistics> detailTimeStatisticsList = new ArrayList<>();
 
         for (int i = 0; i < result.size(); i++) {
             Object[] item = (Object[]) result.get(i);
             DetailTimeStatistics timeStatistics = initModelFromObject(item);
-            if(timeStatistics.getUserName() != null) {
-                record.getDetailedStatistics().add(timeStatistics);
-            }
+            detailTimeStatisticsList.add(timeStatistics);
         }
-        return record;
+        return detailTimeStatisticsList;
     }
 
     /**
@@ -276,7 +221,26 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         return paginationResult;
     }
 
+    private Long getCount(String deviceType, String deviceName, Date startTime, Date endTime, String statWidth) {
 
+        String strQuery = getCountSelectQuery() + getJoinQuery();
+
+        strQuery = strQuery +  " " + getWhereCause(deviceType, deviceName, startTime, endTime);
+        strQuery = strQuery + " GROUP BY startTime";
+        String groupBy = Utils.getGroupByTime(statWidth);
+        String timeGroupBy = groupBy.replace("groupby", "r.REGISTER_TIME");
+        strQuery = strQuery.replace(":timeInfo", timeGroupBy + " as startTime");
+        String countQueryStr = "SELECT count(startTime) FROM (" + strQuery + ") as t";
+        Query countQuery = entityManager.createNativeQuery(countQueryStr);
+        List<Object> countResult = countQuery.getResultList();
+
+        Long count = Utils.parseLong(countResult.get(0).toString());
+
+//        strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(modeId, userName, startTime, endTime));
+//        strQuery = strQuery.replace(":whereHand", getWhereCauseHand(modeId, userName, startTime, endTime));
+
+        return count;
+    }
 
     /**
      * build entire query
@@ -288,10 +252,9 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
      */
     private String makeQuery(String deviceType, String deviceName, Date startTime, Date endTime, String groupBy) {
 
-        String strQuery = getSelectQuery(groupBy) + getJoinQuery();
+        String strQuery = getSelectQuery() + getJoinQuery();
 
         strQuery = strQuery +  " " + getWhereCause(deviceType, deviceName, startTime, endTime);
-        strQuery = strQuery + " " + "GROUP BY  hour(r.REGISTER_TIME) ";
 //        strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(modeId, userName, startTime, endTime));
 //        strQuery = strQuery.replace(":whereHand", getWhereCauseHand(modeId, userName, startTime, endTime));
 
@@ -301,16 +264,27 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * query of select part
-     * @param groupBy : statistics width (hour, day, week, month, quarter, year)
+     * @param  : statistics width (hour, day, week, month, quarter, year)
      * @return
      */
-    private String getSelectQuery(String groupBy) {
+    private String getSelectQuery() {
         return "SELECT\n" +
                 "\n" +
-                groupBy +
-                "\t (r.REGISTER_TIME) as time,\n" +
+                "\t :timeInfo,\n" +
                 "\t sum(TIMESTAMPDIFF(SECOND,REGISTER_TIME,IF ( ISNULL(UNREGISTER_TIME) , NOW(), UNREGISTER_TIME ))),\n" +
                 "\t :detail \n" +
+                "\t FROM ser_device_register r \n";
+    }
+
+    /**
+     * query of select part
+     * @param : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private String getCountSelectQuery() {
+        return "SELECT\n" +
+                "\n" +
+                "\t :timeInfo\n" +
                 "\t FROM ser_device_register r \n";
     }
 
@@ -380,9 +354,10 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
         DetailTimeStatistics record = new DetailTimeStatistics();
         try {
-            record.setTime(Utils.parseInt(item[0]));
+            record.setTime(item[0].toString());
             record.setWorkingTime(Utils.parseLong(item[1]));
-            record.setUserName(item[2].toString());
+            record.setDeviceType(item[2].toString());
+            record.setUserName(item[3].toString());
         } catch (Exception e) { }
 
         return record;

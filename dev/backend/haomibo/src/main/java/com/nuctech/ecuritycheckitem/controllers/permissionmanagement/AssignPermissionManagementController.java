@@ -25,6 +25,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserGroupOnlyUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserGroupSimple;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.AssignPermissionService;
@@ -460,7 +461,7 @@ public class AssignPermissionManagementController extends BaseController {
     @RequestMapping(value = "/user-group/get-all", method = RequestMethod.POST)
     public Object userGroupGetAll() {
 
-        List<SysUserGroupSimple> sysUserGroupList = assignPermissionService.userGroupGetAll(); // Get all sys user group list from DB.
+        List<SysUserGroupOnlyUser> sysUserGroupList = assignPermissionService.userGroupGetAll(); // Get all sys user group list from DB.
 
         // Set filter for response json.
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysUserGroupList));

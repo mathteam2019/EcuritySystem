@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -76,7 +77,7 @@ public class HandExaminationStatisticsExcelView extends BaseExcelView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildExcelDocument(TreeMap<Integer, HandExaminationResponseModel> detailedStatistics) {
+    public static InputStream buildExcelDocument(List<HandExaminationResponseModel> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -100,9 +101,8 @@ public class HandExaminationStatisticsExcelView extends BaseExcelView {
 
             long index = 1;
 
-            for (Map.Entry<Integer, HandExaminationResponseModel> entry : detailedStatistics.entrySet()) {
+            for (HandExaminationResponseModel record : detailedStatistics) {
 
-                HandExaminationResponseModel record = entry.getValue();
                 Row row = sheet.createRow(counter ++);
                 DecimalFormat df = new DecimalFormat("0.00");
 

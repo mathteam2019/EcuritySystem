@@ -25,6 +25,7 @@ import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.DetailTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatistics;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,17 +46,17 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildPDFDocument(TreeMap<Long, TotalTimeStatistics> detailedStatistics, boolean type) {
+    public static InputStream buildPDFDocument(List<TotalTimeStatistics> detailedStatistics, boolean type) {
 
         Document document = new Document();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        TotalTimeStatistics firstRecord = detailedStatistics.firstEntry().getValue();
+        TotalTimeStatistics firstRecord = detailedStatistics.get(0);
         List<DetailTimeStatistics> firstDetail = firstRecord.getDetailedStatistics();
         nameList = new ArrayList<>();
         deviceCategoryList = new ArrayList<>();
         for(int i = 0; i < firstDetail.size(); i ++) {
-            if(i < 3) {
+            if(i < 4) {
                 deviceCategoryList.add(firstDetail.get(i).getUserName());
             } else {
                 nameList.add(firstDetail.get(i).getUserName());
@@ -74,10 +75,11 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
             }
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(deviceCategoryList.size() + nameList.size() + 1);
+            PdfPTable table = new PdfPTable(deviceCategoryList.size() + nameList.size() + 2);
 
             List<String> strHeaderList = new ArrayList<>();
             strHeaderList.add(messageSource.getMessage("ID", null, currentLocale));
+            strHeaderList.add(messageSource.getMessage("StatWidth", null, currentLocale));
 
             for(int i = 0; i < deviceCategoryList.size(); i ++) {
                 String categoryName = ConstantDictionary.getDataValue(deviceCategoryList.get(i));
@@ -104,13 +106,12 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
                 totalNameList.add(nameList.get(i));
             }
 
-            for (Map.Entry<Long, TotalTimeStatistics> entry : detailedStatistics.entrySet()) {
-
-                TotalTimeStatistics record = entry.getValue();
+            for (TotalTimeStatistics record : detailedStatistics) {
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 addTableCell(table, Long.toString(index++));
+                addTableCell(table, record.getTime());
                 int colNum = 0;
 
                 List<DetailTimeStatistics> detailTimeStatistics = record.getDetailedStatistics();
@@ -118,7 +119,7 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
                     String name = totalNameList.get(i);
                     for(int j = 0; j < detailTimeStatistics.size(); j ++) {
                         if(detailTimeStatistics.get(j).getUserName().equals(name)) {
-                            addTableCell(table, String.valueOf(detailTimeStatistics.get(j).getWorkingTime()));
+                            addTableCell(table, Utils.convertSecond(detailTimeStatistics.get(j).getWorkingTime()));
                         }
                     }
                 }

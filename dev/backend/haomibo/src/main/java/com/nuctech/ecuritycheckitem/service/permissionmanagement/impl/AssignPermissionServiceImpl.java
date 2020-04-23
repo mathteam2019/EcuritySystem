@@ -16,6 +16,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserGroupOnlyUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserGroupSimple;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
@@ -56,6 +57,9 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     @Autowired
     SysUserGroupRepository sysUserGroupRepository;
+
+    @Autowired
+    SysUserGroupOnlyUserRepository sysUserGroupOnlyUserRepository;
 
     @Autowired
     SysUserGroupRoleRepository sysUserGroupRoleRepository;
@@ -261,9 +265,9 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      *
      * @return
      */
-    public List<SysUserGroupSimple> userGroupGetAll() {
+    public List<SysUserGroupOnlyUser> userGroupGetAll() {
 
-        return sysUserGroupSimpleRepository.findAll();
+        return sysUserGroupOnlyUserRepository.findAll();
     }
 
     /**

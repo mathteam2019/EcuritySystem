@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -38,7 +39,7 @@ public class HandExaminationStatisticsPdfView extends BasePdfView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildPDFDocument(TreeMap<Integer, HandExaminationResponseModel> detailedStatistics) {
+    public static InputStream buildPDFDocument(List<HandExaminationResponseModel> detailedStatistics) {
 
         Document document = new Document();
 
@@ -67,14 +68,12 @@ public class HandExaminationStatisticsPdfView extends BasePdfView {
 
             long index = 1;
 
-            for (Map.Entry<Integer, HandExaminationResponseModel> entry : detailedStatistics.entrySet()) {
-
-                HandExaminationResponseModel record = entry.getValue();
+            for (HandExaminationResponseModel record : detailedStatistics) {
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 addTableCell(table, Long.toString(index ++));
-                addTableCell(table, Long.toString(record.getTime()));
+                addTableCell(table, record.getTime());
                 addTableCell(table, Long.toString(record.getTotal()));
                 addTableCell(table, Long.toString(record.getNoSeizure()));
                 addTableCell(table, df.format(record.getNoSeizureRate()));

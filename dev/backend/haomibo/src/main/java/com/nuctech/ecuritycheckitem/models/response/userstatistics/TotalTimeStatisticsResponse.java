@@ -25,8 +25,7 @@ import java.util.TreeMap;
 @Setter
 public class TotalTimeStatisticsResponse {
 
-    TotalTimeStatistics totalStatistics;
-    TreeMap<Long, TotalTimeStatistics> detailedStatistics; //detailed statistics
+    List<TotalTimeStatistics> detailedStatistics; //detailed statistics
 
     long total; //total count
     long per_page; //record count per page

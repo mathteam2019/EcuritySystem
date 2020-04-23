@@ -19,6 +19,7 @@ import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.DetailTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatistics;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -84,6 +85,7 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
         XWPFTableRow tableRowHeader = table.getRow(0);
 
         tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("StatWidth", null, currentLocale));
 
         for(int i = 0; i < deviceCategoryList.size(); i ++) {
             tableRowHeader.addNewTableCell().setText(ConstantDictionary.getDataValue(deviceCategoryList.get(i)));
@@ -99,16 +101,16 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildWordDocument(TreeMap<Long, TotalTimeStatistics> detailedStatistics, boolean isUserStatOrDeviceStat) {
+    public static InputStream buildWordDocument(List<TotalTimeStatistics> detailedStatistics, boolean isUserStatOrDeviceStat) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        TotalTimeStatistics firstRecord = detailedStatistics.firstEntry().getValue();
+        TotalTimeStatistics firstRecord = detailedStatistics.get(0);
         List<DetailTimeStatistics> firstDetail = firstRecord.getDetailedStatistics();
         nameList = new ArrayList<>();
         deviceCategoryList = new ArrayList<>();
         for(int i = 0; i < firstDetail.size(); i ++) {
-            if(i < 3) {
+            if(i < 4) {
                 deviceCategoryList.add(firstDetail.get(i).getUserName());
             } else {
                 nameList.add(firstDetail.get(i).getUserName());
@@ -130,23 +132,21 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
             for(int i = 0; i < nameList.size(); i ++) {
                 totalNameList.add(nameList.get(i));
             }
-            for (Map.Entry<Long, TotalTimeStatistics> entry : detailedStatistics.entrySet()) {
-
-                TotalTimeStatistics record = entry.getValue();
-                long key = entry.getKey();
+            for (TotalTimeStatistics record : detailedStatistics) {
 
                 XWPFTableRow tableRow = table.createRow();
 
                 DecimalFormat df = new DecimalFormat("0.00");
                 int colNum = 0;
                 tableRow.getCell(colNum ++).setText(Long.toString(index ++));
+                tableRow.getCell(colNum ++).setText(record.getTime());
 
                 List<DetailTimeStatistics> detailTimeStatistics = record.getDetailedStatistics();
                 for(int i = 0; i < totalNameList.size(); i ++) {
                     String name = totalNameList.get(i);
                     for(int j = 0; j < detailTimeStatistics.size(); j ++) {
                         if(detailTimeStatistics.get(j).getUserName().equals(name)) {
-                            tableRow.getCell(colNum ++).setText(String.valueOf(detailTimeStatistics.get(j).getWorkingTime()));
+                            tableRow.getCell(colNum ++).setText(Utils.convertSecond(detailTimeStatistics.get(j).getWorkingTime()));
                         }
                     }
                 }

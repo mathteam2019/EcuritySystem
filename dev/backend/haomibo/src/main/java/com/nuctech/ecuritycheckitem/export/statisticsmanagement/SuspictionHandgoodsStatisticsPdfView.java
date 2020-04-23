@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -38,7 +39,7 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildPDFDocument(TreeMap<Integer, TreeMap<String, Long>> detailedStatistics) {
+    public static InputStream buildPDFDocument(List<TreeMap<String, String>> detailedStatistics) {
 
         Document document = new Document();
 
@@ -77,19 +78,18 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
 
             long index = 1;
 
-            for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
+            for (TreeMap<String, String> record : detailedStatistics) {
 
-                TreeMap<String, Long> record = entry.getValue();
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 addTableCell(table, Long.toString(index ++));
-                addTableCell(table, Long.toString(record.get("time")));
+                addTableCell(table, record.get("time"));
 
 
                 for (int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
 
-                    addTableCell(table, record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)).toString());
+                    addTableCell(table, record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)));
 
                 }
 

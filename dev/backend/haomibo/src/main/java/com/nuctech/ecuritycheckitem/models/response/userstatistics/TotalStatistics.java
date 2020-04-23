@@ -20,7 +20,7 @@ import lombok.Setter;
 public class TotalStatistics {
 
     long id; //user or device id
-    long time; //time
+    String time; //time
     String name; //user or device name
 
     ScanStatistics scanStatistics; //simplified scan statistics

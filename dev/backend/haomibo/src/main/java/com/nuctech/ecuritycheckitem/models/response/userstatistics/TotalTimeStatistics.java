@@ -20,5 +20,6 @@ import java.util.List;
 @Getter
 @Setter
 public class TotalTimeStatistics {
+    String time;
     List<DetailTimeStatistics> detailedStatistics;
 }

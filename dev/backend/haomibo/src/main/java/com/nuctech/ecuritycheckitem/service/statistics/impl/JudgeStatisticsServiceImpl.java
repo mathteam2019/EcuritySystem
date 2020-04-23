@@ -65,7 +65,93 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
      */
     @Override
     public JudgeStatisticsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+        String groupBy = "hour";
+        List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth);
+        if (statWidth != null && !statWidth.isEmpty()) {
+            groupBy = statWidth;
+        }
+        StringBuilder queryBuilderCount = new StringBuilder();
+        queryBuilderCount.append(getCountSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
 
+        if (!whereCause.isEmpty()) {
+            queryBuilderCount.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        queryBuilderCount.append(" GROUP BY time ");
+        String preCountQuery = queryBuilderCount.toString();
+        String countQueryStr = "SELECT count(time) FROM (" + preCountQuery + ") as t";
+        Query countQuery = entityManager.createNativeQuery(countQueryStr);
+        List<Object> countResult = countQuery.getResultList();
+
+        Long count = Utils.parseLong(countResult.get(0).toString());
+
+        StringBuilder queryBuilder = new StringBuilder();
+
+        JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
+
+        //.... Get Total Statistics
+        queryBuilder.append(getDetailSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
+
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        //.... Get Detailed Statistics
+        queryBuilder.append(" GROUP BY time ");
+        currentPage = currentPage - 1;
+        int start = currentPage * perPage;
+        queryBuilder.append(" LIMIT " + start + ", " + perPage);
+        List<JudgeStatisticsResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, false);
+        response.setDetailedStatistics(detailedStatistics);
+        response.setTotal(count);
+        response.setCurrent_page(currentPage + 1);
+        response.setPer_page(perPage);
+        response.setLast_page((int) Math.ceil(((double) count) / perPage));
+        response.setFrom(perPage * currentPage + 1);
+        response.setTo(perPage * currentPage + detailedStatistics.size());
+
+        return response;
+
+    }
+
+    /**
+     * Get statistics by statistics width
+     * @param query
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private List<JudgeStatisticsResponseModel> getDetailedStatistics(String query, String statWidth, boolean isChart) {
+        Query jpaQuery = entityManager.createNativeQuery(query);
+        List<Object> result = jpaQuery.getResultList();
+
+        SerPlatformCheckParams systemConstants = new SerPlatformCheckParams();
+        try {
+            List<SerPlatformCheckParams> list = serPlatformCheckParamRepository.findAll();
+            systemConstants = list.get(0);
+        } catch (Exception e) {
+        }
+        if (systemConstants.getJudgeProcessingTime() == null) {
+            systemConstants.setJudgeProcessingTime((long) 0);
+        }
+        List<JudgeStatisticsResponseModel> data = new ArrayList<>();
+
+        for (int i = 0; i < result.size(); i++) {
+
+            Object[] item = (Object[]) result.get(i);
+            JudgeStatisticsResponseModel record = initModelFromObject(item);
+            record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
+            if(isChart == false) {
+                record.setTime(Utils.formatDateByStatisticWidth(statWidth, record.getTime()));
+            }
+            data.add(record);
+        }
+
+        return  data;
+    }
+
+    @Override
+    public JudgeStatisticsPaginationResponse getChartStatistics(Long fieldId, Long deviceId, Long userCategory, String userName,
+                                                                Date startTime, Date endTime, String statWidth) {
         StringBuilder queryBuilder = new StringBuilder();
 
         String groupBy = "hour";
@@ -81,88 +167,29 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         if (!whereCause.isEmpty()) {
             queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
-        JudgeStatisticsResponseModel totalStatistics = getTotalStatistics(queryBuilder.toString());
-        response.setTotalStatistics(totalStatistics);
 
         //.... Get Detailed Statistics
         queryBuilder.append(" GROUP BY  " + groupBy + "(g.JUDGE_START_TIME)");
-        TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, startTime, endTime);
-
-        try {
-            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Integer, JudgeStatisticsResponseModel>)paginatedResult.get("list"));
-        }
-        catch (Exception e) {
-            response.setDetailedStatistics(detailedStatistics);
-        }
-
-        if (perPage != null && currentPage != null) {
-            response.setPer_page(perPage);
-            response.setCurrent_page(currentPage);
-            try {
-                response.setTotal(detailedStatistics.size());
-                if (response.getTotal() % response.getPer_page() == 0) {
-                    response.setLast_page(response.getTotal() / response.getPer_page());
-                } else {
-                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-                }
-            } catch (Exception e) { }
-        }
-
+        List<JudgeStatisticsResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, true);
+        response.setDetailedStatistics(detailedStatistics);
         return response;
-
     }
+    @Override
+    public JudgeStatisticsResponseModel getTotalStatistics(Long fieldId, Long deviceId, Long userCategory, String userName,
+                                                           Date startTime, Date endTime, String statWidth) {
+        StringBuilder queryBuilder = new StringBuilder();
 
-    /**
-     * Get statistics by statistics width
-     * @param query
-     * @param statWidth : (hour, day, week, month, quarter, year)
-     * @param startTime : start time
-     * @param endTime : endtime
-     * @return
-     */
-    private TreeMap<Integer, JudgeStatisticsResponseModel> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
-        Query jpaQuery = entityManager.createNativeQuery(query);
-        List<Object> result = jpaQuery.getResultList();
-        TreeMap<Integer, JudgeStatisticsResponseModel> data = new TreeMap<>();
-
-        Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = getKeyValuesforStatistics(statWidth, startTime, endTime);
-        try {
-            keyValueMin = keyValues.get(0);
-            keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
-
-        SerPlatformCheckParams systemConstants = new SerPlatformCheckParams();
-        try {
-            List<SerPlatformCheckParams> list = serPlatformCheckParamRepository.findAll();
-            systemConstants = list.get(0);
-
-        } catch (Exception e) {
-
+        String groupBy = "hour";
+        if (statWidth != null && !statWidth.isEmpty()) {
+            groupBy = statWidth;
         }
-        if (systemConstants.getJudgeProcessingTime() == null) {
-            systemConstants.setJudgeProcessingTime((long) 0);
+        queryBuilder.append(getSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
+        List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth);
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
-
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-            JudgeStatisticsResponseModel item = new JudgeStatisticsResponseModel();
-            item.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
-            item.setTime(i);
-            data.put(i, item);
-        }
-
-        for (int i = 0; i < result.size(); i++) {
-
-            Object[] item = (Object[]) result.get(i);
-            JudgeStatisticsResponseModel record = initModelFromObject(item);
-            record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
-            data.put(record.getTime(), record);
-        }
-
-        return  data;
+        JudgeStatisticsResponseModel totalStatistics = getTotalStatistics(queryBuilder.toString());
+        return totalStatistics;
     }
 
     /**
@@ -243,6 +270,41 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         return result;
     }
 
+    private String getMainSelectQuery() {
+        return "\tsum( IF ( g.judge_user_id != " + Constants.DEFAULT_SYSTEM_USER + ", 1, 0 ) ) AS artificialJudge,\n" +
+                "\tsum( IF ( a.ASSIGN_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.TRUE + "', 1, 0 ) ) AS assignResult,\n" +
+                "\tsum( IF ( g.judge_user_id = " + Constants.DEFAULT_SYSTEM_USER + " AND a.assign_judge_device_id IS NOT NULL " + " AND g.judge_timeout = '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeout,\n" +
+                "\tsum( IF ( (a.assign_id IS NULL OR a.ASSIGN_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.FALSE + "') AND a.assign_judge_device_id IS NULL " + ", 1, 0 ) ) AS atrResult,\n" +
+                "\tsum( IF ( s.SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "' " +
+                " AND g.JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspiction,\n" +
+                "\tsum( IF ( s.SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "' " +
+                " OR g.JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspiction,\n" +
+                "\tcount( JUDGE_ID ) AS total ,\n" +
+                "\tAVG( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS avgDuration,\n" +
+                "\tMAX( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS maxDuration,\n" +
+                "\tMIN( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS minDuration,\n" +
+                "\t\n" +
+                "\tAVG( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) \n" +
+                "\t AS artificialAvgDuration,\n" +
+                "\tMAX( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMaxDuration,\n" +
+                "\tMIN( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n";
+
+    }
+
+    /**
+     * query of select part
+     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private String getDetailSelectQuery(String statWidth) {
+        String groupBy = Utils.getGroupByTime(statWidth);
+        String judgeGroupBy = groupBy.replace("groupby", "judge_start_time");
+        return "SELECT " +
+                judgeGroupBy + " as time, " +
+                getMainSelectQuery();
+
+    }
+
     /**
      * query of select part
      * @param groupBy : statistics width (hour, day, week, month, quarter, year)
@@ -253,23 +315,19 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 "\n" +
                 groupBy +
                 "\t( judge_start_time ) AS time,\n" +
-                "\tsum( IF ( g.judge_user_id != " + Constants.DEFAULT_SYSTEM_USER + ", 1, 0 ) ) AS artificialJudge,\n" +
-                "\tsum( IF ( a.ASSIGN_TIMEOUT LIKE '" + SerJudgeGraph.AssignTimeout.TRUE + "', 1, 0 ) ) AS assignResult,\n" +
-                "\tsum( IF ( g.judge_user_id = " + Constants.DEFAULT_SYSTEM_USER + " AND a.assign_judge_device_id IS NOT NULL " + " AND g.judge_timeout LIKE '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeout,\n" +
-                "\tsum( IF ( (a.assign_id IS NULL OR a.ASSIGN_TIMEOUT LIKE '" + SerJudgeGraph.AssignTimeout.FALSE + "') AND a.assign_judge_device_id IS NULL " + ", 1, 0 ) ) AS atrResult,\n" +
-                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "' " +
-                " AND g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspiction,\n" +
-                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.FALSE + "' " +
-                " OR g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspiction,\n" +
-                "\tcount( JUDGE_ID ) AS total ,\n" +
-                "\tAVG( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS avgDuration,\n" +
-                "\tMAX( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS maxDuration,\n" +
-                "\tMIN( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS minDuration,\n" +
-                "\t\n" +
-                "\tAVG( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) \n" +
-                "\t AS artificialAvgDuration,\n" +
-                "\tMAX( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMaxDuration,\n" +
-                "\tMIN( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n";
+                getMainSelectQuery();
+    }
+
+    /**
+     * query of select part
+     * @param  : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private String getCountSelectQuery(String statWidth) {
+        String groupBy = Utils.getGroupByTime(statWidth);
+        String judgeGroupBy = groupBy.replace("groupby", "judge_start_time");
+        return "SELECT " +
+                judgeGroupBy + " as time ";
 
     }
 
@@ -299,7 +357,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
      */
     private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
         List<String> whereCause = new ArrayList<String>();
-        whereCause.add("s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "'");
+        whereCause.add("s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "'");
 
         if (fieldId != null) {
             whereCause.add("t.SCENE = " + fieldId);
@@ -342,7 +400,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
 
         try {
 
-            record.setTime(Utils.parseInt(item[0]));
+            record.setTime(item[0].toString());
             record.setArtificialJudge(Utils.parseLong(item[1]));
             record.setAssignTimeout(Utils.parseLong(item[2]));
             record.setJudgeTimeout(Utils.parseLong(item[3]));

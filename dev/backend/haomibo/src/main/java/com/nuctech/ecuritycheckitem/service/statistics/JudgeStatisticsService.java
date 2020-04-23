@@ -13,6 +13,7 @@
 package com.nuctech.ecuritycheckitem.service.statistics;
 
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsPaginationResponse;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
 
 import java.util.Date;
 
@@ -32,5 +33,11 @@ public interface JudgeStatisticsService {
      * @return
      */
     JudgeStatisticsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
+
+    JudgeStatisticsPaginationResponse getChartStatistics(Long fieldId, Long deviceId, Long userCategory, String userName,
+                                              Date startTime, Date endTime, String statWidth);
+
+    JudgeStatisticsResponseModel getTotalStatistics(Long fieldId, Long deviceId, Long userCategory, String userName,
+                                                    Date startTime, Date endTime, String statWidth);
 
 }

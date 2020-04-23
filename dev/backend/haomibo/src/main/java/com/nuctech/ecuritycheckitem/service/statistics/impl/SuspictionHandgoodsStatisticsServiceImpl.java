@@ -59,11 +59,80 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
 
         SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
 
-        StringBuilder queryBuilder = new StringBuilder();
+
         String groupBy = "hour";
         if (statWidth != null && !statWidth.isEmpty()) {
             groupBy = statWidth;
         }
+        String groupByTime = Utils.getGroupByTime(groupBy);
+        String handGroupBy = groupByTime.replace("groupby", "h.HAND_START_TIME");
+        List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth);
+        StringBuilder whereBuilder = new StringBuilder();
+        if (!whereCause.isEmpty()) {
+            whereBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        StringBuilder queryBuilderCount = new StringBuilder();
+        queryBuilderCount.append(getSelectQuery());
+
+        String preCountQuery = queryBuilderCount.toString();
+        preCountQuery = preCountQuery.replace(":where", whereBuilder.toString());
+        preCountQuery = preCountQuery.replace(":groupBy", handGroupBy);
+        preCountQuery = getNoZeroQuery(preCountQuery);
+        String countQueryStr = "SELECT count(time) FROM (" + preCountQuery + ") as t";
+        Query countQuery = entityManager.createNativeQuery(countQueryStr);
+        List<Object> countResult = countQuery.getResultList();
+
+        Long count = Utils.parseLong(countResult.get(0).toString());
+
+        //.... Get Total Statistics
+        StringBuilder queryBuilder = new StringBuilder();
+        String strQuery = getSelectQuery();
+
+
+        strQuery = strQuery.replace(":where", whereBuilder.toString());
+        queryBuilder.append(strQuery);
+
+
+
+        String query = queryBuilder.toString();
+
+
+        query = query.replace(":groupBy", handGroupBy);
+        //.... Get Detailed Statistics
+
+        query = getNoZeroQuery(query);
+        currentPage = currentPage - 1;
+        int start = currentPage * perPage;
+        queryBuilder.append(" LIMIT " + start + ", " + perPage);
+
+        List<TreeMap<String, String>> detailedStatistics = getDetailedStatistics(query, groupBy);
+        response.setDetailedStatistics(detailedStatistics);
+        response.setTotal(count);
+        response.setCurrent_page(currentPage + 1);
+        response.setPer_page(perPage);
+        response.setLast_page((int) Math.ceil(((double) count) / perPage));
+        response.setFrom(perPage * currentPage + 1);
+        response.setTo(perPage * currentPage + detailedStatistics.size());
+
+        return response;
+    }
+
+    /**
+     * get statistics
+     * @param fieldId
+     * @param deviceId
+     * @param userCategory
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @param statWidth
+     * @return
+     */
+    public TreeMap<String, Long> getChartStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
+
+
+        StringBuilder queryBuilder = new StringBuilder();
 
         //.... Get Total Statistics
         String strQuery = getSelectQuery();
@@ -74,35 +143,8 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         }
         strQuery = strQuery.replace(":where", whereBuilder.toString());
         queryBuilder.append(strQuery);
-
         TreeMap<String, Long> totalStatistics = getTotalStatistics(queryBuilder.toString());
-        response.setTotalStatistics(totalStatistics);
-
-        //.... Get Detailed Statistics
-        TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, startTime, endTime);
-        try {
-            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Integer, TreeMap<String, Long>>) paginatedResult.get("list"));
-        } catch (Exception e) {
-            response.setDetailedStatistics(detailedStatistics);
-        }
-
-        if (perPage != null && currentPage != null) {
-            response.setPer_page(perPage);
-            response.setCurrent_page(currentPage);
-            try {
-                response.setTotal(detailedStatistics.size());
-                if (response.getTotal() % response.getPer_page() == 0) {
-                    response.setLast_page(response.getTotal() / response.getPer_page());
-                } else {
-                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-                }
-            } catch (Exception e) { }
-        }
-
-        return response;
+        return totalStatistics;
     }
 
     /**
@@ -132,48 +174,30 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
      * Get statistics by statistics width
      * @param query
      * @param statWidth : (hour, day, week, month, quarter, year)
-     * @param startTime : start time
-     * @param endTime : endtime
      * @return
      */
-    private TreeMap<Integer, TreeMap<String, Long>> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
+    private List<TreeMap<String, String>> getDetailedStatistics(String query, String statWidth) {
 
-        String strQuery = query.replace(":groupBy", statWidth + "(h.HAND_START_TIME)");
 
-        Query jpaQuery = entityManager.createNativeQuery(strQuery);
+        Query jpaQuery = entityManager.createNativeQuery(query);
 
         List<Object> result = jpaQuery.getResultList();
-        TreeMap<Integer, TreeMap<String, Long>> data = new TreeMap<>();
+        List<TreeMap<String, String>> data = new ArrayList<>();
 
-        Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = Utils.getKeyValuesforStatistics(statWidth, startTime, endTime);
-        try {
-            keyValueMin = keyValues.get(0);
-            keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
 
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-            TreeMap<String, Long> item = new TreeMap<String, Long>();
-            for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
-                item.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), (long) 0);
-            }
-            item.put("time", (long)i);
-            data.put(i, item);
-        }
 
         for (int i = 0; i < result.size(); i++) {
             Object[] item = (Object[]) result.get(i);
             if(item[0] == null) {
                 continue;
             }
-            TreeMap<String, Long> record = new TreeMap<>();
+            TreeMap<String, String> record = new TreeMap<>();
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
-                record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Utils.parseLong(item[j + 1].toString()));
+                record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), item[j + 1].toString());
             }
-            record.put("time", Utils.parseLong(item[0].toString()));
-            data.put(Utils.parseInt(record.get("time").toString()), record);
+            record.put("time", Utils.formatDateByStatisticWidth(statWidth, item[0].toString()));
+            data.add(record);
         }
-
         return data;
     }
 
@@ -231,20 +255,43 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
     private String getSelectQuery() {
 
         return "SELECT\n" +
-                "\t:groupBy,\n" +
-                "\tsum( IF ( hand_goods LIKE '1000001601', 1, 0 ) ) AS a1,\n" +
-                "\tsum( IF ( hand_goods LIKE '1000001602', 1, 0 ) ) AS a2,\n" +
-                "\tsum( IF ( hand_goods LIKE '1000001603', 1, 0 ) ) AS a3,\n" +
-                "\tsum( IF ( hand_goods LIKE '1000001604', 1, 0 ) ) AS a4,\n" +
-                "\tsum( IF ( hand_goods LIKE '1000001605', 1, 0 ) ) AS a5\n" +
-                "FROM\n" +
+                "\t:groupBy as time,\n" +
+                getMainSelectQuery();
+
+
+    }
+
+    private String getMainSelectQuery() {
+        return "\tsum( IF ( hand_goods LIKE '%1000001601%', 1, 0 ) ) AS a1,\n" +
+                "\tsum( IF ( hand_goods LIKE '%1000001602%', 1, 0 ) ) AS a2,\n" +
+                "\tsum( IF ( hand_goods LIKE '%1000001603%', 1, 0 ) ) AS a3,\n" +
+                "\tsum( IF ( hand_goods LIKE '%1000001604%', 1, 0 ) ) AS a4,\n" +
+                "\tsum( IF ( hand_goods LIKE '%1000001605%', 1, 0 ) ) AS a5\n" +
+                getJoinQuery();
+    }
+
+    private String getJoinQuery() {
+        return "FROM\n" +
                 "\thistory h \n" +
                 "left join ser_task t on h.task_id = t.task_id\n" +
                 "left join sys_user u on h.HAND_USER_ID = u.user_id\n" +
                 "\n" +
                 "\n:where\n" +
-                "\nGROUP BY\n" +
-                "\t:groupBy";
+                "\nGROUP BY time\n";
+    }
+
+    private String getNoZeroQuery(String query) {
+        return "SELECT * FROM(" + query + ")as zt WHERE (a1 + a2 + a3 + a4 + a5 > 0)";
+    }
+
+    /**
+     * query of select part
+     * @param  : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private String getCountSelectQuery() {
+        return "SELECT\n" +
+                "\t:groupBy as time\n";
 
     }
 
@@ -284,6 +331,8 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             String strDate = dateFormat.format(date);
             whereCause.add("h.HAND_START_TIME <= '" + strDate + "'");
         }
+
+
 
 //        CategoryUser categoryUser = authService.getDataCategoryUserList();
 //        if(categoryUser.isAll() == false) {

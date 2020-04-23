@@ -22,7 +22,7 @@ import lombok.Setter;
 @Setter
 public class HandExaminationResponseModel {
 
-    int time; //time
+    String time; //time
     long total; //total hand count
     long seizure; //seizure  hand count
     long noSeizure; //noSeizure hand count

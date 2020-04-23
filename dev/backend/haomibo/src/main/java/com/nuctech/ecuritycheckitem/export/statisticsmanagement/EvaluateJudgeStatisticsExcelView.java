@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -78,17 +79,19 @@ public class EvaluateJudgeStatisticsExcelView extends BaseExcelView {
         Cell headerCellIntelligenceJudge = header.createCell(12);
         headerCellIntelligenceJudge.setCellValue(messageSource.getMessage("IntelligenceJudge", null, currentLocale));
 
-        Cell headerCellIntelligenceJudgeMistake = header.createCell(13);
-        headerCellIntelligenceJudgeMistake.setCellValue(messageSource.getMessage("IntelligenceJudgeMistake", null, currentLocale));
-
-        Cell headerCellIntelligenceJudgeMistakeRate = header.createCell(14);
-        headerCellIntelligenceJudgeMistakeRate.setCellValue(messageSource.getMessage("IntelligenceJudgeMistakeRate", null, currentLocale));
-
-        Cell headerCellIntelligenceJudgeMissing = header.createCell(15);
+        Cell headerCellIntelligenceJudgeMissing = header.createCell(13);
         headerCellIntelligenceJudgeMissing.setCellValue(messageSource.getMessage("IntelligenceJudgeMissing", null, currentLocale));
 
-        Cell headerCellIntelligenceJudgeMissingRate = header.createCell(16);
+        Cell headerCellIntelligenceJudgeMissingRate = header.createCell(146);
         headerCellIntelligenceJudgeMissingRate.setCellValue(messageSource.getMessage("IntelligenceJudgeMissingRate", null, currentLocale));
+
+        Cell headerCellIntelligenceJudgeMistake = header.createCell(15);
+        headerCellIntelligenceJudgeMistake.setCellValue(messageSource.getMessage("IntelligenceJudgeMistake", null, currentLocale));
+
+        Cell headerCellIntelligenceJudgeMistakeRate = header.createCell(16);
+        headerCellIntelligenceJudgeMistakeRate.setCellValue(messageSource.getMessage("IntelligenceJudgeMistakeRate", null, currentLocale));
+
+
     }
 
     /**
@@ -96,7 +99,7 @@ public class EvaluateJudgeStatisticsExcelView extends BaseExcelView {
      * @param detailedStatistics
      * @return
      */
-    public static InputStream buildExcelDocument(TreeMap<Integer, EvaluateJudgeResponseModel> detailedStatistics) {
+    public static InputStream buildExcelDocument(List<EvaluateJudgeResponseModel> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -120,29 +123,30 @@ public class EvaluateJudgeStatisticsExcelView extends BaseExcelView {
 
             long index = 1;
 
-            for (Map.Entry<Integer, EvaluateJudgeResponseModel> entry : detailedStatistics.entrySet()) {
+            for (EvaluateJudgeResponseModel record: detailedStatistics) {
 
-                EvaluateJudgeResponseModel record = entry.getValue();
                 Row row = sheet.createRow(counter ++);
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 row.createCell(0).setCellValue(index ++);
                 row.createCell(1).setCellValue(record.getTime());
                 row.createCell(2).setCellValue(record.getTotal());
-                row.createCell(3).setCellValue(Long.toString(record.getMistakeReport()));
-                row.createCell(4).setCellValue(df.format(record.getMistakeReportRate()));
-                row.createCell(5).setCellValue(Long.toString(record.getMissingReport()));
-                row.createCell(6).setCellValue(df.format(record.getMissingReportRate()));
+                row.createCell(3).setCellValue(Long.toString(record.getMissingReport()));
+                row.createCell(4).setCellValue(df.format(record.getMissingReportRate()));
+                row.createCell(5).setCellValue(Long.toString(record.getMistakeReport()));
+                row.createCell(6).setCellValue(df.format(record.getMistakeReportRate()));
+
                 row.createCell(7).setCellValue(Long.toString(record.getArtificialJudge()));
                 row.createCell(8).setCellValue(Long.toString(record.getArtificialJudgeMistake()));
                 row.createCell(9).setCellValue(df.format(record.getArtificialJudgeMistakeRate()));
                 row.createCell(10).setCellValue(Long.toString(record.getArtificialJudgeMissing()));
                 row.createCell(11).setCellValue(df.format(record.getArtificialJudgeMissingRate()));
                 row.createCell(12).setCellValue(Long.toString(record.getIntelligenceJudge()));
-                row.createCell(13).setCellValue(df.format(record.getIntelligenceJudgeMistake()));
-                row.createCell(14).setCellValue(df.format(record.getIntelligenceJudgeMistakeRate()));
-                row.createCell(15).setCellValue(df.format(record.getIntelligenceJudgeMissing()));
-                row.createCell(16).setCellValue(df.format(record.getIntelligenceJudgeMissingRate()));
+                row.createCell(13).setCellValue(df.format(record.getIntelligenceJudgeMissing()));
+                row.createCell(14).setCellValue(df.format(record.getIntelligenceJudgeMissingRate()));
+                row.createCell(15).setCellValue(df.format(record.getIntelligenceJudgeMistake()));
+                row.createCell(16).setCellValue(df.format(record.getIntelligenceJudgeMistakeRate()));
+
             }
 
             workbook.write(out);

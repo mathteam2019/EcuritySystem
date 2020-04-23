@@ -75,7 +75,6 @@ public class PreviewStatisticsController extends BaseController {
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime; //end time
             String statWidth; //statistics width (possible values: hour, day, week, month, quarter, year)
-
         }
         String sort;
         Integer currentPage; //current page no
@@ -107,8 +106,42 @@ public class PreviewStatisticsController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @RequestMapping(value = "/preview", method = RequestMethod.POST)
+    @RequestMapping(value = "/preview/total", method = RequestMethod.POST)
     public Object previewStatisticsGet(
+            @RequestBody @Valid StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        //get statistics from database through previewStatisticsService
+        TotalStatistics response = previewStatisticsService.getTotalStatistics(
+                requestBody.getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getStatWidth()//get statistics width from input parameter
+        );
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, response));
+
+        return value;
+
+    }
+
+
+
+
+    /**
+     * get preview statistics request
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/preview/detail", method = RequestMethod.POST)
+    public Object previewStatisticsDetail(
             @RequestBody @Valid StatisticsRequestBody requestBody,
             BindingResult bindingResult) {
 
@@ -128,6 +161,49 @@ public class PreviewStatisticsController extends BaseController {
         }
         //get statistics from database through previewStatisticsService
         TotalStatisticsResponse response = previewStatisticsService.getStatistics(sortBy, order,
+                requestBody.getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getStatWidth(),//get statistics width from input parameter
+                requestBody.getCurrentPage(),//get current page no from input parameter
+                requestBody.getPerPage());//get record count per page from input parameter
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, response));
+
+        return value;
+
+    }
+
+    /**
+     * get preview statistics request
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/preview/chart", method = RequestMethod.POST)
+    public Object previewStatisticsChart(
+            @RequestBody @Valid StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        //get statistics from database through previewStatisticsService
+        TotalStatisticsResponse response = previewStatisticsService.getChartStatistics(sortBy, order,
                 requestBody.getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getUserCategory(),//get user category id from input parameter
@@ -168,19 +244,18 @@ public class PreviewStatisticsController extends BaseController {
         }
         StatisticsRequestBody body = requestBody.getFilter();
 
-        //get statistics from database through previewStatisticsService
-        TreeMap<Long, TotalStatistics> totalStatistics = previewStatisticsService.getStatistics(sortBy, order,
-                requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
-                requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
-                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
-                requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
-                requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
-                requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
-                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+        TotalStatisticsResponse response = previewStatisticsService.getStatistics(sortBy, order,
+                body.getFilter().getFieldId(),//get field id from input parameter
+                body.getFilter().getDeviceId(),//get device id from input parameter
+                body.getFilter().getUserCategory(),//get user category id from input parameter
+                body.getFilter().getUserName(),//get user name from input parameter
+                body.getFilter().getStartTime(),//get start time from input parameter
+                body.getFilter().getEndTime(),//get end time from input parameter
+                body.getFilter().getStatWidth(),//get statistics width from input parameter
+                1,//get current page no from input parameter
+                Integer.MAX_VALUE);//get record count per page from input parameter
 
-        TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //TreeMap<Long, TotalStatistics> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         PreviewStatisticsPdfView.setResource(getFontResource());  //set header font
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         PreviewStatisticsPdfView.setMessageSource(messageSource);
@@ -189,7 +264,7 @@ public class PreviewStatisticsController extends BaseController {
         } else {
             PreviewStatisticsPdfView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = PreviewStatisticsPdfView.buildPDFDocument(exportList);  //make inputstream of data to be printed
+        InputStream inputStream = PreviewStatisticsPdfView.buildPDFDocument(response.getDetailedStatistics());  //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=previewStatistics.pdf");  //set filename
@@ -222,19 +297,20 @@ public class PreviewStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        //get statistics fromd database through previewStatisticsService
-        TreeMap<Long, TotalStatistics> totalStatistics = previewStatisticsService.getStatistics(sortBy, order,
-                requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
-                requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
-                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
-                requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
-                requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
-                requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
-                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
 
-        TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        StatisticsRequestBody body = requestBody.getFilter();
+        TotalStatisticsResponse response = previewStatisticsService.getStatistics(sortBy, order,
+                body.getFilter().getFieldId(),//get field id from input parameter
+                body.getFilter().getDeviceId(),//get device id from input parameter
+                body.getFilter().getUserCategory(),//get user category id from input parameter
+                body.getFilter().getUserName(),//get user name from input parameter
+                body.getFilter().getStartTime(),//get start time from input parameter
+                body.getFilter().getEndTime(),//get end time from input parameter
+                body.getFilter().getStatWidth(),//get statistics width from input parameter
+                1,//get current page no from input parameter
+                Integer.MAX_VALUE);//get record count per page from input parameter
+
+        //TreeMap<Long, TotalStatistics> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale());   //set dictionary data key and values
         PreviewStatisticsExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -242,7 +318,7 @@ public class PreviewStatisticsController extends BaseController {
         } else {
             PreviewStatisticsExcelView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = PreviewStatisticsExcelView.buildExcelDocument(exportList);//make inputstream of data to be exported
+        InputStream inputStream = PreviewStatisticsExcelView.buildExcelDocument(response.getDetailedStatistics());//make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=previewStatistics.xlsx"); //set filename
@@ -275,19 +351,19 @@ public class PreviewStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        //get statistics from database through previewStatisticsService
-        TreeMap<Long, TotalStatistics> totalStatistics = previewStatisticsService.getStatistics(sortBy, order,
-                requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
-                requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
-                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
-                requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
-                requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
-                requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
-                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+        StatisticsRequestBody body = requestBody.getFilter();
+        TotalStatisticsResponse response = previewStatisticsService.getStatistics(sortBy, order,
+                body.getFilter().getFieldId(),//get field id from input parameter
+                body.getFilter().getDeviceId(),//get device id from input parameter
+                body.getFilter().getUserCategory(),//get user category id from input parameter
+                body.getFilter().getUserName(),//get user name from input parameter
+                body.getFilter().getStartTime(),//get start time from input parameter
+                body.getFilter().getEndTime(),//get end time from input parameter
+                body.getFilter().getStatWidth(),//get statistics width from input parameter
+                1,//get current page no from input parameter
+                Integer.MAX_VALUE);//get record count per page from input parameter
 
-        TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //TreeMap<Long, TotalStatistics> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         PreviewStatisticsWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -295,7 +371,7 @@ public class PreviewStatisticsController extends BaseController {
         } else {
             PreviewStatisticsWordView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = PreviewStatisticsWordView.buildWordDocument(exportList);  //make input stream of data to be exported
+        InputStream inputStream = PreviewStatisticsWordView.buildWordDocument(response.getDetailedStatistics());  //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=previewStatistics.docx"); //set file name
@@ -327,7 +403,7 @@ public class PreviewStatisticsController extends BaseController {
 
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(Long.toString(record.getTime()))) {  //if specified id is contained idList
+                    if (splits[j].equals(record.getTime())) {  //if specified id is contained idList
                         isExist = true;
                         break;
                     }

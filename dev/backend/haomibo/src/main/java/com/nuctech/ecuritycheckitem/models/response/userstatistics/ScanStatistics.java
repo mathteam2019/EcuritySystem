@@ -26,7 +26,7 @@ public class ScanStatistics {
 
     String axisLabel; //axisLabel
     long id; //id
-    long time; //time
+    String time; //time
     double workingSeconds; //workingSeconds
     long totalScan; //totalScan count
     long invalidScan; //invalidScan count

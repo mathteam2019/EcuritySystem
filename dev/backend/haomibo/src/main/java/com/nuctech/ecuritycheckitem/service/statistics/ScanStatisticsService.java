@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.statistics;
 
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatisticsResponse;
 
 import java.util.Date;
@@ -33,5 +34,11 @@ public interface ScanStatisticsService {
      */
     ScanStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, String workMode,
                                          Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
+
+    ScanStatisticsResponse getChartStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, String workMode,
+                                         Date startTime, Date endTime, String statWidth);
+
+    ScanStatistics getTotalStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, String workMode,
+                                      Date startTime, Date endTime, String statWidth);
 
 }

@@ -139,7 +139,7 @@ public class TaskServiceImpl implements TaskService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("taskId").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("serScan.scanStartTime").descending());
         }
         Date start = new Date();
 
@@ -327,7 +327,7 @@ public class TaskServiceImpl implements TaskService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("taskId").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("serScan.scanStartTime").descending());
         }
 
         Date startDate = new Date();

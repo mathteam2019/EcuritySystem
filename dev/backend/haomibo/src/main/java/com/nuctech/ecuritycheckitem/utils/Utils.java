@@ -18,8 +18,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
+import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.DetailTimeStatistics;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -120,6 +123,86 @@ public class Utils {
         } catch(Exception ex) {
             return null;
         }
+    }
+
+    public static String convertSecond(long realTime) {
+        if(realTime == 0) {
+            return "0";
+        }
+        long time = realTime;
+        long sec = time % 60;
+        time = time / 60;
+        long minutes = time % 60;
+        time = time / 60;
+        long hour = time % 24;
+        long day = time / 24;
+        String answer = "";
+        if(day > 0) {
+            answer = answer + "D" + String.format("%02d", day) + " ";
+        }
+        answer = answer + String.format("%02d", hour) + ": ";
+        answer = answer + String.format("%02d", minutes) + ": ";
+        answer = answer + String.format("%02d", sec);
+        return answer;
+    }
+
+    public static List<TotalTimeStatistics> convertTimeStatistcis(List<DetailTimeStatistics> detailTimeStatisticsList) {
+        List<String> nameList = new ArrayList<>();
+        List<String> timeList = new ArrayList<>();
+        nameList.add(SysDevice.DeviceType.ALL);
+        nameList.add(SysDevice.DeviceType.SECURITY);
+        nameList.add(SysDevice.DeviceType.JUDGE);
+        nameList.add(SysDevice.DeviceType.MANUAL);
+        for(int i = 0; i < detailTimeStatisticsList.size(); i ++) {
+            String name = detailTimeStatisticsList.get(i).getUserName();
+            String time = detailTimeStatisticsList.get(i).getTime();
+            if(!nameList.contains(name)) {
+                nameList.add(name);
+            }
+            if(!timeList.contains(time)) {
+                timeList.add(time);
+            }
+        }
+        List<TotalTimeStatistics> answer = new ArrayList<>();
+        for(int i = 0; i < timeList.size(); i ++) {
+            List<DetailTimeStatistics> detailList = new ArrayList<>();
+            for(int j = 0; j < nameList.size(); j ++) {
+                DetailTimeStatistics statistics = new DetailTimeStatistics();
+                statistics.setUserName(nameList.get(j));
+                statistics.setWorkingTime(0);
+                statistics.setTime(timeList.get(i));
+                detailList.add(statistics);
+            }
+            TotalTimeStatistics totalTimeStatistics = new TotalTimeStatistics();
+            totalTimeStatistics.setTime(timeList.get(i));
+            totalTimeStatistics.setDetailedStatistics(detailList);
+            answer.add(totalTimeStatistics);
+        }
+
+        for(int i = 0; i < detailTimeStatisticsList.size(); i ++) {
+            DetailTimeStatistics detailTimeStatistics = detailTimeStatisticsList.get(i);
+            String time = detailTimeStatistics.getTime();
+            String name = detailTimeStatistics.getUserName();
+            String deviceType = detailTimeStatistics.getDeviceType();
+            Long workTime = detailTimeStatistics.getWorkingTime();
+            int time_index = timeList.indexOf(time);
+            int name_index = nameList.indexOf(name);
+            TotalTimeStatistics totalTimeStatistics = answer.get(time_index);
+            DetailTimeStatistics detailTimeStatisticsOriginanl = totalTimeStatistics.getDetailedStatistics().get(name_index);
+            detailTimeStatisticsOriginanl.setWorkingTime(detailTimeStatisticsOriginanl.getWorkingTime() + workTime);
+
+            //add to sum
+            DetailTimeStatistics sumDetailTimeStatistics = totalTimeStatistics.getDetailedStatistics().get(0);
+            sumDetailTimeStatistics.setWorkingTime(sumDetailTimeStatistics.getWorkingTime() + workTime);
+
+            for(int j = 1; j <= 3; j ++) {
+                if(nameList.get(j).equals(deviceType)) {
+                    DetailTimeStatistics categoryDetailTimeStatistics = totalTimeStatistics.getDetailedStatistics().get(j);
+                    categoryDetailTimeStatistics.setWorkingTime(categoryDetailTimeStatistics.getWorkingTime() + workTime);
+                }
+            }
+        }
+        return answer;
     }
 
     /**
@@ -251,6 +334,118 @@ public class Utils {
             }
         }
         return "";
+    }
+
+    public static String getGroupByTime(String statWidth) {
+        List<String> timeKeyList = getTimeKeyByStatistics(statWidth);
+
+        String groupBy = timeKeyList.get(0) + "(groupby)";
+        if(timeKeyList.size() > 1) {
+            for(int i = 1; i < timeKeyList.size(); i ++) {
+                groupBy = groupBy + ", SPACE(1)," +  "LPAD(" + timeKeyList.get(i) + "(groupby), 2, 0)";
+            }
+            groupBy = "CONCAT(" + groupBy + ")";
+        }
+        return groupBy;
+    }
+
+    public static List<String> getTimeKeyByStatistics(String statisticsWidth) {
+        String width;
+        if(statisticsWidth == null || statisticsWidth.isEmpty()) {
+            width = Constants.StatisticWidth.HOUR;
+        } else {
+            width = statisticsWidth;
+        }
+        List<String> answer = new ArrayList<>();
+        switch (width) {
+            case Constants.StatisticWidth.DAY:
+                answer = new ArrayList<String>() {{
+                    add(Constants.StatisticWidth.YEAR);
+                    add(Constants.StatisticWidth.MONTH);
+                    add(Constants.StatisticWidth.DAY);
+                }};
+                break;
+            case Constants.StatisticWidth.WEEK:
+                answer = new ArrayList<String>() {{
+                    add(Constants.StatisticWidth.YEAR);
+                    add(Constants.StatisticWidth.WEEK);
+                }};
+                break;
+            case Constants.StatisticWidth.MONTH:
+                answer = new ArrayList<String>() {{
+                    add(Constants.StatisticWidth.YEAR);
+                    add(Constants.StatisticWidth.MONTH);
+                }};
+                break;
+            case Constants.StatisticWidth.QUARTER:
+                answer = new ArrayList<String>() {{
+                    add(Constants.StatisticWidth.YEAR);
+                    add(Constants.StatisticWidth.QUARTER);
+                }};
+                break;
+            case Constants.StatisticWidth.YEAR:
+                answer = new ArrayList<String>() {{
+                    add(Constants.StatisticWidth.YEAR);
+                }};
+                break;
+            default:
+                answer = new ArrayList<String>() {{
+                    add(Constants.StatisticWidth.YEAR);
+                    add(Constants.StatisticWidth.MONTH);
+                    add(Constants.StatisticWidth.DAY);
+                    add(Constants.StatisticWidth.HOUR);
+                }};
+                break;
+        }
+        return answer;
+    }
+
+    public static String formatDateByStatisticWidth(String statisticsWidth, String curDate) {
+        String width;
+        if(statisticsWidth == null || statisticsWidth.isEmpty()) {
+            width = Constants.StatisticWidth.HOUR;
+        } else {
+            width = statisticsWidth;
+        }
+        String answer = "";
+        String[] dateSplit = curDate.split(" ");
+        switch (width) {
+            case Constants.StatisticWidth.DAY:
+                answer = dateSplit[0] + "-" + dateSplit[1] + "-" + dateSplit[2];
+                break;
+            case Constants.StatisticWidth.WEEK:
+                answer = dateSplit[0] + "-" + dateSplit[1];
+                break;
+            case Constants.StatisticWidth.MONTH:
+                answer = dateSplit[0] + "-" + dateSplit[1];
+                break;
+            case Constants.StatisticWidth.QUARTER:
+                answer = dateSplit[0] + "-" + dateSplit[1];
+                break;
+            case Constants.StatisticWidth.YEAR:
+                answer = dateSplit[0];
+                break;
+            default:
+                String startDate = dateSplit[0] + "-" + dateSplit[1] + "-" + dateSplit[2] + " " + dateSplit[3] + ":00";
+                Calendar calendar = Calendar.getInstance();
+                calendar.clear();
+                calendar.set(Calendar.YEAR, Integer.valueOf(dateSplit[0]));
+                calendar.set(Calendar.MONTH, Integer.valueOf(dateSplit[1]));
+                calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(dateSplit[2]));
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(dateSplit[3]));
+                calendar.add(Calendar.HOUR, 1);
+
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+                String endDate = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day) + " " +
+                        String.format("%02d", hour) + ":00";
+                answer = startDate + " ~ " + endDate;
+                break;
+        }
+        return answer;
     }
 
     /**

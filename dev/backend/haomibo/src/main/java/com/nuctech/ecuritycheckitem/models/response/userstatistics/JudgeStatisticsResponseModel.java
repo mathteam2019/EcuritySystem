@@ -23,7 +23,7 @@ import java.util.Map;
 @ToString
 public class JudgeStatisticsResponseModel {
 
-    int time; //time
+    String time; //time
     long artificialJudge; //artificial Judge count
     long assignTimeout; //assign Timeout
     long judgeTimeout; //judge Timeout

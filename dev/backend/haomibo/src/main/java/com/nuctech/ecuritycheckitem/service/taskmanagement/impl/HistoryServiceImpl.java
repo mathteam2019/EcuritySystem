@@ -138,7 +138,7 @@ public class HistoryServiceImpl implements HistoryService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("historyId").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
         }
 
 

@@ -109,7 +109,7 @@ public class HandExaminationStatisticsController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @RequestMapping(value = "/get-handexamination-statistics", method = RequestMethod.POST)
+    @RequestMapping(value = "/get-handexamination-statistics/detail", method = RequestMethod.POST)
     public Object getHandExaminationSummary(
             @RequestBody @Valid StatisticsRequestBody requestBody,
             BindingResult bindingResult) {
@@ -147,6 +147,74 @@ public class HandExaminationStatisticsController extends BaseController {
     }
 
     /**
+     * get hand-examination-statistics request
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/get-handexamination-statistics/chart", method = RequestMethod.POST)
+    public Object getHandExaminationSummaryChart(
+            @RequestBody @Valid StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
+
+        //get statistics from database through handExaminationStatisticsService
+        response = handExaminationStatisticsService.getChartStatistics(
+                requestBody.getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getUserCategory(), //get user category id from input parameter
+                requestBody.getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getStatWidth()//get statistics width from input parameter
+                ); //get record count per page from input parameter
+
+        return new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
+    /**
+     * get hand-examination-statistics request
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/get-handexamination-statistics/total", method = RequestMethod.POST)
+    public Object getHandExaminationSummaryTotal(
+            @RequestBody @Valid StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        HandExaminationResponseModel response = new HandExaminationResponseModel();
+
+        //get statistics from database through handExaminationStatisticsService
+        response = handExaminationStatisticsService.getTotalStatistics(
+                requestBody.getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getUserCategory(), //get user category id from input parameter
+                requestBody.getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getStatWidth()//get statistics width from input parameter
+                ); //get record count per page from input parameter
+
+        return new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
+    /**
      * HandExamination Statistics generate pdf file request.
      */
     @RequestMapping(value = "/handexamination/generate/pdf", method = RequestMethod.POST)
@@ -167,7 +235,10 @@ public class HandExaminationStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(sortBy, order,
+        HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
+
+        //get statistics from database through handExaminationStatisticsService
+        response = handExaminationStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(), //get user category id from input parameter
@@ -175,11 +246,12 @@ public class HandExaminationStatisticsController extends BaseController {
                 requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+                1, //get current page no from input parameter
+                Integer.MAX_VALUE); //get record count per page from input parameter
 
 
-        TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        //TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         HandExaminationStatisticsPdfView.setResource(getFontResource()); //set header font
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         HandExaminationStatisticsPdfView.setMessageSource(messageSource);
@@ -188,7 +260,7 @@ public class HandExaminationStatisticsController extends BaseController {
         } else {
             HandExaminationStatisticsPdfView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = HandExaminationStatisticsPdfView.buildPDFDocument(exportList);  //make inputstream of data to be printed
+        InputStream inputStream = HandExaminationStatisticsPdfView.buildPDFDocument(response.getDetailedStatistics());  //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=handStatistics.pdf"); //set filename
@@ -222,18 +294,18 @@ public class HandExaminationStatisticsController extends BaseController {
             }
         }
         //get statistics fromd database through handExaminationStatisticsService
-        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(sortBy, order,
+        HandExaminationStatisticsPaginationResponse response = handExaminationStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
-                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getFilter().getUserCategory(), //get user category id from input parameter
                 requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
                 requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+                1, //get current page no from input parameter
+                Integer.MAX_VALUE); //get record count per page from input parameter
 
-        TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         HandExaminationStatisticsExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -241,7 +313,7 @@ public class HandExaminationStatisticsController extends BaseController {
         } else {
             HandExaminationStatisticsExcelView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = HandExaminationStatisticsExcelView.buildExcelDocument(exportList);  //make inputstream of data to be exported
+        InputStream inputStream = HandExaminationStatisticsExcelView.buildExcelDocument(response.getDetailedStatistics());  //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=handStatistics.xlsx"); //set filename
@@ -274,18 +346,18 @@ public class HandExaminationStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(sortBy, order,
+        HandExaminationStatisticsPaginationResponse response = handExaminationStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
-                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getFilter().getUserCategory(), //get user category id from input parameter
                 requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
                 requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+                1, //get current page no from input parameter
+                Integer.MAX_VALUE); //get record count per page from input parameter
 
-        TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale());  //set dictionary data key and values
         HandExaminationStatisticsWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -293,7 +365,7 @@ public class HandExaminationStatisticsController extends BaseController {
         } else {
             HandExaminationStatisticsWordView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = HandExaminationStatisticsWordView.buildWordDocument(exportList);  //make input stream of data to be exported
+        InputStream inputStream = HandExaminationStatisticsWordView.buildWordDocument(response.getDetailedStatistics());  //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=handStatistics.docx"); //set file name
@@ -323,7 +395,7 @@ public class HandExaminationStatisticsController extends BaseController {
                 HandExaminationResponseModel record = entry.getValue();
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(Long.toString(record.getTime()))) {  //if specified id is contained idList
+                    if (splits[j].equals(record.getTime())) {  //if specified id is contained idList
                         isExist = true;
                         break;
                     }

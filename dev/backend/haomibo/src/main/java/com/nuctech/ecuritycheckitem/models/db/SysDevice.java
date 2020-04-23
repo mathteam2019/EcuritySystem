@@ -70,6 +70,7 @@ public class SysDevice extends BaseEntity implements Serializable {
     }
 
     public static class DeviceType {
+        public static final String ALL = "1000001904";
         public static final String SECURITY = "1000001901";
         public static final String MANUAL = "1000001903";
         public static final String JUDGE = "1000001902";

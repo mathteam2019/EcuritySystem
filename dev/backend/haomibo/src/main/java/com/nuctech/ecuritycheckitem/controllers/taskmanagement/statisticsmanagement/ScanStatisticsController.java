@@ -109,8 +109,44 @@ public class ScanStatisticsController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @RequestMapping(value = "/scan", method = RequestMethod.POST)
-    public Object scanStatisticsGet(
+    @RequestMapping(value = "/scan/chart", method = RequestMethod.POST)
+    public Object scanStatisticsChart(
+            @RequestBody @Valid StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        //get Scan statistics
+        ScanStatisticsResponse scanStatistics = new ScanStatisticsResponse();
+
+        //get statistics from database through scanStatisticsService
+        scanStatistics = scanStatisticsService.getChartStatistics(
+                requestBody.getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getWorkMode(),//get work mode from input parameter
+                requestBody.getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getStatWidth()//get statistics width from input parameter
+        );
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatistics));
+
+        return value;
+
+    }
+
+    /**
+     * get scan statistics request
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/scan/detail", method = RequestMethod.POST)
+    public Object scanStatisticsDetail(
             @RequestBody @Valid StatisticsRequestBody requestBody,
             BindingResult bindingResult) {
 
@@ -151,6 +187,42 @@ public class ScanStatisticsController extends BaseController {
     }
 
     /**
+     * get scan statistics request
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/scan/total", method = RequestMethod.POST)
+    public Object scanStatisticsTotal(
+            @RequestBody @Valid StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        //get Scan statistics
+        ScanStatistics scanStatistics = new ScanStatistics();
+
+        //get statistics from database through scanStatisticsService
+        scanStatistics = scanStatisticsService.getTotalStatistics(
+                requestBody.getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getWorkMode(),//get work mode from input parameter
+                requestBody.getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getStatWidth()); //get record count per page from input parameter
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatistics));
+
+        return value;
+
+    }
+
+    /**
      * Scan Statistics generate excel file request.
      */
     @RequestMapping(value = "/scan/generate/xlsx", method = RequestMethod.POST)
@@ -171,7 +243,9 @@ public class ScanStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(sortBy, order,
+
+        //get statistics from database through scanStatisticsService
+        ScanStatisticsResponse scanStatistics = scanStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
@@ -180,10 +254,10 @@ public class ScanStatisticsController extends BaseController {
                 requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+                1,//get current page no from input parameter
+                Integer.MAX_VALUE); //get record count per page from input parameter
 
-        TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //TreeMap<Integer, ScanStatistics> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale());//set dictionary data key and values
         ScanStatisticsExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -191,7 +265,7 @@ public class ScanStatisticsController extends BaseController {
         } else {
             ScanStatisticsExcelView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = ScanStatisticsExcelView.buildExcelDocument(exportList);  //make inputstream of data to be exported
+        InputStream inputStream = ScanStatisticsExcelView.buildExcelDocument(scanStatistics.getDetailedStatistics());  //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=scanStatistics.xlsx");  //set filename
@@ -224,8 +298,7 @@ public class ScanStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        //get statistics fromd database through scanStatisticsService
-        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(sortBy, order,
+        ScanStatisticsResponse scanStatistics = scanStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
@@ -234,10 +307,10 @@ public class ScanStatisticsController extends BaseController {
                 requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+                1,//get current page no from input parameter
+                Integer.MAX_VALUE); //get record count per page from input parameter
 
-        TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //TreeMap<Integer, ScanStatistics> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         ScanStatisticsWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -245,7 +318,7 @@ public class ScanStatisticsController extends BaseController {
         } else {
             ScanStatisticsWordView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = ScanStatisticsWordView.buildWordDocument(exportList);//make inputstream of data to be exported
+        InputStream inputStream = ScanStatisticsWordView.buildWordDocument(scanStatistics.getDetailedStatistics());//make inputstream of data to be exported
 
 
         HttpHeaders headers = new HttpHeaders();
@@ -279,8 +352,7 @@ public class ScanStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        //get statistics from database through scanStatisticsService
-        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(sortBy, order,
+        ScanStatisticsResponse scanStatistics = scanStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
@@ -289,10 +361,10 @@ public class ScanStatisticsController extends BaseController {
                 requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
                 requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
-                null,
-                null).getDetailedStatistics();
+                1,//get current page no from input parameter
+                Integer.MAX_VALUE); //get record count per page from input parameter
 
-        TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        //TreeMap<Integer, ScanStatistics> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale()); //set dictionary data key and values
         ScanStatisticsPdfView.setResource(getFontResource()); //set header font
         ScanStatisticsPdfView.setMessageSource(messageSource);
@@ -301,7 +373,7 @@ public class ScanStatisticsController extends BaseController {
         } else {
             ScanStatisticsPdfView.setCurrentLocale(Locale.ENGLISH);
         }
-        InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(exportList);//make input stream of data to be printed
+        InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(scanStatistics.getDetailedStatistics());//make input stream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=scanStatistics.pdf"); //set filename
@@ -333,7 +405,7 @@ public class ScanStatisticsController extends BaseController {
 
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(Long.toString(record.getTime()))) { //if specified id is contained idList
+                    if (splits[j].equals(record.getTime())) { //if specified id is contained idList
                         isExist = true;
                         break;
                     }

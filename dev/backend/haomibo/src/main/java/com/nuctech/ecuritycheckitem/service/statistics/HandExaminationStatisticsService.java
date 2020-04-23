@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.statistics;
 
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsPaginationResponse;
 
 import java.util.Date;
@@ -32,5 +33,9 @@ public interface HandExaminationStatisticsService {
      * @return
      */
     HandExaminationStatisticsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
+
+    HandExaminationStatisticsPaginationResponse getChartStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth);
+
+    HandExaminationResponseModel getTotalStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth);
 
 }

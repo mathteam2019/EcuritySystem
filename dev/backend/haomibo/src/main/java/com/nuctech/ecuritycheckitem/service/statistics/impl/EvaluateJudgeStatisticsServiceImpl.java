@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.rmi.CORBA.Util;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -66,7 +67,56 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
     @Override
     public EvaluateJudgeStatisticsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
+        List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth);
+        String groupBy = "hour";
+        if (statWidth != null && !statWidth.isEmpty()) {
+            groupBy = statWidth;
+        }
 
+        StringBuilder queryBuilderCount = new StringBuilder();
+        queryBuilderCount.append(getCountSelectQuery(groupBy) + "\tFROM\n" + getQueryForJoin());
+
+        if (!whereCause.isEmpty()) {
+            queryBuilderCount.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        queryBuilderCount.append(" GROUP BY time ");
+        String preCountQuery = queryBuilderCount.toString();
+        String countQueryStr = "SELECT count(time) FROM (" + preCountQuery + ") as t";
+        Query countQuery = entityManager.createNativeQuery(countQueryStr);
+        List<Object> countResult = countQuery.getResultList();
+
+        Long count = Utils.parseLong(countResult.get(0).toString());
+
+        StringBuilder queryBuilder = new StringBuilder();
+
+
+        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
+
+        queryBuilder.append(getDetailSelectQuery(groupBy) + "FROM\n" + getQueryForJoin());
+
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        queryBuilder.append(" GROUP BY time ");
+        currentPage = currentPage - 1;
+        int start = currentPage * perPage;
+        queryBuilder.append(" LIMIT " + start + ", " + perPage);
+        List<EvaluateJudgeResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, false);
+        response.setDetailedStatistics(detailedStatistics);
+        response.setTotal(count);
+        response.setCurrent_page(currentPage + 1);
+        response.setPer_page(perPage);
+        response.setLast_page((int) Math.ceil(((double) count) / perPage));
+        response.setFrom(perPage * currentPage + 1);
+        response.setTo(perPage * currentPage + detailedStatistics.size());
+        return response;
+
+    }
+
+    @Override
+    public EvaluateJudgeStatisticsPaginationResponse getChartStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
         StringBuilder queryBuilder = new StringBuilder();
         String groupBy = "hour";
         if (statWidth != null && !statWidth.isEmpty()) {
@@ -80,34 +130,29 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
         if (!whereCause.isEmpty()) {
             queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
-        response.setTotalStatistics(getTotalStatistics(queryBuilder.toString()));
 
         queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
-        TreeMap<Integer, EvaluateJudgeResponseModel> sorted = getDetailedStatistics(queryBuilder.toString(), statWidth, startTime, endTime);
-        try {
-            Map<String, Object> paginatedResult = getPaginatedList(sorted, statWidth, startTime, endTime, currentPage, perPage);
-            response.setFrom(Utils.parseLong(paginatedResult.get("from").toString()));
-            response.setTo(Utils.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Integer, EvaluateJudgeResponseModel>) paginatedResult.get("list"));
-        } catch (Exception e) {
-            response.setDetailedStatistics(sorted);
-        }
-
-        if (perPage != null && currentPage != null) {
-            response.setPer_page(perPage);
-            response.setCurrent_page(currentPage);
-            try {
-                response.setTotal(sorted.size());
-                if (response.getTotal() % response.getPer_page() == 0) {
-                    response.setLast_page(response.getTotal() / response.getPer_page());
-                } else {
-                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-                }
-            } catch (Exception e) {
-            }
-        }
+        List<EvaluateJudgeResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, true);
+        response.setDetailedStatistics(detailedStatistics);
         return response;
+    }
 
+    @Override
+    public EvaluateJudgeResponseModel getTotalStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
+        StringBuilder queryBuilder = new StringBuilder();
+        String groupBy = "hour";
+        if (statWidth != null && !statWidth.isEmpty()) {
+            groupBy = statWidth;
+        }
+
+        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
+
+        queryBuilder.append(getQueryForSelectPart(groupBy) + "FROM\n" + getQueryForJoin());
+        List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth);
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+        return getTotalStatistics(queryBuilder.toString());
     }
 
     /**
@@ -185,38 +230,47 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
      *
      * @param query
      * @param statWidth : (hour, day, week, month, quarter, year)
-     * @param startTime : start time
-     * @param endTime   : endtime
      * @return
      */
-    private TreeMap<Integer, EvaluateJudgeResponseModel> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
+    private List<EvaluateJudgeResponseModel> getDetailedStatistics(String query, String statWidth, boolean isChart) {
         Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> result = jpaQuery.getResultList();
 
-        TreeMap<Integer, EvaluateJudgeResponseModel> data = new TreeMap<>();
-        Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = Utils.getKeyValuesforStatistics(statWidth, startTime, endTime);
-        try {
-            keyValueMin = keyValues.get(0);
-            keyValueMax = keyValues.get(1);
-        } catch (Exception e) {
-        }
+        List<EvaluateJudgeResponseModel> data = new ArrayList<>();
 
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-            EvaluateJudgeResponseModel item = new EvaluateJudgeResponseModel();
-            item.setTime(i);
-            data.put(i, item);
-        }
 
         for (int i = 0; i < result.size(); i++) {
             Object[] item = (Object[]) result.get(i);
             EvaluateJudgeResponseModel record = initModelFromObject(item);
-            if (record.getTime() >= keyValueMin && record.getTime() <= keyValueMax) {
-                data.put(record.getTime(), record);
+            if(isChart == false) {
+                record.setTime(Utils.formatDateByStatisticWidth(statWidth, record.getTime()));
             }
+            data.add(record);
         }
 
         return data;
+    }
+
+    private String getMainSelectQuery() {
+        return "\tcount( HAND_EXAMINATION_ID ) AS total,\n" +
+                "\tsum( IF ( h.HAND_RESULT = '" + SerHandExamination.Result.TRUE + "' , 1, 0 ) ) AS seizure,\n" +
+                "\tsum( IF ( h.HAND_RESULT = '" + SerHandExamination.Result.FALSE + "' , 1, 0 ) ) AS noSeizure,\n" +
+                "\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "', 1, 0)) as totalJudge,\n" +
+                "\tsum( IF ( c.HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0 ) ) AS missingReport,\n" +
+                "\tsum( IF ( c.HAND_APPRAISE2 = '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0 ) ) AS falseReport,\n" +
+                "\t\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID != 10000, 1, 0)) as artificialJudge,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID != 10000 and c.HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as artificialJudgeMissing,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID != 10000 and c.HAND_APPRAISE2 = '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as artificialJudgeMistake,\n" +
+                "\t\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID = 10000, 1, 0)) as intelligenceJudge,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID = 10000 and c.HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as intelligenceJudgeMissing,\n" +
+                "\tsum( IF ( j.JUDGE_USER_ID = 10000 and c.HAND_APPRAISE2 = '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as intelligenceJudgeMistake,\n" +
+                "\t\n" +
+                "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +
+                "\tMIN( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS minDuration,\n" +
+                "\tAVG( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS avgDuration \n" +
+                "\t\n";
     }
 
     /**
@@ -231,25 +285,34 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
                 "\n" +
                 groupBy +
                 "\t (h.HAND_START_TIME) as time,\n" +
-                "\tcount( HAND_EXAMINATION_ID ) AS total,\n" +
-                "\tsum( IF ( h.HAND_RESULT LIKE '" + SerHandExamination.Result.TRUE + "' , 1, 0 ) ) AS seizure,\n" +
-                "\tsum( IF ( h.HAND_RESULT LIKE '" + SerHandExamination.Result.FALSE + "' , 1, 0 ) ) AS noSeizure,\n" +
-                "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "', 1, 0)) as totalJudge,\n" +
-                "\tsum( IF ( c.HAND_APPRAISE LIKE '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0 ) ) AS missingReport,\n" +
-                "\tsum( IF ( c.HAND_APPRAISE2 LIKE '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0 ) ) AS falseReport,\n" +
-                "\t\n" +
-                "\tsum( IF ( j.JUDGE_USER_ID != 10000, 1, 0)) as artificialJudge,\n" +
-                "\tsum( IF ( j.JUDGE_USER_ID != 10000 and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as artificialJudgeMissing,\n" +
-                "\tsum( IF ( j.JUDGE_USER_ID != 10000 and c.HAND_APPRAISE2 like '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as artificialJudgeMistake,\n" +
-                "\t\n" +
-                "\tsum( IF ( j.JUDGE_USER_ID = 10000, 1, 0)) as intelligenceJudge,\n" +
-                "\tsum( IF ( j.JUDGE_USER_ID = 10000 and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as intelligenceJudgeMissing,\n" +
-                "\tsum( IF ( j.JUDGE_USER_ID = 10000 and c.HAND_APPRAISE2 like '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as intelligenceJudgeMistake,\n" +
-                "\t\n" +
-                "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +
-                "\tMIN( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS minDuration,\n" +
-                "\tAVG( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS avgDuration \n" +
-                "\t\n";
+                getMainSelectQuery();
+
+    }
+
+    /**
+     * query of select part
+     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private String getDetailSelectQuery(String statWidth) {
+        String groupBy = Utils.getGroupByTime(statWidth);
+        String handGroupBy = groupBy.replace("groupby", "h.HAND_START_TIME");
+        return "SELECT " +
+                handGroupBy + " as time, " +
+                getMainSelectQuery();
+
+    }
+
+    /**
+     * query of select part
+     * @param  : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
+    private String getCountSelectQuery(String statWidth) {
+        String groupBy = Utils.getGroupByTime(statWidth);
+        String handGroupBy = groupBy.replace("groupby", "h.HAND_START_TIME");
+        return "SELECT " +
+                handGroupBy + " as time ";
 
     }
 
@@ -307,7 +370,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
             String strDate = dateFormat.format(date);
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
         }
-        whereCause.add("s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "' ");
+        whereCause.add("s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' ");
 //        CategoryUser categoryUser = authService.getDataCategoryUserList();
 //        if(categoryUser.isAll() == false) {
 //            List<Long> idList = categoryUser.getUserIdList();
@@ -327,7 +390,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
     private EvaluateJudgeResponseModel initModelFromObject(Object[] item) {
         EvaluateJudgeResponseModel record = new EvaluateJudgeResponseModel();
         try {
-            record.setTime(Utils.parseInt(item[0].toString()));
+            record.setTime(item[0].toString());
             record.setTotal(Utils.parseLong(item[1].toString()));
             record.setSeizure(Utils.parseLong(item[2].toString()));
             record.setNoSeizure(Utils.parseLong(item[3].toString()));

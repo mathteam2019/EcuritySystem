@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.models.response.userstatistics;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -24,8 +25,7 @@ import java.util.TreeMap;
 @Setter
 public class TotalStatisticsResponse {
 
-    TotalStatistics totalStatistics; //total statistics
-    TreeMap<Long, TotalStatistics> detailedStatistics; //detailed statistics
+    List<TotalStatistics> detailedStatistics; //detailed statistics
 
     long total; //total count
     long per_page; //record count per page

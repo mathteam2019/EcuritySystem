@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.DetailTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatistics;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -53,6 +54,9 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
         Cell headerCellNo = header.createCell(colNum ++);
         headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
+        Cell headerCellStat = header.createCell(colNum ++);
+        headerCellStat.setCellValue(messageSource.getMessage("StatWidth", null, currentLocale));
+
         for(int i = 0; i < deviceCategoryList.size(); i ++) {
             Cell headerCellTime = header.createCell(colNum ++);
             headerCellTime.setCellValue(ConstantDictionary.getDataValue(deviceCategoryList.get(i)));
@@ -71,16 +75,16 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
      * @param type : true -> by user, false -> by device
      * @return
      */
-    public static InputStream buildExcelDocument(TreeMap<Long, TotalTimeStatistics> detailedStatistics, Boolean type) {
+    public static InputStream buildExcelDocument(List<TotalTimeStatistics> detailedStatistics, Boolean type) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        TotalTimeStatistics firstRecord = detailedStatistics.firstEntry().getValue();
+        TotalTimeStatistics firstRecord = detailedStatistics.get(0);
         List<DetailTimeStatistics> firstDetail = firstRecord.getDetailedStatistics();
         nameList = new ArrayList<>();
         deviceCategoryList = new ArrayList<>();
         for(int i = 0; i < firstDetail.size(); i ++) {
-            if(i < 3) {
+            if(i < 4) {
                 deviceCategoryList.add(firstDetail.get(i).getUserName());
             } else {
                 nameList.add(firstDetail.get(i).getUserName());
@@ -118,22 +122,21 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
             for(int i = 0; i < nameList.size(); i ++) {
                 totalNameList.add(nameList.get(i));
             }
-            for (Map.Entry<Long, TotalTimeStatistics> entry : detailedStatistics.entrySet()) {
-
-                TotalTimeStatistics record = entry.getValue();
+            for (TotalTimeStatistics record : detailedStatistics) {
 
                 Row row = sheet.createRow(counter++);
 
                 DecimalFormat df = new DecimalFormat("0.00");
                 int colNum = 0;
                 row.createCell(colNum ++).setCellValue(index++);
+                row.createCell(colNum ++).setCellValue(record.getTime());
 
                 List<DetailTimeStatistics> detailTimeStatistics = record.getDetailedStatistics();
                 for(int i = 0; i < totalNameList.size(); i ++) {
                     String name = totalNameList.get(i);
                     for(int j = 0; j < detailTimeStatistics.size(); j ++) {
                         if(detailTimeStatistics.get(j).getUserName().equals(name)) {
-                            row.createCell(colNum ++).setCellValue(String.valueOf(detailTimeStatistics.get(j).getWorkingTime()));
+                            row.createCell(colNum ++).setCellValue(Utils.convertSecond(detailTimeStatistics.get(j).getWorkingTime()));
                         }
                     }
                 }
