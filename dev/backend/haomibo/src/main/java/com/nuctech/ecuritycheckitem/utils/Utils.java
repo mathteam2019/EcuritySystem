@@ -409,12 +409,33 @@ public class Utils {
         }
         String answer = "";
         String[] dateSplit = curDate.split(" ");
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        int year = 0;
+        int month = 0;
+        int day = 0;
+        String startDate = "";
+        String endDate = "";
         switch (width) {
             case Constants.StatisticWidth.DAY:
                 answer = dateSplit[0] + "-" + dateSplit[1] + "-" + dateSplit[2];
                 break;
             case Constants.StatisticWidth.WEEK:
-                answer = dateSplit[0] + "-" + dateSplit[1];
+                calendar.set(Calendar.YEAR, Integer.valueOf(dateSplit[0]));
+                calendar.set(Calendar.WEEK_OF_YEAR, Integer.valueOf(dateSplit[1]));
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                year = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+                startDate = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day);
+
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+
+                year = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+                endDate = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day);
+                answer = startDate + " ~ " + endDate;
                 break;
             case Constants.StatisticWidth.MONTH:
                 answer = dateSplit[0] + "-" + dateSplit[1];
@@ -426,21 +447,20 @@ public class Utils {
                 answer = dateSplit[0];
                 break;
             default:
-                String startDate = dateSplit[0] + "-" + dateSplit[1] + "-" + dateSplit[2] + " " + dateSplit[3] + ":00";
-                Calendar calendar = Calendar.getInstance();
-                calendar.clear();
+                startDate = dateSplit[0] + "-" + dateSplit[1] + "-" + dateSplit[2] + " " + dateSplit[3] + ":00";
+
                 calendar.set(Calendar.YEAR, Integer.valueOf(dateSplit[0]));
                 calendar.set(Calendar.MONTH, Integer.valueOf(dateSplit[1]));
                 calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(dateSplit[2]));
                 calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(dateSplit[3]));
                 calendar.add(Calendar.HOUR, 1);
 
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                year = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
-                String endDate = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day) + " " +
+                endDate = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day) + " " +
                         String.format("%02d", hour) + ":00";
                 answer = startDate + " ~ " + endDate;
                 break;
