@@ -318,7 +318,7 @@
             </b-row>
             <b-row v-if="mainForm.archiveId>0">
               <b-col cols="4" v-for="item in archiveDetailData">
-                <b-form-group :label="item.indicatorsName">
+                <b-form-group :label="item.indicatorsUnit? item.indicatorsName + '(' + item.indicatorsUnit + ')': item.indicatorsName">
                   <label class="input-label">{{item.value?item.value:''}}</label>
                 </b-form-group>
               </b-col>
@@ -328,16 +328,16 @@
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
             <div class="img-wrapper">
-              <img v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
-              <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
+              <img draggable="false" v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
+              <img draggable="false" v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
                    src="../../../assets/img/device.png">
               <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
-                <img v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
-                <img v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+                <img draggable="false" v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                <img draggable="false" v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
               </div>
               <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
-                <img v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                <img v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
               </div>
             </div>
             <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
@@ -479,16 +479,16 @@
               </b-col>
               <b-col cols="4" class="d-flex flex-column align-items-center">
                 <div class="img-wrapper">
-                  <img v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
-                  <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
+                  <img draggable="false" v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
+                  <img draggable="false" v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
                        src="../../../assets/img/device.png">
                   <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
-                    <img v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
-                    <img v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+                    <img draggable="false" v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                    <img draggable="false" v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
                   </div>
                   <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
-                    <img v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                    <img v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+                    <img draggable="false" v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                    <img draggable="false" v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
                   </div>
                 </div>
                 <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
@@ -581,7 +581,7 @@
                 </b-row>
                 <b-row>
                   <b-col cols="4" v-for="item in archiveDetailData">
-                    <b-form-group :label="item.indicatorsName">
+                    <b-form-group :label="item.indicatorsUnit? item.indicatorsName + '(' + item.indicatorsUnit + ')': item.indicatorsName">
                       <label class="input-label">{{item.value?item.value:''}}</label>
                     </b-form-group>
                   </b-col>
@@ -590,16 +590,16 @@
               </b-col>
               <b-col cols="4" class="d-flex flex-column align-items-center">
                 <div class="img-wrapper">
-                  <img v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
-                  <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
+                  <img draggable="false" v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
+                  <img draggable="false" v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
                        src="../../../assets/img/device.png">
                   <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
-                    <img v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
-                    <img v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+                    <img draggable="false" v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                    <img draggable="false" v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
                   </div>
                   <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
-                    <img v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                    <img v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+                    <img draggable="false" v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                    <img draggable="false" v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
                   </div>
                 </div>
                 <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>

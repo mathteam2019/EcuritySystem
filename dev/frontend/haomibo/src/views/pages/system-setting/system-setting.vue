@@ -31,7 +31,7 @@
     </div>
 
     <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
-      <b-tab :title="$t('system-setting.parameter-setting.platform-parameter')">
+      <b-tab v-if="!checkPermItem('tab_setting')" :title="$t('system-setting.parameter-setting.platform-parameter')">
 
         <div class="section pt-0 mx-3">
           <b-tabs class="sub-tabs" v-model="tabIndex" card>
@@ -336,7 +336,7 @@
 
       </b-tab>
 
-      <b-tab :title="$t('system-setting.parameter-setting.security-instrument')">
+      <b-tab v-if="!checkPermItem('tab_scan')" :title="$t('system-setting.parameter-setting.security-instrument')">
         <b-row v-show="pageStatus === 'table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
@@ -637,12 +637,12 @@
           </b-col>
           <b-col>
             <div v-if="getLocale()==='zh'" class="position-absolute" style="right: 8%;bottom: 7%">
-              <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-              <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+              <img draggable="false" v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+              <img draggable="false" v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
             </div>
             <div v-if="getLocale()==='en'" class="position-absolute" style="right: 8%;bottom: 7%">
-              <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-              <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+              <img draggable="false" v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+              <img draggable="false" v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">

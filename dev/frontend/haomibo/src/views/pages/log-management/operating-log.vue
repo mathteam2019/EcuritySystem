@@ -27,7 +27,7 @@
       </b-row>
     </div>
     <b-tabs nav-class="ml-2" :no-fade="true">
-      <b-tab :title="$t('log-management.operating-log.access-log')" @click="tabStatus = 'access'">
+      <b-tab v-if="!checkPermItem('tab_access')" :title="$t('log-management.operating-log.access-log')" @click="tabStatus = 'access'">
         <b-row v-if="pageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
@@ -112,7 +112,7 @@
           </b-col>
         </b-row>
       </b-tab>
-      <b-tab :title="$t('log-management.operating-log.operating-log')" @click="tabStatus = 'operating'">
+      <b-tab v-if="!checkPermItem('tab_audit')" :title="$t('log-management.operating-log.operating-log')" @click="tabStatus = 'operating'">
         <b-row class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
@@ -220,7 +220,6 @@
           </b-col>
         </b-row>
       </b-tab>
-
     </b-tabs>
     <b-modal centered id="model-export" ref="model-export">
       <b-row>

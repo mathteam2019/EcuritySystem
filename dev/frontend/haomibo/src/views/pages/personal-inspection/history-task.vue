@@ -110,20 +110,20 @@
 
                   <div v-else>
                     <div v-if="props.rowData.workMode.modeName===getModeDataCode('all')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                      <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                      <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
                     <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
                     <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+judge')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                      <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
                     <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+hand')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                      <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
                   </div>
                 </template>
@@ -159,20 +159,20 @@
 
                 <div v-else>
                   <div v-if="showPage.workMode.modeName===getModeDataCode('all')">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
-                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                    <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                   </div>
                   <div v-if="showPage.workMode.modeName===getModeDataCode('scan')">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                   </div>
                   <div v-if="showPage.workMode.modeName===getModeDataCode('scan+judge')">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                   </div>
                   <div v-if="showPage.workMode.modeName===getModeDataCode('scan+hand')">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                    <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                   </div>
                 </div>
               </b-col>
@@ -182,7 +182,7 @@
                 <span v-if="showPage.judgeUser != null && showPage.judgeUser.userId != defaultUserId"><i
                   class="icofont-search-user"/></span>
                 <span v-else>
-                  <b-img src="/assets/img/system_scan.svg" style="width: 20px; height: 22px;"/></span>
+                  <b-img draggable="false" src="/assets/img/system_scan.svg" style="width: 20px; height: 22px;"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000001'"><i
@@ -197,9 +197,9 @@
                 <canvas id="secondcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
                   <div v-if="power===true">
-                    <b-img :disabled="power===true" src="/assets/img/previous_cartoon.png" class="operation-icon"
+                    <b-img draggable="false" :disabled="power===true" src="/assets/img/previous_cartoon.png" class="operation-icon"
                            @click="previousImage()"/>
-                    <b-img src="/assets/img/next_cartoon.png" class="operation-icon" @click="nextImage()"/>
+                    <b-img draggable="false" src="/assets/img/next_cartoon.png" class="operation-icon" @click="nextImage()"/>
                   </div>
                 </div>
               </b-col>
@@ -208,121 +208,121 @@
               <b-col class="control-group">
                 <div v-if="power===true" class="control-btn-wrapper">
                   <div class="control-btn">
-                    <b-img src="/assets/img/contrast_btn.png" @click="onlyOneSlide(1)"/>
+                    <b-img draggable="false" src="/assets/img/contrast_btn.png" @click="onlyOneSlide(1)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/brightness_btn.png" @click="onlyOneSlide(2)"/>
+                    <b-img draggable="false" src="/assets/img/brightness_btn.png" @click="onlyOneSlide(2)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/color_inverse_btn.png" @click="filterId(2)"/>
+                    <b-img draggable="false" src="/assets/img/color_inverse_btn.png" @click="filterId(2)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color1_btn.png" @click="filterId(3)"/>
+                    <b-img draggable="false" src="/assets/img/pseudo_color1_btn.png" @click="filterId(3)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color2_btn.png" @click="filterId(4)"/>
+                    <b-img draggable="false" src="/assets/img/pseudo_color2_btn.png" @click="filterId(4)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color3_btn.png" @click="filterId(1)"/>
+                    <b-img draggable="false" src="/assets/img/pseudo_color3_btn.png" @click="filterId(1)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color4_btn.png" @click="filterId(12)"/>
+                    <b-img draggable="false" src="/assets/img/pseudo_color4_btn.png" @click="filterId(12)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(10)"/>
+                    <b-img draggable="false" src="/assets/img/enhance_btn.png" @click="filterId(10)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(9)"/>
+                    <b-img draggable="false" src="/assets/img/enhance_btn.png" @click="filterId(9)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(11)"/>
+                    <b-img draggable="false" src="/assets/img/enhance_btn.png" @click="filterId(11)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/edge_btn.png" @click="filterId(13)"/>
+                    <b-img draggable="false" src="/assets/img/edge_btn.png" @click="filterId(13)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
                   </div>
                   <div class="control-btn">
-                    <b-img src="/assets/img/reduction_btn.png" @click="loadImage()"/>
+                    <b-img draggable="false" src="/assets/img/reduction_btn.png" @click="loadImage()"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                   </div>
                 </div>
                 <div v-else style="opacity: 0.5" class="control-btn-wrapper">
                   <div class="control-btn">
-                    <b-img src="/assets/img/contrast_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/contrast_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/brightness_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/brightness_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/color_inverse_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/color_inverse_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color1_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/pseudo_color1_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color2_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/pseudo_color2_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color3_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/pseudo_color3_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color4_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/pseudo_color4_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/enhance_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/enhance_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/enhance_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/edge_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/edge_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
                   </div>
                   <div class="control-btn">
-                    <b-img src="/assets/img/reduction_btn.png"/>
+                    <b-img draggable="false" src="/assets/img/reduction_btn.png"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                   </div>
                 </div>
@@ -642,7 +642,7 @@
                 <b-row class="evidence-gallery" style="margin-top: 0.5rem">
                   <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
                          @click="onThumbClick(thumbIndex)">
-                    <img :src="thumb.src" style="width: 60px; height: 45px;" :alt="thumb.name"/>
+                    <img draggable="false" :src="thumb.src" style="width: 60px; height: 45px;" :alt="thumb.name"/>
 
                   </b-col>
                   <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
@@ -659,37 +659,37 @@
                   <b-col v-if="getLocale()==='zh' || getLocale() === null" cols="12" class="align-self-end text-right mt-3"
                          style="width: 100%; height: 130px !important;">
                     <div v-if="showPage.handResult !== null">
-                      <b-img v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid.png"
+                      <b-img draggable="false" v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid.png"
                              class="align-self-end img-result"/>
-                      <b-img v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid.png"
+                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
                     </div>
                     <div v-else-if="showPage.judgeResult!==null">
-                      <b-img v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid.png"
+                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid.png"
                              class="align-self-end img-result"/>
-                      <b-img v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid.png"
+                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
                     </div>
                     <div v-else>
-                      <b-img src="/assets/img/icon_valid.png"
+                      <b-img draggable="false" src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
                     </div>
                   </b-col>
                   <b-col v-if="getLocale()==='en'" cols="12" class="align-self-end text-right mt-3">
                     <div v-if="showPage.handResult !== null">
-                      <b-img v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
+                      <b-img draggable="false" v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
                              class="align-self-end img-result"/>
-                      <b-img v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
+                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
                              class="align-self-end img-result"/>
                     </div>
                     <div v-else-if="showPage.judgeResult!==null">
-                      <b-img v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
+                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
                              class="align-self-end img-result"/>
-                      <b-img v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
+                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
                              class="align-self-end img-result"/>
                     </div>
                     <div v-else>
-                      <b-img src="/assets/img/icon_valid.png"
+                      <b-img draggable="false" src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
                     </div>
                   </b-col>

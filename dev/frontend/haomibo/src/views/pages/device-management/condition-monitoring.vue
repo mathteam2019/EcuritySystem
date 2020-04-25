@@ -416,17 +416,17 @@
               <div :style="item.device.currentStatus !=='1000002002'?'border-bottom: solid 2px #74dc21;':'border-bottom: solid 2px #c6c6c6;'" class="item-header">
                 <div class="label">{{item.deviceNumber}}</div>
                 <div class="action-list">
-                  <img v-if="item.device.deviceType === '1000001901' && item.maxScanCount > item.deviceTrafficHigh && item.device.currentStatus !=='1000002002'"
+                  <img draggable="false" v-if="item.device.deviceType === '1000001901' && item.maxScanCount > item.deviceTrafficHigh && item.device.currentStatus !=='1000002002'"
                        src="../../../assets/img/icon_user_graphic.png">
-                  <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_user_graphic_disabled.png">
-                  <img v-if="item.device.deviceType === '1000001901' && item.deviceStorageAlarm === 0 && item.device.currentStatus !=='1000002002'" src="../../../assets/img/icon_layout.png">
-                  <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_layout_disabled.png">
+                  <img draggable="false" v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_user_graphic_disabled.png">
+                  <img draggable="false" v-if="item.device.deviceType === '1000001901' && item.deviceStorageAlarm === 0 && item.device.currentStatus !=='1000002002'" src="../../../assets/img/icon_layout.png">
+                  <img draggable="false" v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_layout_disabled.png">
                   <img
                     v-if="(item.device.deviceType === '1000001901' && item.plcStatus === '0' && item.slaveCardStatus === '0' && item.masterCardStatus === '0' && item.footWarning === '0' && item.footWarning === '0') || (item.device.deviceType === '1000001901' && item.device.currentStatus ==='1000002002')"
                     src="../../../assets/img/icon_bell_disabled.png">
-                  <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_bell.png">
-                  <img v-if="item.device.currentStatus !=='1000002002'" src="../../../assets/img/icon_link.png">
-                  <img v-else src="../../../assets/img/icon_link_disabled.png">
+                  <img draggable="false" v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_bell.png">
+                  <img draggable="false" v-if="item.device.currentStatus !=='1000002002'" src="../../../assets/img/icon_link.png">
+                  <img draggable="false" v-else src="../../../assets/img/icon_link_disabled.png">
                 </div>
               </div>
               <div class="item-body flex-grow-1">
@@ -443,9 +443,9 @@
                       ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
                     </div>
                     <div class="img">
-                      <img v-if="item.imageUrl" :src="item.imageUrl">
-                      <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/small_device.png">
-                      <img v-else src="../../../assets/img/small_tablet.png">
+                      <img draggable="false" v-if="item.imageUrl" :src="item.imageUrl">
+                      <img draggable="false" v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/small_device.png">
+                      <img draggable="false" v-else src="../../../assets/img/small_tablet.png">
                     </div>
                   </b-col>
                   <b-col cols="8" class="right-side d-flex flex-column" style="padding-left: 0; padding-right: 2px;">
@@ -494,44 +494,44 @@
               <div class="w-100 d-flex">
                 <div>PLC:</div>
                 <div v-if="item.device.currentStatus !=='1000002002'">
-                <div v-if="item.plcStatus === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.plcStatus === '0'"><img draggable="false" src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.plcStatusName}}</span></div>
-                <div v-else-if="item.plcStatus === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.plcStatus === '1'"><img draggable="false" src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.plcStatusName}}</span></div>
-                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.plcStatusName}}</span>
+                <div v-else><img draggable="false" src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.plcStatusName}}</span>
                 </div>
                 </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.main-acquire-card')}}:</div>
                 <div v-if="item.device.currentStatus !=='1000002002'">
-                <div v-if="item.masterCardStatus === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.masterCardStatus === '0'"><img draggable="false" src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.masterCardStatusName}}</span></div>
-                <div v-else-if="item.masterCardStatus === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.masterCardStatus === '1'"><img draggable="false" src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.masterCardStatusName}}</span></div>
-                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.masterCardStatusName}}</span>
+                <div v-else><img draggable="false" src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.masterCardStatusName}}</span>
                 </div>
                 </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.from-acquire-card')}}:</div>
                 <div v-if="item.device.currentStatus !=='1000002002'">
-                <div v-if="item.slaveCardStatus === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.slaveCardStatus === '0'"><img draggable="false" src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.slaveCardStatusName}}</span></div>
-                <div v-else-if="item.slaveCardStatus === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.slaveCardStatus === '1'"><img draggable="false" src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.slaveCardStatusName}}</span></div>
-                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.slaveCardStatusName}}</span>
+                <div v-else><img draggable="false" src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.slaveCardStatusName}}</span>
                 </div>
                 </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.servo')}}：</div>
                 <div v-if="item.device.currentStatus !=='1000002002'">
-                <div v-if="item.servo === '0'"><img src="../../../assets/img/radio_succss.png"/> <span class="success">{{item.servoName}}</span>
+                <div v-if="item.servo === '0'"><img draggable="false" src="../../../assets/img/radio_succss.png"/> <span class="success">{{item.servoName}}</span>
                 </div>
-                <div v-else-if="item.servo === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.servo === '1'"><img draggable="false" src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.servoName}}</span></div>
-                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span
+                <div v-else><img draggable="false" src="../../../assets/img/radio_pending.png"/> <span
                   class="pending">{{item.servoName}}</span></div>
                 </div>
               </div>
@@ -544,22 +544,22 @@
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.emergency-stop')}}:</div>
                 <div v-if="item.device.currentStatus!=='1000002002'">
-                <div v-if="item.emergencyStop === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.emergencyStop === '0'"><img draggable="false" src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.emergencyStopName}}</span></div>
-                <div v-else-if="item.emergencyStop === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.emergencyStop === '1'"><img draggable="false" src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.emergencyStopName}}</span></div>
-                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.emergencyStopName}}</span>
+                <div v-else><img draggable="false" src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.emergencyStopName}}</span>
                 </div>
                 </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.footstep-alarm')}}:</div>
                 <div v-if="item.device.currentStatus !=='1000002002'">
-                <div v-if="item.footWarning === '0'"><img src="../../../assets/img/radio_succss.png"/> <span
+                <div v-if="item.footWarning === '0'"><img draggable="false" src="../../../assets/img/radio_succss.png"/> <span
                   class="success">{{item.footWarningName}}</span></div>
-                <div v-else-if="item.footWarning === '1'"><img src="../../../assets/img/radio_danger.png"/> <span
+                <div v-else-if="item.footWarning === '1'"><img draggable="false" src="../../../assets/img/radio_danger.png"/> <span
                   class="danger">{{item.footWarningName}}</span></div>
-                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.footWarningName}}</span>
+                <div v-else><img draggable="false" src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.footWarningName}}</span>
                 </div>
                 </div>
               </div>

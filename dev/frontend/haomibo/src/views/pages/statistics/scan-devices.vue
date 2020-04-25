@@ -93,7 +93,7 @@
         <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
           <div class="statistics-item type-3">
             <div style="">
-              <b-img src="/assets/img/scan.svg"/>
+              <b-img draggable="false" src="/assets/img/scan.svg"/>
             </div>
             <div>
               <span v-if="preViewData.totalScan!=null">{{preViewData.totalScan}}</span>
@@ -109,7 +109,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #1989fa">
-                  <b-img src="/assets/img/check.svg"/>
+                  <b-img draggable="false" src="/assets/img/check.svg"/>
                 </div>
                 <div>
                   <div>
@@ -125,7 +125,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #1989fa">
-                  <b-img src="/assets/img/check.svg"/>
+                  <b-img draggable="false" src="/assets/img/check.svg"/>
                 </div>
                 <div>
                   <div>
@@ -141,7 +141,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #cccccc;">
-                  <b-img src="/assets/img/forbidden.svg"/>
+                  <b-img draggable="false" src="/assets/img/forbidden.svg"/>
                 </div>
                 <div>
                   <div>
@@ -157,7 +157,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #cccccc;">
-                  <b-img src="/assets/img/forbidden.svg"/>
+                  <b-img draggable="false" src="/assets/img/forbidden.svg"/>
                 </div>
                 <div>
                   <div>
@@ -175,7 +175,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #009900;">
-                  <b-img src="/assets/img/round_check.svg"/>
+                  <b-img draggable="false" src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
                   <div>
@@ -191,7 +191,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #009900;">
-                  <b-img src="/assets/img/round_check.svg"/>
+                  <b-img draggable="false" src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
                   <div>
@@ -207,7 +207,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #ff6600;">
-                  <b-img src="/assets/img/bell_icon.svg"/>
+                  <b-img draggable="false" src="/assets/img/bell_icon.svg"/>
                 </div>
                 <div>
                   <div>
@@ -223,7 +223,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #ff6600;">
-                  <b-img src="/assets/img/bell_icon.svg"/>
+                  <b-img draggable="false" src="/assets/img/bell_icon.svg"/>
                 </div>
                 <div>
                   <div>
@@ -494,7 +494,6 @@
       this.getManualDeviceData();
       this.getPreviewData();
       this.getChartData();
-      this.setPeriodLabel('hour');
     },
     data() {
 
@@ -761,7 +760,7 @@
             },
             {
               name: 'time',
-              title: this.setPeriodLabel,
+              title: this.$t('statistics.view.periods'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -1188,7 +1187,6 @@
         }
         this.getPreviewData();
         this.getChartData();
-        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
 
       },

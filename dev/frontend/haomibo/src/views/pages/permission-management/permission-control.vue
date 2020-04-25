@@ -10,7 +10,7 @@
 
     <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
 
-      <b-tab :title="$t('permission-management.permission-control.role-setting')" @click="tabStatus = 'role'">
+      <b-tab v-if="!checkPermItem('tab_role')" :title="$t('permission-management.permission-control.role-setting')" @click="tabStatus = 'role'">
         <b-row class="h-100">
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
@@ -232,7 +232,7 @@
         </b-row>
       </b-tab>
 
-      <b-tab :title="$t('permission-management.permission-control.data-grouping')" @click="tabStatus = 'group'">
+      <b-tab v-if="!checkPermItem('tab_data_group')" :title="$t('permission-management.permission-control.data-grouping')" @click="tabStatus = 'group'">
         <b-row class="h-100">
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
@@ -813,7 +813,7 @@
             },
             {
               name: 'dataGroupName',
-              title: this.$t('permission-management.permission-control.data-group'),
+              title: this.$t('permission-management.permission-control.data-group-name'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '21%'

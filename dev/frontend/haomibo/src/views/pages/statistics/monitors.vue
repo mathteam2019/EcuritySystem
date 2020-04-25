@@ -87,7 +87,7 @@
         <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
           <div class="statistics-item type-3">
             <div style="">
-              <b-img src="/assets/img/picture.svg"/>
+              <b-img draggable="false" src="/assets/img/picture.svg"/>
             </div>
             <div>
               <span v-if="preViewData.total!=null">{{preViewData.total}}</span>
@@ -103,7 +103,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #344bf3">
-                  <b-img src="/assets/img/person.svg"/>
+                  <b-img draggable="false" src="/assets/img/person.svg"/>
                 </div>
                 <div>
                   <div>
@@ -120,7 +120,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #1989fa">
-                  <b-img src="/assets/img/user_group.svg"/>
+                  <b-img draggable="false" src="/assets/img/user_group.svg"/>
                 </div>
                 <div>
                   <div>
@@ -136,7 +136,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #19b8fa;">
-                  <b-img src="/assets/img/picture.svg"/>
+                  <b-img draggable="false" src="/assets/img/picture.svg"/>
                 </div>
                 <div>
                   <div>
@@ -152,7 +152,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #00bbb0">
-                  <b-img src="/assets/img/atr.svg"/>
+                  <b-img draggable="false" src="/assets/img/atr.svg"/>
                 </div>
                 <div>
                   <div>
@@ -170,7 +170,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #009900;">
-                  <b-img src="/assets/img/round_check.svg"/>
+                  <b-img draggable="false" src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
                   <div>
@@ -187,7 +187,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #009900;">
-                  <b-img src="/assets/img/round_check.svg"/>
+                  <b-img draggable="false" src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
                   <div>
@@ -204,7 +204,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #ff0000;">
-                  <b-img src="/assets/img/question_mark.svg"/>
+                  <b-img draggable="false" src="/assets/img/question_mark.svg"/>
                 </div>
                 <div>
                   <div>
@@ -221,7 +221,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #ff0000;">
-                  <b-img src="/assets/img/question_mark.svg"/>
+                  <b-img draggable="false" src="/assets/img/question_mark.svg"/>
                 </div>
                 <div>
                   <div>
@@ -239,7 +239,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #344bf3;">
-                  <b-img src="/assets/img/time_icon.svg"/>
+                  <b-img draggable="false" src="/assets/img/time_icon.svg"/>
                 </div>
                 <div>
                   <div>
@@ -255,7 +255,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #1989fa;">
-                  <b-img src="/assets/img/right_arrow_icon2.svg"/>
+                  <b-img draggable="false" src="/assets/img/right_arrow_icon2.svg"/>
                 </div>
                 <div>
                   <div>
@@ -271,7 +271,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #19b8fa;">
-                  <b-img src="/assets/img/up_arrow_icon2.svg"/>
+                  <b-img draggable="false" src="/assets/img/up_arrow_icon2.svg"/>
                 </div>
                 <div>
                   <div>
@@ -287,7 +287,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #00bbb0;">
-                  <b-img src="/assets/img/down_arrow_icon.svg"/>
+                  <b-img draggable="false" src="/assets/img/down_arrow_icon.svg"/>
                 </div>
                 <div>
                   <div>
@@ -635,7 +635,6 @@
       this.getManualDeviceData();
       this.getPreviewData();
       this.getChartData();
-      this.setPeriodLabel('hour');
     },
     data() {
       return {
@@ -1033,7 +1032,7 @@
             },
             {
               name: 'time',
-              title: this.setPeriodLabel,
+              title: this.$t('statistics.view.periods'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -1541,7 +1540,6 @@
 
         this.getPreviewData();
         this.getChartData();
-        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
       onResetButton() {

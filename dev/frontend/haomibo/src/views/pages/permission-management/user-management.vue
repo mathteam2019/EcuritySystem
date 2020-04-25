@@ -123,7 +123,7 @@
 
     <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
 
-      <b-tab :title="$t('permission-management.member-table')" @click="tabStatus='user'">
+      <b-tab v-if="!checkPermItem('tab_user')" :title="$t('permission-management.member-table')" @click="tabStatus='user'">
         <b-row v-show="pageStatus==='table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column" style="padding-right: 15px; padding-left: 15px;">
             <b-row class="pt-2">
@@ -480,32 +480,32 @@
           <b-col cols="2" class="d-flex align-items-center flex-column">
             <div class="mb-4 img-wrapper position-relative">
               <div class=" p-1">
-                <img :src="profileForm.avatar" onerror="src=''" class="card-img-top"/>
+                <img draggable="false" :src="profileForm.avatar" onerror="src=''" class="card-img-top"/>
               </div>
               <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -50%">
-                <img v-if="modifyPage === false" src="../../../assets/img/no_active_stamp.png">
-                <img v-if="profileForm.status==='1000000301'"
+                <img draggable="false" v-if="modifyPage === false" src="../../../assets/img/no_active_stamp.png">
+                <img draggable="false" v-if="profileForm.status==='1000000301'"
                      src="../../../assets/img/active_stamp.png">
-                <img v-else-if="profileForm.status==='1000000302'"
+                <img draggable="false" v-else-if="profileForm.status==='1000000302'"
                      src="../../../assets/img/no_active_stamp.png">
-                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png"
+                <img draggable="false" v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png"
                      class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png"
+                <img draggable="false" v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png"
                      class="img-rotate">
               </div>
               <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -50%">
-                <img v-if="modifyPage === false" src="../../../assets/img/no_active_stamp_en.png"
+                <img draggable="false" v-if="modifyPage === false" src="../../../assets/img/no_active_stamp_en.png"
                      class="img-rotate">
-                <img v-if="profileForm.status==='1000000301'"
+                <img draggable="false" v-if="profileForm.status==='1000000301'"
                      src="../../../assets/img/active_stamp_en.png"
                      class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000302'"
+                <img draggable="false" v-else-if="profileForm.status==='1000000302'"
                      src="../../../assets/img/no_active_stamp_en.png"
                      class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000303'"
+                <img draggable="false" v-else-if="profileForm.status==='1000000303'"
                      src="../../../assets/img/block_en.png"
                      class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000304'"
+                <img draggable="false" v-else-if="profileForm.status==='1000000304'"
                      src="../../../assets/img/pending_en.png"
                      class="img-rotate">
               </div>
@@ -698,29 +698,29 @@
           <b-col cols="2" class="text-right">
             <div class="mb-4 img-wrapper position-relative">
               <div class=" p-1">
-                <img :src="profileForm.avatar" onerror="src=''" class="card-img-top"/>
+                <img draggable="false" :src="profileForm.avatar" onerror="src=''" class="card-img-top"/>
               </div>
               <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -50%">
-                <img v-if="profileForm.status==='1000000301'"
+                <img draggable="false" v-if="profileForm.status==='1000000301'"
                      src="../../../assets/img/active_stamp.png">
-                <img v-else-if="profileForm.status==='1000000302'"
+                <img draggable="false" v-else-if="profileForm.status==='1000000302'"
                      src="../../../assets/img/no_active_stamp.png">
-                <img v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png"
+                <img draggable="false" v-else-if="profileForm.status==='1000000303'" src="../../../assets/img/block.png"
                      class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png"
+                <img draggable="false" v-else-if="profileForm.status==='1000000304'" src="../../../assets/img/pending.png"
                      class="img-rotate">
               </div>
               <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -50%">
-                <img v-if="profileForm.status==='1000000301'"
+                <img draggable="false" v-if="profileForm.status==='1000000301'"
                      src="../../../assets/img/active_stamp_en.png"
                      class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000302'"
+                <img draggable="false" v-else-if="profileForm.status==='1000000302'"
                      src="../../../assets/img/no_active_stamp_en.png"
                      class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000303'"
+                <img draggable="false" v-else-if="profileForm.status==='1000000303'"
                      src="../../../assets/img/block_en.png"
                      class="img-rotate">
-                <img v-else-if="profileForm.status==='1000000304'"
+                <img draggable="false" v-else-if="profileForm.status==='1000000304'"
                      src="../../../assets/img/pending_en.png"
                      class="img-rotate">
               </div>
@@ -760,7 +760,7 @@
         </b-row>
       </b-tab>
 
-      <b-tab :title="$t('permission-management.user-group')" @click="tabStatus='group'">
+      <b-tab v-if="!checkPermItem('tab_user_group')"  :title="$t('permission-management.user-group')" @click="tabStatus='group'">
         <b-row class="h-100 ">
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">

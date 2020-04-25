@@ -57,7 +57,7 @@
         <b-dropdown id="langddm" variant="empty" size="sm" toggle-class="language-button" class="mr-4">
           <template slot="button-content">
             <span>
-                <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()"/>
+                <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false"/>
             </span>
             <span class="name ml-2 mr-3">{{$i18n.locale.toUpperCase()}}</span>
           </template>
@@ -71,7 +71,7 @@
                     menu-class="mt-3" no-caret>
           <template slot="button-content" v-if="currentUser">
             <span @click="showPasswordResetView()">
-                <img :alt="currentUser.title" :src="this.portrait" @error="portraitOnError"/>
+                <img :alt="currentUser.title" :src="this.portrait" @error="portraitOnError" draggable="false"/>
             </span>
             <span @click="showPasswordResetView()" class="name ml-1 mr-2">{{currentUser.name}}</span>
           </template>
@@ -79,7 +79,7 @@
         </b-dropdown>
       </div>
       <div class="d-inline-block">
-        <img src="/assets/img/turn_on_icon.svg" class="ml-5 mb-1 logout" @click="confirmLogout"/>
+        <img src="/assets/img/turn_on_icon.svg" class="ml-5 mb-1 logout" @click="confirmLogout" draggable="false"/>
       </div>
     </div>
     <b-modal centered id="modal-reset" ref="modal-reset">

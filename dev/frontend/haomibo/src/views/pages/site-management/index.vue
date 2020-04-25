@@ -240,14 +240,14 @@
             </b-row>
             <div class="position-absolute" style="bottom: 4%;left: 28%">
               <div v-if="getLocale()==='zh'"  class="position-absolute" style="bottom: 4%;left: 28%">
-                <img v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp.png">
-                <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-                <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                <img draggable="false" v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp.png">
+                <img draggable="false" v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+                <img draggable="false" v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
               </div>
               <div v-if="getLocale()==='en'" class="position-absolute" style="lbottom: 4%;left: 28%">
-                <img v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp_en.png">
-                <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp_en.png">
+                <img draggable="false" v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
               </div>
             </div>
           </b-col>
@@ -355,12 +355,12 @@
               </b-col>
             </b-row>
             <div v-if="getLocale()==='zh'"  class="position-absolute" style="bottom: 4%;left: 28%">
-              <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-              <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+              <img draggable="false" v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+              <img draggable="false" v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
             </div>
             <div v-if="getLocale()==='en'" class="position-absolute" style="lbottom: 4%;left: 28%">
-              <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-              <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+              <img draggable="false" v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+              <img draggable="false" v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
             </div>
           </b-col>
         </b-row>

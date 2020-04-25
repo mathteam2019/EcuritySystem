@@ -217,7 +217,7 @@
 
 <template>
   <b-row class="h-100 auth-login-page">
-    <img class="position-absolute logo" src="../../assets/img/logo.png"/>
+    <img class="position-absolute logo" src="../../assets/img/logo.png" draggable="false"/>
     <b-col md=10 class="mx-auto my-auto auth-content-only-ie">
       <h2 class="mb-5 text-white header-title">{{$t('login.title')}}</h2>
       <b-row class="auth-card ">
@@ -243,7 +243,7 @@
               <b-dropdown id="langddm" variant="empty" class="mb-4" toggle-class="language-button">
                 <template slot="button-content">
                 <span class="front-icon">
-                <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()"/>
+                <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false"/>
                 </span>
                   <span class="name float-left">{{fnGetLangName($i18n.locale)}}</span>
                 </template>
@@ -260,7 +260,7 @@
                   <input type="text" style="" :placeholder="$t('user.captcha-code')" id="cpatchaTextBox" v-model="captchaCode" />
                 </b-col>
                 <b-col cols="1" class="refresh-icon" style="margin-left: 0rem">
-                  <img src="../../assets/img/ic_refresh.png" style="width: 15px;" @click="createCaptcha"/>
+                  <img src="../../assets/img/ic_refresh.png" style="width: 15px;" @click="createCaptcha" draggable="false"/>
                 </b-col>
               </b-row>
               <div class=" mt-4">
