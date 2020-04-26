@@ -179,7 +179,7 @@
       </b-row>
     </div>
     <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
-      <b-tab :title="$t('device-management.site-config')">
+      <b-tab v-if="!checkPermItem('tab_field')" :title="$t('device-management.site-config')">
         <div class="switch-button d-flex mb-3">
           <span :class="`${switchStatus==='config'?'active':''}`" @click="changeSwitchStatus('config')"><i
             class="icofont-gear"/></span>
@@ -330,7 +330,7 @@
           </b-modal>
         </b-row>
       </b-tab>
-      <b-tab :title="$t('device-management.maintenance-config')">
+      <b-tab v-if="!checkPermItem('tab_config')" :title="$t('device-management.maintenance-config')">
         <b-row v-show="pageStatus ==='list'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
@@ -568,12 +568,12 @@
           </b-col>
           <b-col cols="2">
             <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: 0;left: 0">
-              <img v-if="configForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
-              <img v-else-if="configForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+              <img draggable="false" v-if="configForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+              <img draggable="false" v-else-if="configForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
             </div>
             <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: 0;left: 0">
-              <img v-if="configForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-              <img v-else-if="configForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+              <img draggable="false" v-if="configForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+              <img draggable="false" v-else-if="configForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
@@ -716,9 +716,9 @@
         deviceCategoryOptions: [],
         deviceCategoryOption: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: '2', text: this.$t('log-management.device-log.judge')},
-          {value: '3', text: this.$t('log-management.device-log.manual')},
-          {value: '4', text: this.$t('log-management.device-log.hand')}
+          {value: 2, text: this.$t('log-management.device-log.judge')},
+          {value: 3, text: this.$t('log-management.device-log.manual')},
+          {value: 4, text: this.$t('log-management.device-log.hand')}
         ],
         siteSelectOptions: [],
         operationModeOptions: [
@@ -1832,7 +1832,8 @@
           }));
         }
         this.deviceCategoryOptions = JSON.parse(JSON.stringify(options));
-        this.deviceCategoryOptions.push({value: null, text: this.$t('permission-management.all')});
+        console.log(this.deviceCategoryOptions);
+        this.deviceCategoryOptions.unshift({value: null, text: this.$t('permission-management.all')});
         this.$refs.fieldSelectList.setFilterOptions(this.deviceCategoryOption);
       },
       siteData(newVal, oldVal) { // maybe called when the org data is loaded from server

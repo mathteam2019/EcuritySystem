@@ -302,7 +302,7 @@
 
     <b-tabs nav-class="ml-2" :no-fade="true">
 
-      <b-tab :title="$t('log-management.device-log.security-log')">
+      <b-tab v-if="!checkPermItem('tab_security_log')" :title="$t('log-management.device-log.security-log')">
         <b-row v-if="pageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
@@ -367,10 +367,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onDeviceResetButton()">
                     <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_log_export')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('security_device_log_export')">
                     <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('device_log_print')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('security_device_log_print')">
                     <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -410,7 +410,7 @@
         </b-row>
       </b-tab>
 
-      <b-tab :title="$t('log-management.device-log.decision-log')">
+      <b-tab v-if="!checkPermItem('tab_judge_log')" :title="$t('log-management.device-log.decision-log')">
         <b-row v-if="pageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
@@ -475,10 +475,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onJudgeResetButton()">
                     <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('judge')" :disabled="checkPermItem('device_log_export')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('judge')" :disabled="checkPermItem('judge_device_log_export')">
                     <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('judge')" :disabled="checkPermItem('device_log_print')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('judge')" :disabled="checkPermItem('judge_device_log_print')">
                     <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -522,7 +522,7 @@
         </b-row>
       </b-tab>
 
-      <b-tab :title="$t('log-management.device-log.hand-check-log')">
+      <b-tab v-if="!checkPermItem('tab_hand_log')" :title="$t('log-management.device-log.hand-check-log')">
         <b-row v-if="pageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
@@ -586,10 +586,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onManualResetButton()">
                     <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('manual')" :disabled="checkPermItem('device_log_export')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('manual')" :disabled="checkPermItem('hand_device_log_export')">
                     <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('manual')" :disabled="checkPermItem('device_log_print')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('manual')" :disabled="checkPermItem('hand_device_log_print')">
                     <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>

@@ -85,7 +85,7 @@
         <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
           <div class="statistics-item type-3">
             <div style="">
-              <b-img src="/assets/img/scan.svg"/>
+              <b-img draggable="false" src="/assets/img/scan.svg"/>
             </div>
             <div>
               <span class="font-weight-bold" v-if="preViewData.total!=null">{{preViewData.total}}</span>
@@ -101,7 +101,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #009900">
-                  <b-img src="/assets/img/glass_delete_icon.svg"/>
+                  <b-img draggable="false" src="/assets/img/glass_delete_icon.svg"/>
                 </div>
                 <div>
                   <div>
@@ -118,7 +118,7 @@
             <b-card class="no-padding">
               <div class="statistics-item type-2">
                 <div style="background-color: #009900">
-                  <b-img src="/assets/img/glass_delete_icon.svg"/>
+                  <b-img draggable="false" src="/assets/img/glass_delete_icon.svg"/>
                 </div>
                 <div>
                   <div>
@@ -134,7 +134,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #ff0000;">
-                  <b-img src="/assets/img/glass_check_icon.svg"/>
+                  <b-img draggable="false" src="/assets/img/glass_check_icon.svg"/>
                 </div>
                 <div>
 
@@ -151,7 +151,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #ff0000;">
-                  <b-img src="/assets/img/glass_check_icon.svg"/>
+                  <b-img draggable="false" src="/assets/img/glass_check_icon.svg"/>
                 </div>
                 <div>
                   <div>
@@ -169,7 +169,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #344bf3;">
-                  <b-img src="/assets/img/clock.svg"/>
+                  <b-img draggable="false" src="/assets/img/clock.svg"/>
                 </div>
                 <div>
                   <div>
@@ -185,7 +185,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #19b8fa;">
-                  <b-img src="/assets/img/up_arrow.svg"/>
+                  <b-img draggable="false" src="/assets/img/up_arrow.svg"/>
                 </div>
                 <div>
                   <div>
@@ -201,7 +201,7 @@
             <b-card class="no-padding" style="background-color: #fff;">
               <div class="statistics-item type-2">
                 <div style="background-color: #00bbb0;">
-                  <b-img src="/assets/img/down_arrow.svg"/>
+                  <b-img draggable="false" src="/assets/img/down_arrow.svg"/>
                 </div>
                 <div>
                   <div>
@@ -339,7 +339,7 @@
             <b-card>
               <!--              <highcharts :constructor-type="'spline'" :options="wordCloudChartOptions"/>-->
               <div id="wordCloudy">
-                <!--              <b-img src="/assets/img/brand.png" class="w-100 h-100"-->
+                <!--              <b-img draggable="false" src="/assets/img/brand.png" class="w-100 h-100"-->
                 <!--                     style="object-fit: contain; object-position: center"/>-->
               </div>
             </b-card>
@@ -534,7 +534,6 @@
       this.getPreviewData();
       this.getChartData();
       this.getGraphData();
-      this.setPeriodLabel('hour');
     },
     data() {
 
@@ -808,7 +807,7 @@
             },
             {
               name: 'time',
-              title : this.setPeriodLabel,
+              title : this.$t('statistics.view.periods'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -885,7 +884,7 @@
             },
             {
               name: 'time',
-              title: this.setPeriodLabel,
+              title: this.$t('statistics.view.periods'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -1394,7 +1393,6 @@
         this.getPreviewData();
         this.getChartData();
         this.getGraphData();
-        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
         this.$refs.taskVuetable2.refresh();
       },

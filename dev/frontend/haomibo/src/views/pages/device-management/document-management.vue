@@ -239,16 +239,16 @@
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
             <div class="img-wrapper">
-              <img v-if="archivesForm.image!=null&&archivesForm.image!==''" :src="archivesForm.image"/>
-              <img v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')"
+              <img draggable="false" v-if="archivesForm.image!=null&&archivesForm.image!==''" :src="archivesForm.image"/>
+              <img draggable="false" v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')"
                    src="../../../assets/img/device.png">
               <div  v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
-                <img v-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
-                <img v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+                <img draggable="false" v-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                <img draggable="false" v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
               </div>
               <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
-                <img v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                <img v-else-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-else-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
               </div>
             </div>
             <input type="file" ref="imgFile" @change="onFileChange" accept="image/*" style="display: none"/>

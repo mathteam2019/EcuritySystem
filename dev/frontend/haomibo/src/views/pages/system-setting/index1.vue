@@ -566,8 +566,8 @@
             </div>
           </b-col>
           <div class="position-absolute" style="left: 8%;bottom: 3%">
-            <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+            <img draggable="false" v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img draggable="false" v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
 
         </b-row>

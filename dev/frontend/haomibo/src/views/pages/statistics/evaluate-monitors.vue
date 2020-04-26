@@ -80,7 +80,7 @@
           <b-card class="no-padding" style="background-color: #365ae0;">
             <div class="statistics-item type-1">
               <div>
-                <b-img src="/assets/img/hand_check_icon.svg"/>
+                <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
                 <div>
@@ -96,7 +96,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: red;">
-                <b-img src="/assets/img/circle_close.svg"/>
+                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
               </div>
               <div>
                 <div><span v-if="preViewData.missingReport!=null">{{preViewData.missingReport}}</span>
@@ -110,7 +110,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: red;">
-                <b-img src="/assets/img/circle_close.svg"/>
+                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
               </div>
               <div>
                 <div>
@@ -127,7 +127,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: #009900;">
-                <b-img src="/assets/img/export.svg"/>
+                <b-img draggable="false" src="/assets/img/export.svg"/>
               </div>
               <div>
                 <div><span v-if="preViewData.mistakeReport!=null">{{preViewData.mistakeReport}}</span>
@@ -141,7 +141,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: #009900;">
-                <b-img src="/assets/img/export.svg"/>
+                <b-img draggable="false" src="/assets/img/export.svg"/>
               </div>
               <div>
                 <div>
@@ -160,7 +160,7 @@
           <b-card class="no-padding" style="background-color: #1989fa;">
             <div class="statistics-item type-1">
               <div>
-                <b-img src="/assets/img/hand_check_icon.svg"/>
+                <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
                 <div><span
@@ -175,7 +175,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: red;">
-                <b-img src="/assets/img/circle_close.svg"/>
+                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
               </div>
               <div>
                 <div><span v-if="preViewData.artificialJudgeMissing!=null">{{preViewData.artificialJudgeMissing}}</span>
@@ -189,7 +189,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: red;">
-                <b-img src="/assets/img/circle_close.svg"/>
+                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
               </div>
               <div>
                 <div>
@@ -206,7 +206,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: #009900;">
-                <b-img src="/assets/img/export.svg"/>
+                <b-img draggable="false" src="/assets/img/export.svg"/>
               </div>
               <div>
                 <div><span v-if="preViewData.artificialJudgeMistake!=null">{{preViewData.artificialJudgeMistake}}</span>
@@ -220,7 +220,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: #009900;">
-                <b-img src="/assets/img/export.svg"/>
+                <b-img draggable="false" src="/assets/img/export.svg"/>
               </div>
               <div>
                 <div>
@@ -239,7 +239,7 @@
           <b-card class="no-padding" style="background-color: #0cb4d2;">
             <div class="statistics-item type-1">
               <div>
-                <b-img src="/assets/img/hand_check_icon.svg"/>
+                <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
                 <div><span
@@ -254,7 +254,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: red;">
-                <b-img src="/assets/img/circle_close.svg"/>
+                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
               </div>
               <div>
                 <div><span v-if="preViewData.intelligenceJudgeMissing!=null">{{preViewData.intelligenceJudgeMissing}}</span>
@@ -268,7 +268,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: red;">
-                <b-img src="/assets/img/circle_close.svg"/>
+                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
               </div>
               <div>
                 <div>
@@ -285,7 +285,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: #009900;">
-                <b-img src="/assets/img/export.svg"/>
+                <b-img draggable="false" src="/assets/img/export.svg"/>
               </div>
               <div>
                 <div><span v-if="preViewData.intelligenceJudgeMistake!=null">{{preViewData.intelligenceJudgeMistake}}</span>
@@ -299,7 +299,7 @@
           <b-card class="no-padding" style="background-color: #fff;">
             <div class="statistics-item type-2">
               <div style="background-color: #009900;">
-                <b-img src="/assets/img/export.svg"/>
+                <b-img draggable="false" src="/assets/img/export.svg"/>
               </div>
               <div>
                 <div>
@@ -659,7 +659,6 @@
       this.getManualDeviceData();
       this.getPreviewData();
       this.getChartData();
-      this.setPeriodLabel('hour');
     },
     data() {
       return {
@@ -916,7 +915,7 @@
             },
             {
               name: 'time',
-              title: this.setPeriodLabel,
+              title: this.$t('statistics.view.periods'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -1396,7 +1395,6 @@
 
         this.getPreviewData();
         this.getChartData();
-        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
       onResetButton() {

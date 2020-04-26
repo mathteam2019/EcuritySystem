@@ -161,14 +161,14 @@
                               :placeholder="$t('device-management.origin-model-placeholder')"/>
               </b-form-group>
               <div v-if="getLocale()==='zh'" style="left: 3%;top: 10px">
-                <img v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp.png">
-                <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-                <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                <img draggable="false" v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp.png">
+                <img draggable="false" v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+                <img draggable="false" v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
               </div>
               <div v-if="getLocale()==='en'" style="left: 3%;top: 10px">
-                <img v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp_en.png">
-                <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp_en.png">
+                <img draggable="false" v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
               </div>
             </b-col>
             <b-col xxs="12" md="8" lg="9">
@@ -945,13 +945,13 @@
           if (item.indicatorsId > 0)
             this.basicForm.archiveIndicatorsList.push(item.indicatorsId)
         });
-        if (this.basicForm.archiveIndicatorsList.length === 0) {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-indicator-input`), {
-            duration: 3000,
-            permanent: false
-          });
-          return;
-        }
+        // if (this.basicForm.archiveIndicatorsList.length === 0) {
+        //   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-indicator-input`), {
+        //     duration: 3000,
+        //     permanent: false
+        //   });
+        //   return;
+        //}
         this.isLoading = true;
         let finalLink = this.basicForm.archivesTemplateId > 0 ? 'modify' : 'create';
         getApiManager()

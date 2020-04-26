@@ -89,7 +89,7 @@
         <b-card class="no-padding" style="background-color: #122881;">
           <div class="statistics-item type-1">
             <div>
-              <b-img src="/assets/img/scan.svg"/>
+              <b-img draggable="false" src="/assets/img/scan.svg"/>
             </div>
             <div>
               <div>
@@ -106,7 +106,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: #1989fa;">
-              <b-img src="/assets/img/check.svg"/>
+              <b-img draggable="false" src="/assets/img/check.svg"/>
             </div>
             <div>
               <div>
@@ -123,7 +123,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: #009900;">
-              <b-img src="/assets/img/round_check.svg"/>
+              <b-img draggable="false" src="/assets/img/round_check.svg"/>
             </div>
             <div>
               <div>
@@ -140,7 +140,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: #ff6600;">
-              <b-img src="/assets/img/bell_icon.svg"/>
+              <b-img draggable="false" src="/assets/img/bell_icon.svg"/>
             </div>
             <div>
               <div>
@@ -157,7 +157,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: #cccccc;">
-              <b-img src="/assets/img/forbidden.svg"/>
+              <b-img draggable="false" src="/assets/img/forbidden.svg"/>
             </div>
             <div>
               <div>
@@ -176,7 +176,7 @@
         <b-card class="no-padding" style="background-color: #1989fa;">
           <div class="statistics-item type-1">
             <div>
-              <b-img src="/assets/img/picture.svg"/>
+              <b-img draggable="false" src="/assets/img/picture.svg"/>
             </div>
             <div>
               <div>
@@ -192,7 +192,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: #009900;">
-              <b-img src="/assets/img/round_check.svg"/>
+              <b-img draggable="false" src="/assets/img/round_check.svg"/>
             </div>
             <div>
               <div>
@@ -208,7 +208,7 @@
         <b-card class="no-padding" style="background-color: #2bace2;">
           <div class="statistics-item type-1">
             <div>
-              <b-img src="/assets/img/hand_check_icon.svg"/>
+              <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
               <div>
@@ -224,7 +224,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: #009900;">
-              <b-img src="/assets/img/glass_delete_icon.svg"/>
+              <b-img draggable="false" src="/assets/img/glass_delete_icon.svg"/>
             </div>
             <div>
               <div>
@@ -240,7 +240,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: #ff0000;">
-              <b-img src="/assets/img/glass_check_icon.svg"/>
+              <b-img draggable="false" src="/assets/img/glass_check_icon.svg"/>
             </div>
             <div>
               <div>
@@ -516,7 +516,6 @@
       this.getManualDeviceData();
       this.getPreviewData();
       this.getChartData();
-      this.setPeriodLabel('hour');
     },
     data() {
       return {
@@ -754,7 +753,7 @@
             },
             {
               name: 'time',
-              title : this.setPeriodLabel,
+              title : this.$t('statistics.view.periods'),
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -1253,7 +1252,6 @@
         }
         this.getPreviewData();
         this.getChartData();
-        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
       onResetButton() {

@@ -2,7 +2,6 @@
   .item-wrapper {
     position: relative;
     height: fit-content !important;
-    //padding-left: $item-padding;
     display: inline-block;
     width: 100%;
     & > .item-extra-info {
@@ -18,19 +17,8 @@
       left: calculateRem(30px);
       background: wheat;
       z-index: 1;
-
     }
-    /*&.slide-left {*/
-    /*  & > .item-extra-info {*/
-    /*    left: 0;*/
-    /*  }*/
-    /*  &:hover {*/
-    /*    & > .item-extra-info {*/
-    /*      left: calc(1.25rem - 100%);*/
-    /*    }*/
 
-    /*  }*/
-    /*}*/
     &:hover {
       & > .item {
         z-index: 4;
@@ -38,14 +26,12 @@
       & > .item-extra-info {
         top: -0.5rem;
         padding: 0.5rem;
-        //position: fixed;
         display: inline-block !important;
         opacity: 1;
         transition: 10ms;
         left: 100%;
         z-index: 1;
       }
-
     }
   }
   .col-form-label {
@@ -55,12 +41,10 @@
     .v-select.v-select-custom-style {
       & > div {
         border-radius: 0.3rem !important;
-
         & > div {
           border-radius: 0.3rem !important;
         }
       }
-
     }
   }
 </style>
@@ -76,7 +60,7 @@
 
     <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
 
-      <b-tab :title="$t('permission-management.assign-permission-management.assign-to-user')"
+      <b-tab v-if="!checkPermItem('tab_assign_user')" :title="$t('permission-management.assign-permission-management.assign-to-user')"
              @click="tabStatus = 'user'">
         <b-row v-show="pageStatus === 'table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
@@ -455,7 +439,7 @@
 
       </b-tab>
 
-      <b-tab :title="$t('permission-management.assign-permission-management.assign-to-group')"
+      <b-tab v-if="!checkPermItem('tab_assign_user_group')" :title="$t('permission-management.assign-permission-management.assign-to-group')"
              @click="tabStatus = 'group'">
         <b-row v-show="groupPageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
@@ -1292,22 +1276,24 @@
       //   this.showForm.nextSelectedDataGroupId = null;
       // },
       'groupForm.userGroup': function (newVal, oldVal) {
-        this.groupForm.selectedUserGroupMembers = null;
-        if (this.userGroupData.length === 0)
-          this.selectedUserGroupMember = "";
-        else {
-          let userGroupMembers = [];
-          this.userGroupData.forEach(group => {
-            if (group.userGroupId === newVal) {
-              if (group.users != null && group.users.length > 0) {
-                group.users.forEach(user => {
-                  userGroupMembers.push(user.userName);
-                });
+        if (this.groupPageStatus === 'create') {
+          this.groupForm.selectedUserGroupMembers = null;
+          if (this.userGroupData.length === 0)
+            this.selectedUserGroupMember = "";
+          else {
+            let userGroupMembers = [];
+            this.userGroupData.forEach(group => {
+              if (group.userGroupId === newVal) {
+                if (group.users != null && group.users.length > 0) {
+                  group.users.forEach(user => {
+                    userGroupMembers.push(user.userName);
+                  });
+                }
               }
-            }
-          });
-          this.groupForm.selectedUserGroupMembers = userGroupMembers.length > 0 ? 1 : null;
-          this.selectedUserGroupMember = userGroupMembers.join(",");
+            });
+            this.groupForm.selectedUserGroupMembers = userGroupMembers.length > 0 ? 1 : null;
+            this.selectedUserGroupMember = userGroupMembers.join(",");
+          }
         }
       }
     },
@@ -1913,16 +1899,20 @@
       },
       fnShowUserGroupItem(userGroupItem) {
         this.selectedUserGroupItem = userGroupItem;
+
         this.groupForm.userGroup = userGroupItem.userGroupId;
         this.groupForm.dataRange = userGroupItem.dataRangeCategory;
         this.groupForm.filterGroup = userGroupItem.dataGroups.length === 0 ? null : userGroupItem.dataGroups[0].dataGroupId;
+
         this.selectedUserGroupMember = "";
         this.groupForm.selectedUserGroupMembers = [];
         this.groupForm.role = [];
         userGroupItem.users.forEach(user => {
           this.groupForm.selectedUserGroupMembers.push(user.userName)
         });
+
         this.selectedUserGroupMember = this.groupForm.selectedUserGroupMembers.join(',');
+        console.log(this.selectedUserGroupMember);
         userGroupItem.roles.forEach(role => {
           this.groupForm.role.push({
             label: role.roleName, value: role.roleId

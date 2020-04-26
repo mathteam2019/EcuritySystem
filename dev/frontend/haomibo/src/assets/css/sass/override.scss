@@ -901,7 +901,7 @@ $check-checked-color:#67c23a;
 
     .org-tree-node-label-inner {
       padding: 0!important;
-      min-width: 120px;
+      min-width: 100px;
       &>div {
         display: flex;
         flex-direction: column;
@@ -926,7 +926,7 @@ $check-checked-color:#67c23a;
           background: white;
           padding: 5px;
           color: #676e6f;
-          width : 130px;
+          width : 100px;
           word-break: break-word;
         }
       }

@@ -205,12 +205,12 @@
             </b-button>
           </b-col>
           <div v-if="getLocale()==='zh'" class="position-absolute" style="left: 3%;bottom: 17%">
-            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+            <img draggable="false" v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img draggable="false" v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
           <div v-if="getLocale()==='en'" class="position-absolute" style="left: 3%;bottom: 17%">
-            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+            <img draggable="false" v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+            <img draggable="false" v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
           </div>
         </b-row>
       </div>
@@ -281,12 +281,12 @@
             </b-button>
           </b-col>
           <div v-if="getLocale()==='zh'" class="position-absolute" style="left: 3%;bottom: 17%">
-            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+            <img draggable="false" v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img draggable="false" v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
           <div v-if="getLocale()==='en'" class="position-absolute" style="left: 3%;bottom: 17%">
-            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+            <img draggable="false" v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+            <img draggable="false" v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
           </div>
         </b-row>
       </div>

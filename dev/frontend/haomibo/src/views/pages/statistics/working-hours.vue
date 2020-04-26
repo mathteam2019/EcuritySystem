@@ -63,7 +63,7 @@
         <b-card class="no-padding" style="background-color: #1989fa;">
           <div class="statistics-item type-1">
             <div>
-              <b-img src="/assets/img/clock.svg"/>
+              <b-img draggable="false" src="/assets/img/clock.svg"/>
             </div>
             <div>
               <div><span class="span-font">D{{totalData['day'].value}} {{totalData['hour'].value}}: {{totalData['minute'].value}}: {{totalData['second'].value}}</span>
@@ -77,7 +77,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: #1989fa;">
-              <b-img src="/assets/img/scan.svg"/>
+              <b-img draggable="false" src="/assets/img/scan.svg"/>
             </div>
             <div>
               <div><span class="span-font">D{{scanData['day'].value}} {{scanData['hour'].value}}: {{scanData['minute'].value}}: {{scanData['second'].value}}</span>
@@ -91,7 +91,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: red;">
-              <b-img src="/assets/img/round_check.svg"/>
+              <b-img draggable="false" src="/assets/img/round_check.svg"/>
             </div>
             <div>
               <div><span class="span-font">D{{judgeData['day'].value}} {{judgeData['hour'].value}}: {{judgeData['minute'].value}}: {{judgeData['second'].value}}</span>
@@ -105,7 +105,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: #ffd835;">
-              <b-img src="/assets/img/hand_check_icon.svg"/>
+              <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
               <div><span class="span-font">D{{handData['day'].value}} {{handData['hour'].value}}: {{handData['minute'].value}}: {{handData['second'].value}}</span>
@@ -136,7 +136,7 @@
 
     <b-row class="bottom-part mt-3 mb-3">
       <b-col v-if="pageStatus==='charts'" class="charts-part">
-        <b-row>
+        <b-row style="width: 100%;">
           <b-col>
             <b-card>
 
@@ -158,7 +158,7 @@
                     </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">{{100-scanData['rate'].value-judgeData['rate'].value}}%</div>
+                    <div class="value">{{handData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       {{$t('statistics.working-hours.hand-time') }}
@@ -176,14 +176,14 @@
 
             </b-card>
           </b-col>
-          <b-col>
-            <b-card>
+          <b-col style="overflow: auto">
+            <b-card :style="'width: ' + chartWidth">
 
               <b-card-header>
                 <h5>{{$t('statistics.working-hours.time-statistics') }}</h5>
               </b-card-header>
 
-              <div class="w-100 flex-grow-1 d-flex flex-column ">
+              <div class="w-100 flex-grow-1 d-flex flex-column">
                 <div class="bar-3-chart">
                   <v-chart :options="bar3ChartOptions" :autoresize="true"/>
                 </div>
@@ -349,11 +349,11 @@
       },
     },
     mounted() {
+      this.handleWindowResize();
       this.getManualDeviceData();
       this.getSiteOption();
       this.getPreviewData();
       //this.getGraphData();
-      this.setPeriodLabel('hour');
     },
     data() {
 
@@ -410,6 +410,8 @@
             }
           ]
         },
+        chartWidth:'100%',
+        showLength : 4,
         bar3ChartOptions: {
           tooltip: {
             trigger: 'axis',
@@ -613,7 +615,7 @@
           },
           {
             name: 'time',
-            title:  this.setPeriodLabel,
+            title: this.$t('statistics.view.periods'),
             titleClass: 'text-center min-width',
             dataClass: 'text-center min-width',
             width : '10%'
@@ -662,6 +664,14 @@
       }
     },
     methods: {
+      // Resize
+      handleWindowResize(event) {
+        const windowWidth = window.innerWidth;
+        if(windowWidth >=1080) {
+          this.showLength = Math.round(windowWidth / 1080 * 4);
+        }
+
+      },
       setPeriodLabel (newVal) {
         if(getLocale() === 'zh') {
           //this.periodLabel = '时间段';
@@ -926,9 +936,13 @@
           this.handData['day'].value = (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60 - (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
 
           if(totalSeconds !== 0) {
-            this.scanData['rate'].value = Math.round(scanSeconds / totalSeconds * 100);
-            this.judgeData['rate'].value = Math.round(judgeSeconds / totalSeconds * 100);
-            this.handData['rate'].value = Math.round(handSeconds / totalSeconds * 100);
+            let scan = scanSeconds / totalSeconds * 100;
+            let judge = judgeSeconds / totalSeconds * 100;
+            let hand = handSeconds / totalSeconds * 100;
+            this.scanData['rate'].value = scan.toFixed(1);
+            this.judgeData['rate'].value = judge.toFixed(1);
+            this.handData['rate'].value = hand.toFixed(1);
+
           }
           else {
             this.scanData['rate'].value = 0;
@@ -938,7 +952,8 @@
 
           this.doublePieChartOptions.series[0].data[0].value = this.scanData['rate'].value;
           this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
-          this.doublePieChartOptions.series[0].data[2].value = 100 - this.scanData['rate'].value - this.judgeData['rate'].value;
+          this.doublePieChartOptions.series[0].data[2].value = this.handData['rate'].value;
+
 
           let keyData = Object.keys(this.preViewData.detailedStatistics);
           this.tableWidth = 80/keyData.length + '%';
@@ -977,6 +992,11 @@
           // else{
           //   this.bar3ChartOptions.xAxis.axisLabel.rotate = 0;
           // }
+
+          if(keyData.length>(this.showLength+4)){
+            let percent = Math.round((keyData.length-this.showLength) / this.showLength * 100);
+            this.chartWidth = percent + '%';
+          }
 
           if(keyData.length > 4) {
             for (let i = 4; i < keyData.length; i++) {
@@ -1025,7 +1045,6 @@
 
         //this.getGraphData();
         this.getPreviewData();
-        this.setPeriodLabel(this.filter.statWidth);
         this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
@@ -1330,7 +1349,7 @@
               .bar-3-chart {
 
                 display: flex;
-
+                width: 100%;
                 height: 100%;
 
                 .echarts {

@@ -2,7 +2,7 @@
   <div class="dashboard-container d-flex flex-column">
     <b-row>
       <!--            <b-col cols="12">-->
-      <!--              <b-img src="/assets/img/admin_home_main_banner.png" fluid-grow class="shadow-sm"/>-->
+      <!--              <b-img draggable="false" src="/assets/img/admin_home_main_banner.png" fluid-grow class="shadow-sm"/>-->
       <!--            </b-col>-->
 
       <b-col cols="12" style="">
@@ -33,14 +33,14 @@
         </div>
       </b-col>
       <!--      <b-col cols="5">-->
-      <!--        <b-img src="/assets/img/home_bottom_banner.png" fluid-grow class="shadow-sm"/>-->
+      <!--        <b-img draggable="false" src="/assets/img/home_bottom_banner.png" fluid-grow class="shadow-sm"/>-->
       <!--      </b-col>-->
 
       <b-col cols="7" class="pl-5">
         <b-row>
           <b-col cols="6" class="article d-flex">
             <div class="article-icon-container">
-              <b-img src="/assets/img/rocket_icon.svg"/>
+              <b-img draggable="false" src="/assets/img/rocket_icon.svg"/>
             </div>
             <div class="ml-5 mt-2 mr-3">
               <h5>{{$t('dashboard.article-title-1')}}</h5>
@@ -49,7 +49,7 @@
           </b-col>
           <b-col cols="6" class="article d-flex">
             <div class="article-icon-container">
-              <b-img src="/assets/img/rocket_icon.svg"/>
+              <b-img draggable="false" src="/assets/img/rocket_icon.svg"/>
             </div>
             <div class="ml-5 mt-2 mr-3">
               <h5>{{$t('dashboard.article-title-2')}}</h5>
@@ -60,7 +60,7 @@
         <b-row class="mt-5">
           <b-col cols="6" class="article d-flex">
             <div class="article-icon-container">
-              <b-img src="/assets/img/rocket_icon.svg"/>
+              <b-img draggable="false" src="/assets/img/rocket_icon.svg"/>
             </div>
             <div class="ml-5 mt-2 mr-3">
               <h5>{{$t('dashboard.article-title-3')}}</h5>
@@ -69,7 +69,7 @@
           </b-col>
           <b-col cols="6" class="article d-flex">
             <div class="article-icon-container">
-              <b-img src="/assets/img/rocket_icon.svg"/>
+              <b-img draggable="false" src="/assets/img/rocket_icon.svg"/>
             </div>
             <div class="ml-5 mt-2 mr-3">
               <h5>{{$t('dashboard.article-title-4')}}</h5>
