@@ -88,9 +88,13 @@ public class AssignUserPdfView extends BasePdfView {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
+                if(SysAssignUser.DataRangeCategory.SPECIFIED.getValue().equals(user.getDataRangeCategory())) {
+                    addTableCell(table, user.getDataGroups().get(0).getDataGroupName());
+                } else {
+                    addTableCell(table, ConstantDictionary.getDataValue(user.getDataRangeCategory()));
+                }
 
 
-                addTableCell(table, ConstantDictionary.getDataValue(user.getDataRangeCategory()));
 
             }
 

@@ -364,12 +364,12 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             String strDate = dateFormat.format(date);
             whereCause.add("s.SCAN_END_TIME <= '" + strDate + "'");
         }
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
+        }
         return whereCause;
     }
 

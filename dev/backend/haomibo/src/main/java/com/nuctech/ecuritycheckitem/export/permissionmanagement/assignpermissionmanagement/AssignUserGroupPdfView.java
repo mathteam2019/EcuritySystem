@@ -91,7 +91,13 @@ public class AssignUserGroupPdfView extends BasePdfView {
                     }
                 }
                 addTableCell(table, strRole);
-                addTableCell(table, ConstantDictionary.getDataValue(userGroup.getDataRangeCategory()));
+
+                if(SysUserGroup.DataRangeCategory.SPECIFIED.getValue().equals(userGroup.getDataRangeCategory())) {
+                    addTableCell(table, userGroup.getDataGroups().get(0).getDataGroupName());
+                } else {
+                    addTableCell(table, ConstantDictionary.getDataValue(userGroup.getDataRangeCategory()));
+                }
+
             }
 
             document.add(table);

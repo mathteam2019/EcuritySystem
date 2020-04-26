@@ -116,7 +116,13 @@ public class AssignUserGroupExcelView  extends BaseExcelView {
                     }
                 }
                 row.createCell(3).setCellValue(strRole);
-                row.createCell(4).setCellValue(ConstantDictionary.getDataValue(userGroup.getDataRangeCategory()));
+
+                if(SysUserGroup.DataRangeCategory.SPECIFIED.getValue().equals(userGroup.getDataRangeCategory())) {
+                    row.createCell(4).setCellValue(userGroup.getDataGroups().get(0).getDataGroupName());
+                } else {
+                    row.createCell(4).setCellValue(ConstantDictionary.getDataValue(userGroup.getDataRangeCategory()));
+                }
+
             }
 
             workbook.write(out);

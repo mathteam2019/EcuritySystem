@@ -121,8 +121,12 @@ public class AssignUserWordView extends BaseWordView {
                 } else {
                     tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
+                if(SysAssignUser.DataRangeCategory.SPECIFIED.getValue().equals(user.getDataRangeCategory())) {
+                    tableRow.getCell(6).setText(user.getDataGroups().get(0).getDataGroupName());
+                } else {
+                    tableRow.getCell(6).setText(ConstantDictionary.getDataValue(user.getDataRangeCategory()));
+                }
 
-                tableRow.getCell(6).setText(ConstantDictionary.getDataValue(user.getDataRangeCategory()));
 
             }
 

@@ -334,12 +334,12 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
 
 
 
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+        }
 
         return whereCause;
     }

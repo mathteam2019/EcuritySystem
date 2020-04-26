@@ -64,7 +64,7 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
      */
     @Override
     public TotalTimeStatisticsResponse getStatistics(String sortBy, String order, String modeId, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
-
+        categoryUser = authService.getDataCategoryUserList();
         Long count = getCount(modeId, userName, startTime, endTime, statWidth);
 
         String strQueryTime = getCountSelectQuery() + getJoinQuery();
@@ -100,13 +100,17 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
 
     @Override
     public TotalTimeStatistics getChartStatistics(String modeId, String userName, Date startTime, Date endTime, String statWidth) {
-        //categoryUser = authService.getDataCategoryUserList();
+        categoryUser = authService.getDataCategoryUserList();
         //.... Get Total Statistics
         String strQuery = makeQuery(modeId, userName, startTime, endTime, statWidth);
         List<DetailTimeStatistics> detailTimeStatistics = getTotalStatistics(strQuery);
 
         List<TotalTimeStatistics> totalTimeStatisticsList = Utils.convertTimeStatistcis(detailTimeStatistics);
-        return totalTimeStatisticsList.get(0);
+        if(totalTimeStatisticsList.size() > 0) {
+            return totalTimeStatisticsList.get(0);
+        }
+        TotalTimeStatistics totalTimeStatistics = new TotalTimeStatistics();
+        return totalTimeStatistics;
     }
     /**
      * Get total statistics amount
@@ -286,11 +290,11 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         whereCause.add("l.LOGOUT_TIME IS NOT NULL ");
         whereCause.add("l.USER_ID IS NOT NULL ");
 
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
-//        }
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("l.USER_ID in (" + idListStr + ") ");
+        }
 
         if (!whereCause.isEmpty()) {
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));

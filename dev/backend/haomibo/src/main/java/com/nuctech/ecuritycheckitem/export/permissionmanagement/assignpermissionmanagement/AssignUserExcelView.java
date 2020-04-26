@@ -113,8 +113,12 @@ public class AssignUserExcelView extends BaseExcelView {
                 } else {
                     row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
+                if(SysAssignUser.DataRangeCategory.SPECIFIED.getValue().equals(user.getDataRangeCategory())) {
+                    row.createCell(6).setCellValue(user.getDataGroups().get(0).getDataGroupName());
+                } else {
+                    row.createCell(6).setCellValue(ConstantDictionary.getDataValue(user.getDataRangeCategory()));
+                }
 
-                row.createCell(6).setCellValue(ConstantDictionary.getDataValue(user.getDataRangeCategory()));
 
             }
 

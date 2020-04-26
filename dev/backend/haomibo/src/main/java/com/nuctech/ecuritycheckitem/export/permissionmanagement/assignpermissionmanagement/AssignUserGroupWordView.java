@@ -127,7 +127,12 @@ public class AssignUserGroupWordView extends BaseWordView {
                     }
                 }
                 tableRow.getCell(3).setText(strRole);
-                tableRow.getCell(4).setText(ConstantDictionary.getDataValue(userGroup.getDataRangeCategory()));
+
+                if(SysUserGroup.DataRangeCategory.SPECIFIED.getValue().equals(userGroup.getDataRangeCategory())) {
+                    tableRow.getCell(4).setText(userGroup.getDataGroups().get(0).getDataGroupName());
+                } else {
+                    tableRow.getCell(4).setText(ConstantDictionary.getDataValue(userGroup.getDataRangeCategory()));
+                }
 
             }
 

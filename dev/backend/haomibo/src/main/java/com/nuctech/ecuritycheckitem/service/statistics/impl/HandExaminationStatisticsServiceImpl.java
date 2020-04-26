@@ -370,12 +370,12 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
         }
 
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+        }
         whereCause.add("s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' ");
         return whereCause;
     }

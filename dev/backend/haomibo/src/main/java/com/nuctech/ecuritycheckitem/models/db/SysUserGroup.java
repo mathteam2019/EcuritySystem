@@ -27,6 +27,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -99,7 +100,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
     )
     @OrderBy("dataGroupId ASC")
-    private Set<SysDataGroupSimple> dataGroups;
+    private List<SysDataGroupSimple> dataGroups;
 
 }
 

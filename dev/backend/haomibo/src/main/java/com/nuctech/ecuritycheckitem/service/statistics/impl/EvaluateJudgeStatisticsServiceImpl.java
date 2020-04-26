@@ -371,12 +371,12 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
         }
         whereCause.add("s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' ");
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+        }
 
         return whereCause;
     }

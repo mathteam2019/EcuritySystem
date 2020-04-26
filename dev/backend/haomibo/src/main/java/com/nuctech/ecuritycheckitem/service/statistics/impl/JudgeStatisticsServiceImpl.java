@@ -380,12 +380,12 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             String strDate = dateFormat.format(date);
             whereCause.add("g.JUDGE_END_TIME <= '" + strDate + "'");
         }
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("g.CREATEDBY in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("g.CREATEDBY in (" + idListStr + ") ");
+        }
         return whereCause;
     }
 
