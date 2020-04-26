@@ -335,7 +335,7 @@
                 </div>
               </b-col>
             </b-row>
-            <b-row style="height: 15px !important;">
+            <b-row class="vue_slider">
               <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
                 <vue-slider
                   v-model="slidebar2value"
@@ -692,6 +692,11 @@
   </div>
 </template>
 <style lang="scss">
+  .vue_slider{
+    height: 15px !important;
+    width: -moz-available;
+    width: -webkit-fill-available;
+  }
   .col-form-label {
     margin-bottom: 1px;
   }

@@ -137,6 +137,12 @@
                         {{props.rowData.userName}}
                       </span>
                     </template>
+                    <template slot="dataRangeCategory" slot-scope="props">
+                      <span v-if="props.rowData.dataRangeCategory !== '1000000505'">
+                        {{getDataRangeLabel(props.rowData.dataRangeCategory)}}
+                      </span>
+                      <span v-else>{{props.rowData.dataRangneGroupName}}</span>
+                    </template>
 
                     <template slot="actions" slot-scope="props">
                       <div>
@@ -515,6 +521,12 @@
                   >
                     <template slot="groupName" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onActionGroup('show-item', props.rowData)">{{ props.rowData.groupName }}</span>
+                    </template>
+                    <template slot="dataRangeCategory" slot-scope="props">
+                      <span v-if="props.rowData.dataRangeCategory !== '1000000505'">
+                        {{getDataRangeLabel(props.rowData.dataRangeCategory)}}
+                      </span>
+                      <span v-else>{{props.rowData.dataRangneGroupName}}</span>
                     </template>
                     <template slot="operating" slot-scope="props">
                       <div>
@@ -915,10 +927,12 @@
           default:
         }
       });
-
-      this.$refs.userVuetable.$parent.transform = this.transform.bind(this);
-      this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
-
+      if(!this.checkPermItem('tab_assign_user')) {
+        this.$refs.userVuetable.$parent.transform = this.transform.bind(this);
+      }
+      if(!this.checkPermItem('tab_assign_user_group')) {
+        this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
+      }
     },
     data() {
       return {
@@ -1016,26 +1030,24 @@
               }
             },
             {
-              name: 'dataRangeCategory',
+              name: '__slot:dataRangeCategory',
               title: this.$t('permission-management.assign-permission-management.group.data-range'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '10%',
-              callback: (dataRangeCategory) => {
-                if (dataRangeCategory === '1000000501' || dataRangeCategory === null) {
-                  return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
-                } else if (dataRangeCategory === '1000000502') {
-                  return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
-                } else if (dataRangeCategory === '1000000503') {
-                  return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data');
-                } else if (dataRangeCategory === '1000000504') {
-                  return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
-                } else if (dataRangeCategory === '1000000505') {
-                  return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
-                } else {
-                  return '';
-                }
-              }
+              // callback: (dataRangeCategory) => {
+              //   if (dataRangeCategory === '1000000501' || dataRangeCategory === null) {
+              //     return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
+              //   } else if (dataRangeCategory === '1000000502') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
+              //   } else if (dataRangeCategory === '1000000503') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data');
+              //   } else if (dataRangeCategory === '1000000504') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
+              //   } else {
+              //     return dataRangeCategory;
+              //   }
+              // }
             },
             {
               name: '__slot:actions',
@@ -1198,26 +1210,24 @@
               }
             },
             {
-              name: 'dataRangeCategory',
+              name: '__slot:dataRangeCategory',
               title: this.$t('permission-management.assign-permission-management.group.data-range'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '15%',
-              callback: (dataRangeCategory) => {
-                if (dataRangeCategory === '1000000501') {
-                  return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
-                } else if (dataRangeCategory === '1000000503') {
-                  return this.$t('permission-management.assign-permission-management.group.group-user-data');
-                } else if (dataRangeCategory === '1000000504') {
-                  return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
-                } else if (dataRangeCategory === '1000000505') {
-                  return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
-                } else if (dataRangeCategory === '1000000506') {
-                  return this.$t('permission-management.assign-permission-management.group.group-user-data');
-                } else {
-                  return '';
-                }
-              }
+              // callback: (dataRangeCategory) => {
+              //   if (dataRangeCategory === '1000000501') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
+              //   } else if (dataRangeCategory === '1000000503') {
+              //     return this.$t('permission-management.assign-permission-management.group.group-user-data');
+              //   } else if (dataRangeCategory === '1000000504') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
+              //   } else if (dataRangeCategory === '1000000506') {
+              //     return this.$t('permission-management.assign-permission-management.group.group-user-data')
+              //   } else {
+              //     return dataRangeCategory;
+              //   }
+              // }
             },
             {
               name: '__slot:operating',
@@ -1298,6 +1308,28 @@
       }
     },
     methods: {
+      getDataRangeLabel (dataRangeCategory) {
+        // if (dataRangeCategory === '1000000501') {
+        //       return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
+        //     } else if (dataRangeCategory === '1000000503') {
+        //       return this.$t('permission-management.assign-permission-management.group.group-user-data');
+        //     } else if (dataRangeCategory === '1000000504') {
+        //       return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
+        //     }  else {
+        //       return dataRangeCategory;
+        //     }
+        if (dataRangeCategory === '1000000501' || dataRangeCategory === null) {
+          return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
+        } else if (dataRangeCategory === '1000000502') {
+          return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
+        } else if (dataRangeCategory === '1000000503') {
+          return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data');
+        } else if (dataRangeCategory === '1000000504') {
+          return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
+        } else if (dataRangeCategory === '1000000506') {
+          return this.$t('permission-management.assign-permission-management.group.group-user-data')
+        }
+      },
       hoverContent(value) {
         let content = '<div class="item-wrapper slide-right">\n' +
           '      <span class="item d-flex flex-column">\n' + value.label +
@@ -1444,6 +1476,7 @@
         let checkedAll = this.$refs.userVuetable.checkedAllStatus;
         let checkedIds = this.$refs.userVuetable.selectedTo;
         let httpOption = this.$refs.userVuetable.httpOptions;
+        //'isAll': checkedIds.length > 0 ? checkedAll : true,
         let params = {
           'locale' : getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
@@ -1912,7 +1945,7 @@
         });
 
         this.selectedUserGroupMember = this.groupForm.selectedUserGroupMembers.join(',');
-        console.log(this.selectedUserGroupMember);
+
         userGroupItem.roles.forEach(role => {
           this.groupForm.role.push({
             label: role.roleName, value: role.roleId
@@ -2097,6 +2130,9 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          if(temp.dataRangeCategory === '1000000505'){
+            temp.dataRangneGroupName = temp.dataGroups[0].dataGroupName;
+          }
           let userMembers = [];
           temp.roles.forEach(role => {
             userMembers.push(role.roleName);
@@ -2145,6 +2181,9 @@
         for (let i = 0; i < data.data.length; i++) {
           this.renderedCheckListGroup.push(data.data[i].userGroupId);
           temp = data.data[i];
+          if(temp.dataRangeCategory === '1000000505'){
+            temp.dataRangneGroupName = temp.dataGroups[0].dataGroupName;
+          }
           let userMembers = [];
           temp.users.forEach(user => {
             userMembers.push(user.userName);

@@ -700,9 +700,18 @@
     },
     mounted() {
       this.handleWindowResize();
-      this.$refs.securityLogTable.$parent.transform = this.transformTable.bind(this);
-      this.$refs.decisionLogTable.$parent.transform = this.transformTable.bind(this);
-      this.$refs.handCheckLogTable.$parent.transform = this.transformTable.bind(this);
+      if(!this.checkPermItem('tab_security_log')) {
+        this.$refs.securityLogTable.$parent.transform = this.transformTable.bind(this);
+      }
+      if(!this.checkPermItem('tab_judge_log')) {
+        this.$refs.decisionLogTable.$parent.transform = this.transformTable.bind(this);
+      }
+      if(!this.checkPermItem('tab_hand_log')) {
+        this.$refs.handCheckLogTable.$parent.transform = this.transformTable.bind(this);
+      }
+      // this.$refs.securityLogTable.$parent.transform = this.transformTable.bind(this);
+      // this.$refs.decisionLogTable.$parent.transform = this.transformTable.bind(this);
+      // this.$refs.handCheckLogTable.$parent.transform = this.transformTable.bind(this);
     },
     data() {
       return {

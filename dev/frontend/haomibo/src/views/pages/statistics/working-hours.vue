@@ -973,7 +973,11 @@
                 title: this.preViewData.detailedStatistics[i].userName,
                 titleClass: 'text-center min-width',
                 dataClass: 'text-center min-width',
-                width: this.tableWidth
+                width: this.tableWidth,
+                callback: (value) => {
+                  if (value != null) return value;
+                  return 0;
+                }
               });
             }
 

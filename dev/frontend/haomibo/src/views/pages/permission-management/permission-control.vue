@@ -636,8 +636,14 @@
     mounted() {
       //window.addEventListener('resize', this.handleWindowResize);
       this.handleWindowResize();
-      this.$refs.roleVuetable.$parent.transform = this.transform.bind(this);
-      this.$refs.dataGroupVuetable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
+      if(!this.checkPermItem('tab_role')) {
+        this.$refs.roleVuetable.$parent.transform = this.transform.bind(this);
+      }
+      if(!this.checkPermItem('tab_data_group')) {
+        this.$refs.dataGroupVuetable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
+      }
+
+
       this.tableData = staticUserTableData;
 
       getApiManagerError().post(`${apiBaseUrl}/permission-management/permission-control/resource/get-all`, {}).then((response) => {
@@ -1437,6 +1443,7 @@
         });
       },
       transform(response) {
+        console.log(response);
 
         let transformed = {};
 
@@ -1480,6 +1487,7 @@
           this.renderedCheckList.push(data.data[i].roleId);
           transformed.data.push(temp);
         }
+        console.log(transformed);
 
         return transformed
 

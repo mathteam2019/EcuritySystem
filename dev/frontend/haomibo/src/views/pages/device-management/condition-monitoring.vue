@@ -24,12 +24,12 @@
 
     .item-wrapper {
       position: relative;
-      height: fit-content !important;
+      //height: fit-content !important;
       padding-bottom: $item-padding;
       padding-left: $item-padding;
       display: inline-block;
       width: $item-width;
-      height: $item-height;
+      //height: $item-height;
       & > .item {
         z-index: 1;
         border-radius: 0.3rem;

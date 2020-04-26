@@ -336,7 +336,7 @@
                 </div>
               </b-col>
             </b-row>
-            <b-row style="height: 15px !important;">
+            <b-row class="vue_slider">
               <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
                 <vue-slider
                   v-model="slidebar2value"
@@ -424,13 +424,13 @@
                   </div>
 
                   <div class="top-date">
-                    <label v-if="showPage.workMode==null || showPage.handUserId === null || showPage.handStartTime ===null"/>
+                    <label v-if="showPage.workMode==null || showPage.handUserId === null || showPage.judgeEndTime ===null"/>
                     <label v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('scan')"/>
                     <label
-                      v-else>{{this.getDateTimeFormat2(showPage.handStartTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.workMode==null || showPage.handUserId === null || showPage.handStartTime ===null"/>
+                    <label v-if="showPage.workMode==null || showPage.handUserId === null || showPage.handEndTime ===null"/>
                     <label v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('scan')"/>
                     <label
                       v-else>{{this.getDateTimeFormat2(showPage.handEndTime)}}</label>
@@ -793,6 +793,11 @@
   </div>
 </template>
 <style lang="scss">
+  .vue_slider{
+    height: 15px !important;
+    width: -moz-available;
+    width: -webkit-fill-available;
+  }
   .vs__selected-options {
     margin-left: 1px;
     margin-bottom: 1px;

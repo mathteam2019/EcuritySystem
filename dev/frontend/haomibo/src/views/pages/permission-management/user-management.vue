@@ -1178,8 +1178,12 @@
     mounted() {
       this.handleWindowResize();
 
-      this.$refs.vuetable.$parent.transform = this.transform.bind(this);
-      this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
+      if(!this.checkPermItem('tab_user')) {
+        this.$refs.vuetable.$parent.transform = this.transform.bind(this);
+      }
+      if(!this.checkPermItem('tab_user_group')) {
+        this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
+      }
       getApiManagerError().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
         type: 'with_parent'
       }).then((response) => {

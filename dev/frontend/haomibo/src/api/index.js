@@ -189,6 +189,7 @@ const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
   let ext1 = [];
 
   let extension = ext.shift();
+  params.isAll = false;
 
 
   // if(ext !== null){
@@ -243,6 +244,7 @@ const printFileFromServer = (link,params) => {
     });
   }
   else {
+    params.isAll = false;
     getApiManager()
       .post(`${apiBaseUrl}/` + link + '/' + 'pdf', params, {
         responseType: 'blob'

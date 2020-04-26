@@ -779,7 +779,7 @@
           },
           {
             name: 'time',
-            title:  this.$t('statistics.view.scan-hour'),
+            title: this.$t('statistics.view.periods'),
             titleClass: 'text-center min-width',
             dataClass: 'text-center min-width',
             width : '10%'
@@ -1130,7 +1130,11 @@
                 title: this.preViewData.detailedStatistics[i].userName,
                 titleClass: 'text-center min-width',
                 dataClass: 'text-center min-width',
-                width: this.tableWidth
+                width: this.tableWidth,
+                callback: (value) => {
+                  if (value != null) return value;
+                  return 0;
+                }
               });
             }
 

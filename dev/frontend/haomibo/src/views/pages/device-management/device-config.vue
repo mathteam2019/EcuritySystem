@@ -688,8 +688,14 @@
       this.getManualDeviceData();
       this.getJudgeDeviceData();
       this.getManufacturerOptions();
-      this.$refs.configListTable.$parent.transform = this.transformConfigTable.bind(this);
-      this.$refs.pendingListTable.$parent.transform = this.transformPendingTable.bind(this);
+      if(!this.checkPermItem('tab_field')) {
+        this.$refs.configListTable.$parent.transform = this.transformConfigTable.bind(this);
+      }
+      if(!this.checkPermItem('tab_config')) {
+        this.$refs.pendingListTable.$parent.transform = this.transformPendingTable.bind(this);
+      }
+      // this.$refs.configListTable.$parent.transform = this.transformConfigTable.bind(this);
+      // this.$refs.pendingListTable.$parent.transform = this.transformPendingTable.bind(this);
     },
     data() {
 

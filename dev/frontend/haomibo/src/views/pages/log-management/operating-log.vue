@@ -291,8 +291,14 @@
     },
     mounted() {
       //this.handleWindowResize();
-      this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
-      this.$refs.operatingLogTable.$parent.transform = this.transformOperatingTable.bind(this);
+      if(!this.checkPermItem('tab_access')) {
+        this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
+      }
+      if(!this.checkPermItem('tab_audit')) {
+        this.$refs.operatingLogTable.$parent.transform = this.transformOperatingTable.bind(this);
+      }
+      // this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
+      // this.$refs.operatingLogTable.$parent.transform = this.transformOperatingTable.bind(this);
     },
     data() {
       return {
