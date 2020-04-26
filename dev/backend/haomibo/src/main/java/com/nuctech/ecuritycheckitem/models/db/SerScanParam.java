@@ -23,17 +23,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
-import javax.persistence.OneToMany;
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -138,6 +128,7 @@ public class SerScanParam extends BaseEntity implements Serializable {
     @JoinColumn(name = "SCAN_PARAMS_ID", referencedColumnName = "SCAN_PARAMS_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("from_param")
+    @OrderBy("fromConfigId ASC")
     private List<SerScanParamsFrom> fromParamsList; // Relation to SerScanParamsFrom table.
 
 }

@@ -56,10 +56,13 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
 
         Cell headerCellStat = header.createCell(colNum ++);
         headerCellStat.setCellValue(messageSource.getMessage("StatWidth", null, currentLocale));
-
+        String keyDetail = "UserWorking";
+        if(type == false) {
+            keyDetail = "DeviceWorking";
+        }
         for(int i = 0; i < deviceCategoryList.size(); i ++) {
             Cell headerCellTime = header.createCell(colNum ++);
-            headerCellTime.setCellValue(ConstantDictionary.getDataValue(deviceCategoryList.get(i)));
+            headerCellTime.setCellValue(ConstantDictionary.getDataValue(deviceCategoryList.get(i), keyDetail));
         }
 
         for(int i = 0; i < nameList.size(); i ++) {

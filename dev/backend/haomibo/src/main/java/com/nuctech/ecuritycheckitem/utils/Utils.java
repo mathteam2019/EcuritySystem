@@ -423,16 +423,16 @@ public class Utils {
             case Constants.StatisticWidth.WEEK:
                 calendar.set(Calendar.YEAR, Integer.valueOf(dateSplit[0]));
                 calendar.set(Calendar.WEEK_OF_YEAR, Integer.valueOf(dateSplit[1]));
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
                 year = calendar.get(Calendar.YEAR);
-                month = calendar.get(Calendar.MONTH);
+                month = calendar.get(Calendar.MONTH) + 1;
                 day = calendar.get(Calendar.DAY_OF_MONTH);
                 startDate = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day);
 
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                calendar.add(Calendar.DATE, 6);
 
                 year = calendar.get(Calendar.YEAR);
-                month = calendar.get(Calendar.MONTH);
+                month = calendar.get(Calendar.MONTH) + 1;
                 day = calendar.get(Calendar.DAY_OF_MONTH);
                 endDate = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day);
                 answer = startDate + " ~ " + endDate;
@@ -451,12 +451,12 @@ public class Utils {
 
                 calendar.set(Calendar.YEAR, Integer.valueOf(dateSplit[0]));
                 calendar.set(Calendar.MONTH, Integer.valueOf(dateSplit[1]));
-                calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(dateSplit[2]));
+                calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(dateSplit[2]) - 1);
                 calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(dateSplit[3]));
                 calendar.add(Calendar.HOUR, 1);
 
                 year = calendar.get(Calendar.YEAR);
-                month = calendar.get(Calendar.MONTH);
+                month = calendar.get(Calendar.MONTH) + 1;
                 day = calendar.get(Calendar.DAY_OF_MONTH);
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
 

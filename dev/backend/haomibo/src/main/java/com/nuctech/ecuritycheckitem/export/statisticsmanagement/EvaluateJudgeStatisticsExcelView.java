@@ -137,10 +137,10 @@ public class EvaluateJudgeStatisticsExcelView extends BaseExcelView {
                 row.createCell(6).setCellValue(df.format(record.getMistakeReportRate()));
 
                 row.createCell(7).setCellValue(Long.toString(record.getArtificialJudge()));
-                row.createCell(8).setCellValue(Long.toString(record.getArtificialJudgeMistake()));
-                row.createCell(9).setCellValue(df.format(record.getArtificialJudgeMistakeRate()));
-                row.createCell(10).setCellValue(Long.toString(record.getArtificialJudgeMissing()));
-                row.createCell(11).setCellValue(df.format(record.getArtificialJudgeMissingRate()));
+                row.createCell(8).setCellValue(Long.toString(record.getArtificialJudgeMissing()));
+                row.createCell(9).setCellValue(df.format(record.getArtificialJudgeMissingRate()));
+                row.createCell(10).setCellValue(Long.toString(record.getArtificialJudgeMistake()));
+                row.createCell(11).setCellValue(df.format(record.getArtificialJudgeMistakeRate()));
                 row.createCell(12).setCellValue(Long.toString(record.getIntelligenceJudge()));
                 row.createCell(13).setCellValue(df.format(record.getIntelligenceJudgeMissing()));
                 row.createCell(14).setCellValue(df.format(record.getIntelligenceJudgeMissingRate()));

@@ -81,8 +81,13 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
             strHeaderList.add(messageSource.getMessage("ID", null, currentLocale));
             strHeaderList.add(messageSource.getMessage("StatWidth", null, currentLocale));
 
+            String keyDetail = "UserWorking";
+            if(type == false) {
+                keyDetail = "DeviceWorking";
+            }
+
             for(int i = 0; i < deviceCategoryList.size(); i ++) {
-                String categoryName = ConstantDictionary.getDataValue(deviceCategoryList.get(i));
+                String categoryName = ConstantDictionary.getDataValue(deviceCategoryList.get(i), keyDetail);
                 strHeaderList.add(categoryName);
             }
             for(int i = 0; i < nameList.size(); i ++) {

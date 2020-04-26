@@ -23,17 +23,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
-import javax.persistence.OneToMany;
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -115,6 +105,7 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
     @JoinColumn(name = "CONFIG_ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("manual")
+    @OrderBy("manualGroupId ASC")
     private List<SysManualGroup> manualGroupList; // Relation to SysManualGroup table.
 
     @ToString.Exclude
@@ -122,6 +113,7 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
     @JoinColumn(name = "CONFIG_ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("judge")
+    @OrderBy("judgeGroupId ASC")
     private List<SysJudgeGroup> judgeGroupList; // Relation to SysJudgeGroup table.
 
     @ToString.Exclude
@@ -129,6 +121,7 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
     @JoinColumn(name = "CONFIG_ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("from_config")
+    @OrderBy("fromConfigId ASC")
     private List<FromConfigId> fromConfigIdList; // Relation to FromConfigId table.
 
     @javax.persistence.Transient

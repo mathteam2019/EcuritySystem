@@ -25,16 +25,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -89,6 +80,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
+    @OrderBy("userId ASC")
     private Set<SysUserSimplifiedOnlyHasName> users; // Relation to sysUser table.
 
     @OneToMany(fetch = FetchType.LAZY)
@@ -97,6 +89,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
+    @OrderBy("roleId ASC")
     private Set<SysRoleSimple> roles; // Relation to SysRole table.
 
     @OneToMany(fetch = FetchType.LAZY)
@@ -105,6 +98,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
     )
+    @OrderBy("dataGroupId ASC")
     private Set<SysDataGroupSimple> dataGroups;
 
 }

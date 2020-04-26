@@ -87,8 +87,13 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
         tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("StatWidth", null, currentLocale));
 
+        String keyDetail = "UserWorking";
+        if(isUserStatOrDeviceStat == false) {
+            keyDetail = "DeviceWorking";
+        }
+
         for(int i = 0; i < deviceCategoryList.size(); i ++) {
-            tableRowHeader.addNewTableCell().setText(ConstantDictionary.getDataValue(deviceCategoryList.get(i)));
+            tableRowHeader.addNewTableCell().setText(ConstantDictionary.getDataValue(deviceCategoryList.get(i), keyDetail));
         }
 
         for(int i = 0; i < nameList.size(); i ++) {

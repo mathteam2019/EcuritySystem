@@ -56,7 +56,8 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
             PdfPTable table = new PdfPTable(17);
 
             table.setWidthPercentage(99);
-            Stream.of("ID", "StatWidth", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "IntelligenceJudgeMissing", "IntelligenceJudgeMissingRate", "ArtificialJudgeMistakeRate", "IntelligenceJudge", "IntelligenceJudgeMistake", "IntelligenceJudgeMistakeRate")
+            Stream.of("ID", "StatWidth", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing",
+                    "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge", "IntelligenceJudgeMissing", "IntelligenceJudgeMissingRate", "IntelligenceJudgeMistake", "IntelligenceJudgeMistakeRate")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
                         header.setBorderWidth(2);
@@ -79,10 +80,11 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
                 addTableCell(table, df.format(record.getMistakeReportRate()));
 
                 addTableCell(table, Long.toString(record.getArtificialJudge()));
-                addTableCell(table, Long.toString(record.getArtificialJudgeMistake()));
-                addTableCell(table, df.format(record.getArtificialJudgeMistakeRate()));
                 addTableCell(table, Long.toString(record.getArtificialJudgeMissing()));
                 addTableCell(table, df.format(record.getArtificialJudgeMissingRate()));
+                addTableCell(table, Long.toString(record.getArtificialJudgeMistake()));
+                addTableCell(table, df.format(record.getArtificialJudgeMistakeRate()));
+
                 addTableCell(table, Long.toString(record.getIntelligenceJudge()));
                 addTableCell(table, df.format(record.getIntelligenceJudgeMissing()));
                 addTableCell(table, df.format(record.getIntelligenceJudgeMissingRate()));

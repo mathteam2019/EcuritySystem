@@ -51,7 +51,6 @@ public class ConstantDictionary {
             new Dictionary("1000000506", "组内所有人数据"),
             new Dictionary("1000000901", "同方"),
             new Dictionary("1000000902", "威视"),
-            new Dictionary("1000001904", "累计"),
             new Dictionary("FALSE", "无查获"),
             new Dictionary("TRUE", "有查获"),
             new Dictionary("doubt", "有嫌疑"),
@@ -71,6 +70,14 @@ public class ConstantDictionary {
             new Dictionary("2", "警告", "DeviceLogLevel"),
             new Dictionary("3", "错误", "DeviceLogLevel"),
             new Dictionary("4", "致命", "DeviceLogLevel"),
+            new Dictionary("1000001901", "扫描累计工时", "UserWorking"),
+            new Dictionary("1000001902", "判图累计工时", "UserWorking"),
+            new Dictionary("1000001903", "手检累计工时", "UserWorking"),
+            new Dictionary("1000001904", "累计", "UserWorking"),
+            new Dictionary("1000001901", "安检仪累计", "DeviceWorking"),
+            new Dictionary("1000001902", "判图站累计", "DeviceWorking"),
+            new Dictionary("1000001903", "手检站累计", "DeviceWorking"),
+            new Dictionary("1000001904", "累计", "DeviceWorking"),
     };
 
 
@@ -91,7 +98,7 @@ public class ConstantDictionary {
             new Dictionary("1000000506", "组内所有人数据"),
             new Dictionary("1000000901", "同方"),
             new Dictionary("1000000902", "威视"),
-            new Dictionary("1000001904", "ALL"),
+
             new Dictionary("FALSE", "Not Seized"),
             new Dictionary("TRUE", "Seized"),
             new Dictionary("doubt", "Suspect"),
@@ -111,6 +118,14 @@ public class ConstantDictionary {
             new Dictionary("2", "Warn", "DeviceLogLevel"),
             new Dictionary("3", "Error", "DeviceLogLevel"),
             new Dictionary("4", "Fatal", "DeviceLogLevel"),
+            new Dictionary("1000001901", "Scan working time", "UserWorking"),
+            new Dictionary("1000001902", "Judge working time", "UserWorking"),
+            new Dictionary("1000001903", "Hand working time", "UserWorking"),
+            new Dictionary("1000001904", "Total", "UserWorking"),
+            new Dictionary("1000001901", "Scan working time", "DeviceWorking"),
+            new Dictionary("1000001902", "Judge working time", "DeviceWorking"),
+            new Dictionary("1000001903", "Hand working time", "DeviceWorking"),
+            new Dictionary("1000001904", "Total", "DeviceWorking"),
     };
 
     public static void setDictionaryList(Dictionary[] newDictionaryList) {

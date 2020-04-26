@@ -55,6 +55,7 @@ public class SysUserGroupSimple extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
+    @OrderBy("roleId ASC")
     private Set<SysRoleSimple> roles; // Relation to SysRole table.
 
 

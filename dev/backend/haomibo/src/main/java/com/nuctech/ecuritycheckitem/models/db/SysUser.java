@@ -145,6 +145,7 @@ public class SysUser extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
+    @OrderBy("roleId ASC")
     private Set<SysRoleSimple> roles; // Relation to SysRole table.
 
 //    @OneToMany(fetch = FetchType.EAGER)

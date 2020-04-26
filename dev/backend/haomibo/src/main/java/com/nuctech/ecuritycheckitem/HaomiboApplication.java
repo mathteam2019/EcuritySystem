@@ -15,11 +15,21 @@ package com.nuctech.ecuritycheckitem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableAsync
 public class HaomiboApplication {
+
+    @PostConstruct
+    public void init(){
+        //TimeZone.setDefault(TimeZone.getTimeZone("GMT-06:00"));   // It will set UTC timezone
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(HaomiboApplication.class, args);

@@ -61,6 +61,7 @@ public class SysUserGroupOnlyUser extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
+    @OrderBy("userId ASC")
     private Set<SysUserSimplifiedOnlyHasName> users; // Relation to sysUser table.
 
 }
