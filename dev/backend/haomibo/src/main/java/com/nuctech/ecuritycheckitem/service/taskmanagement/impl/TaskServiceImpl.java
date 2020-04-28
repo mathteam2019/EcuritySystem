@@ -270,6 +270,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public SerTaskSimplifiedForProcessTaskManagement getOne(Long taskId) {
 
+        Date startTime = new Date();
         QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
         Optional<SerTaskSimplifiedForProcessTaskManagement> data = serTaskRepository.findOne(builder.taskId.eq(taskId));
         if (!data.isPresent()) {
@@ -290,6 +291,8 @@ public class TaskServiceImpl implements TaskService {
 
         SerTaskSimplifiedForProcessTaskManagement serTask = data.get();
         serTask.setPlatFormCheckParams(platformCheckParams);
+        Date endTime = new Date();
+        long diff = endTime.getTime() - startTime.getTime();
         return data.get();
     }
 

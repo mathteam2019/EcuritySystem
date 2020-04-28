@@ -234,6 +234,8 @@ public class PermissionServiceImpl implements PermissionService {
         return predicate;
     }
 
+
+
     /**
      * get filtered and paginated role list
      * @param roleName

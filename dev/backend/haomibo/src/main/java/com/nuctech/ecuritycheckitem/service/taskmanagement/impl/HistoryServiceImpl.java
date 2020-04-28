@@ -283,6 +283,7 @@ public class HistoryServiceImpl implements HistoryService {
      */
     @Override
     public HistorySimplifiedForHistoryTaskManagement getOne(Long taskId) {
+        Date startTime = new Date();
         QHistorySimplifiedForHistoryTaskManagement builder = QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement;
         Optional<HistorySimplifiedForHistoryTaskManagement> data = historyRepository.findOne(builder.historyId.eq(taskId)); //get a HistorySimplifiedForHistoryTaskManagement record from database using repository
         if (!data.isPresent()) {
@@ -303,6 +304,8 @@ public class HistoryServiceImpl implements HistoryService {
 
         HistorySimplifiedForHistoryTaskManagement history = data.get();
         history.setPlatFormCheckParams(platformCheckParams);
+        Date endTime = new Date();
+        long diff = endTime.getTime() - startTime.getTime();
         return history;
     }
 

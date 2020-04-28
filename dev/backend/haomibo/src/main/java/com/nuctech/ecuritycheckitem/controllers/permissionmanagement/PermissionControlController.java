@@ -14,6 +14,7 @@ package com.nuctech.ecuritycheckitem.controllers.permissionmanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
@@ -157,6 +158,7 @@ public class PermissionControlController extends BaseController {
         int perPage;
         String sort;
         Filter filter;
+        String locale;
     }
 
     /**
@@ -189,6 +191,18 @@ public class PermissionControlController extends BaseController {
 
         @NotNull
         long roleId;
+    }
+
+    /**
+     * Role delete request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class RoleGetAllRequestBody {
+
+        String locale;
     }
 
     /**
@@ -320,6 +334,15 @@ public class PermissionControlController extends BaseController {
         String type = GetAllType.BARE;
     }
 
+    private void updateRoleList(List<SysRole> roleList) {
+        for(int i = 0; i < roleList.size(); i ++) {
+            SysRole role = roleList.get(i);
+            role.getResources().forEach(resource -> {
+                resource.setResourceCaption(ConstantDictionary.getDataValue(resource.getResourceName(), "Resource"));
+            });
+        }
+    }
+
     /**
      * Role create request.
      */
@@ -403,7 +426,8 @@ public class PermissionControlController extends BaseController {
 
         long total = result.getTotal();
         List<SysRole> data = result.getDataList();
-
+        setDictionary(requestBody.getLocale()); //set dictionary data
+        updateRoleList(data);
         // Set filter.
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
@@ -457,6 +481,7 @@ public class PermissionControlController extends BaseController {
             }
         }
         List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList());
+
         setDictionary(requestBody.getLocale()); //set dictionary data
         RoleExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -464,6 +489,7 @@ public class PermissionControlController extends BaseController {
         } else {
             RoleExcelView.setCurrentLocale(Locale.ENGLISH);
         }
+        updateRoleList(exportList);
         InputStream inputStream = RoleExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -515,6 +541,7 @@ public class PermissionControlController extends BaseController {
         } else {
             RoleWordView.setCurrentLocale(Locale.ENGLISH);
         }
+        updateRoleList(exportList);
         InputStream inputStream = RoleWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -569,6 +596,7 @@ public class PermissionControlController extends BaseController {
         } else {
             RolePdfView.setCurrentLocale(Locale.ENGLISH);
         }
+        updateRoleList(exportList);
         InputStream inputStream = RolePdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -1092,9 +1120,14 @@ public class PermissionControlController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/resource/get-all", method = RequestMethod.POST)
-    public Object resourceGetAll() {
+    public Object resourceGetAll(RoleGetAllRequestBody requestBody) {
 
+        setDictionary(requestBody.getLocale());
         List<SysResource> sysResourceList = permissionService.findAllResource();
+        for(int i = 0; i < sysResourceList.size(); i ++) {
+            SysResource resource = sysResourceList.get(i);
+            resource.setResourceCaption(ConstantDictionary.getDataValue(resource.getResourceName(), "Resource"));
+        }
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysResourceList));
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters();
