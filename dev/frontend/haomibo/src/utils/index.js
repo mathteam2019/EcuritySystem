@@ -155,10 +155,23 @@ export const centerTextPlugin = {
     }
   }
 };
+// export const getDirection = () => {
+//   let direction = defaultDirection;
+//   if (localStorage.getItem('direction')) {
+//     const localValue = localStorage.getItem('direction');
+//     if (localValue === 'rtl' || localValue === 'ltr') {
+//       direction = localValue
+//     }
+//   }
+//   return {
+//     direction,
+//     isRtl: direction === 'rtl'
+//   }
+// };
 export const getDirection = () => {
   let direction = defaultDirection;
-  if (localStorage.getItem('direction')) {
-    const localValue = localStorage.getItem('direction');
+  if (sessionStorage.getItem('direction')) {
+    const localValue = sessionStorage.getItem('direction');
     if (localValue === 'rtl' || localValue === 'ltr') {
       direction = localValue
     }
@@ -169,39 +182,88 @@ export const getDirection = () => {
   }
 };
 
+// export const setDirection = localValue => {
+//   let direction = 'ltr';
+//   if (localValue === 'rtl' || localValue === 'ltr') {
+//     direction = localValue
+//   }
+//   localStorage.setItem('direction', direction)
+// };
+
 export const setDirection = localValue => {
   let direction = 'ltr';
   if (localValue === 'rtl' || localValue === 'ltr') {
     direction = localValue
   }
-  localStorage.setItem('direction', direction)
+  sessionStorage.setItem('direction', direction)
 };
 
+// export const getLocale = () => {
+//   return localStorage.getItem('currentLanguage');
+// };
+// export const setLocale = localValue => {
+//
+//   localStorage.setItem('currentLanguage', localValue);
+//
+// };
+
 export const getLocale = () => {
-  return localStorage.getItem('currentLanguage');
+  return sessionStorage.getItem('currentLanguage');
 };
 export const setLocale = localValue => {
 
-  localStorage.setItem('currentLanguage', localValue);
+  sessionStorage.setItem('currentLanguage', localValue);
 
 };
 
+
+// export const saveLoginInfo = (loginInfo, account) => {
+//   localStorage.set('loginInfo', JSON.stringify(loginInfo));
+//   localStorage.set('loginAccount', account);
+// };
 
 export const saveLoginInfo = (loginInfo, account) => {
-  localStorage.setItem('loginInfo', JSON.stringify(loginInfo));
-  localStorage.setItem('loginAccount', account);
+  sessionStorage.setItem('loginInfo', JSON.stringify(loginInfo));
+  sessionStorage.setItem('loginAccount', account);
 };
 
-export const saveLanguageInfo = () => {
-  let account =  localStorage.getItem('loginAccount');
+// export const saveLanguageInfo = () => {
+//   let account =  localStorage.getItem('loginAccount');
+//
+//   let currentLanguage = localStorage.getItem('currentLanguage');
+//
+//   let data, tmp=false;
+//   if(localStorage.getItem('languageInfo')===null) {
+//     data = [];
+//   }else {
+//     data = JSON.parse(localStorage.getItem('languageInfo'));
+//   }
+//   for(let i=0; i<data.length; i++){
+//     if(data[i].account===account){
+//       data[i].currentLanguage = currentLanguage;
+//       tmp = true;
+//     }
+//   }
+//   if(tmp===false) {
+//     data.push({
+//       account: account,
+//       currentLanguage: currentLanguage
+//     });
+//   }
+//   localStorage.setItem('languageInfo', JSON.stringify(data));
+//
+// };
 
-  let currentLanguage = localStorage.getItem('currentLanguage');
+export const saveLanguageInfo = () => {
+  let account =  sessionStorage.getItem('loginAccount');
+
+  let currentLanguage = sessionStorage.getItem('currentLanguage');
 
   let data, tmp=false;
-  if(localStorage.getItem('languageInfo')===null) {
+  if(sessionStorage.getItem('languageInfo')===null) {
     data = [];
   }else {
-    data = JSON.parse(localStorage.getItem('languageInfo'));
+    data = JSON.parse(sessionStorage.getItem('languageInfo'));
   }
   for(let i=0; i<data.length; i++){
     if(data[i].account===account){
@@ -215,15 +277,28 @@ export const saveLanguageInfo = () => {
       currentLanguage: currentLanguage
     });
   }
-  localStorage.setItem('languageInfo', JSON.stringify(data));
+  sessionStorage.setItem('languageInfo', JSON.stringify(data));
 
 };
 
-export const getLanguageInfo= (account) => {
-  if(localStorage.getItem('languageInfo')===null){
+// export const getLanguageInfo= (account) => {
+//   if(localStorage.getItem('languageInfo')===null){
+//     return null;
+//   }else{
+//     let data = JSON.parse(localStorage.getItem('languageInfo'));
+//     for(let i=0; i<data.length; i++) {
+//       if (data[i].account === account)
+//         return data[i].currentLanguage;
+//     }
+//     return null;
+//   }
+//
+// };
+export const getLanguageInfo = (account) => {
+  if(sessionStorage.getItem('languageInfo')===null){
     return null;
   }else{
-    let data = JSON.parse(localStorage.getItem('languageInfo'));
+    let data = JSON.parse(sessionStorage.getItem('languageInfo'));
     for(let i=0; i<data.length; i++) {
       if (data[i].account === account)
         return data[i].currentLanguage;
@@ -232,97 +307,193 @@ export const getLanguageInfo= (account) => {
   }
 
 };
+// export const setInvalidCount = (account) => {
+//   if(localStorage.getItem(account)==null){
+//     localStorage.setItem(account, '2');
+//   }
+//   else{
+//     let countValue = localStorage.getItem(account);
+//     localStorage.removeItem(account);
+//     countValue = (parseInt(countValue) +1).toString();
+//     localStorage.setItem(account, countValue);
+//   }
+// };
 
 export const setInvalidCount = (account) => {
-  if(localStorage.getItem(account)==null){
-    localStorage.setItem(account, '2');
+  if(sessionStorage.getItem(account)==null){
+    sessionStorage.setItem(account, '2');
   }
   else{
-    let countValue = localStorage.getItem(account);
-    localStorage.removeItem(account);
+    let countValue = sessionStorage.getItem(account);
+    sessionStorage.removeItem(account);
     countValue = (parseInt(countValue) +1).toString();
-    localStorage.setItem(account, countValue);
+    sessionStorage.setItem(account, countValue);
   }
 };
 
+// export const getInvalidCount = (account) => {
+//   if(localStorage.getItem(account)==null){
+//     return "1";
+//   }
+//   else{
+//     let countValue = localStorage.getItem(account);
+//     return countValue;
+//   }
+// };
+
 export const getInvalidCount = (account) => {
-  if(localStorage.getItem(account)==null){
+  if(sessionStorage.getItem(account)==null){
     return "1";
   }
   else{
-    let countValue = localStorage.getItem(account);
+    let countValue = sessionStorage.getItem(account);
     return countValue;
   }
 };
 
+// export const removeCount = (account) =>{
+//   localStorage.removeItem(account);
+// };
 export const removeCount = (account) =>{
-  localStorage.removeItem(account);
+  sessionStorage.removeItem(account);
 };
 
+// export const savePermissionInfo = (info) => {
+//   let data = [];
+//   info.forEach(item => {
+//     if (item.resourceName != null)
+//       data.push(item.resourceName);
+//   });
+//   localStorage.setItem('permInfo', JSON.stringify(data));
+// };
 export const savePermissionInfo = (info) => {
   let data = [];
   info.forEach(item => {
     if (item.resourceName != null)
       data.push(item.resourceName);
   });
-  localStorage.setItem('permInfo', JSON.stringify(data));
+  sessionStorage.setItem('permInfo', JSON.stringify(data));
 };
 
+// export const checkPermissionItem = (item) => {
+//   let data = localStorage.getItem('permInfo');
+//   if (data === null)
+//     return true;
+//   data = JSON.parse(data);
+//   return data.indexOf(item) === -1;
+// };
 export const checkPermissionItem = (item) => {
-  let data = localStorage.getItem('permInfo');
+  let data = sessionStorage.getItem('permInfo');
   if (data === null)
     return true;
   data = JSON.parse(data);
   return data.indexOf(item) === -1;
 };
 
+// export const savePermissionInfoId = (info) => {
+//   let data = [];
+//   info.forEach(item => {
+//     if (item.resourceId != null)
+//       data.push(item.resourceId);
+//   });
+//   localStorage.setItem('permInfoId', JSON.stringify(data));
+// };
 export const savePermissionInfoId = (info) => {
   let data = [];
   info.forEach(item => {
     if (item.resourceId != null)
       data.push(item.resourceId);
   });
-  localStorage.setItem('permInfoId', JSON.stringify(data));
+  sessionStorage.setItem('permInfoId', JSON.stringify(data));
 };
 
+// export const getPermissionInfoId = () => {
+//   let data = localStorage.getItem('permInfoId');
+//   return data;
+// };
 export const getPermissionInfoId = () => {
-  let data = localStorage.getItem('permInfoId');
+  let data = sessionStorage.getItem('permInfoId');
   return data;
 };
 
+// export const checkPermissionItemById = (item) => {
+//   let data = localStorage.getItem('permInfoId');
+//   if (data === null)
+//     return true;
+//   data = JSON.parse(data);
+//   return data.indexOf(item) === -1;
+// };
 export const checkPermissionItemById = (item) => {
-  let data = localStorage.getItem('permInfoId');
+  let data = sessionStorage.getItem('permInfoId');
   if (data === null)
     return true;
   data = JSON.parse(data);
   return data.indexOf(item) === -1;
 };
 
+// export const removeLoginInfo = () => {
+//   localStorage.removeItem('loginInfo');
+//   localStorage.removeItem('permInfo'); //remove permission Info too
+//   localStorage.removeItem('permInfoId');
+//   localStorage.removeItem('loginAccount');
+//  // localStorage.removeItem('languageInfo');
+// };
 export const removeLoginInfo = () => {
-  localStorage.removeItem('loginInfo');
-  localStorage.removeItem('permInfo'); //remove permission Info too
-  localStorage.removeItem('permInfoId');
-  localStorage.removeItem('loginAccount');
- // localStorage.removeItem('languageInfo');
+  sessionStorage.removeItem('loginInfo');
+  sessionStorage.removeItem('permInfo'); //remove permission Info too
+  sessionStorage.removeItem('permInfoId');
+  sessionStorage.removeItem('loginAccount');
+  // sessionStorage.remove('languageInfo');
 };
+
+// export const saveDicDataGroupByDicId = (data) => {
+//   let dicData = data.dictionaryDataList;
+//   let deviceDicData = data.deviceDictionaryDataList;
+//   let ids = [...new Set(dicData.map(item => item.dictionaryId))];
+//   let filterData = Object.assign(...ids.map(id => ({[id]: dicData.filter(item => item.dictionaryId === id)})));
+//   localStorage.setItem('dicDataGroupByDicId', JSON.stringify(filterData));
+//   saveDeviceDicDataGroupByDicId(deviceDicData);
+// };
 
 export const saveDicDataGroupByDicId = (data) => {
   let dicData = data.dictionaryDataList;
   let deviceDicData = data.deviceDictionaryDataList;
   let ids = [...new Set(dicData.map(item => item.dictionaryId))];
   let filterData = Object.assign(...ids.map(id => ({[id]: dicData.filter(item => item.dictionaryId === id)})));
-  localStorage.setItem('dicDataGroupByDicId', JSON.stringify(filterData));
+  sessionStorage.setItem('dicDataGroupByDicId', JSON.stringify(filterData));
   saveDeviceDicDataGroupByDicId(deviceDicData);
 };
 
+// export const saveDeviceDicDataGroupByDicId = (dicData) => {
+//   let ids = [...new Set(dicData.map(item => item.dictionaryId))];
+//   let filterData = Object.assign(...ids.map(id => ({[id]: dicData.filter(item => item.dictionaryId === id)})));
+//   localStorage.setItem('deviceDicDataGroupByDicId', JSON.stringify(filterData));
+// };
 export const saveDeviceDicDataGroupByDicId = (dicData) => {
   let ids = [...new Set(dicData.map(item => item.dictionaryId))];
   let filterData = Object.assign(...ids.map(id => ({[id]: dicData.filter(item => item.dictionaryId === id)})));
-  localStorage.setItem('deviceDicDataGroupByDicId', JSON.stringify(filterData));
+  sessionStorage.setItem('deviceDicDataGroupByDicId', JSON.stringify(filterData));
 };
 
+// export const getDicDataByDicIdForOptions = (dicId) => {
+//   let data = localStorage.getItem('dicDataGroupByDicId');
+//   if (data == null)
+//     return [];
+//   data = JSON.parse(data);
+//   let options = [];
+//   if (Object.keys(data).indexOf(dicId + "") !== -1) {
+//     data[dicId].forEach(item => {
+//       options.push({
+//         value: item.dataCode, text: (item.dataValue).trim()
+//       })
+//     });
+//     return options;
+//   }
+//   return [];
+// };
+
 export const getDicDataByDicIdForOptions = (dicId) => {
-  let data = localStorage.getItem('dicDataGroupByDicId');
+  let data = sessionStorage.getItem('dicDataGroupByDicId');
   if (data == null)
     return [];
   data = JSON.parse(data);
@@ -338,8 +509,25 @@ export const getDicDataByDicIdForOptions = (dicId) => {
   return [];
 };
 
+// export const getDeviceDicDataByDicIdForOptions = (dicId) => {
+//   let data = localStorage.getItem('deviceDicDataGroupByDicId');
+//   if (data == null)
+//     return [];
+//   data = JSON.parse(data);
+//   let options = [];
+//   if (Object.keys(data).indexOf(dicId + "") !== -1) {
+//     data[dicId].forEach(item => {
+//       options.push({
+//         value: item.dataCode, text: item.dataValue
+//       })
+//     });
+//     return options;
+//   }
+//   return [];
+// };
+
 export const getDeviceDicDataByDicIdForOptions = (dicId) => {
-  let data = localStorage.getItem('deviceDicDataGroupByDicId');
+  let data = sessionStorage.getItem('deviceDicDataGroupByDicId');
   if (data == null)
     return [];
   data = JSON.parse(data);
@@ -355,8 +543,20 @@ export const getDeviceDicDataByDicIdForOptions = (dicId) => {
   return [];
 };
 
+// export const getLoginInfo = () => {
+//   let loginInfo = localStorage.getItem('loginInfo');
+//   try {
+//     loginInfo = JSON.parse(loginInfo);
+//     if (loginInfo) {
+//       return loginInfo
+//     }
+//   } catch (e) {
+//   }
+//
+//   return {};
+// };
 export const getLoginInfo = () => {
-  let loginInfo = localStorage.getItem('loginInfo');
+  let loginInfo = sessionStorage.getItem('loginInfo');
   try {
     loginInfo = JSON.parse(loginInfo);
     if (loginInfo) {
@@ -368,8 +568,24 @@ export const getLoginInfo = () => {
   return {};
 };
 
+// export const getAuthTokenInfo = () => {
+//   let loginInfo = localStorage.getItem('loginInfo');
+//   try {
+//     loginInfo = JSON.parse(loginInfo);
+//     if (loginInfo && loginInfo.token && loginInfo.token.token) {//&& loginInfo.token.expirationTimestamp
+//       return loginInfo.token;
+//     }
+//   } catch (e) {
+//   }
+//
+//   return {
+//     token: '',
+//     //expirationTimestamp: 0
+//   };
+// };
+
 export const getAuthTokenInfo = () => {
-  let loginInfo = localStorage.getItem('loginInfo');
+  let loginInfo = sessionStorage.getItem('loginInfo');
   try {
     loginInfo = JSON.parse(loginInfo);
     if (loginInfo && loginInfo.token && loginInfo.token.token) {//&& loginInfo.token.expirationTimestamp

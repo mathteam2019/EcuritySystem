@@ -599,36 +599,36 @@
                 <label
                   style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.seized-contraband')}}</label>
                 <b-row class="justify-content-start" style="margin-bottom: 2rem; margin-top: 1rem">
-                  <b-col>
-                    <div v-if="handGoodExpanded[0]" class="text-center"
-                         style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[0]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[1]" class="text-center"
-                         style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[1]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[2]" class="text-center"
-                         style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[2]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[3]" class="text-center"
-                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[3]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[4]" class="text-center"
-                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[4]].text}}</span>
-                    </div>
-                  </b-col>
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[0]" class="text-center"-->
+<!--                         style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[0]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[1]" class="text-center"-->
+<!--                         style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[1]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[2]" class="text-center"-->
+<!--                         style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[2]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[3]" class="text-center"-->
+<!--                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[3]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[4]" class="text-center"-->
+<!--                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[4]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
                 </b-row>
 
                 <div
@@ -636,18 +636,18 @@
                 <label
                   style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.obtained-evidence')}}</label>
                 <b-row class="evidence-gallery" style="margin-top: 0.5rem">
-                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
-                         @click="onThumbClick(thumbIndex)">
-                    <img draggable="false" :src="thumb.src" style="width: 60px; height: 45px;" :alt="thumb.name"/>
+<!--                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"-->
+<!--                         @click="onThumbClick(thumbIndex)">-->
+<!--                    <img draggable="false" :src="thumb.src" style="width: 60px; height: 45px;" :alt="thumb.name"/>-->
 
-                  </b-col>
-                  <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
-                         @click="onVideoClick(video)">
-                    <video style=" width: 60px; height: 50px;">
-                      <source :src="video.src" type="video/mp4">
-                    </video>
-                  </b-col>
-                  <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
+<!--                  </b-col>-->
+<!--                  <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"-->
+<!--                         @click="onVideoClick(video)">-->
+<!--                    <video style="width: 60px; height: 50px;">-->
+<!--                      <source :src="video.src" type="video/mp4">-->
+<!--                    </video>-->
+<!--                  </b-col>-->
+<!--                  <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>-->
                 </b-row>
               </b-col>
               <b-col style="max-width: 45%;">
@@ -2089,50 +2089,50 @@
 
                 loadImageCanvas(url1, url2, this.imageRectL, this.imageRectR, this.power);
 
-                let handGoodsStr = this.showPage.serCheckResult.handGoods;
-                let handAttactedStr = this.showPage.serCheckResult.handAttached;
-                if (handGoodsStr !== null) {
-                  handGood = handGoodsStr.split(",");
-                }
-
-                if (handAttactedStr !== null) {
-                  handAttached = handAttactedStr.split(",");
-                }
-                let k = 0;
-                if (handGood !== null) {
-                  for (let i = 0; i < handGood.length; i++) {
-                    for (let j = 0; j < 5; j++) {
-                      if (handGood[i] === this.handGoodDataCode[j]) {
-                        this.handGoodExpanded[k] = true;
-                        this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
-                        k++;
-                      }
-                    }
-                  }
-                }
-                //getting media data from server.
-                if (handAttached !== null) {
-                  for (let i = 0; i < handAttached.length; i++) {
-                    let iHandAttached = handAttached[i].split(".");
-                    if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {
-                      this.thumbs.push({
-                        name: iHandAttached[0],
-                        src: handAttached[i]
-                      });
-                      this.images.push(handAttached[i]);
-                      /* this.thumbs[k].name = iHandAttached[0];
-                    this.thumbs[k].src = handAttached[i];
-                    this.images[k] = handAttached[i];*/
-
-                    } else {
-                      this.videos.push({
-                        name: iHandAttached[0],
-                        src: handAttached[i],
-                        poster: '',//todo if client need to show different poster for each videos, should get its poster image from server.
-                      });
-                    }
-                  }
-                }
+                // let handGoodsStr = this.showPage.serCheckResult.handGoods;
+                // let handAttactedStr = this.showPage.serCheckResult.handAttached;
+                // if (handGoodsStr !== null) {
+                //   handGood = handGoodsStr.split(",");
+                // }
+                //
+                // if (handAttactedStr !== null) {
+                //   handAttached = handAttactedStr.split(",");
+                // }
+                // let k = 0;
+                // if (handGood !== null) {
+                //   for (let i = 0; i < handGood.length; i++) {
+                //     for (let j = 0; j < 5; j++) {
+                //       if (handGood[i] === this.handGoodDataCode[j]) {
+                //         this.handGoodExpanded[k] = true;
+                //         this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
+                //         k++;
+                //       }
+                //     }
+                //   }
+                // }
+                // //getting media data from server.
+                // if (handAttached !== null) {
+                //   for (let i = 0; i < handAttached.length; i++) {
+                //     let iHandAttached = handAttached[i].split(".");
+                //     if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {
+                //       this.thumbs.push({
+                //         name: iHandAttached[0],
+                //         src: handAttached[i]
+                //       });
+                //       this.images.push(handAttached[i]);
+                //       /* this.thumbs[k].name = iHandAttached[0];
+                //     this.thumbs[k].src = handAttached[i];
+                //     this.images[k] = handAttached[i];*/
+                //
+                //     } else {
+                //       this.videos.push({
+                //         name: iHandAttached[0],
+                //         src: handAttached[i],
+                //         poster: '',//todo if client need to show different poster for each videos, should get its poster image from server.
+                //       });
+                //     }
+                //   }
+                // }
 
                 break;// okay
 

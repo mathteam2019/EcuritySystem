@@ -9,7 +9,8 @@ export default (to, from, next) => {
 
   } else {
 
-    localStorage.removeItem('loginInfo');
+    //localStorage.removeItem('loginInfo');
+    sessionStorage.removeItem('loginInfo');
 
     next('/auth/login');
 

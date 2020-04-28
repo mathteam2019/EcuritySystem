@@ -290,7 +290,6 @@
   } from '../../utils'
   import {getApiManager} from "../../api";
   import {responseMessages} from "../../constants/response-messages";
-  //import vuecaptcha from 'vuejs-captcha';
 
 
   export default {
@@ -489,6 +488,7 @@
                   });
                   return;
                 }
+                // this.$session.start();
 
                 saveLoginInfo(data, this.account);
                 savePermissionInfo(data.permission);
