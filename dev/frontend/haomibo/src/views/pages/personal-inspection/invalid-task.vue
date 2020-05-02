@@ -106,22 +106,21 @@
                     </span>
                 </template>
                 <template slot="mode" slot-scope="props">
-                  <div v-if="props.rowData.workFlow==null"></div>
-                  <div v-else-if="props.rowData.workFlow.workMode==null"></div>
+                  <div v-if="props.rowData.modeName==null"></div>
                   <div v-else>
-                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('all')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('all')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('scan')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan+judge')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('scan+judge')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan+hand')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('scan+hand')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
@@ -1123,57 +1122,44 @@
               dataClass: 'text-center'
             },
             {
-              name: 'field',
+              name: 'fieldDesignation',
               title: this.$t('personal-inspection.on-site'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (field) => {
-                if (field == null) return '';
-                return field.fieldDesignation;
-              }
             },
             {
-              name: 'serScan',
+              name: 'scanDeviceName',
               title: this.$t('personal-inspection.security-instrument'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (serScan) => {
-                if (serScan == null) return '';
-                if (serScan.scanDevice == null) return '';
-                return serScan.scanDevice.deviceName;
-              }
+
             },
             {
-              name: 'serScan',
+              name: 'scanPointsManName',
               title: this.$t('personal-inspection.guide'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (serScan) => {
-                if (serScan == null) return '';
-                if (serScan.scanPointsman == null) return '';
-                return serScan.scanPointsman.userName;
-              }
             },
             {
-              name: 'serScan',
+              name: 'scanStartTime',
               sortField: 'scanStartTime',
               title: this.$t('personal-inspection.scan-start-time'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (serScan) => {
-                if (serScan == null) return '';
-                return getDateTimeWithFormat(serScan.scanStartTime);
+              callback: (scanStartTime) => {
+                if (scanStartTime == null) return '';
+                return getDateTimeWithFormat(scanStartTime);
               }
             },
             {
-              name: 'serScan',
+              name: 'scanEndTime',
               sortField: 'scanEndTime',
               title: this.$t('personal-inspection.scan-end-time'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (serScan) => {
-                if (serScan == null) return '';
-                return getDateTimeWithFormat(serScan.scanEndTime);
+              callback: (scanEndTime) => {
+                if (scanEndTime == null) return '';
+                return getDateTimeWithFormat(scanEndTime);
               }
             },
           ],

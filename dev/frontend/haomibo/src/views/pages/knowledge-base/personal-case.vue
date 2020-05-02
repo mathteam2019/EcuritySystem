@@ -73,7 +73,7 @@
                 <template slot="task" slot-scope="props">
                     <span class="cursor-p text-primary"
                           @click="onRowClicked(props.rowData)">
-                      {{props.rowData.task.taskNumber}}
+                      {{props.rowData.history.taskNumber}}
                     </span>
 
                 </template>
@@ -1088,14 +1088,13 @@
               }
             },
             {
-              name: 'task',
+              name: 'history',
               title: this.$t('knowledge-base.site'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (task) => {
-                if (task == null) return '';
-                if (task.field == null) return '';
-                return task.field.fieldDesignation;
+              callback: (history) => {
+                if (history == null) return '';
+                return history.fieldDesignation;
               }
             },
             {

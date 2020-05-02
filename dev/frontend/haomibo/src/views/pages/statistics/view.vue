@@ -769,22 +769,22 @@
             },
             {
               name: 'scanStatistics',
-              title: this.$t('statistics.view.invalid-scan-amount'),
+              title: this.$t('statistics.view.valid-scan-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
                 if (scanStatistics == null) return '';
-                return scanStatistics.invalidScan;
+                return scanStatistics.validScan;
               }
             },
             {
               name: 'scanStatistics',
-              title: this.$t('statistics.view.invalid-scan-rate-table'),
+              title: this.$t('statistics.view.valid-scan-rate-table'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanStatistics) => {
                 if (scanStatistics == null) return '';
-                return scanStatistics.invalidScanRate.toFixed(1);
+                return scanStatistics.validScanRate.toFixed(1);
               }
             },
             {
@@ -798,13 +798,23 @@
               }
             },
             {
-              name: 'handExaminationStatistics',
-              title: this.$t('statistics.view.hand-total'),
+              name: 'judgeStatistics',
+              title: this.$t('statistics.monitors.suspiction-judge-amount'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (handExaminationStatistics) => {
-                if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.totalHandExamination;
+              callback: (judgeStatistics) => {
+                if (judgeStatistics == null) return '';
+                return judgeStatistics.suspictionJudge;
+              }
+            },
+            {
+              name: 'judgeStatistics',
+              title: this.$t('statistics.monitors.suspiction-judge-rate'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (judgeStatistics) => {
+                if (judgeStatistics == null) return '';
+                return judgeStatistics.suspictionJudgeRate.toFixed(1);
               }
             },
             {
@@ -829,22 +839,12 @@
             },
             {
               name: 'handExaminationStatistics',
-              title: this.$t('statistics.view.no-seizure'),
+              title: this.$t('statistics.view.hand-total'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.noSeizureHandExamination;
-              }
-            },
-            {
-              name: 'handExaminationStatistics',
-              title: this.$t('statistics.view.no-seizure-rate'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (handExaminationStatistics) => {
-                if (handExaminationStatistics == null) return '';
-                return handExaminationStatistics.noSeizureHandExaminationRate.toFixed(1);
+                return handExaminationStatistics.totalHandExamination;
               }
             },
             {
@@ -865,6 +865,26 @@
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
                 return handExaminationStatistics.seizureHandExaminationRate.toFixed(1);
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: this.$t('statistics.view.no-seizure'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.noSeizureHandExamination;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: this.$t('statistics.view.no-seizure-rate'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.noSeizureHandExaminationRate.toFixed(1);
               }
             },
           ],

@@ -1237,7 +1237,7 @@
     "forbidden-warning" : "Your account may be banned",
     "forbidden" : " Lock user",
     "block" : "Your account is disabled",
-    "select-data" : "No printable data",
+    "select-data" : "Please select data",
     "select-file-type" : "Select file type",
     "inactive": "Inactive user"
   },

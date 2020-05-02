@@ -149,214 +149,476 @@
           </b-col>
         </b-row>
       </div>
-      <div v-if="pageStatus==='create'" class="form-section">
-        <b-row class="h-100">
-          <b-col cols="8">
-            <b-row>
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.device-no')}}<span class="text-danger">*</span>
-                  </template>
-                  <b-form-input v-model="mainForm.deviceSerial"
-                                :state="!$v.mainForm.deviceSerial.$dirty ? null : !$v.mainForm.deviceSerial.$invalid"/>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted && !$v.mainForm.deviceSerial.required) ?
-                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+      <div v-if="pageStatus==='create'" class="h-100 d-flex flex-grow-1 flex-column pb-3" style="height: 100% !important;">
+        <b-tabs nav-class="ml-2" :no-fade="true" style="height: 100% !important;">
+          <!--          <b-tabs class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"-->
+          <!--                  :no-fade="true">-->
+          <b-tab :title="$t('device-management.device-table.device-info')" style="height: 100% !important;">
+            <b-row class="h-100 form-section">
+              <b-col cols="8">
+                <b-row>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-no')}}<span class="text-danger">*</span>
+                      </template>
+                      <b-form-input v-model="mainForm.deviceSerial"
+                                    :state="!$v.mainForm.deviceSerial.$dirty ? null : !$v.mainForm.deviceSerial.$invalid"/>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted && !$v.mainForm.deviceSerial.required) ?
+                        $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                      </div>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device')}}<span class="text-danger">*</span>
+                      </template>
+                      <b-form-input v-model="mainForm.deviceName"
+                                    :state="!$v.mainForm.deviceName.$dirty ? null : !$v.mainForm.deviceName.$invalid"/>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted && !$v.mainForm.deviceName.required) ?
+                        $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                      </div>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-list.archive')}}<span
+                        class="text-danger">*</span>
+                      </template>
+                      <b-form-select v-model="mainForm.archiveId"
+                                     :state="!$v.mainForm.archiveId.$dirty ? null : !$v.mainForm.archiveId.$invalid"
+                                     :options="archivesSelectOptions" plain/>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted && !$v.mainForm.archiveId.required) ?
+                        $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                      </div>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" v-if="mainForm.archiveId>0">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">{{archiveForm.category}}</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" v-if="mainForm.archiveId>0">
+                    <b-form-group :label="$t('device-management.manufacture')">
+                      <label class="input-label">{{archiveForm.manufacturer}}</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" v-if="mainForm.archiveId>0">
+                    <b-form-group :label="$t('device-management.origin-model')">
+                      <label class="input-label">{{archiveForm.originalModel}}</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-5" v-if="mainForm.archiveId>0">
+                  <b-col cols="12" class="d-flex align-items-center">
+                    <label class="pr-2 m-0 "
+                           style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>
+                    <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+                  </b-col>
+                </b-row>
+                <b-row v-show="mainForm.archiveId>0">
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-table.guid')}}<span
+                        class="text-danger">*</span>
+                      </template>
+                      <b-form-input v-model="mainForm.guid" :disabled="true"
+                                    :state="(!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid) && invalidGuid"/>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted && !$v.mainForm.guid.required) ?
+                        $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                      </div>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.original-number')">
+                      <b-form-input v-model="mainForm.originalFactoryNumber"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.production-date')">
+                      <b-form-input type="date" v-model="mainForm.manufacturerDate"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.purchase-date')">
+                      <b-form-input type="date" v-model="mainForm.purchaseDate"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.supplier')">
+                      <b-form-select v-model="mainForm.supplier" :options="manufacturerOptions" plain/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.supplier-contact')">
+                      <b-form-input v-model="mainForm.contacts"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
+                      <b-form-input v-model="mainForm.mobile" :placeholder="'000-0000-0000'"
+                                    :state="!$v.mainForm.mobile.$dirty ? null : !$v.mainForm.mobile.$invalid"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.ip')">
+                      <b-form-input v-model="mainForm.deviceIp"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.software-version')">
+                      <b-form-input v-model="mainForm.softwareVersion"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.algorithm-version')">
+                      <b-form-input v-model="mainForm.algorithmVersion"/>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+
+              <b-col cols="4" class="d-flex flex-column align-items-center">
+                <div class="img-wrapper">
+                  <img draggable="false" v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
+                  <img draggable="false" v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
+                       src="../../../assets/img/device.png">
+                  <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img draggable="false" v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                    <img draggable="false" v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
                   </div>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.device')}}<span class="text-danger">*</span>
-                  </template>
-                  <b-form-input v-model="mainForm.deviceName"
-                                :state="!$v.mainForm.deviceName.$dirty ? null : !$v.mainForm.deviceName.$invalid"/>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted && !$v.mainForm.deviceName.required) ?
-                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                  <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img draggable="false" v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                    <img draggable="false" v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
                   </div>
-                </b-form-group>
+                </div>
+                <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
+                <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{
+                  $t('permission-management.upload-image')}}
+                </b-button>
               </b-col>
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.device-list.archive')}}<span
-                    class="text-danger">*</span>
-                  </template>
-                  <b-form-select v-model="mainForm.archiveId"
-                                 :state="!$v.mainForm.archiveId.$dirty ? null : !$v.mainForm.archiveId.$invalid"
-                                 :options="archivesSelectOptions" plain/>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted && !$v.mainForm.archiveId.required) ?
-                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+              <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
+                <div>
+                  <b-button size="sm" @click="saveDeviceItem()" variant="info default"><i class="icofont-save"></i>
+                    {{$t('device-management.save')}}
+                  </b-button>
+
+                  <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+                    class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
+                  </b-button>
+                </div>
+              </b-col>
+
+            </b-row>
+          </b-tab>
+          <b-tab :title="$t('device-management.device-table.archive-info')" style="height: 100% !important;">
+            <b-row class="h-100 form-section">
+              <b-col cols="8">
+                <b-row>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.file-no')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">{{archiveForm.number}}</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.filename')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">{{archiveForm.name}}</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.template-name')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">{{archiveForm.templateName}}</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-classify')}}<span
+                        class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">{{archiveForm.category}}</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.manufacture')">
+                      <label class="input-label">{{archiveForm.manufacturer}}</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.origin-model')">
+                      <label class="input-label">{{archiveForm.originalModel}}</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-5">
+                  <b-col cols="12" class="d-flex align-items-center">
+                    <label class="pr-2 m-0 "
+                           style="color: #bdbaba">{{$t('device-management.archive.technical-indicator')}}</label>
+                    <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="4" v-for="item in archiveDetailData">
+                    <b-form-group :label="item.indicatorsUnit? item.indicatorsName + '(' + item.indicatorsUnit + ')': item.indicatorsName">
+                      <label class="input-label">{{item.value?item.value:''}}</label>
+                    </b-form-group>
+                  </b-col>
+
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex flex-column align-items-center">
+                <div class="img-wrapper">
+                  <img draggable="false" v-if="archiveForm.image!=null&&archiveForm.image!==''" :src="archiveForm.image"/>
+                  <img draggable="false" v-else-if="!(archiveForm.image!=null&&archiveForm.image!=='')"
+                       src="../../../assets/img/device.png">
+                  <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img draggable="false" v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                    <img draggable="false" v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
                   </div>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4" v-if="mainForm.archiveId>0">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
-                  </template>
-                  <label class="input-label">{{archiveForm.category}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4" v-if="mainForm.archiveId>0">
-                <b-form-group :label="$t('device-management.manufacture')">
-                  <label class="input-label">{{archiveForm.manufacturer}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4" v-if="mainForm.archiveId>0">
-                <b-form-group :label="$t('device-management.origin-model')">
-                  <label class="input-label">{{archiveForm.originalModel}}</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mb-5" v-if="mainForm.archiveId>0">
-              <b-col cols="12" class="d-flex align-items-center">
-                <label class="pr-2 m-0 "
-                       style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>
-                <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
-              </b-col>
-            </b-row>
-            <b-row v-show="mainForm.archiveId>0">
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.device-table.guid')}}<span
-                    class="text-danger">*</span>
-                  </template>
-                  <b-form-input v-model="mainForm.guid" :disabled="true"
-                                :state="(!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid) && invalidGuid"/>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted && !$v.mainForm.guid.required) ?
-                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                  <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img draggable="false" v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                    <img draggable="false" v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
                   </div>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.device-list.original-number')">
-                  <b-form-input v-model="mainForm.originalFactoryNumber"/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.device-list.production-date')">
-                  <b-form-input type="date" v-model="mainForm.manufacturerDate"/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.device-list.purchase-date')">
-                  <b-form-input type="date" v-model="mainForm.purchaseDate"/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.device-list.supplier')">
-                  <b-form-select v-model="mainForm.supplier" :options="manufacturerOptions" plain/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.device-list.supplier-contact')">
-                  <b-form-input v-model="mainForm.contacts"/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
-                  <b-form-input v-model="mainForm.mobile" :placeholder="'000-0000-0000'"
-                                :state="!$v.mainForm.mobile.$dirty ? null : !$v.mainForm.mobile.$invalid"/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.device-list.ip')">
-                  <b-form-input v-model="mainForm.deviceIp"/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.device-list.software-version')">
-                  <b-form-input v-model="mainForm.softwareVersion"/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-              <b-form-group :label="$t('device-management.device-list.algorithm-version')">
-                <b-form-input v-model="mainForm.algorithmVersion"/>
-              </b-form-group>
+                </div>
+                <!--                <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>-->
+                <!--                <b-button class="mt-3" variant="info skyblue default" size="sm">{{-->
+                <!--                  $t('permission-management.upload-image')}}-->
+                <!--                </b-button>-->
+
+                <div class="d-flex flex-column align-items-center" style="margin-top: 50px;">
+                  <div>
+                    <b-button size="sm" @click="saveDeviceItem()" variant="info default"><i class="icofont-save"></i>
+                      {{$t('device-management.save')}}
+                    </b-button>
+
+                    <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+                      class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
+                    </b-button>
+                  </div>
+                </div>
+
               </b-col>
 
             </b-row>
+          </b-tab>
+        </b-tabs>
+<!--        <b-row class="h-100">-->
+<!--          <b-col cols="8">-->
+<!--            <b-row>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group>-->
+<!--                  <template slot="label">{{$t('device-management.device-no')}}<span class="text-danger">*</span>-->
+<!--                  </template>-->
+<!--                  <b-form-input v-model="mainForm.deviceSerial"-->
+<!--                                :state="!$v.mainForm.deviceSerial.$dirty ? null : !$v.mainForm.deviceSerial.$invalid"/>-->
+<!--                  <div class="invalid-feedback d-block">-->
+<!--                    {{ (submitted && !$v.mainForm.deviceSerial.required) ?-->
+<!--                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}-->
+<!--                  </div>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group>-->
+<!--                  <template slot="label">{{$t('device-management.device')}}<span class="text-danger">*</span>-->
+<!--                  </template>-->
+<!--                  <b-form-input v-model="mainForm.deviceName"-->
+<!--                                :state="!$v.mainForm.deviceName.$dirty ? null : !$v.mainForm.deviceName.$invalid"/>-->
+<!--                  <div class="invalid-feedback d-block">-->
+<!--                    {{ (submitted && !$v.mainForm.deviceName.required) ?-->
+<!--                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}-->
+<!--                  </div>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group>-->
+<!--                  <template slot="label">{{$t('device-management.device-list.archive')}}<span-->
+<!--                    class="text-danger">*</span>-->
+<!--                  </template>-->
+<!--                  <b-form-select v-model="mainForm.archiveId"-->
+<!--                                 :state="!$v.mainForm.archiveId.$dirty ? null : !$v.mainForm.archiveId.$invalid"-->
+<!--                                 :options="archivesSelectOptions" plain/>-->
+<!--                  <div class="invalid-feedback d-block">-->
+<!--                    {{ (submitted && !$v.mainForm.archiveId.required) ?-->
+<!--                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}-->
+<!--                  </div>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4" v-if="mainForm.archiveId>0">-->
+<!--                <b-form-group>-->
+<!--                  <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>-->
+<!--                  </template>-->
+<!--                  <label class="input-label">{{archiveForm.category}}</label>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4" v-if="mainForm.archiveId>0">-->
+<!--                <b-form-group :label="$t('device-management.manufacture')">-->
+<!--                  <label class="input-label">{{archiveForm.manufacturer}}</label>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4" v-if="mainForm.archiveId>0">-->
+<!--                <b-form-group :label="$t('device-management.origin-model')">-->
+<!--                  <label class="input-label">{{archiveForm.originalModel}}</label>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--            </b-row>-->
+<!--            <b-row class="mb-5" v-if="mainForm.archiveId>0">-->
+<!--              <b-col cols="12" class="d-flex align-items-center">-->
+<!--                <label class="pr-2 m-0 "-->
+<!--                       style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>-->
+<!--                <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>-->
+<!--              </b-col>-->
+<!--            </b-row>-->
+<!--            <b-row v-show="mainForm.archiveId>0">-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group>-->
+<!--                  <template slot="label">{{$t('device-management.device-table.guid')}}<span-->
+<!--                    class="text-danger">*</span>-->
+<!--                  </template>-->
+<!--                  <b-form-input v-model="mainForm.guid" :disabled="true"-->
+<!--                                :state="(!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid) && invalidGuid"/>-->
+<!--                  <div class="invalid-feedback d-block">-->
+<!--                    {{ (submitted && !$v.mainForm.guid.required) ?-->
+<!--                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}-->
+<!--                  </div>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group :label="$t('device-management.device-list.original-number')">-->
+<!--                  <b-form-input v-model="mainForm.originalFactoryNumber"/>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group :label="$t('device-management.device-list.production-date')">-->
+<!--                  <b-form-input type="date" v-model="mainForm.manufacturerDate"/>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group :label="$t('device-management.device-list.purchase-date')">-->
+<!--                  <b-form-input type="date" v-model="mainForm.purchaseDate"/>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group :label="$t('device-management.device-list.supplier')">-->
+<!--                  <b-form-select v-model="mainForm.supplier" :options="manufacturerOptions" plain/>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group :label="$t('device-management.device-list.supplier-contact')">-->
+<!--                  <b-form-input v-model="mainForm.contacts"/>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">-->
+<!--                  <b-form-input v-model="mainForm.mobile" :placeholder="'000-0000-0000'"-->
+<!--                                :state="!$v.mainForm.mobile.$dirty ? null : !$v.mainForm.mobile.$invalid"/>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group :label="$t('device-management.device-list.ip')">-->
+<!--                  <b-form-input v-model="mainForm.deviceIp"/>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group :label="$t('device-management.device-list.software-version')">-->
+<!--                  <b-form-input v-model="mainForm.softwareVersion"/>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--              <b-form-group :label="$t('device-management.device-list.algorithm-version')">-->
+<!--                <b-form-input v-model="mainForm.algorithmVersion"/>-->
+<!--              </b-form-group>-->
+<!--              </b-col>-->
 
-            <b-row class="mb-5" v-if="mainForm.archiveId>0">
-              <b-col cols="12" class="d-flex align-items-center">
-                <label class="pr-2 m-0 "
-                       style="color: #bdbaba">{{$t('device-management.device-table.archive-info')}}</label>
-                <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
-              </b-col>
-            </b-row>
-            <b-row v-if="mainForm.archiveId>0">
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.file-no')}}<span class="text-danger">*</span>
-                  </template>
-                  <label class="input-label">{{archiveForm.number}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.filename')}}<span class="text-danger">*</span>
-                  </template>
-                  <label class="input-label">{{archiveForm.name}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.template-name')}}<span class="text-danger">*</span>
-                  </template>
-                  <label class="input-label">{{archiveForm.templateName}}</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mb-5" v-if="mainForm.archiveId>0">
-              <b-col cols="12" class="d-flex align-items-center">
-                <label class="pr-2 m-0 "
-                       style="color: #bdbaba">{{$t('device-management.archive.technical-indicator')}}</label>
-                <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
-              </b-col>
-            </b-row>
-            <b-row v-if="mainForm.archiveId>0">
-              <b-col cols="4" v-for="item in archiveDetailData">
-                <b-form-group :label="item.indicatorsUnit? item.indicatorsName + '(' + item.indicatorsUnit + ')': item.indicatorsName">
-                  <label class="input-label">{{item.value?item.value:''}}</label>
-                </b-form-group>
-              </b-col>
+<!--            </b-row>-->
 
-            </b-row>
+<!--            <b-row class="mb-5" v-if="mainForm.archiveId>0">-->
+<!--              <b-col cols="12" class="d-flex align-items-center">-->
+<!--                <label class="pr-2 m-0 "-->
+<!--                       style="color: #bdbaba">{{$t('device-management.device-table.archive-info')}}</label>-->
+<!--                <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>-->
+<!--              </b-col>-->
+<!--            </b-row>-->
+<!--            <b-row v-if="mainForm.archiveId>0">-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group>-->
+<!--                  <template slot="label">{{$t('device-management.file-no')}}<span class="text-danger">*</span>-->
+<!--                  </template>-->
+<!--                  <label class="input-label">{{archiveForm.number}}</label>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group>-->
+<!--                  <template slot="label">{{$t('device-management.filename')}}<span class="text-danger">*</span>-->
+<!--                  </template>-->
+<!--                  <label class="input-label">{{archiveForm.name}}</label>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--              <b-col cols="4">-->
+<!--                <b-form-group>-->
+<!--                  <template slot="label">{{$t('device-management.template-name')}}<span class="text-danger">*</span>-->
+<!--                  </template>-->
+<!--                  <label class="input-label">{{archiveForm.templateName}}</label>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
+<!--            </b-row>-->
+<!--            <b-row class="mb-5" v-if="mainForm.archiveId>0">-->
+<!--              <b-col cols="12" class="d-flex align-items-center">-->
+<!--                <label class="pr-2 m-0 "-->
+<!--                       style="color: #bdbaba">{{$t('device-management.archive.technical-indicator')}}</label>-->
+<!--                <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>-->
+<!--              </b-col>-->
+<!--            </b-row>-->
+<!--            <b-row v-if="mainForm.archiveId>0">-->
+<!--              <b-col cols="4" v-for="item in archiveDetailData">-->
+<!--                <b-form-group :label="item.indicatorsUnit? item.indicatorsName + '(' + item.indicatorsUnit + ')': item.indicatorsName">-->
+<!--                  <label class="input-label">{{item.value?item.value:''}}</label>-->
+<!--                </b-form-group>-->
+<!--              </b-col>-->
 
-          </b-col>
-          <b-col cols="4" class="d-flex flex-column align-items-center">
-            <div class="img-wrapper">
-              <img draggable="false" v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
-              <img draggable="false" v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
-                   src="../../../assets/img/device.png">
-              <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
-                <img draggable="false" v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
-                <img draggable="false" v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
-              </div>
-              <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
-                <img draggable="false" v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                <img draggable="false" v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
-              </div>
-            </div>
-            <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
-            <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{
-              $t('permission-management.upload-image')}}
-            </b-button>
-          </b-col>
-          <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
-            <div>
-              <b-button size="sm" @click="saveDeviceItem()" variant="info default"><i class="icofont-save"></i>
-                {{$t('device-management.save')}}
-              </b-button>
+<!--            </b-row>-->
 
-              <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
-                class="icofont-long-arrow-left"/> {{$t('device-management.return')}}
-              </b-button>
-            </div>
-          </b-col>
-        </b-row>
+<!--          </b-col>-->
+<!--          <b-col cols="4" class="d-flex flex-column align-items-center">-->
+<!--            <div class="img-wrapper">-->
+<!--              <img draggable="false" v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>-->
+<!--              <img draggable="false" v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"-->
+<!--                   src="../../../assets/img/device.png">-->
+<!--              <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">-->
+<!--                <img draggable="false" v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">-->
+<!--                <img draggable="false" v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">-->
+<!--              </div>-->
+<!--              <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">-->
+<!--                <img draggable="false" v-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">-->
+<!--                <img draggable="false" v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>-->
+<!--            <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{-->
+<!--              $t('permission-management.upload-image')}}-->
+<!--            </b-button>-->
+<!--          </b-col>-->
+<!--          <b-col cols="12 d-flex align-items-end justify-content-end mt-3">-->
+<!--            <div>-->
+<!--              <b-button size="sm" @click="saveDeviceItem()" variant="info default"><i class="icofont-save"></i>-->
+<!--                {{$t('device-management.save')}}-->
+<!--              </b-button>-->
+
+<!--              <b-button size="sm" variant="info default" @click="onAction('show-list')"><i-->
+<!--                class="icofont-long-arrow-left"/> {{$t('device-management.return')}}-->
+<!--              </b-button>-->
+<!--            </div>-->
+<!--          </b-col>-->
+<!--        </b-row>-->
       </div>
 
       <div v-if="pageStatus==='show' || pageStatus === 'edit'" class="h-100 d-flex flex-grow-1 flex-column pb-3" style="height: 100% !important;">

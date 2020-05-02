@@ -102,26 +102,26 @@
                 <template slot="task" slot-scope="props">
                     <span class="cursor-p text-primary"
                           @click="onRowClicked(props.rowData.historyId)">
-                      {{props.rowData.task.taskNumber}}
+                      {{props.rowData.taskNumber}}
                     </span>
                 </template>
                 <template slot="mode" slot-scope="props">
-                  <div v-if="props.rowData.workMode==null"></div>
+                  <div v-if="props.rowData.modeName==null"></div>
 
                   <div v-else>
-                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('all')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('all')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('scan')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+judge')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('scan+judge')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+hand')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('scan+hand')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
@@ -1300,10 +1300,6 @@
               title: this.$t('personal-inspection.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (historyId) => {
-                if (historyId == null) return '';
-                return historyId;
-              }
             },
             {
               name: '__slot:task',
@@ -1338,35 +1334,22 @@
               }
             },
             {
-              name: 'task',
+              name: 'fieldDesignation',
               title: this.$t('personal-inspection.on-site'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (task) => {
-                if (task == null) return '';
-                if (task.field == null) return '';
-                return task.field.fieldDesignation;
-              }
             },
             {
-              name: 'scanDevice',
+              name: 'scanDeviceName',
               title: this.$t('personal-inspection.security-instrument'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (scanDevice) => {
-                if (scanDevice == null) return '';
-                return scanDevice.deviceName;
-              }
             },
             {
-              name: 'scanPointsman',
+              name: 'scanPointsManName',
               title: this.$t('personal-inspection.guide'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (scanPointsman) => {
-                if (scanPointsman == null) return '';
-                return scanPointsman.userName;
-              }
             },
             {
               name: 'scanStartTime',

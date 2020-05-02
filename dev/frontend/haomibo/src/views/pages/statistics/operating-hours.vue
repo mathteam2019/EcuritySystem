@@ -1147,6 +1147,7 @@
           let xAxisChart = [];
           let allUserStr = "";
           if(keyData.length>(this.showLength+4)){
+            console.log(this.showLength);
             let percent = Math.round((keyData.length-this.showLength) / this.showLength * 100);
             this.chartWidth = percent + '%';
           }

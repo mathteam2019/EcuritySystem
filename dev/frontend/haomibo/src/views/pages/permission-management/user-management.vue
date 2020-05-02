@@ -1127,7 +1127,7 @@
       passwordForm: {
         password: {
           required, minLength: minLength(6), maxLength: maxLength(20),
-          isAccountValid
+          isPasswordValid
         },
         confirmPassword: {
           required, sameAs: sameAs('password'), maxLength: maxLength(20),

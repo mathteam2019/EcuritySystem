@@ -1280,24 +1280,24 @@
           // if (this.filter.statWidth === 'year') {
           //   this.bar3ChartOptions.xAxis.data = this.xHour;
           // } else {
-          this.xDay = Object.keys(this.preViewData.detailedStatistics);
-          this.lineChart1Options.xAxis.data = this.xDay;
-          this.lineChart2Options.xAxis.data = this.xDay;
-          this.lineChart3Options.xAxis.data = this.xDay;
-
-          for (let i = 0; i < this.xDay.length; i++) {
-            let key = this.xDay[i];
-
-            if (this.preViewData.detailedStatistics[i] != null) {
-              this.lineChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[key].missingReport;
-              this.lineChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[key].mistakeReport;
-              this.lineChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMissing;
-              this.lineChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMistake;
-              this.lineChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMissing;
-              this.lineChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMistake;
-
-            }
-          }
+          // this.xDay = Object.keys(this.preViewData.detailedStatistics);
+          // this.lineChart1Options.xAxis.data = this.xDay;
+          // this.lineChart2Options.xAxis.data = this.xDay;
+          // this.lineChart3Options.xAxis.data = this.xDay;
+          //
+          // for (let i = 0; i < this.xDay.length; i++) {
+          //   let key = this.xDay[i];
+          //
+          //   if (this.preViewData.detailedStatistics[i] != null) {
+          //     this.lineChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[key].missingReport;
+          //     this.lineChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[key].mistakeReport;
+          //     this.lineChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMissing;
+          //     this.lineChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMistake;
+          //     this.lineChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMissing;
+          //     this.lineChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMistake;
+          //
+          //   }
+          // }
           //}
         });
       },
