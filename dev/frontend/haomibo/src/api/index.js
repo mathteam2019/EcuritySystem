@@ -1,9 +1,10 @@
 import axios from 'axios';
-import {getAuthTokenInfo, removeLoginInfo, saveLanguageInfo} from "../utils";
+import {getAuthTokenInfo, removeLoginInfo, saveLanguageInfo, toDataUrl} from "../utils";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
 import moment from '../../node_modules/moment';
-import {apiBaseUrl} from '../constants/config';
+import {apiBaseUrl, apiImageUrl} from '../constants/config';
+import Chobi from "../data/Chobi";
 
 const getApiManager = function () {
 
@@ -283,19 +284,45 @@ const downLoadImageFromUrl = (url) => {
   let splitLength = urlSplit.length;
   let img = urlSplit[splitLength-1];
   let imgExt = img.toString().split('.');
+  img = img.replace('bcp', 'png');
   if(imgExt.length === 2) {
-    //url = apiImageUrl + url;
+    url = apiImageUrl + url;
+    toDataUrl(url, function (tourl) {
+      if (tourl != null) {
+        tourl = 'data:image/png;base64,' + tourl;
+      }
 
-    //let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-    let fileLink = document.createElement('a');
-    fileLink.href = url;
-    //fileLink.download=img;
-    fileLink.setAttribute('download', img);
-    document.body.appendChild(fileLink);
-    fileLink.click();
-    //document.body.removeChild(fileLink);
-    fileLink.parentNode.removeChild(fileLink);
+        //url = apiImageUrl + url;
+
+        //let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+        let fileLink = document.createElement('a');
+        fileLink.href = tourl;
+        //fileLink.download=img;
+        fileLink.setAttribute('download', img);
+        document.body.appendChild(fileLink);
+        fileLink.click();
+        //document.body.removeChild(fileLink);
+        fileLink.parentNode.removeChild(fileLink);
+
+    });
   }
+  // let urlSplit = url.toString().split("/");
+  // let splitLength = urlSplit.length;
+  // let img = urlSplit[splitLength-1];
+  // let imgExt = img.toString().split('.');
+  // if(imgExt.length === 2) {
+  //   //url = apiImageUrl + url;
+  //
+  //   //let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+  //   let fileLink = document.createElement('a');
+  //   fileLink.href = url;
+  //   //fileLink.download=img;
+  //   fileLink.setAttribute('download', img);
+  //   document.body.appendChild(fileLink);
+  //   fileLink.click();
+  //   //document.body.removeChild(fileLink);
+  //   fileLink.parentNode.removeChild(fileLink);
+  // }
 
   // var a = $("<a>")
   //   .attr("href", url)

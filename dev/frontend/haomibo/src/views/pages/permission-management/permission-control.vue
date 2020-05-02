@@ -646,7 +646,7 @@
 
       this.tableData = staticUserTableData;
 
-      getApiManagerError().post(`${apiBaseUrl}/permission-management/permission-control/resource/get-all`, {}).then((response) => {
+      getApiManagerError().post(`${apiBaseUrl}/permission-management/permission-control/resource/get-all`, {locale:getLocale()}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -1435,6 +1435,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.roleVuetableItems.perPage,
+          locale: getLocale(),
           sort: httpOptions.params.sort,
           filter: {
             roleName: this.roleKeyword,
@@ -1465,7 +1466,7 @@
 
           let resourceName = [];
           temp.resources.forEach(resources => {
-            resourceName.push(this.getParentResourceCaption(resources.parentResourceId) + '-' + resources.resourceCaption);
+            resourceName.push(this.getParentResourceCaption(resources.parentResourceId) ? this.getParentResourceCaption(resources.parentResourceId) + '-' + resources.resourceCaption : resources.resourceCaption);
           });
 
           let resources = resourceName.join(',');
@@ -1494,6 +1495,9 @@
       },
 
       getParentResourceCaption(parentId) {
+        // if(parentId === 0) {
+        //   return '';
+        // }
         for (let i = 0; i < this.resourceList.length; i++) {
           if (this.resourceList[i].resourceId === parentId) {
             return this.resourceList[i].resourceCaption;

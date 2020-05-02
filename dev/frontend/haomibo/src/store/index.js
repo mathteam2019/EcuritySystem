@@ -15,7 +15,8 @@ export const store = new Vuex.Store({
   mutations: {
     changeLang (state, payload) {
       app.$i18n.locale = payload
-      localStorage.setItem('currentLanguage', payload)
+      //localStorage.setItem('currentLanguage', payload)
+      sessionStorage.setItem('currentLanguage', payload)
     }
   },
   actions: {

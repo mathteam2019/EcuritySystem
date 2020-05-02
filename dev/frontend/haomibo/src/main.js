@@ -37,7 +37,9 @@ Vue.use(BootstrapVue);
 Vue.use(VueI18n);
 
 const messages = { en: en, es: es, zh: zh };
-const locale = (localStorage.getItem('currentLanguage') && localeOptions.filter(x => x.id === localStorage.getItem('currentLanguage')).length > 0) ? localStorage.getItem('currentLanguage') : defaultLocale;
+//const locale = (localStorage.getItem('currentLanguage') && localeOptions.filter(x => x.id === localStorage.getItem('currentLanguage')).length > 0) ? localStorage.getItem('currentLanguage') : defaultLocale;
+const locale = (sessionStorage.getItem('currentLanguage') && localeOptions.filter(x => x.id === sessionStorage.getItem('currentLanguage')).length > 0) ? sessionStorage.getItem('currentLanguage') : defaultLocale;
+//const locale = (sessionStorage.get('currentLanguage') && localeOptions.filter(x => x.id === sessionStorage.get('currentLanguage')).length > 0) ? sessionStorage.get('currentLanguage') : defaultLocale;
 const i18n = new VueI18n({
   locale: locale,
   fallbackLocale: 'en',

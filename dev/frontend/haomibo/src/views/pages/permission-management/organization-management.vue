@@ -554,7 +554,7 @@
                 </h3>
                 <vue2-org-tree
                   :data="treeData"
-                  :horizontal="false"
+                  :horizontal="true"
                   :collapsable="false"
                   :label-class-name="treeLabelClass"
                   :render-content="renderTreeContent"

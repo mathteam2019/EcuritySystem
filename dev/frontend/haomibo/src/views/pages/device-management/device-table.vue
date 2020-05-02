@@ -590,8 +590,8 @@
               </b-col>
               <b-col cols="4" class="d-flex flex-column align-items-center">
                 <div class="img-wrapper">
-                  <img draggable="false" v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
-                  <img draggable="false" v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
+                  <img draggable="false" v-if="archiveForm.image!=null&&archiveForm.image!==''" :src="archiveForm.image"/>
+                  <img draggable="false" v-else-if="!(archiveForm.image!=null&&archiveForm.image!=='')"
                        src="../../../assets/img/device.png">
                   <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
                     <img draggable="false" v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
@@ -602,12 +602,12 @@
                     <img draggable="false" v-else-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
                   </div>
                 </div>
-                <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
-                <b-button class="mt-3" variant="info skyblue default" size="sm">{{
-                  $t('permission-management.upload-image')}}
-                </b-button>
+<!--                <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>-->
+<!--                <b-button class="mt-3" variant="info skyblue default" size="sm">{{-->
+<!--                  $t('permission-management.upload-image')}}-->
+<!--                </b-button>-->
 
-                  <div style="margin-top: 50px; margin-left: 60px;">
+                  <div style="margin-top: 100px; margin-left: 60px;">
                     <div>
                       <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i
                         class="icofont-save"/>
@@ -971,6 +971,7 @@
           category: '',
           manufacturer: '',
           originalModel: '',
+          image:null,
           number: '',
           templateName: ''
         },
@@ -1137,17 +1138,20 @@
           category: '',
           manufacturer: '',
           originalModel: '',
+          image:null,
           number: '',
           templateName: ''
         };
         this.archiveDetailData = {};
         for (let item of this.archivesData) {
           if (item.archiveId === archiveId) {
+            console.log(item);
             this.archiveForm.name = item.archivesName;
             this.archiveForm.number = item.archivesNumber;
             this.archiveForm.templateName = item.archiveTemplate.templateName;
             this.archiveForm.category = item.archiveTemplate.deviceCategory.categoryName;
             this.archiveForm.manufacturer = getManufacturerName(this.manufacturerOptions, item.archiveTemplate.manufacturer);
+            this.archiveForm.image = item.imageUrl ? item.imageUrl : null;
             this.archiveForm.originalModel = item.archiveTemplate.originalModel;
             if (this.pageStatus === 'show' || this.pageStatus === 'edit' || this.pageStatus === 'create') {
               this.archiveDetailData = item.archiveTemplate.archiveIndicatorsList;

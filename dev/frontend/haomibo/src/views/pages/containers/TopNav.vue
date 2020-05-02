@@ -154,6 +154,7 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import Switches from 'vue-switches'
   import notifications from '../../../data/notifications'
 
@@ -327,6 +328,8 @@
 
                 removeLoginInfo();
 
+                // this.$session.destroy()
+
 
                 this.$router.push('/auth/login');
 
@@ -339,8 +342,11 @@
       },
 
       getThemeColor() {
-        return localStorage.getItem('themeColor') ?
-          localStorage.getItem('themeColor') :
+        // return localStorage.getItem('themeColor') ?
+        //   localStorage.getItem('themeColor') :
+        //   defaultColor
+        return sessionStorage.getItem('themeColor') ?
+          sessionStorage.getItem('themeColor') :
           defaultColor
       },
     },
