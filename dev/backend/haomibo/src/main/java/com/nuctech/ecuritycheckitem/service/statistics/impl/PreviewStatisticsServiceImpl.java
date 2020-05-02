@@ -339,10 +339,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         StringBuilder stringBuilder = new StringBuilder();
 
         if (fieldId != null) {
-            whereCause.add("t.SCENE = " + fieldId);
+            whereCause.add("SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("t.DEVICE_ID = " + deviceId);
+            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -355,30 +355,22 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
         }
         if (userName != null && !userName.isEmpty()) {
-            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+            whereCause.add("SCAN_POINTSMAN_NAME like '%" + userName + "%' ");
         }
         if (userCategory != null && !userCategory.isEmpty()) {
 
             //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
-        }
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("SCAN_POINTSMAN_ID in (" + idListStr + ") ");
+//        }
 
         if (userCategory != null && !userCategory.isEmpty()) {
-            whereCause.add(" u.user_id in (" + relateUserIdListStr + ") ");
+            whereCause.add(" SCAN_POINTSMAN_ID in (" + relateUserIdListStr + ") ");
         }
-
-
-        stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
-                "\t\tLEFT JOIN \n" +
-                "\t\tsys_user u\n" +
-                "\t\tON s.SCAN_POINTSMAN_ID = u.user_id ");
-
-
 
 
         if (!whereCause.isEmpty()) {
@@ -408,10 +400,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         StringBuilder stringBuilder = new StringBuilder();
 
         if (fieldId != null) {
-            whereCause.add("t.SCENE = " + fieldId);
+            whereCause.add("SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("t.DEVICE_ID = " + deviceId);
+            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -424,37 +416,26 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("JUDGE_END_TIME <= '" + strDate + "'");
         }
         if (userName != null && !userName.isEmpty()) {
-            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+            whereCause.add("JUDGE_USER_NAME like '%" + userName + "%' ");
         }
         if (userCategory != null && !userCategory.isEmpty()) {
 
             //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("j.CREATEDBY in (" + idListStr + ") ");
-        }
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("JUDGE_USER_ID in (" + idListStr + ") ");
+//        }
 
         if (userCategory != null && !userCategory.isEmpty()) {
-            whereCause.add(" u.user_id in (" + relateUserIdListStr + ") ");
+            whereCause.add(" JUDGE_USER_ID in (" + relateUserIdListStr + ") ");
         }
 
-
-
-        stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
-                "\t\tLEFT JOIN " +
-                "\t\tser_scan s\n" +
-                "\t\tON j.task_id = s.task_id " +
-                "\t\tLEFT JOIN " +
-                "\t\tsys_user u\n" +
-                "\t\tON j.JUDGE_USER_ID = u.user_id ");
-
-        whereCause.add(" s.SCAN_INVALID = 'FALSE' ");
+        whereCause.add(" SCAN_INVALID = 'FALSE' ");
+        whereCause.add(" JUDGE_ID IS NOT NULL ");
         if (!whereCause.isEmpty()) {
-
-
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
@@ -479,10 +460,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         StringBuilder stringBuilder = new StringBuilder();
 
         if (fieldId != null) {
-            whereCause.add("t.SCENE = " + fieldId);
+            whereCause.add("SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("t.DEVICE_ID = " + deviceId);
+            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -495,28 +476,25 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("HAND_END_TIME <= '" + strDate + "'");
         }
         if (userName != null && !userName.isEmpty()) {
-            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+            whereCause.add("HAND_USER_NAME like '%" + userName + "%' ");
         }
         if (userCategory != null && !userCategory.isEmpty()) {
 
             //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-        }
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("HAND_USER_ID in (" + idListStr + ") ");
+//        }
 
         if (userCategory != null && !userCategory.isEmpty()) {
-            whereCause.add(" u.user_id in (" + relateUserIdListStr + ") ");
+            whereCause.add(" HAND_USER_ID in (" + relateUserIdListStr + ") ");
         }
 
 
-        stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
-                "\t\tLEFT JOIN " +
-                "\t\tsys_user u\n" +
-                "\t\tON h.HAND_USER_ID = u.user_id ");
+        whereCause.add(" HAND_EXAMINATION_ID IS NOT NULL ");
 
         if (!whereCause.isEmpty()) {
 
@@ -568,7 +546,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:handGroupBy AS q \n" +
                 "\t\tFROM\n" +
-                "\t\t\tser_hand_examination h \n" +
+                "\t\t\thistory h \n" +
                 "\t\t) AS t00 \n" +
                 "\t) AS t0 ";
     }
@@ -594,13 +572,13 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( SCAN_ID ) AS totalScan,\n" +
-                "\t\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS validScan,\n" +
-                "\t\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalidScan,\n" +
-                "\t\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' AND SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScan,\n" +
-                "\t\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' AND SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScan,\n" +
+                "\t\tsum( IF ( SCAN_INVALID = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS validScan,\n" +
+                "\t\tsum( IF ( SCAN_INVALID = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalidScan,\n" +
+                "\t\tsum( IF ( SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' AND SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScan,\n" +
+                "\t\tsum( IF ( SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' AND SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScan,\n" +
                 "\t\t:scanGroupBy AS q1 \n" +
                 "\tFROM\n" +
-                "\t\tser_scan s \n" +
+                "\t\thistory  \n" +
                 "\t:whereScan\t" +
                 "\tGROUP BY\n" +
                 "\t\tq1 \n" +
@@ -621,7 +599,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
                 "\t\t:judgeGroupBy AS q2 \n" +
                 "\tFROM\n" +
-                "\t\tser_judge_graph j \n" +
+                "\t\thistory  \n" +
                 "\t:whereJudge\t" +
                 "\tGROUP BY\n" +
                 "\t\tq2 \n" +
@@ -642,7 +620,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.FALSE + "', 1, 0 ) ) AS noSeizureHand,\n" +
                 "\t\t:handGroupBy AS q3 \n" +
                 "\tFROM\n" +
-                "\t\tser_hand_examination h \n" +
+                "\t\thistory  \n" +
                 "\t:whereHand\t" +
                 "\tGROUP BY\n" +
                 "\t\tq3 \n" +

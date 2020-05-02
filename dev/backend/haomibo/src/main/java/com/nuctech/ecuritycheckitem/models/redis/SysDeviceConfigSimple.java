@@ -38,6 +38,10 @@ public class SysDeviceConfigSimple extends BaseEntity implements Serializable {
     private SysWorkModeSimple sysWorkMode;
 
     @ManyToOne
+    @JoinColumn(name = "FIELD_ID")
+    private SysFieldSimple sysField;
+
+    @ManyToOne
     @JoinColumn(name = "DEVICE_ID")
     private SysDeviceRedis sysDevice;
 

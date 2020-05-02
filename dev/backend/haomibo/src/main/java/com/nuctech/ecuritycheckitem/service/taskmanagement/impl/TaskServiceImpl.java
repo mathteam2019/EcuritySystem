@@ -123,7 +123,11 @@ public class TaskServiceImpl implements TaskService {
         QSerTaskSimplifiedForProcessTableManagement builder = QSerTaskSimplifiedForProcessTableManagement.serTaskSimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.scanInvalid.eq(SerScan.Invalid.FALSE));
-        predicate.and(builder.taskStatus.ne(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ALL));
+        predicate.and((builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ASSIGN))
+                .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.SECURITY))
+                .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.JUDGE))
+                .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.HAND))
+        );
         //predicate.and(builder.serCheckResult.checkResultId.isNull());
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);

@@ -129,7 +129,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         }
 
         //.... Get Detailed Statistics ....
-        queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
+        queryBuilder.append(" GROUP BY  " + groupBy + "(HAND_START_TIME)");
         List<HandExaminationResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, true);
         response.setDetailedStatistics(detailedStatistics);
         return response;
@@ -161,7 +161,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
      * @return
      */
     private HandExaminationResponseModel getTotalStatistics(String query) {
-        query = query.replace("(h.HAND_START_TIME)", "( '0000:01:01' )");
+        query = query.replace("(HAND_START_TIME)", "( '0000:01:01' )");
         HandExaminationResponseModel record = new HandExaminationResponseModel();
         Query jpaQueryTotal = entityManager.createNativeQuery(query);
 
@@ -246,36 +246,11 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
     private String getMainSelectQuery() {
         return
                 "\tcount( HAND_EXAMINATION_ID ) AS total,\n" +
-                "\tsum( IF ( h.HAND_RESULT = '" + SerHandExamination.Result.TRUE + "' , 1, 0 ) ) AS seizure,\n" +
-                "\tsum( IF ( h.HAND_RESULT = '" + SerHandExamination.Result.FALSE + "' , 1, 0 ) ) AS noSeizure,\n" +
-                "\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "', 1, 0)) as totalJudge,\n" +
-                "\tsum( IF ( c.HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0 ) ) AS missingReport,\n" +
-                "\tsum( IF ( c.HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0 ) ) AS falseReport,\n" +
-                "\t\n" +
-                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT), 1, 0)) as artificialJudge,\n" +
-                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT) and c.HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as artificialJudgeMissing,\n" +
-                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT) and c.HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as artificialJudgeMistake,\n" +
-                "\t\n" +
-                "\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' " +
-                "and (wm.MODE_NAME = '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
-                "OR wm.MODE_NAME = '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "')" +
-                " and a.ASSIGN_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID = " + Constants.DEFAULT_SYSTEM_USER + " and j.JUDGE_TIMEOUT = '" + SerJudgeGraph.JudgeTimeout.TRUE + "', 1, 0)) as intelligenceJudge,\n" +
-                "\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' " +
-                " and (wm.MODE_NAME = '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
-                " OR wm.MODE_NAME = '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "') " +
-                " and a.ASSIGN_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID =  " + Constants.DEFAULT_SYSTEM_USER + " and j.JUDGE_TIMEOUT = '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
-                " and c.HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as intelligenceJudgeMissing,\n" +
-                "\tsum( IF ( s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' " +
-                " and (wm.MODE_NAME = '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
-                " OR wm.MODE_NAME = '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "') " +
-                " and a.ASSIGN_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID = " + Constants.DEFAULT_SYSTEM_USER + " and j.JUDGE_TIMEOUT = '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
-                " and c.HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as intelligenceJudgeMistake,\n" +
-                "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +
-                "\tMIN( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS minDuration,\n" +
-                "\tAVG( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS avgDuration \n";
+                "\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.TRUE + "' , 1, 0 ) ) AS seizure,\n" +
+                "\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.FALSE + "' , 1, 0 ) ) AS noSeizure,\n" +
+                "\tMAX( TIMESTAMPDIFF( SECOND, HAND_START_TIME, HAND_END_TIME ) ) AS maxDuration,\n" +
+                "\tMIN( TIMESTAMPDIFF( SECOND, HAND_START_TIME, HAND_END_TIME ) ) AS minDuration,\n" +
+                "\tAVG( TIMESTAMPDIFF( SECOND, HAND_START_TIME, HAND_END_TIME ) ) AS avgDuration \n";
     }
 
     /**
@@ -287,7 +262,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         return "SELECT\n" +
                 "\n" +
                 groupBy +
-                "\t (h.HAND_START_TIME) as time,\n" +
+                "\t (HAND_START_TIME) as time,\n" +
                 getMainSelectQuery();
     }
 
@@ -298,7 +273,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
      */
     private String getDetailSelectQuery(String statWidth) {
         String groupBy = Utils.getGroupByTime(statWidth);
-        String handGroupBy = groupBy.replace("groupby", "h.HAND_START_TIME");
+        String handGroupBy = groupBy.replace("groupby", "HAND_START_TIME");
         return "SELECT " +
                 handGroupBy + " as time, " +
                 getMainSelectQuery();
@@ -312,7 +287,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
      */
     private String getCountSelectQuery(String statWidth) {
         String groupBy = Utils.getGroupByTime(statWidth);
-        String handGroupBy = groupBy.replace("groupby", "h.HAND_START_TIME");
+        String handGroupBy = groupBy.replace("groupby", "HAND_START_TIME");
         return "SELECT " +
                 handGroupBy + " as time ";
 
@@ -323,15 +298,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
      * @return
      */
     private String getJoinQuery() {
-        return "\tser_hand_examination h\n" +
-                "\tLEFT join sys_user u on h.HAND_USER_ID = u.USER_ID\n" +
-                "\tINNER JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
-                "\tLEFT JOIN ser_check_result c ON t.TASK_ID = c.task_id\n" +
-                "\tLEFT join ser_judge_graph j on t.TASK_ID = j.TASK_ID\n" +
-                "\tLEFT join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
-                "\tLEFT join ( SELECT task_id, assign_id, ASSIGN_TIMEOUT FROM ser_assign WHERE ASSIGN_HAND_DEVICE_ID IS NOT NULL ) a on t.task_id = a.task_id\n" +
-                "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n" +
-                "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n";
+        return "\thistory h\n";
     }
 
     /**
@@ -349,34 +316,35 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         List<String> whereCause = new ArrayList<>();
 
         if (fieldId != null) {
-            whereCause.add("t.SCENE = " + fieldId);
+            whereCause.add("SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("t.DEVICE_ID = " + deviceId);
+            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (userName != null && !userName.isEmpty()) {
-            whereCause.add("u.USER_NAME like '%" + userName + "%'");
+            whereCause.add("HAND_USER_NAME like '%" + userName + "%'");
         }
         if (startTime != null) {
             Date date = startTime;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("h.HAND_START_TIME >= '" + strDate + "'");
+            whereCause.add("HAND_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             Date date = endTime;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
+            whereCause.add("HAND_END_TIME <= '" + strDate + "'");
         }
 
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-        }
-        whereCause.add("s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' ");
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+//        }
+        whereCause.add("SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' ");
+        whereCause.add("HAND_EXAMINATION_ID IS NOT NULL ");
         return whereCause;
     }
 
@@ -392,38 +360,16 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
             record.setTotal(Utils.parseLong(item[1]));
             record.setSeizure(Utils.parseLong(item[2]));
             record.setNoSeizure(Utils.parseLong(item[3]));
-            record.setTotalJudge(Utils.parseLong(item[4]));
-            record.setMissingReport(Utils.parseLong(item[5]));
-            record.setMistakeReport(Utils.parseLong(item[6]));
-            record.setArtificialJudge(Utils.parseLong(item[7]));
-            record.setArtificialJudgeMissing(Utils.parseLong(item[8]));
-            record.setArtificialJudgeMistake(Utils.parseLong(item[9]));
-            record.setIntelligenceJudge(Utils.parseLong(item[10]));
-            record.setIntelligenceJudgeMissing(Utils.parseLong(item[11]));
-            record.setIntelligenceJudgeMistake(Utils.parseLong(item[12]));
-            record.setMaxDuration(Utils.parseDouble(item[13]));
-            record.setMinDuration(Utils.parseDouble(item[14]));
-            record.setAvgDuration(Utils.parseDouble(item[15]));
-            record.setMissingReportRate(0);
-            record.setMistakeReportRate(0);
-            record.setArtificialJudgeMissingRate(0);
-            record.setArtificialJudgeMistakeRate(0);
-            record.setIntelligenceJudgeMissingRate(0);
-            record.setIntelligenceJudgeMistakeRate(0);
+            record.setMaxDuration(Utils.parseDouble(item[4]));
+            record.setMinDuration(Utils.parseDouble(item[5]));
+            record.setAvgDuration(Utils.parseDouble(item[6]));
+            record.setSeizureRate(0);
+            record.setNoSeizureRate(0);
             if (record.getTotal() > 0) {
                 record.setSeizureRate(record.getSeizure() * 100 / (double) record.getTotal());
                 record.setNoSeizureRate(record.getNoSeizure() * 100 / (double) record.getTotal());
-                record.setMissingReportRate(record.getMissingReport() * 100 / (double) record.getTotal());
-                record.setMistakeReportRate(record.getMistakeReport() * 100 / (double) record.getTotal());
             }
-            if (record.getArtificialJudge() > 0) {
-                record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() * 100 / (double) record.getArtificialJudge());
-                record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() * 100 / (double) record.getArtificialJudge());
-            }
-            if (record.getIntelligenceJudge() > 0) {
-                record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() * 100 / (double) record.getIntelligenceJudge());
-                record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() * 100 / (double) record.getIntelligenceJudge());
-            }
+
         } catch (Exception e) { }
 
         return record;

@@ -108,17 +108,17 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
         predicate.and(builder.knowledgeCase.caseStatus.eq(caseStatus));
         if (!StringUtils.isEmpty(taskNumber)) {
-            predicate.and(builder.task.taskNumber.contains(taskNumber));
+            predicate.and(builder.history.taskNumber.contains(taskNumber));
         }
         if (!StringUtils.isEmpty(modeName)) {
-            predicate.and(builder.workMode.modeName.eq(modeName));
+            predicate.and(builder.history.modeName.eq(modeName));
         }
 
         if (!StringUtils.isEmpty(taskResult)) {
-            predicate.and(builder.handTaskResult.eq(taskResult));
+            predicate.and(builder.history.handTaskResult.eq(taskResult));
         }
         if (fieldId != null) {
-            predicate.and(builder.task.field.fieldId.eq(fieldId));
+            predicate.and(builder.history.fieldId.eq(fieldId));
         }
         if (!StringUtils.isEmpty(handGoods)) {
             predicate.and(builder.handGoods.contains(handGoods));
@@ -184,6 +184,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
                                                                 Long fieldId, String handGoods, int currentPage, int perPage) {
         BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldId, handGoods);
 
+
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sortBy = "task.taskNumber";
@@ -198,6 +199,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
         long total = serKnowledgeCaseDealRepository.count(predicate);
         List<SerKnowledgeCaseDeal> data = serKnowledgeCaseDealRepository.findAll(predicate, pageRequest).getContent();
+        Date endTime = new Date();
         return new PageResult<>(total, data);
     }
 

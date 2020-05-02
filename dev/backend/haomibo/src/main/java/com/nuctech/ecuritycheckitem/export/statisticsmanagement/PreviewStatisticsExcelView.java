@@ -51,34 +51,42 @@ public class PreviewStatisticsExcelView extends BaseExcelView {
         headerCellTotalScan.setCellValue(messageSource.getMessage("TotalScan", null, currentLocale));
 
         Cell headerCellInvalidScans = header.createCell(3);
-        headerCellInvalidScans.setCellValue(messageSource.getMessage("InvalidScans", null, currentLocale));
+        headerCellInvalidScans.setCellValue(messageSource.getMessage("ValidScans", null, currentLocale));
 
         Cell headerInvalidScanRate = header.createCell(4);
-        headerInvalidScanRate.setCellValue(messageSource.getMessage("InvalidScanRate", null, currentLocale));
+        headerInvalidScanRate.setCellValue(messageSource.getMessage("ValidScanRate", null, currentLocale));
 
         Cell headerCellTotalJudge = header.createCell(5);
         headerCellTotalJudge.setCellValue(messageSource.getMessage("TotalJudge", null, currentLocale));
 
-        Cell headerCellTotalHands = header.createCell(6);
-        headerCellTotalHands.setCellValue(messageSource.getMessage("TotalHands", null, currentLocale));
+        Cell headerCellsuspicion = header.createCell(6);
+        headerCellsuspicion.setCellValue(messageSource.getMessage("Suspicion", null, currentLocale));
 
-        Cell headerCellNosuspicion = header.createCell(7);
+        Cell headerCellScansuspictionRate = header.createCell(7);
+        headerCellScansuspictionRate.setCellValue(messageSource.getMessage("SuspicionRate", null, currentLocale));
+
+        Cell headerCellNosuspicion = header.createCell(8);
         headerCellNosuspicion.setCellValue(messageSource.getMessage("Nosuspicion", null, currentLocale));
 
-        Cell headerCellScanNosuspictionRate = header.createCell(8);
+        Cell headerCellScanNosuspictionRate = header.createCell(9);
         headerCellScanNosuspictionRate.setCellValue(messageSource.getMessage("ScanNosuspictionRate", null, currentLocale));
 
-        Cell headerCellNoSeizure = header.createCell(9);
-        headerCellNoSeizure.setCellValue(messageSource.getMessage("NoSeizure", null, currentLocale));
-
-        Cell headerCellNoSeizureRate = header.createCell(10);
-        headerCellNoSeizureRate.setCellValue(messageSource.getMessage("NoSeizureRate", null, currentLocale));
+        Cell headerCellTotalHands = header.createCell(10);
+        headerCellTotalHands.setCellValue(messageSource.getMessage("TotalHands", null, currentLocale));
 
         Cell headerCellSeizure = header.createCell(11);
         headerCellSeizure.setCellValue(messageSource.getMessage("Seizure", null, currentLocale));
 
         Cell headerCellSeizureRate = header.createCell(12);
         headerCellSeizureRate.setCellValue(messageSource.getMessage("SeizureRate", null, currentLocale));
+
+        Cell headerCellNoSeizure = header.createCell(13);
+        headerCellNoSeizure.setCellValue(messageSource.getMessage("NoSeizure", null, currentLocale));
+
+        Cell headerCellNoSeizureRate = header.createCell(14);
+        headerCellNoSeizureRate.setCellValue(messageSource.getMessage("NoSeizureRate", null, currentLocale));
+
+
 
     }
 
@@ -118,16 +126,20 @@ public class PreviewStatisticsExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(index ++);
                 row.createCell(1).setCellValue(record.getTime());
                 row.createCell(2).setCellValue(record.getScanStatistics().getTotalScan());
-                row.createCell(3).setCellValue(record.getScanStatistics().getInvalidScan());
-                row.createCell(4).setCellValue(df.format(record.getScanStatistics().getInvalidScanRate()));
+                row.createCell(3).setCellValue(record.getScanStatistics().getValidScan());
+                row.createCell(4).setCellValue(df.format(record.getScanStatistics().getValidScanRate()));
                 row.createCell(5).setCellValue(record.getJudgeStatistics().getTotalJudge());
-                row.createCell(6).setCellValue(record.getHandExaminationStatistics().getTotalHandExamination());
-                row.createCell(7).setCellValue(record.getJudgeStatistics().getNoSuspictionJudge());
-                row.createCell(8).setCellValue(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                row.createCell(9).setCellValue(record.getHandExaminationStatistics().getNoSeizureHandExamination());
-                row.createCell(10).setCellValue(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                row.createCell(6).setCellValue(record.getJudgeStatistics().getSuspictionJudge());
+                row.createCell(7).setCellValue(record.getJudgeStatistics().getSuspictionJudgeRate());
+                row.createCell(8).setCellValue(record.getJudgeStatistics().getNoSuspictionJudge());
+                row.createCell(9).setCellValue(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
+                row.createCell(10).setCellValue(record.getHandExaminationStatistics().getTotalHandExamination());
                 row.createCell(11).setCellValue(record.getHandExaminationStatistics().getSeizureHandExamination());
                 row.createCell(12).setCellValue(df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
+                row.createCell(13).setCellValue(record.getHandExaminationStatistics().getNoSeizureHandExamination());
+                row.createCell(14).setCellValue(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+
+
 
 
             }

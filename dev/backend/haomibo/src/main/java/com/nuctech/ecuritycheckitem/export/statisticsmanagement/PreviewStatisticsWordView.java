@@ -70,16 +70,19 @@ public class PreviewStatisticsWordView extends BaseWordView {
         tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("StatWidth", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalScan", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("InvalidScans", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("InvalidScanRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ValidScans", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ValidScanRate", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalJudge", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalHands", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Suspicion", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("SuspicionRate", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Nosuspicion", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanNosuspictionRate", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSeizure", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSeizureRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalHands", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Seizure", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("SeizureRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSeizure", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSeizureRate", null, currentLocale));
+
         
 
     }
@@ -115,16 +118,19 @@ public class PreviewStatisticsWordView extends BaseWordView {
                 tableRow.getCell(0).setText(Long.toString(index ++));
                 tableRow.getCell(1).setText(record.getTime());
                 tableRow.getCell(2).setText(Long.toString(record.getScanStatistics().getTotalScan()));
-                tableRow.getCell(3).setText(Long.toString(record.getScanStatistics().getInvalidScan()));
-                tableRow.getCell(4).setText(df.format(record.getScanStatistics().getInvalidScanRate()));
+                tableRow.getCell(3).setText(Long.toString(record.getScanStatistics().getValidScan()));
+                tableRow.getCell(4).setText(df.format(record.getScanStatistics().getValidScanRate()));
                 tableRow.getCell(5).setText(Long.toString(record.getJudgeStatistics().getTotalJudge()));
-                tableRow.getCell(6).setText(Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
-                tableRow.getCell(7).setText(Long.toString(record.getJudgeStatistics().getNoSuspictionJudge()));
-                tableRow.getCell(8).setText(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                tableRow.getCell(9).setText(Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
-                tableRow.getCell(10).setText(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                tableRow.getCell(6).setText(Long.toString(record.getJudgeStatistics().getSuspictionJudge()));
+                tableRow.getCell(7).setText(df.format(record.getJudgeStatistics().getSuspictionJudgeRate()));
+                tableRow.getCell(8).setText(Long.toString(record.getJudgeStatistics().getNoSuspictionJudge()));
+                tableRow.getCell(9).setText(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
+                tableRow.getCell(10).setText(Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
                 tableRow.getCell(11).setText(Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
                 tableRow.getCell(12).setText(df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
+                tableRow.getCell(13).setText(Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
+                tableRow.getCell(14).setText(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+
 
 
             }

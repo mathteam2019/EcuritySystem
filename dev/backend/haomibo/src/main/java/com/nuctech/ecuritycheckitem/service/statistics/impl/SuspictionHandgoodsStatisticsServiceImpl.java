@@ -65,7 +65,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             groupBy = statWidth;
         }
         String groupByTime = Utils.getGroupByTime(groupBy);
-        String handGroupBy = groupByTime.replace("groupby", "h.HAND_START_TIME");
+        String handGroupBy = groupByTime.replace("groupby", "HAND_START_TIME");
         List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth);
         StringBuilder whereBuilder = new StringBuilder();
         if (!whereCause.isEmpty()) {
@@ -273,8 +273,6 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
     private String getJoinQuery() {
         return "FROM\n" +
                 "\thistory h \n" +
-                "left join ser_task t on h.task_id = t.task_id\n" +
-                "left join sys_user u on h.HAND_USER_ID = u.user_id\n" +
                 "\n" +
                 "\n:where\n" +
                 "\nGROUP BY time\n";
@@ -311,35 +309,35 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         List<String> whereCause = new ArrayList<String>();
 
         if (fieldId != null) {
-            whereCause.add("t.SCENE = " + fieldId);
+            whereCause.add("SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("h.HAND_DEVICE_ID = " + deviceId);
+            whereCause.add("HAND_DEVICE_ID = " + deviceId);
         }
         if (userName != null && !userName.isEmpty()) {
-            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+            whereCause.add("HAND_USER_NAME like '%" + userName + "%' ");
         }
         if (startTime != null) {
             Date date = startTime;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("h.HAND_START_TIME >= '" + strDate + "'");
+            whereCause.add("HAND_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             Date date = endTime;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("h.HAND_START_TIME <= '" + strDate + "'");
+            whereCause.add("HAND_START_TIME <= '" + strDate + "'");
         }
 
 
 
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-        }
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
+//        }
 
         return whereCause;
     }

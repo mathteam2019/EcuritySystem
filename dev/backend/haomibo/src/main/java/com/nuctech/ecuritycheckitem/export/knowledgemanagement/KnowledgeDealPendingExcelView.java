@@ -21,6 +21,7 @@ import java.util.List;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -97,21 +98,14 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
             for (SerKnowledgeCaseDeal deal : exportDealList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(String.valueOf(++ id));
-                if(deal.getTask() != null) {
-                    row.createCell(1).setCellValue(deal.getTask().getTaskNumber());
-                } else {
-                    row.createCell(1).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                }
+                row.createCell(1).setCellValue(deal.getHistory().getTaskNumber());
 
-                if(deal.getWorkMode() != null) {
-                    row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getWorkMode().getModeName()));
-                } else {
-                    row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                }
+                row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getHistory().getModeName()));
+
 
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(deal.getTask() != null && deal.getTask().getField() != null) {
-                    row.createCell(4).setCellValue(deal.getTask().getField().getFieldDesignation());
+                if(!StringUtils.isEmpty(deal.getHistory().getFieldDesignation())) {
+                    row.createCell(4).setCellValue(deal.getHistory().getFieldDesignation());
                 } else {
                     row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
@@ -122,14 +116,14 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
                     row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if(deal.getJudgeDevice() != null) {
-                    row.createCell(6).setCellValue(deal.getJudgeDevice().getDeviceName());
+                if(!StringUtils.isEmpty(deal.getHistory().getHandDeviceName())) {
+                    row.createCell(6).setCellValue(deal.getHistory().getHandDeviceName());
                 } else {
                     row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if(deal.getHandDevice() != null) {
-                    row.createCell(7).setCellValue(deal.getHandDevice().getDeviceName());
+                if(!StringUtils.isEmpty(deal.getHistory().getHandDeviceName())) {
+                    row.createCell(7).setCellValue(deal.getHistory().getHandDeviceName());
                 } else {
                     row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

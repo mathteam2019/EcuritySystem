@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimple;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SysDeviceSimple;
 import lombok.Getter;
@@ -205,24 +206,24 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     private SerKnowledgeCase knowledgeCase;
 
     @OneToOne()
-    @JoinColumn(name = "MODE", referencedColumnName = "MODE_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private SysWorkMode workMode;
+    private HistorySimplifiedForHistoryTableManagement history;
 
     @OneToOne()
     @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDeviceSimple scanDevice;
-
-    @OneToOne()
-    @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SysDeviceSimple handDevice;
-
-    @OneToOne()
-    @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SysDeviceSimple judgeDevice;
+//
+//    @OneToOne()
+//    @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SysDeviceSimple handDevice;
+//
+//    @OneToOne()
+//    @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SysDeviceSimple judgeDevice;
 
 //    @OneToOne()
 //    @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)
@@ -236,10 +237,10 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
 //    @NotFound(action = NotFoundAction.IGNORE)
 //    private SerImage scanImage;
 
-    @OneToOne()
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SerTaskSimple task;
+//    @OneToOne()
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SerTaskSimple task;
 
 
 

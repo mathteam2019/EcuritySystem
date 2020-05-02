@@ -1120,7 +1120,7 @@ public class PermissionControlController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/resource/get-all", method = RequestMethod.POST)
-    public Object resourceGetAll(RoleGetAllRequestBody requestBody) {
+    public Object resourceGetAll(@RequestBody @Valid RoleGetAllRequestBody requestBody) {
 
         setDictionary(requestBody.getLocale());
         List<SysResource> sysResourceList = permissionService.findAllResource();

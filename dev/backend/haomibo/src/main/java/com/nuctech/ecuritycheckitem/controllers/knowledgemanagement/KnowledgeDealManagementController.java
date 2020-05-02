@@ -320,6 +320,7 @@ public class KnowledgeDealManagementController extends BaseController {
     public Object knowledgeDealGetByFilterAndPage(
             @RequestBody @Valid KnowLedgeDealGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
+        Date startTime = new Date();
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -358,7 +359,6 @@ public class KnowledgeDealManagementController extends BaseController {
                 fieldId, handGoods, currentPage, perPage); //get result from database through service
         long total = result.getTotal();
         List<SerKnowledgeCaseDeal> data = result.getDataList();
-
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
@@ -374,14 +374,11 @@ public class KnowledgeDealManagementController extends BaseController {
 
         // Set filters.
         FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE, SimpleBeanPropertyFilter.filterOutAllExcept("caseStatus"))  //return all fields except caseStatus from SerKnowLedgeCase model
-                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")) //return all fields except modeName from  SysWorkMode model
-                .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl")) //return all fields except imageUrl from  SerImage model
-                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "field")) //return all fields except taskNumber from  SerTask model
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("field", "devicePassageWay", "deviceName")) //return all fields except specified fieldds from SysDevice model
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")); //return all fields except " from  SysField model
+                .getDefaultFilters();
         value.setFilters(filters);
+
+        Date endTime = new Date();
+        long idff = endTime.getTime() - startTime.getTime();
 
         return value;
     }

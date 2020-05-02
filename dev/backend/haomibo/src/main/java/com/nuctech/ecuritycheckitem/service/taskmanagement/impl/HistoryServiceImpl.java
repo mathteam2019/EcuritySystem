@@ -18,10 +18,7 @@ import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
-import com.nuctech.ecuritycheckitem.repositories.HistoryImageRepository;
-import com.nuctech.ecuritycheckitem.repositories.HistoryRepository;
-import com.nuctech.ecuritycheckitem.repositories.HistoryTableRepository;
-import com.nuctech.ecuritycheckitem.repositories.SerPlatformCheckParamRepository;
+import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -46,6 +43,12 @@ public class HistoryServiceImpl implements HistoryService {
     HistoryRepository historyRepository;
 
     @Autowired
+    HistoryTableProcessRepository historyTableProcessRepository;
+
+    @Autowired
+    HistoryTableInvalidRepository historyTableInvalidRepository;
+
+    @Autowired
     HistoryImageRepository historyImageRepository;
 
     @Autowired
@@ -56,6 +59,8 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Autowired
     SerPlatformCheckParamRepository serPlatformCheckParamRepository;
+    private QHistorySimplifiedForHistoryTableManagement builder;
+
     /**
      * Get filter condition from input parameters
      * @param taskNumber
@@ -73,18 +78,18 @@ public class HistoryServiceImpl implements HistoryService {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        if (taskNumber != null) { //if task number is input
-            predicate.and(builder.task.taskNumber.contains(taskNumber));
+        if (!StringUtils.isEmpty(taskNumber)) { //if task number is input
+            predicate.and(builder.taskNumber.contains(taskNumber));
         }
         if (modeId != null) { //if mode id is input
-            predicate.and(builder.workMode.modeId.eq(modeId));
+            predicate.and(builder.modeId.eq(modeId));
         }
 
         if (fieldId != null) { //if field id is input
-            predicate.and(builder.task.field.fieldId.eq(fieldId));
+            predicate.and(builder.fieldId.eq(fieldId));
         }
-        if (userName != null && !userName.isEmpty()) { //if username is input
-            Predicate scanUserName = builder.scanPointsman.userName.contains(userName);
+        if (!StringUtils.isEmpty(userName)) { //if username is input
+            Predicate scanUserName = builder.scanPointsManName.contains(userName);
             predicate.and(scanUserName);
         }
         if (startTime != null) { //if start time is input
@@ -94,8 +99,110 @@ public class HistoryServiceImpl implements HistoryService {
             predicate.and(builder.scanStartTime.before(endTime));
         }
 
+
+
+
+        //predicate.and(builder.serCheckResultList.isNotEmpty());
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+//        }
+        //predicate.and(builder.serCheckResult.checkResultId.isNotNull());
+        return predicate;
+    }
+
+
+
+
+    /**
+     * Get paginated and filtered records of HistorySimplifiedForHistoryTaskManagement task
+     * @param taskNumber : task number
+     * @param modeId : workmode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param currentPage : current page no
+     * @param perPage : record count per page
+     * @return
+     */
+    @Override
+    public PageResult<HistorySimplifiedForHistoryTableManagement> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
+        Date start = new Date();
+        QHistorySimplifiedForHistoryTableManagement builder = QHistorySimplifiedForHistoryTableManagement.historySimplifiedForHistoryTableManagement;
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
         predicate.and(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ALL));
         predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.FALSE));
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("taskNumber")) {
+                sortBy = "taskNumber";
+            }
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
+        }
+
+
+        long total = historyTableRepository.count(predicate); //get total count from database using repsitory
+        Date end = new Date();
+        long diff = end.getTime() - start.getTime();
+        List<HistorySimplifiedForHistoryTableManagement> data = historyTableRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
+        end = new Date();
+        long diff1 = end.getTime() - start.getTime();
+        return new PageResult<>(total, data);
+
+    }
+
+    /**
+     * Get filter condition from input parameters
+     * @param taskNumber
+     * @param modeId
+     * @param taskStatus
+     * @param fieldId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    private BooleanBuilder getPredicateProcess(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
+
+        QHistorySimplifiedForProcessTableManagement builder = QHistorySimplifiedForProcessTableManagement.historySimplifiedForProcessTableManagement;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (!StringUtils.isEmpty(taskNumber)) { //if task number is input
+            predicate.and(builder.taskNumber.contains(taskNumber));
+        }
+
+        if (!StringUtils.isEmpty(taskStatus)) { //if task number is input
+            predicate.and(builder.taskStatus.eq(taskStatus));
+        }
+        if (modeId != null) { //if mode id is input
+            predicate.and(builder.modeId.eq(modeId));
+        }
+
+        if (fieldId != null) { //if field id is input
+            predicate.and(builder.fieldId.eq(fieldId));
+        }
+        if (!StringUtils.isEmpty(userName)) { //if username is input
+            Predicate scanUserName = builder.scanPointsManName.contains(userName);
+            predicate.and(scanUserName);
+        }
+        if (startTime != null) { //if start time is input
+            predicate.and(builder.scanStartTime.after(startTime));
+        }
+        if (endTime != null) { //if end time is input
+            predicate.and(builder.scanStartTime.before(endTime));
+        }
+
+
 
 
         //predicate.and(builder.serCheckResultList.isNotEmpty());
@@ -121,15 +228,20 @@ public class HistoryServiceImpl implements HistoryService {
      * @return
      */
     @Override
-    public PageResult<HistorySimplifiedForHistoryTableManagement> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
+    public PageResult<HistorySimplifiedForProcessTableManagement> getProcessTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
         Date start = new Date();
-        QHistorySimplifiedForHistoryTaskManagement builder = QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement;
-        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
+        QHistorySimplifiedForProcessTableManagement builder = QHistorySimplifiedForProcessTableManagement.historySimplifiedForProcessTableManagement;
+        BooleanBuilder predicate = getPredicateProcess(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
+        predicate.and((builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ASSIGN))
+                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.SECURITY))
+                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.JUDGE))
+                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.HAND)));
+        predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.FALSE));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if(sortBy.equals("taskNumber")) {
-                sortBy = "task.taskNumber";
+                sortBy = "taskNumber";
             }
             if (order.equals(Constants.SortOrder.ASC)) {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
@@ -142,15 +254,112 @@ public class HistoryServiceImpl implements HistoryService {
         }
 
 
-        long total = historyTableRepository.count(predicate); //get total count from database using repsitory
+        long total = historyTableProcessRepository.count(predicate); //get total count from database using repsitory
         Date end = new Date();
         long diff = end.getTime() - start.getTime();
-        List<HistorySimplifiedForHistoryTableManagement> data = historyTableRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
+        List<HistorySimplifiedForProcessTableManagement> data = historyTableProcessRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
+        end = new Date();
+        long diff1 = end.getTime() - start.getTime();
+        return new PageResult<>(total, data);
+    }
+
+
+    /**
+     * Get filter condition from input parameters
+     * @param taskNumber
+     * @param modeId
+     * @param taskStatus
+     * @param fieldId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    private BooleanBuilder getInvalidPredicate(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
+
+        QHistorySimplifiedForInvalidTableManagement builder = QHistorySimplifiedForInvalidTableManagement.historySimplifiedForInvalidTableManagement;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (!StringUtils.isEmpty(taskNumber)) { //if task number is input
+            predicate.and(builder.taskNumber.contains(taskNumber));
+        }
+        if (modeId != null) { //if mode id is input
+            predicate.and(builder.modeId.eq(modeId));
+        }
+
+        if (fieldId != null) { //if field id is input
+            predicate.and(builder.fieldId.eq(fieldId));
+        }
+        if (!StringUtils.isEmpty(userName)) { //if username is input
+            Predicate scanUserName = builder.scanPointsManName.contains(userName);
+            predicate.and(scanUserName);
+        }
+        if (startTime != null) { //if start time is input
+            predicate.and(builder.scanStartTime.after(startTime));
+        }
+        if (endTime != null) { //if end time is input
+            predicate.and(builder.scanStartTime.before(endTime));
+        }
+
+
+
+
+        //predicate.and(builder.serCheckResultList.isNotEmpty());
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+//        }
+        //predicate.and(builder.serCheckResult.checkResultId.isNotNull());
+        return predicate;
+    }
+
+    /**
+     * Get paginated and filtered records of HistorySimplifiedForHistoryTaskManagement task
+     * @param taskNumber : task number
+     * @param modeId : workmode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param currentPage : current page no
+     * @param perPage : record count per page
+     * @return
+     */
+    @Override
+    public PageResult<HistorySimplifiedForInvalidTableManagement> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
+        Date start = new Date();
+        QHistorySimplifiedForInvalidTableManagement builder = QHistorySimplifiedForInvalidTableManagement.historySimplifiedForInvalidTableManagement;
+        BooleanBuilder predicate = getInvalidPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
+        //predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.TRUE));
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("taskNumber")) {
+                sortBy = "taskNumber";
+            }
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        } else {
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
+        }
+
+
+        long total = historyTableInvalidRepository.count(predicate); //get total count from database using repsitory
+        Date end = new Date();
+        long diff = end.getTime() - start.getTime();
+        List<HistorySimplifiedForInvalidTableManagement> data = historyTableInvalidRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
         end = new Date();
         long diff1 = end.getTime() - start.getTime();
         return new PageResult<>(total, data);
 
     }
+
+
 
     /**
      * get all filtered records of HistorySimplifiedForHistoryTaskManagement task

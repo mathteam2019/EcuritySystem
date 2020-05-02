@@ -14,8 +14,7 @@ package com.nuctech.ecuritycheckitem.models.simplifieddb;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
-import com.nuctech.ecuritycheckitem.models.db.SerTaskTag;
+import com.nuctech.ecuritycheckitem.models.db.SerAssign;
 import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -36,32 +35,19 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
 @Table(name = "history")
-public class HistorySimplifiedForHistoryTableManagement implements Serializable {
+public class HistorySimplifiedForInvalidTableManagement implements Serializable {
 
-
-    public static class TaskStatusType {
-        public static final String ALL = "1000001101";
-        public static final String ASSIGN = "1000001102";
-        public static final String JUDGE = "1000001103";
-        public static final String HAND = "1000001104";
-        public static final String SECURITY = "1000001106";
-    }
-
-    public static class InvalidType {
-        public static final String TRUE = "TRUE";
-        public static final String FALSE = "FALSE";
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HISTORY_ID", length = 20)
     private Long historyId;
 
-    @Column(name = "MODE", length = 20)
-    private Long modeId;
-
     @Column(name = "TASK_ID", length = 20)
     private Long taskId;
+
+    @Column(name = "MODE", length = 20)
+    private Long modeId;
 
     @Column(name = "SCAN_START_TIME", nullable = false)
     private Date scanStartTime;
@@ -79,20 +65,14 @@ public class HistorySimplifiedForHistoryTableManagement implements Serializable 
     @Column(name = "SCAN_INVALID", length = 10)
     private String scanInvalid;
 
-    @Column(name = "SCENE", length = 20)
-    private Long fieldId;
-
     @Column(name = "MODE_NAME", length = 50)
     private String modeName;
 
+    @Column(name = "SCENE", length = 20)
+    private Long fieldId;
+
     @Column(name = "SCAN_DEVICE_NAME", length = 50)
     private String scanDeviceName;
-
-    @Column(name = "JUDGE_DEVICE_NAME", length = 50)
-    private String judgeDeviceName;
-
-    @Column(name = "HAND_DEVICE_NAME", length = 50)
-    private String handDeviceName;
 
     @Column(name = "SCAN_POINTSMAN_NAME", length = 50)
     private String scanPointsManName;

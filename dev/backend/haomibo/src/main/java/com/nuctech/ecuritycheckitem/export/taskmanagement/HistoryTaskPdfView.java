@@ -24,6 +24,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -68,46 +69,31 @@ public class HistoryTaskPdfView extends BasePdfView {
 
                 addTableCell(table, String.valueOf(++ number));
 
-                if (task.getTask() != null) {
-                    addTableCell(table, task.getTask().getTaskNumber());
-                }
-                else {
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                }
+                addTableCell(table, task.getTaskNumber());
 
-                if (task.getWorkMode() != null) {
-                    addTableCell(table, ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));
+                if (!StringUtils.isEmpty(task.getModeName())){
+                    addTableCell(table, ConstantDictionary.getDataValue(task.getModeName()));
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
                 addTableCell(table, ConstantDictionary.getDataValue(task.getHandTaskResult()));
 
-                if (task.getTask() != null) {
-                    if (task.getTask().getField() != null) {
-                        if (task.getTask().getField().getFieldDesignation() != null) {
-                            addTableCell(table, task.getTask().getField().getFieldDesignation());
-                        } else {
-                            addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                        }
-                    } else {
-                        addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    }
-
-                }
-                else {
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                }
-
-
-                if (task.getScanDevice() != null) {
-                    addTableCell(table, task.getScanDevice().getDeviceName());
+                if (!StringUtils.isEmpty(task.getFieldDesignation())){
+                    addTableCell(table, task.getFieldDesignation());
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if (task.getScanPointsman() != null) {
-                    addTableCell(table, task.getScanPointsman().getUserName());
+
+                if (!StringUtils.isEmpty(task.getScanDeviceName())){
+                    addTableCell(table, task.getScanDeviceName());
+                } else {
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                }
+
+                if (!StringUtils.isEmpty(task.getScanPointsManName())){
+                    addTableCell(table, task.getScanPointsManName());
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }

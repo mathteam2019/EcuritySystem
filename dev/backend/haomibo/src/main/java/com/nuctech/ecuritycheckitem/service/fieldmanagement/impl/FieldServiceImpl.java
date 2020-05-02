@@ -245,11 +245,11 @@ public class FieldServiceImpl implements FieldService {
         if (isAll == false) {
             predicate.and(builder.status.eq(SysField.Status.ACTIVE));
         }
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> userIdList = categoryUser.getUserIdList();
-            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
-        }
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            List<Long> userIdList = categoryUser.getUserIdList();
+//            predicate.and(builder.createdBy.in(userIdList).or(builder.editedBy.in(userIdList)));
+//        }
 
 
         List<SysField> sysFieldList = StreamSupport

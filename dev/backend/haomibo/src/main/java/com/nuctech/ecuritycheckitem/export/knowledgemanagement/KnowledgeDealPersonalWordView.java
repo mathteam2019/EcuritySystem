@@ -17,6 +17,7 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -98,15 +99,12 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
                 XWPFTableRow tableRow = table.createRow();
 
                 tableRow.getCell(0).setText(String.valueOf(++ number));
-                if(deal.getTask() != null) {
-                    tableRow.getCell(1).setText(deal.getTask().getTaskNumber());
-                } else {
-                    tableRow.getCell(1).setText(messageSource.getMessage("None", null, currentLocale));
-                }
+                tableRow.getCell(1).setText(deal.getHistory().getTaskNumber());
+
 
                 tableRow.getCell(2).setText(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(deal.getTask() != null && deal.getTask().getField() != null) {
-                    tableRow.getCell(3).setText(deal.getTask().getField().getFieldDesignation());
+                if(!StringUtils.isEmpty(deal.getHistory().getFieldDesignation())) {
+                    tableRow.getCell(3).setText(deal.getHistory().getFieldDesignation());
                 } else {
                     tableRow.getCell(3).setText(messageSource.getMessage("None", null, currentLocale));
                 }

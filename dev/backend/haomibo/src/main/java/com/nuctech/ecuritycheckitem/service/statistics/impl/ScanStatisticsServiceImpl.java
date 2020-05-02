@@ -143,7 +143,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         }
 
         //.... Get Detailed Statistics
-        queryBuilder.append(" GROUP BY " + groupBy + "(s.SCAN_START_TIME)");
+        queryBuilder.append(" GROUP BY " + groupBy + "(SCAN_START_TIME)");
         List<ScanStatistics> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, true);
         response.setDetailedStatistics(detailedStatistics);
 
@@ -272,12 +272,12 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
     private String getSelectQuery(String groupBy) {
         return "SELECT " +
                 groupBy +
-                "\n (s.SCAN_START_TIME)," +
-                "\tcount( s.SCAN_ID ) AS total,\n" +
-                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS valid,\n" +
-                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalid,\n" +
-                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passed,\n" +
-                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarm\n";
+                "\n (SCAN_START_TIME)," +
+                "\tcount(SCAN_ID ) AS total,\n" +
+                "\tsum( IF ( scan_invalid = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS valid,\n" +
+                "\tsum( IF ( scan_invalid = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalid,\n" +
+                "\tsum( IF ( scan_invalid = '" + SerScan.Invalid.FALSE + "' AND scan_atr_result = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passed,\n" +
+                "\tsum( IF ( scan_invalid = '" + SerScan.Invalid.FALSE + "' AND scan_atr_result = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarm\n";
 
     }
 
@@ -289,14 +289,14 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
      */
     private String getDetailSelectQuery(String statWidth) {
         String groupBy = Utils.getGroupByTime(statWidth);
-        String scanGroupBy = groupBy.replace("groupby", "s.SCAN_START_TIME");
+        String scanGroupBy = groupBy.replace("groupby", "SCAN_START_TIME");
         return "SELECT " +
                 scanGroupBy + " as time " +
-                "\t, count( s.SCAN_ID ) AS total,\n" +
-                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS valid,\n" +
-                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalid,\n" +
-                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passed,\n" +
-                "\tsum( IF ( s.scan_invalid = '" + SerScan.Invalid.FALSE + "' AND s.scan_atr_result = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarm\n";
+                "\t, count( SCAN_ID ) AS total,\n" +
+                "\tsum( IF ( scan_invalid = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS valid,\n" +
+                "\tsum( IF ( scan_invalid = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalid,\n" +
+                "\tsum( IF ( scan_invalid = '" + SerScan.Invalid.FALSE + "' AND scan_atr_result = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passed,\n" +
+                "\tsum( IF ( scan_invalid = '" + SerScan.Invalid.FALSE + "' AND scan_atr_result = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarm\n";
 
     }
 
@@ -307,7 +307,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
      */
     private String getCountSelectQuery(String statWidth) {
         String groupBy = Utils.getGroupByTime(statWidth);
-        String scanGroupBy = groupBy.replace("groupby", "s.SCAN_START_TIME");
+        String scanGroupBy = groupBy.replace("groupby", "SCAN_START_TIME");
         return "SELECT " +
                 scanGroupBy + " as time ";
 
@@ -319,10 +319,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
      */
     private String getJoinQuery() {
 
-        return "\tser_scan s\n" +
-                "\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
-                "\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id\n";
-
+        return "\thistory \n";
     }
 
     /**
@@ -341,13 +338,13 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         List<String> whereCause = new ArrayList<String>();
 
         if (fieldId != null) {
-            whereCause.add("t.SCENE = " + fieldId);
+            whereCause.add("SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("s.SCAN_DEVICE_ID = " + deviceId);
+            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (userName != null && !userName.isEmpty()) {
-            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+            whereCause.add("SCAN_POINTSMAN_NAME like '%" + userName + "%' ");
         }
         if (workMode != null && !workMode.isEmpty()) {
             //whereCause.add("t.MODE_NAME like '%" + workMode + "%' ");
@@ -356,20 +353,20 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             Date date = startTime;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("s.SCAN_START_TIME >= '" + strDate + "'");
+            whereCause.add("SCAN_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             Date date = endTime;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("s.SCAN_END_TIME <= '" + strDate + "'");
+            whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
         }
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
-        }
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("s.CREATEDBY in (" + idListStr + ") ");
+//        }
         return whereCause;
     }
 

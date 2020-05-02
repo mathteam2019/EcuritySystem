@@ -169,7 +169,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         }
 
         //.... Get Detailed Statistics
-        queryBuilder.append(" GROUP BY  " + groupBy + "(g.JUDGE_START_TIME)");
+        queryBuilder.append(" GROUP BY  " + groupBy + "(JUDGE_START_TIME)");
         List<JudgeStatisticsResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, true);
         response.setDetailedStatistics(detailedStatistics);
         return response;
@@ -271,23 +271,23 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
     }
 
     private String getMainSelectQuery() {
-        return "\tsum( IF ( g.judge_user_id != " + Constants.DEFAULT_SYSTEM_USER + ", 1, 0 ) ) AS artificialJudge,\n" +
-                "\tsum( IF ( a.ASSIGN_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.TRUE + "', 1, 0 ) ) AS assignResult,\n" +
-                "\tsum( IF ( g.judge_user_id = " + Constants.DEFAULT_SYSTEM_USER + " AND a.assign_judge_device_id IS NOT NULL " + " AND g.judge_timeout = '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeout,\n" +
-                "\tsum( IF ( (a.assign_id IS NULL OR a.ASSIGN_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.FALSE + "') AND a.assign_judge_device_id IS NULL " + ", 1, 0 ) ) AS atrResult,\n" +
-                "\tsum( IF ( s.SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "' " +
-                " AND g.JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspiction,\n" +
-                "\tsum( IF ( s.SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "' " +
-                " OR g.JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspiction,\n" +
+        return "\tsum( IF (JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + ", 1, 0 ) ) AS artificialJudge,\n" +
+                "\tsum( IF ( ASSIGN_JUDGE_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.TRUE + "', 1, 0 ) ) AS assignResult,\n" +
+                "\tsum( IF ( JUDGE_USER_ID = " + Constants.DEFAULT_SYSTEM_USER + " AND ASSIGN_JUDGE_DEVICE_ID IS NOT NULL " + " AND JUDGE_TIMEOUT = '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeout,\n" +
+                "\tsum( IF ( (ASSIGN_JUDGE_ID IS NULL OR ASSIGN_JUDGE_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.FALSE + "') AND ASSIGN_JUDGE_DEVICE_ID IS NULL " + ", 1, 0 ) ) AS atrResult,\n" +
+                "\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "' " +
+                " AND JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspiction,\n" +
+                "\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "' " +
+                " OR JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspiction,\n" +
                 "\tcount( JUDGE_ID ) AS total ,\n" +
-                "\tAVG( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS avgDuration,\n" +
-                "\tMAX( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS maxDuration,\n" +
-                "\tMIN( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS minDuration,\n" +
+                "\tAVG( TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ) AS avgDuration,\n" +
+                "\tMAX( TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ) AS maxDuration,\n" +
+                "\tMIN( TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ) AS minDuration,\n" +
                 "\t\n" +
-                "\tAVG( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) \n" +
+                "\tAVG( CASE WHEN JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ELSE NULL END ) \n" +
                 "\t AS artificialAvgDuration,\n" +
-                "\tMAX( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMaxDuration,\n" +
-                "\tMIN( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n";
+                "\tMAX( CASE WHEN JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ELSE NULL END ) AS artificialMaxDuration,\n" +
+                "\tMIN( CASE WHEN JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n";
 
     }
 
@@ -336,12 +336,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
      * @return
      */
     private String getJoinQuery() {
-        return "\tser_judge_graph g\n" +
-                "\tLEFT JOIN sys_user u ON g.JUDGE_USER_ID = u.USER_ID\n" +
-                "\tINNER JOIN ser_task t ON g.TASK_ID = t.TASK_ID\n" +
-                "\tLEFT JOIN sys_workflow wf ON t.WORKFLOW_ID = wf.WORKFLOW_ID\n" +
-                "\tLEFT JOIN ser_scan s ON t.TASK_ID = s.TASK_ID\n" +
-                "\tLEFT JOIN ( SELECT task_id, assign_id, assign_judge_device_id, ASSIGN_TIMEOUT FROM ser_assign WHERE ASSIGN_HAND_DEVICE_ID IS NULL) a ON t.task_id = a.task_id \n";
+        return "\thistory h\n";
     }
 
     /**
@@ -357,35 +352,36 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
      */
     private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
         List<String> whereCause = new ArrayList<String>();
-        whereCause.add("s.SCAN_INVALID = '" + SerScan.Invalid.FALSE + "'");
+        whereCause.add("SCAN_INVALID = '" + SerScan.Invalid.FALSE + "'");
 
         if (fieldId != null) {
-            whereCause.add("t.SCENE = " + fieldId);
+            whereCause.add("SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("t.DEVICE_ID = " + deviceId);
+            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (userName != null && !userName.isEmpty()) {
-            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+            whereCause.add("JUDGE_USER_NAME like '%" + userName + "%' ");
         }
         if (startTime != null) {
             Date date = startTime;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("g.JUDGE_START_TIME >= '" + strDate + "'");
+            whereCause.add("JUDGE_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             Date date = endTime;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("g.JUDGE_END_TIME <= '" + strDate + "'");
+            whereCause.add("JUDGE_END_TIME <= '" + strDate + "'");
         }
-        CategoryUser categoryUser = authService.getDataCategoryUserList();
-        if(categoryUser.isAll() == false) {
-            List<Long> idList = categoryUser.getUserIdList();
-            String idListStr = StringUtils.join(idList, ",");
-            whereCause.add("g.CREATEDBY in (" + idListStr + ") ");
-        }
+        whereCause.add("JUDGE_ID IS NOT NULL");
+//        CategoryUser categoryUser = authService.getDataCategoryUserList();
+//        if(categoryUser.isAll() == false) {
+//            List<Long> idList = categoryUser.getUserIdList();
+//            String idListStr = StringUtils.join(idList, ",");
+//            whereCause.add("g.CREATEDBY in (" + idListStr + ") ");
+//        }
         return whereCause;
     }
 

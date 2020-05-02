@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -88,15 +89,10 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
             for (SerKnowledgeCaseDeal deal : exportDealList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(String.valueOf(++ number));
-                if(deal.getTask() != null) {
-                    row.createCell(1).setCellValue(deal.getTask().getTaskNumber());
-                } else {
-                    row.createCell(1).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                }
-
+                row.createCell(1).setCellValue(deal.getHistory().getTaskNumber());
                 row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(deal.getTask() != null && deal.getTask().getField() != null) {
-                    row.createCell(3).setCellValue(deal.getTask().getField().getFieldDesignation());
+                if(!StringUtils.isEmpty(deal.getHistory().getFieldDesignation())) {
+                    row.createCell(3).setCellValue(deal.getHistory().getFieldDesignation());
                 } else {
                     row.createCell(3).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

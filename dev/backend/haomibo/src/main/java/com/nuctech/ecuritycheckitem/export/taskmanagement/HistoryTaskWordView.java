@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -106,51 +107,31 @@ public class HistoryTaskWordView extends BaseWordView {
                 XWPFTableRow tableRow = table.createRow();
                 tableRow.getCell(0).setText(String.valueOf(++ number));
 
-                if (task.getTask() != null) {
-                    if (task.getTask().getTaskNumber() != null) {
-                        tableRow.getCell(1).setText(task.getTask().getTaskNumber());
-                    }
-                    else {
-                        tableRow.getCell(1).setText(messageSource.getMessage("None", null, currentLocale));
-                    }
-                }
-                else {
-                    tableRow.getCell(1).setText(messageSource.getMessage("None", null, currentLocale));
-                }
+                tableRow.getCell(1).setText(task.getTaskNumber());
 
-                if (task.getWorkMode() != null) {
-                    tableRow.getCell(2).setText(ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));
+                if (!StringUtils.isEmpty(task.getModeName())){
+                    tableRow.getCell(2).setText(ConstantDictionary.getDataValue(task.getModeName()));
                 } else {
                     tableRow.getCell(2).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(task.getHandTaskResult()));
 
-                if (task.getTask() != null) {
-                    if (task.getTask().getField() != null) {
-                        if (task.getTask().getField().getFieldDesignation() != null) {
-                            tableRow.getCell(4).setText(task.getTask().getField().getFieldDesignation());
-                        } else {
-                            tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
-                        }
-                    }
-                    else {
-                        tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
-                    }
-                }
-                else {
+                if (!StringUtils.isEmpty(task.getFieldDesignation())){
+                    tableRow.getCell(4).setText(task.getFieldDesignation());
+                } else {
                     tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
 
-                if (task.getScanDevice() != null) {
-                    tableRow.getCell(5).setText(task.getScanDevice().getDeviceName());
+                if (!StringUtils.isEmpty(task.getScanDeviceName())){
+                    tableRow.getCell(5).setText(task.getScanDeviceName());
                 } else {
                     tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if (task.getScanPointsman() != null) {
-                    tableRow.getCell(6).setText(task.getScanPointsman().getUserName());
+                if (!StringUtils.isEmpty(task.getScanPointsManName())){
+                    tableRow.getCell(6).setText(task.getScanPointsManName());
                 } else {
                     tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
                 }

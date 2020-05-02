@@ -17,6 +17,7 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -104,21 +105,21 @@ public class KnowledgeDealPendingWordView extends BaseWordView {
                 XWPFTableRow tableRow = table.createRow();
 
                 tableRow.getCell(0).setText(String.valueOf(++ number));
-                if(deal.getTask() != null) {
-                    tableRow.getCell(1).setText(deal.getTask().getTaskNumber());
+                if(deal.getHistory() != null) {
+                    tableRow.getCell(1).setText(deal.getHistory().getTaskNumber());
                 } else {
                     tableRow.getCell(1).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if(deal.getWorkMode() != null) {
-                    tableRow.getCell(2).setText(ConstantDictionary.getDataValue(deal.getWorkMode().getModeName()));
+                if(deal.getHistory() != null) {
+                    tableRow.getCell(2).setText(ConstantDictionary.getDataValue(deal.getHistory().getModeName()));
                 } else {
                     tableRow.getCell(2).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 tableRow.getCell(3).setText(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(deal.getTask() != null && deal.getTask().getField() != null) {
-                    tableRow.getCell(4).setText(deal.getTask().getField().getFieldDesignation());
+                if(!StringUtils.isEmpty(deal.getHistory().getFieldDesignation())){
+                    tableRow.getCell(4).setText(deal.getHistory().getFieldDesignation());
                 } else {
                     tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
@@ -129,14 +130,14 @@ public class KnowledgeDealPendingWordView extends BaseWordView {
                     tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if(deal.getJudgeDevice() != null) {
-                    tableRow.getCell(6).setText(deal.getJudgeDevice().getDeviceName());
+                if(!StringUtils.isEmpty(deal.getHistory().getHandDeviceName())) {
+                    tableRow.getCell(6).setText(deal.getHistory().getHandDeviceName());
                 } else {
                     tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if(deal.getHandDevice() != null) {
-                    tableRow.getCell(7).setText(deal.getHandDevice().getDeviceName());
+                if(!StringUtils.isEmpty(deal.getHistory().getHandDeviceName())) {
+                    tableRow.getCell(7).setText(deal.getHistory().getHandDeviceName());
                 } else {
                     tableRow.getCell(7).setText(messageSource.getMessage("None", null, currentLocale));
                 }

@@ -29,6 +29,8 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
 import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForInvalidTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
@@ -197,7 +199,7 @@ public class InvalidTaskController extends BaseController {
         currentPage --;
 
         //get result from service
-        PageResult<SerTaskSimplifiedForProcessTableManagement> result = taskService.getInvalidTaskByFilter(
+        PageResult<HistorySimplifiedForInvalidTableManagement> result = historyService.getInvalidTaskByFilter(
                 requestBody.getFilter().getTaskNumber(), //task number from request body
                 requestBody.getFilter().getMode(), //modeId from request body
                 requestBody.getFilter().getStatus(), //status from request body
@@ -211,7 +213,7 @@ public class InvalidTaskController extends BaseController {
                 perPage);
 
         long total = result.getTotal(); // get total count
-        List<SerTaskSimplifiedForProcessTableManagement> data = result.getDataList(); //get data list to return
+        List<HistorySimplifiedForInvalidTableManagement> data = result.getDataList(); //get data list to return
 
         //make response body
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(

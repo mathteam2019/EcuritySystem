@@ -13,9 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.service.taskmanagement;
 
-import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryImageManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 import java.util.Date;
@@ -37,6 +35,37 @@ public interface HistoryService {
      * @return
      */
     PageResult<HistorySimplifiedForHistoryTableManagement> getHistoryTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
+
+    /**
+     * get paginated list of history task
+     * @param taskNumber : task number
+     * @param mode : mode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime :  start time
+     * @param endTime : end time
+     * @param currentPage : currentPage No
+     * @param perPage : perPage count
+     * @return
+     */
+    PageResult<HistorySimplifiedForProcessTableManagement> getProcessTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
+
+    /**
+     * get paginated list of history task
+     * @param taskNumber : task number
+     * @param mode : mode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime :  start time
+     * @param endTime : end time
+     * @param currentPage : currentPage No
+     * @param perPage : perPage count
+     * @return
+     */
+    PageResult<HistorySimplifiedForInvalidTableManagement> getInvalidTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
+
 
     /**
      * get All history task with filter

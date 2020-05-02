@@ -321,7 +321,7 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        sysUser.setPassword(password);
+        sysUser.setPassword(requestBody.getPassword());
         String valueAfter = getJsonFromUser(sysUser);
         auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("User", null, currentLocale), "", sysUser.getUserId().toString(), null, true, valueBefore, valueAfter);

@@ -19,9 +19,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.QSysUserSimplifiedOnlyHasName;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserGroupSimple;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
 import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
@@ -82,6 +80,15 @@ public class AuthServiceImpl implements AuthService {
     SysRoleResourceRepository sysRoleResourceRepository;
 
     @Autowired
+    SysUserGroupDataRangeRepository sysUserGroupUserCategoryRepository;
+
+    @Autowired
+    SysUserGroupUserRepository sysUserGroupUserRepository;
+
+    @Autowired
+    SysUserGroupDataRangeRepository sysUserGroupDataRangeRepository;
+
+    @Autowired
     private RedisUtil redisUtil;
 
 
@@ -123,6 +130,7 @@ public class AuthServiceImpl implements AuthService {
         }
         SysUser user = optionalSysUser.get();
         user.setPassword(password);
+        user.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         sysUserRepository.save(user);
 
         return true;
@@ -280,7 +288,7 @@ public class AuthServiceImpl implements AuthService {
         SysUserSimplifiedOnlyHasName sysUserSimple = sysUserSimpleRepository.findOne(QSysUserSimplifiedOnlyHasName.sysUserSimplifiedOnlyHasName.userId.eq(userId)).get();
         Date endTime = new Date();
         long userTime = endTime.getTime() - startTime.getTime();
-        QSysUserGroupUserDetail builder = QSysUserGroupUserDetail.sysUserGroupUserDetail;
+        QSysUserGroupUser builder = QSysUserGroupUser.sysUserGroupUser;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
@@ -294,11 +302,22 @@ public class AuthServiceImpl implements AuthService {
             return categoryUser;
         }
 
-
-
-        List<SysUserGroupUserDetail> allGroupUser = StreamSupport
-                .stream(sysUserGroupUserDetailRepository.findAll(predicate).spliterator(), false)
+        List<SysUserGroupUser> sysUserGroupUserList = StreamSupport
+                .stream(sysUserGroupUserRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
+
+        List<Long> groupIdListPre = new ArrayList<>();
+        for(SysUserGroupUser sysUserGroupUser: sysUserGroupUserList) {
+            groupIdListPre.add(sysUserGroupUser.getUserGroupId());
+        }
+        predicate = new BooleanBuilder();
+        QSysUserGroupDataRange builderRange = QSysUserGroupDataRange.sysUserGroupDataRange;
+        predicate.and(builderRange.userGroupId.in(groupIdListPre));
+        List<SysUserGroupDataRange> sysUserGroupList = StreamSupport
+                .stream(sysUserGroupDataRangeRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+
         endTime = new Date();
         long userGroupTime = endTime.getTime() - startTime.getTime();
         List<Long> relateUserList = new ArrayList<>();
@@ -318,8 +337,8 @@ public class AuthServiceImpl implements AuthService {
         String levelGroup = "";
         List<Long> groupIdForDataList = new ArrayList<>();
         List<Long> groupIdList = new ArrayList<>();
-        for(int i = 0; i < allGroupUser.size(); i ++) {
-            SysUserGroupSimple userGroup = allGroupUser.get(i).getUserGroupSimple();
+        for(int i = 0; i < sysUserGroupList.size(); i ++) {
+            SysUserGroupDataRange userGroup = sysUserGroupList.get(i);
             if(userGroup != null) {
                 if(userGroup.getDataRangeCategory().equals(SysUserGroup.DataRangeCategory.SPECIFIED.getValue())) {
                     groupIdForDataList.add(userGroup.getUserGroupId());

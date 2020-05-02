@@ -53,10 +53,11 @@ public class PreviewStatisticsPdfView extends BasePdfView {
             document.add(getTitle(messageSource.getMessage("PreviewStatisticsTableTitle", null, currentLocale)));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(13);
+            PdfPTable table = new PdfPTable(15);
 
             table.setWidthPercentage(99);
-            Stream.of("ID", "StatWidth", "TotalScan", "InvalidScans", "InvalidScanRate", "TotalJudge", "TotalHands", "Nosuspicion", "ScanNosuspictionRate", "NoSeizure", "NoSeizureRate", "Seizure", "SeizureRate")
+            Stream.of("ID", "StatWidth", "TotalScan", "ValidScans", "ValidScanRate", "TotalJudge",  "Suspicion", "SuspicionRate", "Nosuspicion", "ScanNosuspictionRate",
+                    "TotalHands", "Seizure", "SeizureRate", "NoSeizure", "NoSeizureRate")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -76,16 +77,19 @@ public class PreviewStatisticsPdfView extends BasePdfView {
                 addTableCell(table, Long.toString(index ++));
                 addTableCell(table, record.getTime());
                 addTableCell(table, Long.toString(record.getScanStatistics().getTotalScan()));
-                addTableCell(table, Long.toString(record.getScanStatistics().getInvalidScan()));
-                addTableCell(table, df.format(record.getScanStatistics().getInvalidScanRate()));
+                addTableCell(table, Long.toString(record.getScanStatistics().getValidScan()));
+                addTableCell(table, df.format(record.getScanStatistics().getValidScanRate()));
                 addTableCell(table, Long.toString(record.getJudgeStatistics().getTotalJudge()));
-                addTableCell(table, Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
+                addTableCell(table, Long.toString(record.getJudgeStatistics().getSuspictionJudge()));
+                addTableCell(table, df.format(record.getJudgeStatistics().getSuspictionJudgeRate()));
                 addTableCell(table, Long.toString(record.getJudgeStatistics().getNoSuspictionJudge()));
                 addTableCell(table, df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                addTableCell(table, Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
-                addTableCell(table, df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                addTableCell(table, Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
                 addTableCell(table, Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
                 addTableCell(table, df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
+                addTableCell(table, Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
+                addTableCell(table, df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+
 
             }
 

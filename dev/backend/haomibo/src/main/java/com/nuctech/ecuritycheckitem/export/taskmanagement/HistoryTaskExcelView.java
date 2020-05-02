@@ -17,6 +17,7 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -102,52 +103,29 @@ public class HistoryTaskExcelView extends BaseExcelView {
                 Row row = sheet.createRow(counter++);
 
                 row.createCell(0).setCellValue(String.valueOf(++ number));
+                row.createCell(1).setCellValue(task.getTaskNumber());
 
-                if (task.getTask() != null) {
-                    if (task.getTask().getTaskNumber() != null) {
-                        row.createCell(1).setCellValue(task.getTask().getTaskNumber());
-                    }
-                    else {
-                        row.createCell(1).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                    }
-                }
-                else {
-                    row.createCell(1).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                }
 
-                if (task.getWorkMode() != null) {
-                    row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));
-                } else {
-                    row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                }
+                row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getModeName()));
 
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(task.getHandTaskResult()));
 
-                if (task.getTask() != null) {
-                    if (task.getTask().getField() != null) {
-                        if (task.getTask().getField().getFieldDesignation() != null) {
-                            row.createCell(4).setCellValue(task.getTask().getField().getFieldDesignation());
-                        } else {
-                            row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                        }
-                    }
-                    else {
-                        row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                    }
-                }
-                else {
+                if (!StringUtils.isEmpty(task.getFieldDesignation())) {
+                    row.createCell(4).setCellValue(task.getFieldDesignation());
+                } else {
                     row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
 
-                if (task.getScanDevice() != null) {
-                    row.createCell(5).setCellValue(task.getScanDevice().getDeviceName());
+
+                if (!StringUtils.isEmpty(task.getScanDeviceName())) {
+                    row.createCell(5).setCellValue(task.getScanDeviceName());
                 } else {
                     row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if (task.getScanPointsman() != null) {
-                    row.createCell(6).setCellValue(task.getScanPointsman().getUserName());
+                if (!StringUtils.isEmpty(task.getScanPointsManName())) {
+                    row.createCell(5).setCellValue(task.getScanPointsManName());
                 } else {
                     row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

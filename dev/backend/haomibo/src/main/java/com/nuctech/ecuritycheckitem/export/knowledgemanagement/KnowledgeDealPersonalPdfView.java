@@ -23,6 +23,7 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -66,17 +67,13 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
             int number = 0;
             for (SerKnowledgeCaseDeal deal : exportDealList) {
                 addTableCell(table, String.valueOf(++ number));
-                if(deal.getTask() != null) {
-                    addTableCell(table, deal.getTask().getTaskNumber());
-                } else {
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                }
+                addTableCell(table, deal.getHistory().getTaskNumber());
 
 
 
                 addTableCell(table, ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(deal.getTask() != null && deal.getTask().getField() != null) {
-                    addTableCell(table, deal.getTask().getField().getFieldDesignation());
+                if(!StringUtils.isEmpty(deal.getHistory().getFieldDesignation())) {
+                    addTableCell(table, deal.getHistory().getFieldDesignation());
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
