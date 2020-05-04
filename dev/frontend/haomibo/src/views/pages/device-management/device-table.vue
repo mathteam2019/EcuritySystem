@@ -92,6 +92,9 @@
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
+              <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                <div class="loading"></div>
+              </div>
               <vuetable
                 ref="vuetable"
                 :fields="vuetableItems.fields"
@@ -102,6 +105,8 @@
                 track-by="deviceId"
                 @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onPaginationData"
+                @vuetable:loading="loadingTable = true"
+                @vuetable:loaded="loadingTable = false"
                 class="table-striped"
               >
                 <div slot="number" slot-scope="props">
@@ -1011,7 +1016,7 @@
     downLoadFileFromServer,
     getApiManager,
     getDateTimeWithFormat,
-    isPhoneValid, isGuidValid,
+    isPhoneValid, isGuidValid, isInputLengthValid,
     printFileFromServer, getApiManagerError
   } from '../../../api';
   import {validationMixin} from 'vuelidate';
@@ -1052,13 +1057,14 @@
       },
       mainForm: {
         deviceName: {
-          required
+          required, maxLength: maxLength(16),
+          isInputLengthValid
         },
         archiveId: {
           required
         },
         deviceSerial: {
-          required
+          required, maxLength: maxLength(16)
         },
         guid: {
           isGuidValid,
@@ -1072,6 +1078,7 @@
     data() {
       return {
         isLoading: false,
+        loadingTable:false,
         pageStatus: 'list',
         submitted: false,
         link: '',
@@ -1666,10 +1673,18 @@
             return;
           }
           if(this.$v.mainForm.deviceName.$invalid){
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-input`), {
-              duration: 3000,
-              permanent: false
-            });
+            if(this.mainForm.deviceName === '') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-input`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else{
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-input-length`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
             return;
           }
           if(this.$v.mainForm.archiveId.$invalid){

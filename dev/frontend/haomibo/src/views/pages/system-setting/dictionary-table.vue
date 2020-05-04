@@ -37,6 +37,9 @@
             <b-row class="flex-grow-1 m-0">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading_table"></div>
+                  </div>
                   <vuetable
                     ref="vuetableId"
                     :fields="vuetableIdItems.fields"
@@ -47,6 +50,8 @@
                     data-path="data.data"
                     class="table-hover"
                     @vuetable:pagination-data="onDicPaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                     <template slot="dictionaryName" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onDetailClicked(props.rowData)">
@@ -160,6 +165,9 @@
             <b-row class="flex-grow-1 m-0">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading_table"></div>
+                  </div>
                   <vuetable
                     ref="vuetableData"
                     :fields="vuetableDataItems.fields"
@@ -170,6 +178,8 @@
                     data-path="data.data"
                     class="table-hover"
                     @vuetable:pagination-data="onDicDataPaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                     <template slot="dataCode" slot-scope="props">
                       <span v-if="checkPermItem('dictionary_data_modify')" class="cursor-p text-primary">
@@ -283,16 +293,16 @@
 </template>
 
 <style>
+
   .col-form-label {
     margin-bottom: 1px;
-  }{
-    border-radius: 0.3125rem;
-    border-top-left-radius: 0.3125rem;
-    border-top-right-radius: 0.3125rem;
-    border-bottom-right-radius: 0.3125rem;
-    border-bottom-left-radius: 0.3125rem;
-    padding: 1.5rem 0 1rem 0;
-    border: solid 1px #cccccc;
+    /*border-radius: 0.3125rem;*/
+    /*border-top-left-radius: 0.3125rem;*/
+    /*border-top-right-radius: 0.3125rem;*/
+    /*border-bottom-right-radius: 0.3125rem;*/
+    /*border-bottom-left-radius: 0.3125rem;*/
+    /*padding: 1.5rem 0 1rem 0;*/
+    /*border: solid 1px #cccccc;*/
   }
 
   .halo-tree .inputCheck {
@@ -324,6 +334,20 @@
   }
 </style>
 <style lang="scss">
+  .loading_table {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(#145388, 0.2);
+    border-radius: 50%;
+    border-top-color: #145388;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    left: calc(38% - 15px);
+    top: calc(50% - 15px);
+    position: fixed;
+    z-index: 1;
+  }
   .search-form-group {
     [dic="group"] {
       position: relative;
@@ -385,6 +409,7 @@
         pageStatus: 'table',
         pageStatus1: '',
         isLoading: false,
+        loadingTable:false,
         dicForm: {
           visible: false,
           dicName: '',

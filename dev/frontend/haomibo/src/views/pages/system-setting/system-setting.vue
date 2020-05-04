@@ -373,6 +373,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="vuetable"
                     :fields="vuetableItems.fields"
@@ -382,6 +385,8 @@
                     pagination-path="pagination"
                     class="table-striped"
                     @vuetable:pagination-data="onTablePaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                     <template slot="deviceNumber" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onAction('show', props.rowData)">{{ props.rowData.deviceNumber }}</span>
@@ -909,6 +914,7 @@
     data() {
       return {
         isLoading: false,
+        loadingTable:false,
         direction: getDirection().direction,
         tabIndex: 0,
         submitted: false,

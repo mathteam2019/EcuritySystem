@@ -278,6 +278,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="configListTable"
                     :fields="configListTableItems.fields"
@@ -288,6 +291,8 @@
                     track-by="deviceId"
                     @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onConfigTablePaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                     class="table-striped"
                   >
                   </vuetable>
@@ -365,6 +370,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="pendingListTable"
                     :fields="pendingListTableItems.fields"
@@ -374,6 +382,8 @@
                     pagination-path="pagination"
                     @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                     @vuetable:pagination-data="onPendingListTablePaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                     class="table table-striped"
                   >
                     <div slot="number" slot-scope="props">
@@ -704,6 +714,7 @@
         //   render: createElement => createElement('span', '❌'),
         // },
         isLoading: false,
+        loadingTable:false,
         isLoadCompleted: false,
         modeDictionaryData: {
           '1000001301': this.$t('personal-inspection.security-instrument'),

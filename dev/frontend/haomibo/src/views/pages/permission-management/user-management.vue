@@ -2,6 +2,20 @@
   /*.section {*/
   /*  padding: 1rem 0 8px 0 !important;*/
   /*}*/
+  .loading_group {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(#145388, 0.2);
+    border-radius: 50%;
+    border-top-color: #145388;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    left: calc(33% - 15px);
+    top: calc(50% - 15px);
+    position: fixed;
+    z-index: 1;
+  }
   .col-form-label {
     margin-bottom: 1px;
   }
@@ -181,6 +195,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="vuetable"
                     :api-url="vuetableItems.apiUrl"
@@ -192,6 +209,8 @@
                     class="table-striped"
                     @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onUserTablePaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                     <template slot="userNumber" slot-scope="props">
                                             <span class="cursor-p text-primary"
@@ -817,6 +836,9 @@
               <b-row class="flex-grow-1 m-0">
                 <b-col cols="12">
                   <div class="table-wrapper table-responsive">
+                    <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                      <div class="loading_group"></div>
+                    </div>
                     <vuetable
                       ref="userGroupTable"
                       :api-url="userGroupTableItems.apiUrl"
@@ -828,6 +850,8 @@
                       :row-class="onUserGroupRowClass"
                       @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                       @vuetable:pagination-data="onUserGroupTablePaginationData"
+                      @vuetable:loading="loadingTable = true"
+                      @vuetable:loaded="loadingTable = false"
                     >
                       <template slot="userGroupNumber" slot-scope="props">
                                                 <span class="cursor-p text-primary"
@@ -1211,6 +1235,7 @@
     data() {
       return {
         isLoading: false,
+        loadingTable : false,
         submitted: false,
         tabStatus: 'user',
         link: '',

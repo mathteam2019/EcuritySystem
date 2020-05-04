@@ -62,6 +62,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="vuetable"
                     :api-url="vuetableItems.apiUrl"
@@ -72,6 +75,8 @@
                     track-by="fieldId"
                     @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onPaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                     class="table-striped"
                   >
                     <template slot="fieldSerial" slot-scope="props">
@@ -595,6 +600,7 @@
     data() {
       return {
         isLoading: false,
+        loadingTable:false,
         selectedSiteItem: null,
         siteData: [],
         link: '',

@@ -88,6 +88,9 @@
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
+              <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                <div class="loading"></div>
+              </div>
               <vuetable
                 ref="taskVuetable"
                 track-by="taskId"
@@ -99,6 +102,8 @@
                 class="table-hover"
                 @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
+                @vuetable:loading="loadingTable = true"
+                @vuetable:loaded="loadingTable = false"
               >
                 <template slot="taskNumber" slot-scope="props">
                     <span class="cursor-p text-primary" @click="onRowClicked(props.rowData.taskId)">
@@ -963,6 +968,7 @@
         name: '',
         imgUrl: [],
         isExpanded: false,
+        loadingTable:false,
         pageStatus: 'table',
         filter: {
           taskNumber: null,

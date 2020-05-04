@@ -577,6 +577,7 @@
       "device-info": "设备信息",
       "device-number-input": "请输入设备编号",
       "device-input": "请输入设备",
+      "device-input-length": "最多输入16个字符(1个汉字2个字符)",
       "archive-input": "请输入档案",
       "archive-info": "档案信息",
       "guid": "GUID",

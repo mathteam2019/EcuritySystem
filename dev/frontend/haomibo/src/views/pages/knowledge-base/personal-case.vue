@@ -58,6 +58,9 @@
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
+              <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                <div class="loading"></div>
+              </div>
               <vuetable
                 ref="pendingListTable"
                 track-by="caseDealId"
@@ -68,6 +71,8 @@
                 pagination-path="pagination"
                 @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
+                @vuetable:loading="loadingTable = true"
+                @vuetable:loaded="loadingTable = false"
                 class="table-striped"
               >
                 <template slot="task" slot-scope="props">
@@ -967,6 +972,7 @@
         },
         selectedVideo: null,
         isExpanded: false,
+        loadingTable:false,
         pageStatus: 'table',
         power: true,
         siteData: [],

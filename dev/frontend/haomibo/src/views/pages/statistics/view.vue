@@ -404,6 +404,9 @@
                 <b-col>
 
                   <div class="table-wrapper table-responsive">
+                    <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
+                      <div class="loading_statistics"></div>
+                    </div>
                     <vuetable
                       ref="taskVuetable"
                       :api-url="taskVuetableItems.apiUrl"
@@ -413,6 +416,8 @@
                       pagination-path="pagination"
                       class="table-hover"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
+                      @vuetable:loading="loadingTable = true"
+                      @vuetable:loaded="loadingTable = false"
                     >
                     </vuetable>
                   </div>
@@ -670,6 +675,7 @@
 
         isExpanded: false,
         isCheckAll: false,
+        loadingTable:false,
         pageStatus: 'charts',
         link: '',
         params: {},
@@ -1577,5 +1583,29 @@
       background-color: #007bff;
     }
 
+  }
+  .overlay {
+    /* position: relative; */
+    /* top: 0; */
+    /* left: 0; */
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: rgba(0,0,0,0.5);
+    background-color: white;
+  }
+  .loading {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(#145388, 0.2);
+    border-radius: 50%;
+    border-top-color: #145388;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    left: calc(50% - 15px);
+    top: calc(50% - 15px);
+    position: relative;
+    z-index: 1;
   }
 </style>

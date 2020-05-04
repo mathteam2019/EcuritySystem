@@ -2,17 +2,19 @@
   .col-form-label {
     margin-bottom: 1px;
   }
+
   .document-management {
-      .v-select.v-select-custom-style {
+    .v-select.v-select-custom-style {
+      & > div {
+        border-radius: 0.3rem !important;
+
         & > div {
           border-radius: 0.3rem !important;
-
-          & > div {
-            border-radius: 0.3rem !important;
-          }
         }
-
       }
+
+    }
+
     .form-group {
       label.input-label {
         line-height: 2.25rem;
@@ -35,7 +37,8 @@
       }
     }
   }
-  .img-rotate{
+
+  .img-rotate {
     -ms-transform: rotate(-15deg); /* IE 9 */
     -webkit-transform: rotate(-15deg); /* Safari 3-8 */
     transform: rotate(-15deg);
@@ -84,13 +87,16 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"/>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_archive_export')">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()"
+                      :disabled="checkPermItem('device_archive_export')">
               <i class="icofont-share-alt"/>&nbsp;{{ $t('permission-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('device_archive_print')">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()"
+                      :disabled="checkPermItem('device_archive_print')">
               <i class="icofont-printer"/>&nbsp;{{ $t('permission-management.print') }}
             </b-button>
-            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default" :disabled="checkPermItem('device_archive_create')">
+            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default"
+                      :disabled="checkPermItem('device_archive_create')">
               <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
             </b-button>
           </b-col>
@@ -98,6 +104,9 @@
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
+              <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                <div class="loading"></div>
+              </div>
               <vuetable
                 ref="vuetable"
                 :fields="vuetableItems.fields"
@@ -108,6 +117,8 @@
                 track-by="archiveId"
                 @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onPaginationData"
+                @vuetable:loading="loadingTable = true"
+                @vuetable:loaded="loadingTable = false"
                 class="table-striped"
               >
                 <div slot="number" slot-scope="props">
@@ -122,13 +133,15 @@
                   </b-button>
                   <b-button
                     v-if="props.rowData.status==='1000000702'"
-                    size="sm" @click="onAction('activate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
+                    size="sm" @click="onAction('activate',props.rowData)"
+                    :disabled="checkPermItem('device_archive_update_status')"
                     variant="success default btn-square">
                     <i class="icofont-check-circled"/>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status==='1000000701'"
-                    size="sm" @click="onAction('inactivate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
+                    size="sm" @click="onAction('inactivate',props.rowData)"
+                    :disabled="checkPermItem('device_archive_update_status')"
                     variant="warning default btn-square"
                   >
                     <i class="icofont-ban"/>
@@ -162,7 +175,9 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.file-no')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input :disabled="pageStatus==='show' || pageStatus==='edit'" v-model="archivesForm.archivesNumber" :state="!$v.archivesForm.archivesNumber.$dirty ? null : !$v.archivesForm.archivesNumber.$invalid"/>
+                  <b-form-input :disabled="pageStatus==='show' || pageStatus==='edit'"
+                                v-model="archivesForm.archivesNumber"
+                                :state="!$v.archivesForm.archivesNumber.$dirty ? null : !$v.archivesForm.archivesNumber.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.archivesForm.archivesNumber.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -173,7 +188,8 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.file-name')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="archivesForm.archivesName" :state="!$v.archivesForm.archivesName.$dirty ? null : !$v.archivesForm.archivesName.$invalid"/>
+                  <b-form-input v-model="archivesForm.archivesName"
+                                :state="!$v.archivesForm.archivesName.$dirty ? null : !$v.archivesForm.archivesName.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.archivesForm.archivesName.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -184,7 +200,8 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.template-name')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-select v-model="archivesForm.archivesTemplateId" :options="templateOptions" :state="!$v.archivesForm.archivesTemplateId.$dirty ? null : !$v.archivesForm.archivesTemplateId.$invalid"
+                  <b-form-select v-model="archivesForm.archivesTemplateId" :options="templateOptions"
+                                 :state="!$v.archivesForm.archivesTemplateId.$dirty ? null : !$v.archivesForm.archivesTemplateId.$invalid"
                                  :disabled="pageStatus === 'show' || archivesForm.status==='1000000701'" plain/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.archivesForm.archivesTemplateId.required) ?
@@ -239,16 +256,21 @@
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
             <div class="img-wrapper">
-              <img draggable="false" v-if="archivesForm.image!=null&&archivesForm.image!==''" :src="archivesForm.image"/>
+              <img draggable="false" v-if="archivesForm.image!=null&&archivesForm.image!==''"
+                   :src="archivesForm.image"/>
               <img draggable="false" v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')"
                    src="../../../assets/img/device.png">
-              <div  v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
-                <img draggable="false" v-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
-                <img draggable="false" v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+              <div v-if="getLocale()==='zh'" class="position-absolute" style="bottom: -18%;left: -41%">
+                <img draggable="false" v-if="archivesForm.status === '1000000701'"
+                     src="../../../assets/img/active_stamp.png">
+                <img draggable="false" v-if="archivesForm.status === '1000000702'"
+                     src="../../../assets/img/no_active_stamp.png">
               </div>
               <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: -18%;left: -41%">
-                <img draggable="false" v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
-                <img draggable="false" v-else-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-if="archivesForm.status === '1000000702'"
+                     src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
+                <img draggable="false" v-else-if="archivesForm.status === '1000000701'"
+                     src="../../../assets/img/active_stamp_en.png" class="img-rotate">
               </div>
             </div>
             <input type="file" ref="imgFile" @change="onFileChange" accept="image/*" style="display: none"/>
@@ -263,14 +285,17 @@
                 {{$t('device-management.save')}}
               </b-button>
               <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === '1000000702'"
-                        @click="onAction('activate',archivesForm)" variant="success default" :disabled="checkPermItem('device_archive_update_status')">
+                        @click="onAction('activate',archivesForm)" variant="success default"
+                        :disabled="checkPermItem('device_archive_update_status')">
                 <i class="icofont-check-circled"/> {{$t('system-setting.status-active')}}
               </b-button>
               <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === '1000000701'"
-                        @click="onAction('inactivate',archivesForm)" variant="warning default" :disabled="checkPermItem('device_archive_update_status')">
+                        @click="onAction('inactivate',archivesForm)" variant="warning default"
+                        :disabled="checkPermItem('device_archive_update_status')">
                 <i class="icofont-ban"/> {{$t('system-setting.status-inactive')}}
               </b-button>
-              <b-button size="sm" v-if="pageStatus ==='edit' && archivesForm.status === '1000000702'" :disabled="checkPermItem('device_archive_delete')"
+              <b-button size="sm" v-if="pageStatus ==='edit' && archivesForm.status === '1000000702'"
+                        :disabled="checkPermItem('device_archive_delete')"
                         @click="onAction('delete',archivesForm)" variant="danger default"><i class="icofont-bin"/>
                 {{$t('device-management.delete')}}
               </b-button>
@@ -316,10 +341,11 @@
       </template>
     </b-modal>
 
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -341,7 +367,7 @@
         </b-button>
       </div>
     </b-modal>
-     <Modal
+    <Modal
       ref="exportModal"
       v-if="isModalVisible"
       :link="link" :params="params" :name="name"
@@ -390,7 +416,7 @@
     },
     mixins: [validationMixin],
     validations: {
-      fileSelection : {
+      fileSelection: {
         required
       },
       archivesForm: {
@@ -408,20 +434,21 @@
     data() {
       return {
         isLoading: false,
+        loadingTable:false,
         submitted: false,
         templateData: [],
-	link: '',
+        link: '',
         params: {},
         name: '',
-        fileSelection : [],
-        renderedCheckList:[],
+        fileSelection: [],
+        renderedCheckList: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-		isModalVisible: false,
+        isModalVisible: false,
         templateOptions: [],
         categoryData: [],
         categoryFilterData: [],
@@ -444,7 +471,7 @@
         filterOption: {
           archivesName: '',
           status: null,
-          templateName : '',
+          templateName: '',
           categoryId: null
         },
         templateForm: {
@@ -463,7 +490,7 @@
           image: null,
           note: '',
           status: '1000000702',
-          archiveValueList:[]
+          archiveValueList: []
         },
 
         vuetableItems: {
@@ -514,8 +541,8 @@
               title: this.$t('device-management.template'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback:(archiveTemplate) =>{
-                if(archiveTemplate===null) return null
+              callback: (archiveTemplate) => {
+                if (archiveTemplate === null) return null
                 return archiveTemplate.templateName;
               }
             },
@@ -567,48 +594,49 @@
       getLocale() {
         return getLocale();
       },
-      selectAll(value){
+      selectAll(value) {
         this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.vuetable.isCheckAllStatus=value;
+        this.$refs.vuetable.isCheckAllStatus = value;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = value;
       },
-      selectNone(){
-        this.$refs.vuetable.isCheckAllStatus=false;
+      selectNone() {
+        this.$refs.vuetable.isCheckAllStatus = false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.vuetable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = false;
       },
-      changeCheckAllStatus(){
+      changeCheckAllStatus() {
         let selectList = this.$refs.vuetable.selectedTo;
         let renderedList = this.renderedCheckList;
-        if(selectList.length>=renderedList.length){
+        if (selectList.length >= renderedList.length) {
           let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
+          for (let i = 0; i < renderedList.length; i++) {
             isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
             }
-            if(isEqual===false){
+            if (isEqual === false) {
               this.selectNone();
               break;
             }
-            if(i===renderedList.length-1){
+            if (i === renderedList.length - 1) {
               this.selectAll(true);
             }
           }
-        }
-        else {
+        } else {
           this.selectNone();
         }
 
       },
-      onCheckStatusChange(isChecked){
-        if(isChecked){
+      onCheckStatusChange(isChecked) {
+        if (isChecked) {
           this.changeCheckAllStatus();
-        }
-        else {
+        } else {
           this.selectNone();
         }
       },
@@ -618,8 +646,8 @@
       checkPermItem(value) {
         return checkPermissionItem(value);
       },
-      getManufacturerOptions(){
-        this.manufacturerOptions =  getDicDataByDicIdForOptions(9);
+      getManufacturerOptions() {
+        this.manufacturerOptions = getDicDataByDicIdForOptions(9);
       },
       onExportButton() {
         // this.fileSelection = [];
@@ -629,8 +657,8 @@
         let httpOption = this.$refs.vuetable.httpOptions;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'locale' : getLocale(),
-          'sort' : httpOption.params.sort,
+          'locale': getLocale(),
+          'sort': httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -638,34 +666,34 @@
         this.name = this.$t('menu.document-management');
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'locale' : getLocale(),
+          'locale': getLocale(),
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
         let link = `device-management/document-management/archive`;
-        if(this.fileSelection !== null) {
+        if (this.fileSelection !== null) {
           downLoadFileFromServer(link, params, 'document', this.fileSelection);
           this.hideModal('model-export')
         }
       },
-      onPrintButton(){
+      onPrintButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'locale' : getLocale(),
-          'sort' : httpOption.params.sort,
+          'locale': getLocale(),
+          'sort': httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
         let link = `device-management/document-management/archive`;
-        printFileFromServer(link,params);
+        printFileFromServer(link, params);
       },
       hideModal(modal) {
         this.$refs[modal].hide();
@@ -750,7 +778,7 @@
             imageUrl: null,
             note: '',
             status: '1000000702',
-            archiveValueList:[]
+            archiveValueList: []
           };
         else {
           if (Object.keys(data).includes('createdBy')) { //if getting data from table , needful to processing
@@ -762,12 +790,11 @@
                   this.archivesForm.image = data['imageUrl'] ? data['imageUrl'] : null;
               }
             }
-          }
-          else
+          } else
             this.archivesForm = data;
         }
         this.submitted = false;
-       // this.getTemplateDetailData(this.archivesForm.archivesTemplateId);
+        // this.getTemplateDetailData(this.archivesForm.archivesTemplateId);
       },
       onFileChange(e) {
         let files = e.target.files || e.dataTransfer.files;
@@ -795,7 +822,7 @@
         for (let item of this.templateData) {
           if (item.archivesTemplateId === templateId) {
             this.templateForm.category = item.deviceCategory.categoryName;
-            this.templateForm.manufacturer = getManufacturerName(this.manufacturerOptions,item.manufacturer);
+            this.templateForm.manufacturer = getManufacturerName(this.manufacturerOptions, item.manufacturer);
             this.templateForm.originalModel = item.originalModel;
             this.indicatorsData = item.archiveIndicatorsList;
             break;
@@ -805,12 +832,11 @@
         if (this.archivesForm != null && Object.keys(this.archivesForm).includes('archiveValueList'))
           indicatorValues = this.archivesForm.archiveValueList;
         this.indicatorsForm = {};
-        if (indicatorValues.length >0)
-        {
-          this.indicatorsData.forEach((item,index) => {
+        if (indicatorValues.length > 0) {
+          this.indicatorsData.forEach((item, index) => {
             this.indicatorsForm[index] = null;
-            for (let v of indicatorValues){
-              if(v.indicatorsId === item.indicatorsId){
+            for (let v of indicatorValues) {
+              if (v.indicatorsId === item.indicatorsId) {
                 this.indicatorsForm[index] = v.value;
                 break
               }
@@ -825,21 +851,21 @@
         this.submitted = true;
         this.$v.archivesForm.$touch();
         if (this.$v.archivesForm.$invalid) {
-          if(this.$v.archivesForm.archivesNumber.$invalid){
+          if (this.$v.archivesForm.archivesNumber.$invalid) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.file-number-placeholder`), {
               duration: 3000,
               permanent: false
             });
             return;
           }
-          if(this.$v.archivesForm.archivesName.$invalid){
+          if (this.$v.archivesForm.archivesName.$invalid) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.file-name-placeholder`), {
               duration: 3000,
               permanent: false
             });
             return;
           }
-          if(this.$v.archivesForm.archivesTemplateId.$invalid){
+          if (this.$v.archivesForm.archivesTemplateId.$invalid) {
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.template-name-select`), {
               duration: 3000,
               permanent: false
@@ -852,7 +878,7 @@
         let isRequired = false;
         let indicateFormData = [];
         this.indicatorsData.forEach((item, index) => {
-          if (Object.keys(this.indicatorsForm).includes(index + "") && (this.indicatorsForm[index]).trim()!== "") {
+          if (Object.keys(this.indicatorsForm).includes(index + "") && (this.indicatorsForm[index]).trim() !== "") {
             indicateFormData.push({
               "indicatorsId": item.indicatorsId,
               "value": this.indicatorsForm[index]
@@ -872,7 +898,7 @@
 
         const formData = new FormData();
         for (let key in this.archivesForm) {
-          if (key !== 'imageUrl' && key !== 'image' && key !=='archiveValueList')
+          if (key !== 'imageUrl' && key !== 'image' && key !== 'archiveValueList')
             formData.append(key, this.archivesForm[key]);
           else if (key === 'imageUrl' && this.archivesForm['image'] !== null && this.archivesForm['imageUrl'] !== null)
             formData.append('imageUrl', this.archivesForm['imageUrl'], this.archivesForm['imageUrl'].name);
@@ -886,13 +912,12 @@
             let message = response.data.message;
             switch (message) {
               case responseMessages['ok']: // okay
-                if(finalLink === 'create') {
+                if (finalLink === 'create') {
                   this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-management.added-successfully`), {
                     duration: 10000,
                     permanent: false
                   });
-                }
-                else{
+                } else {
                   this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.document-management.updated-successfully`), {
                     duration: 10000,
                     permanent: false
@@ -1024,7 +1049,7 @@
           temp = data.data[i];
           this.renderedCheckList.push(data.data[i].archiveId);
           temp.categoryId = temp.archiveTemplate ? temp.archiveTemplate.deviceCategory.categoryId : '';
-          temp.manufacturerName = temp.archiveTemplate ? getManufacturerName(this.manufacturerOptions,temp.archiveTemplate.manufacturer) : '';
+          temp.manufacturerName = temp.archiveTemplate ? getManufacturerName(this.manufacturerOptions, temp.archiveTemplate.manufacturer) : '';
           temp.originalModelName = temp.archiveTemplate ? temp.archiveTemplate.originalModel : '';
           transformed.data.push(temp);
         }
@@ -1041,11 +1066,11 @@
       },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData);
-	this.changeCheckAllStatus();
+        this.changeCheckAllStatus();
       },
       onChangePage(page) {
         this.$refs.vuetable.changePage(page);
-	this.changeCheckAllStatus();
+        this.changeCheckAllStatus();
       },
 
     },
@@ -1063,8 +1088,7 @@
             value: 0,
             html: `${this.$t('system-setting.none')}`
           });
-        }
-        else {
+        } else {
           this.categorySelectOptions = newVal.map(site => ({
             text: site.categoryName,
             value: site.categoryId
@@ -1081,8 +1105,7 @@
             value: null,
             html: `${this.$t('system-setting.none')}`
           });
-        }
-        else {
+        } else {
           this.templateOptions = newVal.map(template => ({
             text: template.templateName,
             value: template.archivesTemplateId
@@ -1090,8 +1113,8 @@
         }
 
       },
-      'archivesForm.archivesTemplateId': function (newVal,oldVal) {
-          this.getTemplateDetailData(newVal);
+      'archivesForm.archivesTemplateId': function (newVal, oldVal) {
+        this.getTemplateDetailData(newVal);
       }
     }
   }

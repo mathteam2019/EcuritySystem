@@ -120,6 +120,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="userVuetable"
                     :api-url="userVuetableItems.apiUrl"
@@ -131,6 +134,8 @@
                     track-by="userId"
                     @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onUserPaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                     <template slot="userName" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onUserNameClicked(props.rowData)">
@@ -506,6 +511,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="userGroupTable"
                     :api-url="userGroupTableItems.apiUrl"
@@ -517,7 +525,8 @@
                     :per-page="userGroupTableItems.perPage"
                     @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
-
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                     <template slot="groupName" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onActionGroup('show-item', props.rowData)">{{ props.rowData.groupName }}</span>
@@ -937,6 +946,7 @@
     data() {
       return {
         isLoading: false,
+        loadingTable : false,
         direction: getDirection().direction,
         tabStatus: 'user',
         link: '',

@@ -85,6 +85,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="vuetable"
                     :fields="vuetableItems.fields"
@@ -96,6 +99,8 @@
                     class="table-striped"
                     @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onvueTablePaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                   </vuetable>
                 </div>
@@ -194,6 +199,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="operatingLogTable"
                     :fields="operatingLogTableItems.fields"
@@ -204,6 +212,8 @@
                     class="table-striped"
                     @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                     @vuetable:pagination-data="onOperatingLogTablePaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                   </vuetable>
                 </div>
@@ -303,6 +313,7 @@
     data() {
       return {
         isExpanded: false,
+        loadingTable:false,
         pageStatus: 'table',
         showLength:20,
         direction: getDirection().direction,
