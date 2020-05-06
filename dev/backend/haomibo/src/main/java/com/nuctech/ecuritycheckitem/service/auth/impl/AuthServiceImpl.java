@@ -157,12 +157,18 @@ public class AuthServiceImpl implements AuthService {
     /**
      * check pending user
      * @param user
-     * @param count
+     * @param
      */
     @Override
-    public int checkPendingUser(SysUser user, Integer count) {
+    public int checkPendingUser(SysUser user) {
 
         Integer passwordLimit = 7;
+        Integer failCount = user.getFailCount();
+        if(failCount == null) {
+            failCount = 0;
+        }
+        failCount ++;
+        user.setFailCount(failCount);
 
         List<SerPlatformOtherParams> serPlatformOtherParams = serPlatformOtherParamRepository.findAll();
 
@@ -174,16 +180,18 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        if(count != null && passwordLimit > 0) {
-            if(count == passwordLimit - 1) {
-                return 1;
-            } else if(count >= passwordLimit) {
+        int answer = 0;
+        if(passwordLimit > 0) {
+            if(failCount == passwordLimit - 1) {
+                answer = 1;
+            } else if(failCount >= passwordLimit) {
                 user.setStatus(SysUser.Status.PENDING);
-                sysUserRepository.save(user);
-                return 2;
+                answer = 2;
+
             }
         }
-        return 0;
+        sysUserRepository.save(user);
+        return answer;
     }
 
     /**

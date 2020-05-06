@@ -52,9 +52,9 @@ public interface AuthService {
     /**
      * check pending user
      * @param user
-     * @param count
+     * @param
      */
-    int checkPendingUser(SysUser user, Integer count);
+    int checkPendingUser(SysUser user);
 
     /**
      * get all resource for user

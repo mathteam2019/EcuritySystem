@@ -49,4 +49,13 @@ public class SysDeviceSimplifiedOnlyHasName implements Serializable {
     @Column(name = "DEVICE_NAME", length = 50)
     private String deviceName;
 
+    @Column(name = "DEVICE_SERIAL", length = 50)
+    private String deviceSerial;
+
+    @Column(name = "CATEGORY_ID", length = 20)
+    private Long categoryId;
+
+    @Column(name = "GUID", length = 255)
+    private String guid;
+
 }

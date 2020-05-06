@@ -65,7 +65,7 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
         if (!StringUtils.isEmpty(deviceType)) {
-            predicate.and(builder.device.deviceType.eq(deviceType));
+            predicate.and(builder.devType.eq(deviceType));
         }
 
         if (!StringUtils.isEmpty(deviceName)) {
@@ -159,6 +159,7 @@ public class DeviceLogServiceImpl implements DeviceLogService {
     public PageResult<SerDevLog> getDeviceLogListByFilter(String sortBy, String order, String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
                                                           Date operateEndTime, int currentPage, int perPage) {
 
+        Date startTime = new Date();
         BooleanBuilder predicate = getPredicate(deviceType, deviceName, userName, category, level, operateStartTime, operateEndTime);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -176,7 +177,11 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         }
 
         long total = serDevLogRepository.count(predicate);
+        Date endTime = new Date();
+        long diff = endTime.getTime() - startTime.getTime();
         List<SerDevLog> data = serDevLogRepository.findAll(predicate, pageRequest).getContent();
+        endTime = new Date();
+        long dif1 = endTime.getTime() - startTime.getTime();
         return new PageResult<>(total, data);
     }
 

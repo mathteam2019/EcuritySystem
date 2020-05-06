@@ -113,7 +113,7 @@ public class HistoryTaskController extends BaseController {
 
         @NotNull
         @Min(1)
-        Long historyId; //id of a history task
+        Long taskId; //id of a history task
 
     }
 
@@ -151,7 +151,7 @@ public class HistoryTaskController extends BaseController {
         }
 
         Date startTime = new Date();
-        HistorySimplifiedForHistoryTaskManagement optionalHistory = historyService.getOne(requestBody.getHistoryId()); //get detailed history task from historyService
+        HistorySimplifiedForHistoryTaskManagement optionalHistory = historyService.getOne(requestBody.getTaskId()); //get detailed history task from historyService
 
         Date endTime = new Date();
         long difference = endTime.getTime() - startTime.getTime();

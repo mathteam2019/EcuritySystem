@@ -93,6 +93,8 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         strQuery = strQuery.replace(":where", whereBuilder.toString());
         queryBuilder.append(strQuery);
 
+        currentPage = currentPage - 1;
+        int start = currentPage * perPage;
 
 
         String query = queryBuilder.toString();
@@ -102,9 +104,9 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         //.... Get Detailed Statistics
 
         query = getNoZeroQuery(query);
-        currentPage = currentPage - 1;
-        int start = currentPage * perPage;
-        queryBuilder.append(" LIMIT " + start + ", " + perPage);
+
+        query = query + " LIMIT " + start + ", " + perPage;
+
 
         List<TreeMap<String, String>> detailedStatistics = getDetailedStatistics(query, groupBy);
         response.setDetailedStatistics(detailedStatistics);

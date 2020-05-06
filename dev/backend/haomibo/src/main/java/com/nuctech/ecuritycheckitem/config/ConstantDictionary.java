@@ -266,6 +266,12 @@ public class ConstantDictionary {
     public static Dictionary[] originalEnglishDictionaryList = {
             new Dictionary("active", "Active"),
             new Dictionary("inactive", "Inactive"),
+            new Dictionary("1000000301", "Active"),
+            new Dictionary("1000000302", "Inactive"),
+            new Dictionary("1000000701", "Active"),
+            new Dictionary("1000000702", "Inactive"),
+            new Dictionary("1000000001", "Male"),
+            new Dictionary("1000000002", "Female"),
             new Dictionary("male", "Male"),
             new Dictionary("female", "Female"),
             new Dictionary("1000001301", "安检仪+(本地手检)"),
@@ -509,6 +515,7 @@ public class ConstantDictionary {
             Dictionary dicationary = dictionaryList[i];
             if(dicationary.dataCode.equals(dataCode) && StringUtils.isEmpty(dicationary.dictionaryName)) {
                 answer = dicationary.dataValue;
+                return answer;
             }
         }
         return answer;
@@ -526,6 +533,7 @@ public class ConstantDictionary {
             Dictionary dicationary = dictionaryList[i];
             if(dicationary.dataCode.equals(dataCode) && dictionaryName.equals(dicationary.dictionaryName)) {
                 answer = dicationary.dataValue;
+                return answer;
             }
         }
         return answer;

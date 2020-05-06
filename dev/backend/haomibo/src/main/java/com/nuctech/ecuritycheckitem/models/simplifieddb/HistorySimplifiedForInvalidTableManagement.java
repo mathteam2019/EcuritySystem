@@ -34,7 +34,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
-@Table(name = "history")
+@Table(name = "history_invalid")
 public class HistorySimplifiedForInvalidTableManagement implements Serializable {
 
 

@@ -201,7 +201,7 @@ public class AuthController extends BaseController {
         if (CryptUtil.matches(requestBody.getPassword(), password) == false) {
         //if (!sysUser.getPassword().equals(requestBody.getPassword())) {
             // This is when the password is incorrect.
-            int checkValue = authService.checkPendingUser(sysUser, requestBody.getCount());
+            int checkValue = authService.checkPendingUser(sysUser);
             if(checkValue == 2) {
                 accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                         , messageSource.getMessage("Lock", null, currentLocale), null);
@@ -221,6 +221,13 @@ public class AuthController extends BaseController {
         try {
             serPlatformOtherParams = platformOtherService.findAll().get(0);
         } catch(Exception ex) {}
+
+        if(sysUser.getFailCount() != null && sysUser.getFailCount() > 0) {
+            sysUser.setFailCount(0);
+            sysUserRepository.save(sysUser);
+        }
+
+
 
 
         // Generate token for user.

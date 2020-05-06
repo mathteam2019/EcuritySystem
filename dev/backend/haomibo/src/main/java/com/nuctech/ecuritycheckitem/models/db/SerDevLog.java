@@ -14,6 +14,8 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysDeviceSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SysDeviceSimplifiedOnlyHasName;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -78,15 +80,14 @@ public class SerDevLog extends BaseEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GUID", referencedColumnName = "GUID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    @MapsId("device")
-    private SysDevice device;
+    private SysDeviceSimplifiedOnlyHasName device;
 
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "LOGIN_NAME", referencedColumnName = "USER_ACCOUNT", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @MapsId("user")
-    private SysUser user;
+//    @ToString.Exclude
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "LOGIN_NAME", referencedColumnName = "USER_ACCOUNT", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    @MapsId("user")
+//    private SysUser user;
 
 
 

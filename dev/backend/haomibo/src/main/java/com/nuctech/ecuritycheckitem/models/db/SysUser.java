@@ -132,6 +132,9 @@ public class SysUser extends BaseEntity implements Serializable {
     @Column(name = "TASK_ID", length = 20)
     private Long taskId;
 
+    @Column(name = "FAIL_COUNT", length = 10)
+    private Integer failCount;
+
     @ToString.Exclude
     @ManyToOne()
     @JoinColumn(name = "ORG_ID", referencedColumnName = "ORG_ID", insertable = false, updatable = false)

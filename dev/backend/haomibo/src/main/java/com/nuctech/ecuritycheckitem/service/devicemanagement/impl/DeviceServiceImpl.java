@@ -734,7 +734,7 @@ public class DeviceServiceImpl implements DeviceService {
                     }
                     Long configDeviceId = deviceConfigList.get(j).getDeviceId();
                     Long deviceId = sysDevice.getDeviceId();
-                    if(configDeviceId.equals(deviceId)) {
+                    if(configDeviceId != null && configDeviceId.equals(deviceId)) {
                         sysDeviceList.add(sysDevice);
                     }
                 }

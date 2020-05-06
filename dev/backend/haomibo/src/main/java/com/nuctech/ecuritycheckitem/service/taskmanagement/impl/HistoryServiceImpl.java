@@ -132,8 +132,8 @@ public class HistoryServiceImpl implements HistoryService {
         Date start = new Date();
         QHistorySimplifiedForHistoryTableManagement builder = QHistorySimplifiedForHistoryTableManagement.historySimplifiedForHistoryTableManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
-        predicate.and(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ALL));
-        predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.FALSE));
+        //predicate.and(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ALL));
+        //predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.FALSE));
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if(sortBy.equals("taskNumber")) {
@@ -232,11 +232,11 @@ public class HistoryServiceImpl implements HistoryService {
         Date start = new Date();
         QHistorySimplifiedForProcessTableManagement builder = QHistorySimplifiedForProcessTableManagement.historySimplifiedForProcessTableManagement;
         BooleanBuilder predicate = getPredicateProcess(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
-        predicate.and((builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ASSIGN))
-                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.SECURITY))
-                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.JUDGE))
-                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.HAND)));
-        predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.FALSE));
+//        predicate.and((builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ASSIGN))
+//                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.SECURITY))
+//                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.JUDGE))
+//                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.HAND)));
+//        predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.FALSE));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -494,7 +494,7 @@ public class HistoryServiceImpl implements HistoryService {
     public HistorySimplifiedForHistoryTaskManagement getOne(Long taskId) {
         Date startTime = new Date();
         QHistorySimplifiedForHistoryTaskManagement builder = QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement;
-        Optional<HistorySimplifiedForHistoryTaskManagement> data = historyRepository.findOne(builder.historyId.eq(taskId)); //get a HistorySimplifiedForHistoryTaskManagement record from database using repository
+        Optional<HistorySimplifiedForHistoryTaskManagement> data = historyRepository.findOne(builder.taskId.eq(taskId)); //get a HistorySimplifiedForHistoryTaskManagement record from database using repository
         if (!data.isPresent()) {
             return null;
         }

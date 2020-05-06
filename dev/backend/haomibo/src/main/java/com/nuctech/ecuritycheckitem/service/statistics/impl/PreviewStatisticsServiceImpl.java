@@ -538,15 +538,15 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:scanGroupBy AS q \n" +
                 "\t\tFROM\n" +
-                "\t\t\tser_scan s UNION\n" +
+                "\t\t\thistory  UNION\n" +
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:judgeGroupBy AS q \n" +
                 "\t\tFROM\n" +
-                "\t\t\tser_judge_graph j UNION\n" +
+                "\t\t\thistory WHERE JUDGE_ID IS NOT NULL UNION\n" +
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:handGroupBy AS q \n" +
                 "\t\tFROM\n" +
-                "\t\t\thistory h \n" +
+                "\t\t\thistory h where HAND_EXAMINATION_ID IS NOT NULL\n" +
                 "\t\t) AS t00 \n" +
                 "\t) AS t0 ";
     }
