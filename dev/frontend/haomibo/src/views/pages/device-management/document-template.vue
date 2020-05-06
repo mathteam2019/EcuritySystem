@@ -53,6 +53,10 @@
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
+              <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                <div class="loading"></div>
+              </div>
+
               <vuetable
                 ref="vuetable"
                 :fields="vuetableItems.fields"
@@ -63,6 +67,8 @@
                 track-by="archivesTemplateId"
                 @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onPaginationData"
+                @vuetable:loading="loadingTable = true"
+                @vuetable:loaded="loadingTable = false"
                 class="table-striped text-center"
               >
                 <div slot="number" slot-scope="props">
@@ -474,6 +480,7 @@
     data() {
       return {
         isLoading: false,
+        loadingTable:false,
         submitted: false,
         categoryData: [],
         link: '',
@@ -900,6 +907,7 @@
           };
           if (isUpdated) {
             let items = [];
+            this.indicatorData = [];
             this.basicForm.archiveIndicatorsList.forEach((item) => {
               items.push({
                 indicatorsId: item.indicatorsId,
@@ -1272,6 +1280,16 @@
   }
 </script>
 <style>
+  .overlay {
+    position: absolute;
+    top: 0; left: 0;
+    /* bottom: 0%; right: 0%; */
+    width: 100%; height: 100%;
+    z-index: 10;
+    background-color: rgba(0,0,0,0.5);
+    background-color: white;
+    /*dim the background*/
+  }
   .col-form-label {
     margin-bottom: 1px;
   }

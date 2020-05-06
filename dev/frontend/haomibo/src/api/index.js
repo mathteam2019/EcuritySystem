@@ -347,7 +347,40 @@ function isPhoneValid(value) {
   // let phoneNumber = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
   // return !!value.match(phoneNumber);
 }
+function isInputLengthValid(value) {
+  var reg = /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/;//中文，数字，字母，下划线
+  // console.log(this.computedStrLen(this.remarkName), '...');
+  if (!reg.test(value)) {
+    return false;
+  } else {
+      //this.errorMsg = '最多输入16个字符(1个汉字2个字符)';
 
+    let isChineseReg = /^[\u3000\u3400-\u4DBF\u4E00-\u9FFF]+$/;
+    let arrInput = value.split('');
+    let strLength = 0;
+    for (let i = 0; i < arrInput.length; i++) {
+      var c = value.charCodeAt(i);
+      //单字节加1
+      if ((c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f)) {
+        strLength++;
+      }
+      else {
+        strLength += 2;
+      }
+      // if (isChineseReg.test(arrInput[i])) {
+      //   strLength += 2;
+      // } else {
+      //   strLength += 1;
+      // }
+    }
+    if (strLength<=16){
+      return true
+    }else {
+      return false
+    }
+  }
+
+}
 function isGuidValid(value) {
   if(value === "")
     return false;
@@ -450,4 +483,4 @@ function isPasswordValid(value) {
 // }
 
 
-export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isPasswordValid, isDataCodeValid, isGuidValid, isColorValid, isGroupNumberValid, isRoleNumberValid, isSpaceContain, isDataGroupNumberValid};
+export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isPasswordValid, isDataCodeValid, isInputLengthValid, isGuidValid, isColorValid, isGroupNumberValid, isRoleNumberValid, isSpaceContain, isDataGroupNumberValid};

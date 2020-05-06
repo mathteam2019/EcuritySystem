@@ -37,6 +37,9 @@
               <b-row class="flex-grow-1 m-0">
                 <b-col cols="12">
                   <div class="table-wrapper table-responsive">
+                    <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                      <div class="loading_table"></div>
+                    </div>
                     <vuetable
                       ref="vuetable"
                       :fields="vuetableItems.fields"
@@ -48,6 +51,8 @@
                       data-path="data.data"
                       class="table-hover"
                       @vuetable:pagination-data="onGoodsPaginationData"
+                      @vuetable:loading="loadingTable = true"
+                      @vuetable:loaded="loadingTable = false"
                     >
                       <template slot="seizedGoods" slot-scope="props">
                       <span v-if="checkPermItem('seized_good_modify')" class="cursor-p text-primary">
@@ -158,6 +163,7 @@
 </template>
 
 <style>
+
   .col-form-label {
     margin-bottom: 1px;
   }
@@ -199,6 +205,20 @@
   }
 </style>
 <style lang="scss">
+  .loading_table {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(#145388, 0.2);
+    border-radius: 50%;
+    border-top-color: #145388;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    left: calc(38% - 15px);
+    top: calc(50% - 15px);
+    position: fixed;
+    z-index: 1;
+  }
   .search-form-group {
     [goods="group"] {
       position: relative;
@@ -260,6 +280,7 @@
     data() {
       return {
         isLoading: false,
+        loadingTable:false,
         showable:false,
         goodsForm: {
           visible: false,

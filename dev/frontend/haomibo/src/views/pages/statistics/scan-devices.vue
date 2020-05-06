@@ -379,6 +379,9 @@
                 <b-col cols>
 
                   <div class="table-wrapper table-responsive">
+                    <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
+                      <div class="loading_statistics"></div>
+                    </div>
                     <vuetable
                       ref="taskVuetable"
                       :api-url="taskVuetableItems.apiUrl"
@@ -388,6 +391,8 @@
                       pagination-path="pagination"
                       class="table-hover"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
+                      @vuetable:loading="loadingTable = true"
+                      @vuetable:loaded="loadingTable = false"
                     >
 
                     </vuetable>
@@ -672,6 +677,7 @@
 
         isExpanded: false,
         isCheckAll: false,
+        loadingTable:false,
         pageStatus: 'charts',
         link: '',
         params: {},

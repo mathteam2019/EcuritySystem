@@ -58,6 +58,9 @@
               <b-row class="flex-grow-1 m-0">
                 <b-col cols="12">
                   <div class="table-wrapper table-responsive">
+                    <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                      <div class="loading_group"></div>
+                    </div>
                     <vuetable
                       ref="roleVuetable"
                       :fields="roleVuetableItems.fields"
@@ -70,6 +73,8 @@
                       :row-class="onRoleRowClass"
                       @vuetable:checkbox-toggled="onCheckStatusChange"
                       @vuetable:pagination-data="onRolePaginationData"
+                      @vuetable:loading="loadingTable = true"
+                      @vuetable:loaded="loadingTable = false"
                     >
                       <template slot="roleNumber" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onRoleNumberClicked(props.rowData)">
@@ -288,6 +293,9 @@
               <b-row class="flex-grow-1 m-0">
                 <b-col cols="12">
                   <div class="table-wrapper table-responsive">
+                    <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                      <div class="loading_group"></div>
+                    </div>
                     <vuetable
                       ref="dataGroupVuetable"
                       :api-url="dataGroupVuetableItems.apiUrl"
@@ -300,6 +308,8 @@
                       :row-class="onDataGroupRowClass"
                       @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                       @vuetable:pagination-data="onDataGroupPaginationData"
+                      @vuetable:loading="loadingTable = true"
+                      @vuetable:loaded="loadingTable = false"
                     >
 
                       <template slot="dataGroupNumber" slot-scope="props">
@@ -528,6 +538,20 @@
   }
 </style>
 <style lang="scss">
+  .loading_group {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(#145388, 0.2);
+    border-radius: 50%;
+    border-top-color: #145388;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    left: calc(33% - 15px);
+    top: calc(50% - 15px);
+    position: fixed;
+    z-index: 1;
+  }
   .col-form-label {
     margin-bottom: 1px;
   }
@@ -692,6 +716,7 @@
     data() {
       return {
         tempRoleResource: null,
+        loadingTable : false,
         showLength: 20,
         isLoading: false,
         direction: getDirection().direction,

@@ -380,6 +380,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="securityLogTable"
                     :api-url="securityLogTableItems.apiUrl"
@@ -391,6 +394,8 @@
                     class="table-striped"
                     @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onSecurityLogTablePaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                   </vuetable>
                 </div>
@@ -488,6 +493,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="decisionLogTable"
                     :api-url="decisionLogTableItems.apiUrl"
@@ -499,6 +507,8 @@
                     track-by="id"
                     @vuetable:checkbox-toggled="onCheckStatusChangeGroup"
                     @vuetable:pagination-data="ondecisionLogTablePaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
 <!--                    <template slot="content" slot-scope="props">-->
 <!--                      <span v-if="props.rowData.content.isLong === false" class="cursor-p text-primary">{{ props.rowData.content.content }}</span>-->
@@ -599,6 +609,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="handCheckLogTable"
                     :api-url="handCheckLogTableItems.apiUrl"
@@ -610,6 +623,8 @@
                     track-by="id"
                     @vuetable:checkbox-toggled="onCheckStatusChangeHand"
                     @vuetable:pagination-data="onhandCheckLogTablePaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                   </vuetable>
                 </div>
@@ -720,6 +735,7 @@
           'judge': false,
           'manual': false
         },
+        loadingTable:false,
         direction: getDirection().direction,
         tabStatus : 'device',
         link: '',

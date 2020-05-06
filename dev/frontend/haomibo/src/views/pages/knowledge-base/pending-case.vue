@@ -64,6 +64,9 @@
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
+              <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                <div class="loading"></div>
+              </div>
               <vuetable
                 ref="pendingListTable"
                 track-by="caseDealId"
@@ -74,30 +77,32 @@
                 pagination-path="pagination"
                 @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
+                @vuetable:loading="loadingTable = true"
+                @vuetable:loaded="loadingTable = false"
                 class="table-striped"
               >
                 <template slot="task" slot-scope="props">
                     <span class="cursor-p text-primary"
                           @click="onRowClicked(props.rowData)">
-                      {{props.rowData.task.taskNumber}}
+                      {{props.rowData.history.taskNumber}}
                     </span>
                 </template>
                 <template slot="mode" slot-scope="props">
-                  <div v-if="props.rowData.workMode==null"></div>
+                  <div v-if="props.rowData.history==null"></div>
                   <div v-else>
-                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('all')">
+                    <div v-if="props.rowData.history.modeName===getModeDataCode('all')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan')">
+                    <div v-if="props.rowData.history.modeName===getModeDataCode('scan')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+judge')">
+                    <div v-if="props.rowData.history.modeName===getModeDataCode('scan+judge')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+hand')">
+                    <div v-if="props.rowData.history.modeName===getModeDataCode('scan+hand')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
@@ -1023,6 +1028,7 @@
         },
         selectedVideo: null,
         isExpanded: false,
+        loadingTable:false,
         pageStatus: 'table',
         power: false,
         siteData: [],
@@ -1158,45 +1164,43 @@
               }
             },
             {
-              name: 'task',
+              name: 'history',
               title: this.$t('knowledge-base.site'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (task) => {
-                if (task == null) return '';
-                if (task.field == null) return '';
-                return task.field.fieldDesignation;
+              callback: (history) => {
+                if (history == null) return '';
+                return history.fieldDesignation;
               }
             },
             {
-              name: 'scanDevice',
+              name: 'history',
               title: this.$t('knowledge-base.security-instrument'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (scanDevice) => {
-                if (scanDevice == null) return '';
-                if (scanDevice.deviceName == null) return '';
-                return scanDevice.deviceName;
+              callback: (history) => {
+                if (history == null) return '';
+                return history.scanDeviceName;
               }
             },
             {
-              name: 'judgeDevice',
+              name: 'history',
               title: this.$t('knowledge-base.inspection-station'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (judgeDevice) => {
-                if (judgeDevice == null) return '';
-                return judgeDevice.deviceName;
+              callback: (history) => {
+                if (history == null) return '';
+                return history.judgeDeviceName;
               }
             },
             {
-              name: 'handDevice',
+              name: 'history',
               title: this.$t('knowledge-base.hand-inspection-station'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (handDevice) => {
-                if (handDevice == null) return '';
-                return handDevice.deviceName;
+              callback: (history) => {
+                if (history == null) return '';
+                return history.handDeviceName;
               }
             },
             {

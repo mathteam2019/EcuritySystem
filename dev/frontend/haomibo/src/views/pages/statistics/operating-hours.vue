@@ -241,6 +241,9 @@
 
 
           <div class="table-wrapper table-responsive">
+            <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
+              <div class="loading_statistics"></div>
+            </div>
             <vuetable
               ref="taskVuetable"
               :api-url="taskVuetableItems.apiUrl"
@@ -250,6 +253,8 @@
               pagination-path="pagination"
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
+              @vuetable:loading="loadingTable = true"
+              @vuetable:loaded="loadingTable = false"
             >
             </vuetable>
           </div>
@@ -662,6 +667,7 @@
           {value: 'pdf', label: 'PDF'},
         ],
         isModalVisible: false,
+        loadingTable:false,
 
         filter: {
           deviceName: '',
@@ -1147,6 +1153,7 @@
           let xAxisChart = [];
           let allUserStr = "";
           if(keyData.length>(this.showLength+4)){
+            console.log(this.showLength);
             let percent = Math.round((keyData.length-this.showLength) / this.showLength * 100);
             this.chartWidth = percent + '%';
           }

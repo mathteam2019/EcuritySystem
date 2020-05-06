@@ -92,6 +92,9 @@
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
+              <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                <div class="loading"></div>
+              </div>
               <vuetable
                 ref="taskVuetable"
                 track-by="taskId"
@@ -104,6 +107,8 @@
                 class="table-hover"
                 @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
+                @vuetable:loading="loadingTable = true"
+                @vuetable:loaded="loadingTable = false"
               >
                 <template slot="taskNumber" slot-scope="props">
                     <span class="cursor-p text-primary" @click="onRowClicked(props.rowData.taskId)">
@@ -111,22 +116,21 @@
                     </span>
                 </template>
                 <template slot="mode" slot-scope="props">
-                  <div v-if="props.rowData.workFlow==null"></div>
-                  <div v-else-if="props.rowData.workFlow.workMode==null"></div>
+                  <div v-if="props.rowData.modeName==null"></div>
                   <div v-else>
-                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('all')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('all')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('scan')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan+judge')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('scan+judge')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan+hand')">
+                    <div v-if="props.rowData.modeName===getModeDataCode('scan+hand')">
                       <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
@@ -998,6 +1002,7 @@
         name: '',
         imgUrl:[],
         isExpanded: false,
+        loadingTable:false,
         pageStatus: 'table',
         power: false,
         siteData: [],
@@ -1207,57 +1212,43 @@
               }
             },
             {
-              name: 'field',
+              name: 'fieldDesignation',
               title: this.$t('personal-inspection.on-site'),
               titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (field) => {
-                if (field == null) return '';
-                return field.fieldDesignation;
-              }
+              dataClass: 'text-center'
             },
             {
-              name: 'serScan',
+              name: 'scanDeviceName',
               title: this.$t('personal-inspection.security-instrument'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (serScan) => {
-                if (serScan == null) return '';
-                if (serScan.scanDevice == null) return '';
-                return serScan.scanDevice.deviceName;
-              }
             },
             {
-              name: 'serScan',
+              name: 'scanPointsManName',
               title: this.$t('personal-inspection.guide'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (serScan) => {
-                if (serScan == null) return '';
-                if (serScan.scanPointsman == null) return '';
-                return serScan.scanPointsman.userName;
-              }
             },
             {
-              name: 'serScan',
+              name: 'scanStartTime',
               sortField: 'scanStartTime',
               title: this.$t('personal-inspection.scan-start-time'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (serScan) => {
-                if (serScan == null) return '';
-                return getDateTimeWithFormat(serScan.scanStartTime);
+              callback: (scanStartTime) => {
+                if (scanStartTime == null) return '';
+                return getDateTimeWithFormat(scanStartTime);
               }
             },
             {
-              name: 'serScan',
+              name: 'scanEndTime',
               sortField: 'scanEndTime',
               title: this.$t('personal-inspection.scan-end-time'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (serScan) => {
-                if (serScan == null) return '';
-                return getDateTimeWithFormat(serScan.scanEndTime);
+              callback: (scanEndTime) => {
+                if (scanEndTime == null) return '';
+                return getDateTimeWithFormat(scanEndTime);
               }
             },
           ],
@@ -1269,7 +1260,7 @@
       //this.timer = setInterval(this.autoUpdate, 20000)
     },
     beforeDestroy() {
-      clearInterval(this.timer)
+      //clearInterval(this.timer)
     },
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
@@ -1814,10 +1805,10 @@
               case responseMessages['ok']:
                 this.showPage = response.data.data;
                 this.apiBaseURL = apiBaseUrl;
-                if (this.showPage.serCheckResult !== null) {
-                  this.pageStatus = 'table';
-                  this.$refs.taskVuetable.reload();
-                }
+                // if (this.showPage.serCheckResult !== null) {
+                //   this.pageStatus = 'table';
+                //   this.$refs.taskVuetable.reload();
+                // }
                 //if(this.showPage.workFlow.modeName
                 let modeName;
                 if (this.showPage.serJudgeGraph !== null) {
@@ -2249,29 +2240,29 @@
       //:row-class="rowColour(props.rowData)"
       rowColour(dataItem, index) {
 
-        if (dataItem.workFlow !== null) {
-          if (dataItem.workFlow.workMode !== null) {
-            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('all')) {
-              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+        if (dataItem.modeName !== null) {
+
+            if (dataItem.modeName === this.getModeDataCode('all')) {
+              if (dataItem.assignHandId === null || dataItem.assignJudgeId === null) {
                 return 'bg-orange';
               }
             }
-            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+judge')) {
-              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 1) {
+            if (dataItem.modeName === this.getModeDataCode('scan+judge')) {
+              if (dataItem.assignHandId === null && dataItem.assignJudgeId === null) {
                 return 'bg-orange';
               }
             }
-            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+hand')) {
-              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+            if (dataItem.modeName === this.getModeDataCode('scan+hand')) {
+              if (dataItem.assignHandId === null || dataItem.assignJudgeId === null) {
                 return 'bg-orange';
               }
             }
-            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan')) {
-              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 1) {
+            if (dataItem.modeName === this.getModeDataCode('scan')) {
+              if (dataItem.assignHandId === null && dataItem.assignJudgeId === null) {
                 return 'bg-orange';
               }
             }
-          }
+
         }
       },
 

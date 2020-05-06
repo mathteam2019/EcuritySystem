@@ -136,6 +136,9 @@
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
+                  <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                    <div class="loading"></div>
+                  </div>
                   <vuetable
                     ref="vuetable"
                     :api-url="vuetableItems.apiUrl"
@@ -147,6 +150,8 @@
                     track-by="orgId"
                     @vuetable:checkbox-toggled="onCheckStatusChange"
                     @vuetable:pagination-data="onPaginationData"
+                    @vuetable:loading="loadingTable = true"
+                    @vuetable:loaded="loadingTable = false"
                   >
                     <template slot="orgNumberLabel" slot-scope="props">
                       <div v-if="!props.rowData.orgNumberLabel.isLong">
@@ -632,7 +637,6 @@
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
 
-
   const {required, maxLength} = require('vuelidate/lib/validators');
 
   let getOrgById = (orgData, orgId) => {
@@ -705,6 +709,7 @@
     data() {
       return {
         isLoading: false,
+        loadingTable:false,
         filter: {
           orgName: '',
           status: null,

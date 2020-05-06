@@ -58,6 +58,9 @@
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
+              <div v-show="loadingTable" class="overlay flex flex-column items-center justify-center">
+                <div class="loading"></div>
+              </div>
               <vuetable
                 ref="pendingListTable"
                 track-by="caseDealId"
@@ -68,12 +71,14 @@
                 pagination-path="pagination"
                 @vuetable:checkbox-toggled="onCheckStatusChange"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
+                @vuetable:loading="loadingTable = true"
+                @vuetable:loaded="loadingTable = false"
                 class="table-striped"
               >
                 <template slot="task" slot-scope="props">
                     <span class="cursor-p text-primary"
                           @click="onRowClicked(props.rowData)">
-                      {{props.rowData.task.taskNumber}}
+                      {{props.rowData.history.taskNumber}}
                     </span>
 
                 </template>
@@ -967,6 +972,7 @@
         },
         selectedVideo: null,
         isExpanded: false,
+        loadingTable:false,
         pageStatus: 'table',
         power: true,
         siteData: [],
@@ -1088,14 +1094,13 @@
               }
             },
             {
-              name: 'task',
+              name: 'history',
               title: this.$t('knowledge-base.site'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (task) => {
-                if (task == null) return '';
-                if (task.field == null) return '';
-                return task.field.fieldDesignation;
+              callback: (history) => {
+                if (history == null) return '';
+                return history.fieldDesignation;
               }
             },
             {
