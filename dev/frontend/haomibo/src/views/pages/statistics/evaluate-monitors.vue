@@ -75,508 +75,515 @@
           </div>
         </b-col>
       </b-row>
-      <b-row class="mt-2">
-        <b-col>
-          <b-card class="no-padding" style="background-color: #365ae0;">
-            <div class="statistics-item type-1">
-              <div>
-                <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
-              </div>
-              <div>
-                <div>
-                  <span v-if="preViewData.total!=null">{{preViewData.total}}</span>
-                  <span v-else>0</span>
-                </div>
-                <div><span>{{$t('maintenance-management.process-task.hand')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: red;">
-                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
-              </div>
-              <div>
-                <div><span v-if="preViewData.missingReport!=null">{{preViewData.missingReport}}</span>
-                  <span v-else>0</span></div>
-                <div><span>{{$t('statistics.evaluate-monitors.missing-report')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: red;">
-                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
-              </div>
-              <div>
-                <div>
-                  <span v-if="preViewData.total==null">0%</span>
-                  <span v-else-if="preViewData.total!==0">{{Math.round(preViewData.missingReport/preViewData.total * 100)}}%</span>
-                  <span v-else>0%</span>
-                </div>
-                <div><span>{{$t('statistics.evaluate-monitors.missing-report-rate')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: #009900;">
-                <b-img draggable="false" src="/assets/img/export.svg"/>
-              </div>
-              <div>
-                <div><span v-if="preViewData.mistakeReport!=null">{{preViewData.mistakeReport}}</span>
-                  <span v-else>0</span></div>
-                <div><span>{{$t('statistics.evaluate-monitors.mistake-report')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: #009900;">
-                <b-img draggable="false" src="/assets/img/export.svg"/>
-              </div>
-              <div>
-                <div>
-                  <span v-if="preViewData.total==null">0%</span>
-                  <span v-else-if="preViewData.total!==0">{{Math.round(preViewData.mistakeReport/preViewData.total * 100)}}%</span>
-                  <span v-else>0%</span>
-                </div>
-                <div><span>{{$t('statistics.evaluate-monitors.mistake-report-rate')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-      </b-row>
-      <b-row class="mt-4">
-        <b-col>
-          <b-card class="no-padding" style="background-color: #1989fa;">
-            <div class="statistics-item type-1">
-              <div>
-                <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
-              </div>
-              <div>
-                <div><span
-                  v-if="preViewData.artificialJudge!=null">{{preViewData.artificialJudge}}</span>
-                  <span v-else>0</span></div>
-                <div><span>{{$t('statistics.evaluate-monitors.artificial-judge')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: red;">
-                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
-              </div>
-              <div>
-                <div><span v-if="preViewData.artificialJudgeMissing!=null">{{preViewData.artificialJudgeMissing}}</span>
-                  <span v-else>0</span></div>
-                <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-missing')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: red;">
-                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
-              </div>
-              <div>
-                <div>
-                  <span v-if="preViewData.artificialJudge==null">0%</span>
-                  <span v-else-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMissing/preViewData.artificialJudge * 100)}}%</span>
-                  <span v-else>0%</span>
-                </div>
-                <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-missing-rate')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: #009900;">
-                <b-img draggable="false" src="/assets/img/export.svg"/>
-              </div>
-              <div>
-                <div><span v-if="preViewData.artificialJudgeMistake!=null">{{preViewData.artificialJudgeMistake}}</span>
-                  <span v-else>0</span></div>
-                <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-mistake')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: #009900;">
-                <b-img draggable="false" src="/assets/img/export.svg"/>
-              </div>
-              <div>
-                <div>
-                  <span v-if="preViewData.artificialJudge==null">0%</span>
-                  <span v-else-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMistake/preViewData.artificialJudge * 100)}}%</span>
-                  <span v-else>0%</span>
-                </div>
-                <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-mistake-rate')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-      </b-row>
-      <b-row class="mt-4">
-        <b-col>
-          <b-card class="no-padding" style="background-color: #0cb4d2;">
-            <div class="statistics-item type-1">
-              <div>
-                <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
-              </div>
-              <div>
-                <div><span
-                  v-if="preViewData.intelligenceJudge!=null">{{preViewData.intelligenceJudge}}</span>
-                  <span v-else>0</span></div>
-                <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: red;">
-                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
-              </div>
-              <div>
-                <div><span v-if="preViewData.intelligenceJudgeMissing!=null">{{preViewData.intelligenceJudgeMissing}}</span>
-                  <span v-else>0</span></div>
-                <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-missing')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: red;">
-                <b-img draggable="false" src="/assets/img/circle_close.svg"/>
-              </div>
-              <div>
-                <div>
-                  <span v-if="preViewData.intelligenceJudge==null">0%</span>
-                  <span v-else-if="preViewData.intelligenceJudge!==0">{{Math.round(preViewData.intelligenceJudgeMissing/preViewData.intelligenceJudge * 100)}}%</span>
-                  <span v-else>0%</span>
-                </div>
-                <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-missing-rate')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: #009900;">
-                <b-img draggable="false" src="/assets/img/export.svg"/>
-              </div>
-              <div>
-                <div><span v-if="preViewData.intelligenceJudgeMistake!=null">{{preViewData.intelligenceJudgeMistake}}</span>
-                  <span v-else>0</span></div>
-                <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-mistake')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card class="no-padding" style="background-color: #fff;">
-            <div class="statistics-item type-2">
-              <div style="background-color: #009900;">
-                <b-img draggable="false" src="/assets/img/export.svg"/>
-              </div>
-              <div>
-                <div>
-                  <span v-if="preViewData.intelligenceJudge==null">0%</span>
-                  <span v-else-if="preViewData.intelligenceJudge!==0">{{Math.round(preViewData.intelligenceJudgeMistake/preViewData.intelligenceJudge * 100)}}%</span>
-                  <span v-else>0%</span>
-                </div>
-                <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-mistake-rate')}}</span></div>
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-      </b-row>
-      <b-row class="pt-2 mt-4">
-        <b-col cols="8">
-        </b-col>
-        <b-col cols="4" class="d-flex justify-content-end align-items-center">
-          <div>
-            <b-button size="sm" class="ml-2" variant="info default" @click="showTable = !showTable">
-              <i class="icofont-exchange"/>&nbsp;{{ $t('statistics.evaluate-monitors.displacement') }}
-            </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default"
-                      :disabled="checkPermItem('evaluate_statistics_export')" @click="onExportButton()">
-              <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
-            </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default"
-                      :disabled="checkPermItem('evaluate_statistics_print')" @click="onPrintButton()">
-              <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
-            </b-button>
-          </div>
-        </b-col>
-      </b-row>
-      <div v-if="!showTable">
-        <b-row class="mt-3">
-          <b-col class="pr-0" cols="4">
-            <b-card>
-              <b-card-header>
-                <h5>{{$t('maintenance-management.process-task.hand')}}</h5>
-              </b-card-header>
-              <b-row style="height: 300px;">
-                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.total!=null" :diameter="156" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.missingReport/preViewData.total * 100)"
-                                       :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.total==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.total!==0">{{Math.round(preViewData.missingReport/preViewData.total * 100)}}%</span>
-                    <span class="chart percent clearfix" v-else>0%</span>
-                    {{$t('statistics.evaluate-monitors.missing-report')}}
-                  </radial-progress-bar>
-                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
-                    <span class="chart percent clearfix">0%</span>
-                    {{$t('statistics.evaluate-monitors.missing-report')}}
-                  </radial-progress-bar>
-                </b-col>
-                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.total!=null" :diameter="172" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.mistakeReport/preViewData.total * 100)"
-                                       :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.total==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.total!==0">{{Math.round(preViewData.mistakeReport/preViewData.total * 100)}}%</span>
-                    <span class="chart percent clearfix" v-else>0%</span>
-                    {{$t('statistics.evaluate-monitors.mistake-report')}}
-                  </radial-progress-bar>
-                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
-                    <span class="chart percent clearfix">0%</span>
-                    {{$t('statistics.evaluate-monitors.mistake-report')}}
-                  </radial-progress-bar>
-                </b-col>
-              </b-row>
-            </b-card>
-          </b-col>
-          <b-col cols="8">
-            <b-card>
-              <b-card-header>
-                <h5>{{$t('statistics.evaluate-monitors.missing-report')}}
-                  {{$t('statistics.evaluate-monitors.mistake-report')}}</h5>
-              </b-card-header>
-              <b-row>
-                <b-col>
-                  <v-chart :options="lineChart1Options" style="width: 100%; height: 300px" :autoresize="true"/>
-                </b-col>
-              </b-row>
-            </b-card>
-          </b-col>
-        </b-row>
-        <b-row class="mt-3">
-          <b-col class="pr-0" cols="4">
-            <b-card>
-              <b-card-header>
-                <h5>{{$t('statistics.evaluate-monitors.artificial-judge')}}</h5>
-              </b-card-header>
-              <b-row style="height: 300px;">
-                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.artificialJudge!=null" :diameter="156" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.artificialJudgeMissing/preViewData.artificialJudge * 100)"
-                                       :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.artificialJudge==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMissing/preViewData.artificialJudge * 100)}}%</span>
-                    <span class="chart percent clearfix" v-else>0%</span>
-                    {{$t('statistics.evaluate-monitors.missing-report')}}
-                  </radial-progress-bar>
-                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
-                    <span class="chart percent clearfix">0%</span>
-                    {{$t('statistics.evaluate-monitors.missing-report')}}
-                  </radial-progress-bar>
-                </b-col>
-                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.artificialJudge!=null" :diameter="172" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.artificialJudgeMistake/preViewData.artificialJudge * 100)"
-                                       :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMistake/preViewData.artificialJudge * 100)}}%</span>
-                    <span class="chart percent clearfix" v-else>0%</span>
-                    {{$t('statistics.evaluate-monitors.mistake-report')}}
-                  </radial-progress-bar>
-                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
-                    <span class="chart percent clearfix">0%</span>
-                    {{$t('statistics.evaluate-monitors.mistake-report')}}
-                  </radial-progress-bar>
-                </b-col>
-              </b-row>
-            </b-card>
-          </b-col>
-          <b-col cols="8">
-            <b-card>
-              <b-card-header>
-                <h5>{{$t('statistics.evaluate-monitors.missing-report')}}
-                  {{$t('statistics.evaluate-monitors.mistake-report')}}</h5>
-              </b-card-header>
-              <b-row>
-                <b-col>
-                  <v-chart :options="lineChart2Options" style="width: 100%; height: 300px" :autoresize="true"/>
-                </b-col>
-              </b-row>
-            </b-card>
-          </b-col>
-        </b-row>
-        <b-row class="mt-3">
-          <b-col class="pr-0" cols="4">
-            <b-card>
-              <b-card-header>
-                <h5>{{$t('statistics.evaluate-monitors.intelligence-judge')}}</h5>
-              </b-card-header>
-              <b-row style="height: 300px;">
-                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.intelligenceJudge!=null" :diameter="156" :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.intelligenceJudgeMissing/preViewData.intelligenceJudge * 100)"
-                                       :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.intelligenceJudge!==0">{{Math.round(preViewData.intelligenceJudgeMissing/preViewData.intelligenceJudge * 100)}}%</span>
-                    <span class="chart percent clearfix" v-else>0%</span>
-                    {{$t('statistics.evaluate-monitors.missing-report')}}
-                  </radial-progress-bar>
-                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
-                    <span class="chart percent clearfix">0%</span>
-                    {{$t('statistics.evaluate-monitors.missing-report')}}
-                  </radial-progress-bar>
-                </b-col>
-                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.intelligenceJudge==null" :diameter="156" :strokeWidth="8"
-                                       :completed-steps="0" :total-steps=100>
-                    <span class="chart percent clearfix">0%</span>
-                    {{$t('statistics.evaluate-monitors.mistake-report')}}
-                  </radial-progress-bar>
-                  <radial-progress-bar v-else-if="preViewData.intelligenceJudge!==0" :diameter="172"
-                                       :strokeWidth="8"
-                                       :completed-steps="Math.round(preViewData.intelligenceJudgeMistake/preViewData.intelligenceJudge * 100)"
-                                       :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.round(preViewData.intelligenceJudgeMistake/preViewData.intelligenceJudge * 100)}}%</span>
-                    {{$t('statistics.evaluate-monitors.mistake-report')}}
-                  </radial-progress-bar>
-                  <radial-progress-bar v-else-if="preViewData.intelligenceJudge===0" :diameter="172"
-                                       :strokeWidth="8" :completed-steps="0" :total-steps=100>
-                    <span class="chart percent clearfix">0%</span>
-                    {{$t('statistics.evaluate-monitors.mistake-report')}}
-                  </radial-progress-bar>
 
-                </b-col>
-              </b-row>
-            </b-card>
-          </b-col>
-          <b-col cols="8">
-            <b-card>
-              <b-card-header>
-                <h5>{{$t('statistics.evaluate-monitors.missing-report')}}
-                  {{$t('statistics.evaluate-monitors.mistake-report')}}</h5>
-              </b-card-header>
-              <b-row>
-                <b-col>
-                  <v-chart :options="lineChart3Options" style="width: 100%; height: 300px" :autoresize="true"/>
-                </b-col>
-              </b-row>
-            </b-card>
-          </b-col>
-        </b-row>
-      </div>
-      <div v-if="showTable">
-        <b-row class="mt-3">
+      <div v-show="!isLoading">
+        <b-row class="mt-2">
           <b-col>
-            <b-card>
-              <b-card-header>
-                <h5 class="text-center my-4">{{$t('statistics.evaluate-monitors.table-title')}}</h5>
-              </b-card-header>
-
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.fieldId === null">{{this.allField}}</span>
-                  <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.deviceId === null">{{allDevice}}</span>
-                  <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.userName === null">{{$t('statistics.view.operator')}}</span>
-                  <span v-else>{{filter.userName}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
-                  <span v-else>{{filter.userName}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('maintenance-management.process-task.judge')}}:</b></b-col>
-                <b-col cols="11"><span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
-                  <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
-                  <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
-                  <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
-                  <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
-                  <span v-else>{{$t('statistics.year')}}</span>
-                </b-col>
-              </b-row>
-
-              <div class="table-wrapper table-responsive overflow-auto">
-                <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
-                  <div class="loading_statistics"></div>
+            <b-card class="no-padding" style="background-color: #365ae0;">
+              <div class="statistics-item type-1">
+                <div>
+                  <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
                 </div>
-                <vuetable
-                  ref="taskVuetable"
-                  :api-url="taskVuetableItems.apiUrl"
-                  :fields="taskVuetableItems.fields"
-                  :http-fetch="taskVuetableHttpFetch"
-                  :per-page="taskVuetableItems.perPage"
-                  pagination-path="pagination"
-                  class="table-hover"
-                  @vuetable:pagination-data="onTaskVuetablePaginationData"
-                  @vuetable:loading="loadingTable = true"
-                  @vuetable:loaded="loadingTable = false"
-                >
-                </vuetable>
+                <div>
+                  <div>
+                    <span v-if="preViewData.total!=null">{{preViewData.total}}</span>
+                    <span v-else>0</span>
+                  </div>
+                  <div><span>{{$t('maintenance-management.process-task.hand')}}</span></div>
+                </div>
               </div>
-              <div class="pagination-wrapper">
-                <vuetable-pagination-bootstrap
-                  ref="taskVuetablePagination"
-                  @vuetable-pagination:change-page="onTaskVuetableChangePage"
-                  :initial-per-page="taskVuetableItems.perPage"
-                  @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-                />
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: red;">
+                  <b-img draggable="false" src="/assets/img/circle_close.svg"/>
+                </div>
+                <div>
+                  <div><span v-if="preViewData.missingReport!=null">{{preViewData.missingReport}}</span>
+                    <span v-else>0</span></div>
+                  <div><span>{{$t('statistics.evaluate-monitors.missing-report')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: red;">
+                  <b-img draggable="false" src="/assets/img/circle_close.svg"/>
+                </div>
+                <div>
+                  <div>
+                    <span v-if="preViewData.total==null">0%</span>
+                    <span v-else-if="preViewData.total!==0">{{Math.round(preViewData.missingReport/preViewData.total * 100)}}%</span>
+                    <span v-else>0%</span>
+                  </div>
+                  <div><span>{{$t('statistics.evaluate-monitors.missing-report-rate')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #009900;">
+                  <b-img draggable="false" src="/assets/img/export.svg"/>
+                </div>
+                <div>
+                  <div><span v-if="preViewData.mistakeReport!=null">{{preViewData.mistakeReport}}</span>
+                    <span v-else>0</span></div>
+                  <div><span>{{$t('statistics.evaluate-monitors.mistake-report')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #009900;">
+                  <b-img draggable="false" src="/assets/img/export.svg"/>
+                </div>
+                <div>
+                  <div>
+                    <span v-if="preViewData.total==null">0%</span>
+                    <span v-else-if="preViewData.total!==0">{{Math.round(preViewData.mistakeReport/preViewData.total * 100)}}%</span>
+                    <span v-else>0%</span>
+                  </div>
+                  <div><span>{{$t('statistics.evaluate-monitors.mistake-report-rate')}}</span></div>
+                </div>
               </div>
             </b-card>
           </b-col>
         </b-row>
+        <b-row class="mt-4">
+          <b-col>
+            <b-card class="no-padding" style="background-color: #1989fa;">
+              <div class="statistics-item type-1">
+                <div>
+                  <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
+                </div>
+                <div>
+                  <div><span
+                    v-if="preViewData.artificialJudge!=null">{{preViewData.artificialJudge}}</span>
+                    <span v-else>0</span></div>
+                  <div><span>{{$t('statistics.evaluate-monitors.artificial-judge')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: red;">
+                  <b-img draggable="false" src="/assets/img/circle_close.svg"/>
+                </div>
+                <div>
+                  <div><span v-if="preViewData.artificialJudgeMissing!=null">{{preViewData.artificialJudgeMissing}}</span>
+                    <span v-else>0</span></div>
+                  <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-missing')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: red;">
+                  <b-img draggable="false" src="/assets/img/circle_close.svg"/>
+                </div>
+                <div>
+                  <div>
+                    <span v-if="preViewData.artificialJudge==null">0%</span>
+                    <span v-else-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMissing/preViewData.artificialJudge * 100)}}%</span>
+                    <span v-else>0%</span>
+                  </div>
+                  <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-missing-rate')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #009900;">
+                  <b-img draggable="false" src="/assets/img/export.svg"/>
+                </div>
+                <div>
+                  <div><span v-if="preViewData.artificialJudgeMistake!=null">{{preViewData.artificialJudgeMistake}}</span>
+                    <span v-else>0</span></div>
+                  <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-mistake')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #009900;">
+                  <b-img draggable="false" src="/assets/img/export.svg"/>
+                </div>
+                <div>
+                  <div>
+                    <span v-if="preViewData.artificialJudge==null">0%</span>
+                    <span v-else-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMistake/preViewData.artificialJudge * 100)}}%</span>
+                    <span v-else>0%</span>
+                  </div>
+                  <div><span>{{$t('statistics.evaluate-monitors.artificial-judge-mistake-rate')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+        </b-row>
+        <b-row class="mt-4">
+          <b-col>
+            <b-card class="no-padding" style="background-color: #0cb4d2;">
+              <div class="statistics-item type-1">
+                <div>
+                  <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
+                </div>
+                <div>
+                  <div><span
+                    v-if="preViewData.intelligenceJudge!=null">{{preViewData.intelligenceJudge}}</span>
+                    <span v-else>0</span></div>
+                  <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: red;">
+                  <b-img draggable="false" src="/assets/img/circle_close.svg"/>
+                </div>
+                <div>
+                  <div><span v-if="preViewData.intelligenceJudgeMissing!=null">{{preViewData.intelligenceJudgeMissing}}</span>
+                    <span v-else>0</span></div>
+                  <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-missing')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: red;">
+                  <b-img draggable="false" src="/assets/img/circle_close.svg"/>
+                </div>
+                <div>
+                  <div>
+                    <span v-if="preViewData.intelligenceJudge==null">0%</span>
+                    <span v-else-if="preViewData.intelligenceJudge!==0">{{Math.round(preViewData.intelligenceJudgeMissing/preViewData.intelligenceJudge * 100)}}%</span>
+                    <span v-else>0%</span>
+                  </div>
+                  <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-missing-rate')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #009900;">
+                  <b-img draggable="false" src="/assets/img/export.svg"/>
+                </div>
+                <div>
+                  <div><span v-if="preViewData.intelligenceJudgeMistake!=null">{{preViewData.intelligenceJudgeMistake}}</span>
+                    <span v-else>0</span></div>
+                  <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-mistake')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #009900;">
+                  <b-img draggable="false" src="/assets/img/export.svg"/>
+                </div>
+                <div>
+                  <div>
+                    <span v-if="preViewData.intelligenceJudge==null">0%</span>
+                    <span v-else-if="preViewData.intelligenceJudge!==0">{{Math.round(preViewData.intelligenceJudgeMistake/preViewData.intelligenceJudge * 100)}}%</span>
+                    <span v-else>0%</span>
+                  </div>
+                  <div><span>{{$t('statistics.evaluate-monitors.intelligence-judge-mistake-rate')}}</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+        </b-row>
+        <b-row class="pt-2 mt-4">
+          <b-col cols="8">
+          </b-col>
+          <b-col cols="4" class="d-flex justify-content-end align-items-center">
+            <div>
+              <b-button size="sm" class="ml-2" variant="info default" @click="showTable = !showTable">
+                <i class="icofont-exchange"/>&nbsp;{{ $t('statistics.evaluate-monitors.displacement') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="outline-info default"
+                        :disabled="checkPermItem('evaluate_statistics_export')" @click="onExportButton()">
+                <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="outline-info default"
+                        :disabled="checkPermItem('evaluate_statistics_print')" @click="onPrintButton()">
+                <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
+              </b-button>
+            </div>
+          </b-col>
+        </b-row>
+        <div v-if="!showTable">
+          <b-row class="mt-3">
+            <b-col class="pr-0" cols="4">
+              <b-card>
+                <b-card-header>
+                  <h5>{{$t('maintenance-management.process-task.hand')}}</h5>
+                </b-card-header>
+                <b-row style="height: 300px;">
+                  <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
+                    <radial-progress-bar v-if="preViewData.total!=null && preViewData.total!==0" :diameter="156" :strokeWidth="8"
+                                         :completed-steps="Math.round(preViewData.missingReport/preViewData.total * 100)"
+                                         :total-steps=100>
+                      <span class="chart percent clearfix" v-if="preViewData.total==null">0%</span>
+                      <span class="chart percent clearfix" v-else-if="preViewData.total!==0">{{Math.round(preViewData.missingReport/preViewData.total * 100)}}%</span>
+                      <span class="chart percent clearfix" v-else>0%</span>
+                      {{$t('statistics.evaluate-monitors.missing-report')}}
+                    </radial-progress-bar>
+                    <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                      <span class="chart percent clearfix">0%</span>
+                      {{$t('statistics.evaluate-monitors.missing-report')}}
+                    </radial-progress-bar>
+                  </b-col>
+                  <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
+                    <radial-progress-bar v-if="preViewData.total!=null && preViewData.total!==0" :diameter="172" :strokeWidth="8"
+                                         :completed-steps="Math.round(preViewData.mistakeReport/preViewData.total * 100)"
+                                         :total-steps=100>
+                      <span class="chart percent clearfix" v-if="preViewData.total==null">0%</span>
+                      <span class="chart percent clearfix" v-else-if="preViewData.total!==0">{{Math.round(preViewData.mistakeReport/preViewData.total * 100)}}%</span>
+                      <span class="chart percent clearfix" v-else>0%</span>
+                      {{$t('statistics.evaluate-monitors.mistake-report')}}
+                    </radial-progress-bar>
+                    <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                      <span class="chart percent clearfix">0%</span>
+                      {{$t('statistics.evaluate-monitors.mistake-report')}}
+                    </radial-progress-bar>
+                  </b-col>
+                </b-row>
+              </b-card>
+            </b-col>
+            <b-col cols="8">
+              <b-card>
+                <b-card-header>
+                  <h5>{{$t('statistics.evaluate-monitors.missing-report')}}
+                    {{$t('statistics.evaluate-monitors.mistake-report')}}</h5>
+                </b-card-header>
+                <b-row>
+                  <b-col>
+                    <v-chart :options="lineChart1Options" style="width: 100%; height: 300px" :autoresize="true"/>
+                  </b-col>
+                </b-row>
+              </b-card>
+            </b-col>
+          </b-row>
+          <b-row class="mt-3">
+            <b-col class="pr-0" cols="4">
+              <b-card>
+                <b-card-header>
+                  <h5>{{$t('statistics.evaluate-monitors.artificial-judge')}}</h5>
+                </b-card-header>
+                <b-row style="height: 300px;">
+                  <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
+                    <radial-progress-bar v-if="preViewData.artificialJudge!=null && preViewData.artificialJudge!==0" :diameter="156" :strokeWidth="8"
+                                         :completed-steps="Math.round(preViewData.artificialJudgeMissing/preViewData.artificialJudge * 100)"
+                                         :total-steps=100>
+                      <span class="chart percent clearfix" v-if="preViewData.artificialJudge==null">0%</span>
+                      <span class="chart percent clearfix" v-else-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMissing/preViewData.artificialJudge * 100)}}%</span>
+                      <span class="chart percent clearfix" v-else>0%</span>
+                      {{$t('statistics.evaluate-monitors.missing-report')}}
+                    </radial-progress-bar>
+                    <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                      <span class="chart percent clearfix">0%</span>
+                      {{$t('statistics.evaluate-monitors.missing-report')}}
+                    </radial-progress-bar>
+                  </b-col>
+                  <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
+                    <radial-progress-bar v-if="preViewData.artificialJudge!=null && preViewData.artificialJudge!==0" :diameter="172" :strokeWidth="8"
+                                         :completed-steps="Math.round(preViewData.artificialJudgeMistake/preViewData.artificialJudge * 100)"
+                                         :total-steps=100>
+                      <span class="chart percent clearfix" v-if="preViewData.artificialJudge!==0">{{Math.round(preViewData.artificialJudgeMistake/preViewData.artificialJudge * 100)}}%</span>
+                      <span class="chart percent clearfix" v-else>0%</span>
+                      {{$t('statistics.evaluate-monitors.mistake-report')}}
+                    </radial-progress-bar>
+                    <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                      <span class="chart percent clearfix">0%</span>
+                      {{$t('statistics.evaluate-monitors.mistake-report')}}
+                    </radial-progress-bar>
+                  </b-col>
+                </b-row>
+              </b-card>
+            </b-col>
+            <b-col cols="8">
+              <b-card>
+                <b-card-header>
+                  <h5>{{$t('statistics.evaluate-monitors.missing-report')}}
+                    {{$t('statistics.evaluate-monitors.mistake-report')}}</h5>
+                </b-card-header>
+                <b-row>
+                  <b-col>
+                    <v-chart :options="lineChart2Options" style="width: 100%; height: 300px" :autoresize="true"/>
+                  </b-col>
+                </b-row>
+              </b-card>
+            </b-col>
+          </b-row>
+          <b-row class="mt-3">
+            <b-col class="pr-0" cols="4">
+              <b-card>
+                <b-card-header>
+                  <h5>{{$t('statistics.evaluate-monitors.intelligence-judge')}}</h5>
+                </b-card-header>
+                <b-row style="height: 300px;">
+                  <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
+                    <radial-progress-bar v-if="preViewData.intelligenceJudge!=null && preViewData.intelligenceJudge!==0" :diameter="156" :strokeWidth="8"
+                                         :completed-steps="Math.round(preViewData.intelligenceJudgeMissing/preViewData.intelligenceJudge * 100)"
+                                         :total-steps=100>
+                      <span class="chart percent clearfix" v-if="preViewData.intelligenceJudge!==0">{{Math.round(preViewData.intelligenceJudgeMissing/preViewData.intelligenceJudge * 100)}}%</span>
+                      <span class="chart percent clearfix" v-else>0%</span>
+                      {{$t('statistics.evaluate-monitors.missing-report')}}
+                    </radial-progress-bar>
+                    <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                      <span class="chart percent clearfix">0%</span>
+                      {{$t('statistics.evaluate-monitors.missing-report')}}
+                    </radial-progress-bar>
+                  </b-col>
+                  <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
+                    <radial-progress-bar v-if="preViewData.intelligenceJudge==null || preViewData.intelligenceJudge===0" :diameter="156" :strokeWidth="8"
+                                         :completed-steps="0" :total-steps=100>
+                      <span class="chart percent clearfix">0%</span>
+                      {{$t('statistics.evaluate-monitors.mistake-report')}}
+                    </radial-progress-bar>
+                    <radial-progress-bar v-else-if="preViewData.intelligenceJudge!==0" :diameter="172"
+                                         :strokeWidth="8"
+                                         :completed-steps="Math.round(preViewData.intelligenceJudgeMistake/preViewData.intelligenceJudge * 100)"
+                                         :total-steps=100>
+                      <span class="chart percent clearfix">{{Math.round(preViewData.intelligenceJudgeMistake/preViewData.intelligenceJudge * 100)}}%</span>
+                      {{$t('statistics.evaluate-monitors.mistake-report')}}
+                    </radial-progress-bar>
+
+                  </b-col>
+                </b-row>
+              </b-card>
+            </b-col>
+            <b-col cols="8">
+              <b-card>
+                <b-card-header>
+                  <h5>{{$t('statistics.evaluate-monitors.missing-report')}}
+                    {{$t('statistics.evaluate-monitors.mistake-report')}}</h5>
+                </b-card-header>
+                <b-row>
+                  <b-col>
+                    <v-chart :options="lineChart3Options" style="width: 100%; height: 300px" :autoresize="true"/>
+                  </b-col>
+                </b-row>
+              </b-card>
+            </b-col>
+          </b-row>
+        </div>
+        <div v-if="showTable">
+          <b-row class="mt-3">
+            <b-col>
+              <b-card>
+                <b-card-header>
+                  <h5 class="text-center my-4">{{$t('statistics.evaluate-monitors.table-title')}}</h5>
+                </b-card-header>
+
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.fieldId === null">{{this.allField}}</span>
+                    <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.deviceId === null">{{allDevice}}</span>
+                    <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.userName === null">{{$t('statistics.view.operator')}}</span>
+                    <span v-else>{{filter.userName}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
+                    <span v-else>{{filter.userName}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('maintenance-management.process-task.judge')}}:</b></b-col>
+                  <b-col cols="11"><span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
+                    <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
+                    <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
+                    <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
+                    <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
+                    <span v-else>{{$t('statistics.year')}}</span>
+                  </b-col>
+                </b-row>
+
+                <b-row class="no-gutters">
+                  <b-col cols>
+                    <div class="table-wrapper table-responsive overflow-auto">
+                      <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
+                        <div class="loading_statistics"></div>
+                      </div>
+                      <vuetable
+                        ref="taskVuetable"
+                        :api-url="taskVuetableItems.apiUrl"
+                        :fields="taskVuetableItems.fields"
+                        :http-fetch="taskVuetableHttpFetch"
+                        :per-page="taskVuetableItems.perPage"
+                        pagination-path="pagination"
+                        class="table-hover"
+                        @vuetable:pagination-data="onTaskVuetablePaginationData"
+                        @vuetable:loading="loadingTable = true"
+                        @vuetable:loaded="loadingTable = false"
+                      >
+                      </vuetable>
+                    </div>
+                    <div class="pagination-wrapper">
+                      <vuetable-pagination-bootstrap
+                        ref="taskVuetablePagination"
+                        @vuetable-pagination:change-page="onTaskVuetableChangePage"
+                        :initial-per-page="taskVuetableItems.perPage"
+                        @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+                      />
+                    </div>
+                  </b-col>
+                </b-row>
+
+
+              </b-card>
+            </b-col>
+          </b-row>
+        </div>
       </div>
+
+      <div v-show="isLoading" class="loading"></div>
+
       <b-row class="mt-3"/>
     </div>
     <b-modal centered id="model-export" ref="model-export">
@@ -669,6 +676,7 @@
       return {
         showTable: false,
         loadingTable:false,
+        isLoading :false,
         lineChart1Options: {
           tooltip: {
             trigger: 'axis'
@@ -1282,6 +1290,7 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
+          this.isLoading = false;
 
           // if (this.filter.statWidth === 'year') {
           //   this.bar3ChartOptions.xAxis.data = this.xHour;
@@ -1347,7 +1356,12 @@
               break;
 
           }
-
+          this.lineChart1Options.series[0].data = [0];
+          this.lineChart1Options.series[1].data = [0];
+          this.lineChart2Options.series[0].data = [0];
+          this.lineChart2Options.series[1].data = [0];
+          this.lineChart3Options.series[0].data = [0];
+          this.lineChart3Options.series[1].data = [0];
           //this.line3ChartOptions.xAxis.data = this.xDay;
           if (this.filter.statWidth !== 'year') {
             for (let i = 0; i < this.lineChart1Options.xAxis.data.length; i++) {
@@ -1399,9 +1413,16 @@
 
         }
 
+        this.isLoading = true;
         this.getPreviewData();
-        this.getChartData();
-        this.$refs.taskVuetable.refresh();
+        //this.getPreviewData();
+        if (this.showTable) {
+          this.$refs.taskVuetable.refresh();
+        } else {
+          this.getChartData();
+        }
+        // this.getChartData();
+        // this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
         this.filter = {

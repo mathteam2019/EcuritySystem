@@ -76,7 +76,7 @@
                 class="table-striped"
               >
                 <template slot="task" slot-scope="props">
-                    <span class="cursor-p text-primary"
+                    <span  v-if="props.rowData.history !==null" class="cursor-p text-primary"
                           @click="onRowClicked(props.rowData)">
                       {{props.rowData.history.taskNumber}}
                     </span>

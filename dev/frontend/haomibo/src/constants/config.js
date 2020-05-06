@@ -12,21 +12,21 @@ export const localeOptions = [
   {id: 'zh', name: '中文', direction: 'ltr', icon: '/assets/img/flags/china.svg'}
 ];
 
-export const apiBaseUrl = 'http://59.110.233.165:9090/ecuritycheck/';
+//export const apiBaseUrl = 'http://59.110.233.165:9090/ecuritycheck/';
 //export const apiBaseUrl = 'http://59.110.233.165:4546';
 //export const apiBaseUrl = 'http://10.0.20.51:4546';
 //export const apiBaseUrl = 'http://10.0.20.51:4547';
 //export const apiBaseUrl = 'http://10.17.248.120:4546';
-//export const apiBaseUrl = 'http://192.168.1.152:4546';
+export const apiBaseUrl = 'http://192.168.1.152:4546';
 //export const apiBaseUrl = 'http://47.95.246.188:4546';
 //export const apiBaseUrl = 'http://192.168.1.113:4546';
-// export const apiBaseUrl = 'http://39.97.175.200:8080/ecuritycheckitem-0.0.1-SNAPSHOT';
+//export const apiBaseUrl = 'http://39.97.175.200:8080/ecuritycheckitem-0.0.1-SNAPSHOT';
 //export const apiImageUrl = 'http://localhost:8080';
 //export const apiImageUrl = 'http://39.97.175.200';
 //export const apiImageUrl = 'http://10.17.248.120';
-//export const apiImageUrl = 'http://192.168.1.152:8888/';
+export const apiImageUrl = 'http://192.168.1.152:8888/';
 //export const apiImageUrl = 'http://10.0.20.51:8888/';
-export const apiImageUrl = '';
+//export const apiImageUrl = '';
 
 export const refreshTokenTimeDiff = 30;
 

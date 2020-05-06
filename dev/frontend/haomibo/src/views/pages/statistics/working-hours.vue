@@ -58,7 +58,7 @@
       </b-col>
     </b-row>
 
-    <b-row>
+    <b-row v-show="!isLoading">
       <b-col>
         <b-card class="no-padding" style="background-color: #1989fa;">
           <div class="statistics-item type-1">
@@ -116,7 +116,7 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="mt-4 mb-2">
+    <b-row v-show="!isLoading" class="mt-4 mb-2">
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
@@ -134,7 +134,7 @@
       </b-col>
     </b-row>
 
-    <b-row class="bottom-part mt-3 mb-3">
+    <b-row v-show="!isLoading" class="bottom-part mt-3 mb-3">
       <b-col v-if="pageStatus==='charts'" class="charts-part">
         <b-row style="width: 100%;">
           <b-col>
@@ -240,36 +240,42 @@
             </b-col>
           </b-row>
 
+          <b-row class="no-gutters">
+            <b-col cols>
+              <div class="table-wrapper table-responsive">
+                <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
+                  <div class="loading_statistics"></div>
+                </div>
+                <vuetable
+                  ref="taskVuetable"
+                  :api-url="taskVuetableItems.apiUrl"
+                  :fields="taskVuetableItems.fields"
+                  :http-fetch="taskVuetableHttpFetch"
+                  :per-page="taskVuetableItems.perPage"
+                  pagination-path="pagination"
+                  class="table-hover"
+                  @vuetable:pagination-data="onTaskVuetablePaginationData"
+                  @vuetable:loading="loadingTable = true"
+                  @vuetable:loaded="loadingTable = false"
+                >
+                </vuetable>
+              </div>
+              <div class="pagination-wrapper">
+                <vuetable-pagination-bootstrap
+                  ref="taskVuetablePagination"
+                  @vuetable-pagination:change-page="onTaskVuetableChangePage"
+                  :initial-per-page="taskVuetableItems.perPage"
+                  @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+                />
+              </div>
+            </b-col>
+          </b-row>
 
-          <div class="table-wrapper table-responsive">
-            <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
-              <div class="loading_statistics"></div>
-            </div>
-            <vuetable
-              ref="taskVuetable"
-              :api-url="taskVuetableItems.apiUrl"
-              :fields="taskVuetableItems.fields"
-              :http-fetch="taskVuetableHttpFetch"
-              :per-page="taskVuetableItems.perPage"
-              pagination-path="pagination"
-              class="table-hover"
-              @vuetable:pagination-data="onTaskVuetablePaginationData"
-              @vuetable:loading="loadingTable = true"
-              @vuetable:loaded="loadingTable = false"
-            >
-            </vuetable>
-          </div>
-          <div class="pagination-wrapper">
-            <vuetable-pagination-bootstrap
-              ref="taskVuetablePagination"
-              @vuetable-pagination:change-page="onTaskVuetableChangePage"
-              :initial-per-page="taskVuetableItems.perPage"
-              @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-            />
-          </div>
+
         </b-card>
       </b-col>
     </b-row>
+    <div v-show="isLoading" class="loading"></div>
     <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
@@ -416,7 +422,6 @@
           ]
         },
         chartWidth:'100%',
-        loadingTable:false,
         showLength : 4,
         bar3ChartOptions: {
           tooltip: {
@@ -443,7 +448,7 @@
               show: true
             },
             axisLabel: {
-              interval:'auto',
+              interval:'0',
               rotate: 0
             },
             axisTick: {
@@ -505,6 +510,8 @@
           {value: 'pdf', label: 'PDF'},
         ],
         isModalVisible: false,
+        loadingTable:false,
+        isLoading : false,
 
         filter: {
           modeId: null,
@@ -1004,8 +1011,12 @@
           // }
 
           if(keyData.length>(this.showLength+4)){
-            let percent = Math.round((keyData.length-this.showLength) / this.showLength * 100);
+            let percent = Math.round((keyData.length-4) / this.showLength * 100);
             this.chartWidth = percent + '%';
+            console.log(keyData.length, this.showLength, this.chartWidth);
+          }
+          else{
+            this.chartWidth = '100%';
           }
 
           if(keyData.length > 4) {
@@ -1036,6 +1047,8 @@
             this.bar3ChartOptions.series[0].data = [0];
           }
 
+          this.isLoading = false;
+
         }).catch((error) => {
         });
       },
@@ -1054,8 +1067,15 @@
         }
 
         //this.getGraphData();
+        this.isLoading = true;
         this.getPreviewData();
-        this.$refs.taskVuetable.refresh();
+        if (this.pageStatus === 'charts') {
+          //this.pageStatus = 'table';
+        } else {
+          this.$refs.taskVuetable.refresh();
+        }
+
+        //this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
         this.filter = {

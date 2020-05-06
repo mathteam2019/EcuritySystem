@@ -106,7 +106,7 @@
               >
                 <template slot="task" slot-scope="props">
                     <span class="cursor-p text-primary"
-                          @click="onRowClicked(props.rowData.historyId)">
+                          @click="onRowClicked(props.rowData.taskId)">
                       {{props.rowData.taskNumber}}
                     </span>
                 </template>
@@ -1946,7 +1946,7 @@
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/task/history-task/get-one`, {
-            'historyId': taskNumber,
+            'taskId': taskNumber,
           })
           .then((response) => {
             let message = response.data.message;

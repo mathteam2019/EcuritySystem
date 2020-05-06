@@ -82,480 +82,484 @@
       </b-col>
     </b-row>
 
-    <b-row class="parameter-items">
-      <b-col>
-        <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
-          <div class="statistics-item type-3">
-            <div style="">
-              <b-img draggable="false" src="/assets/img/picture.svg"/>
+    <div v-show="!isLoading">
+      <b-row class="parameter-items">
+        <b-col>
+          <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
+            <div class="statistics-item type-3">
+              <div style="">
+                <b-img draggable="false" src="/assets/img/picture.svg"/>
+              </div>
+              <div>
+                <span v-if="preViewData.total!=null">{{preViewData.total}}</span>
+                <span v-else>0</span>
+              </div>
+              <div><span>{{$t('maintenance-management.process-task.judge')}}</span></div>
             </div>
-            <div>
-              <span v-if="preViewData.total!=null">{{preViewData.total}}</span>
-              <span v-else>0</span>
-            </div>
-            <div><span>{{$t('maintenance-management.process-task.judge')}}</span></div>
-          </div>
-        </b-card>
-      </b-col>
-      <b-col>
-        <b-row class="mb-4">
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #344bf3">
-                  <b-img draggable="false" src="/assets/img/person.svg"/>
-                </div>
-                <div>
+          </b-card>
+        </b-col>
+        <b-col>
+          <b-row class="mb-4">
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #344bf3">
+                    <b-img draggable="false" src="/assets/img/person.svg"/>
+                  </div>
                   <div>
+                    <div>
                     <span
                       v-if="preViewData.artificialJudge!=null">{{preViewData.artificialJudge}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.artificial-result')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #1989fa">
-                  <b-img draggable="false" src="/assets/img/user_group.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.assignTimeout!=null">{{preViewData.assignTimeout}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.assign-timeout')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #19b8fa;">
-                  <b-img draggable="false" src="/assets/img/picture.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.judgeTimeout!=null">{{preViewData.judgeTimeout}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.judge-timeout')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #00bbb0">
-                  <b-img draggable="false" src="/assets/img/atr.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.atrResult!=null">{{preViewData.atrResult}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.atr-result')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-        </b-row>
-        <b-row class="mb-4">
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #009900;">
-                  <b-img draggable="false" src="/assets/img/round_check.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.noSuspiction!=null">{{preViewData.noSuspiction}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('knowledge-base.no-suspect')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #009900;">
-                  <b-img draggable="false" src="/assets/img/round_check.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.noSuspictionRate!=null">{{Math.round(preViewData.noSuspictionRate)}}%</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.view.no-suspiction-judge-rate')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #ff0000;">
-                  <b-img draggable="false" src="/assets/img/question_mark.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.suspiction!=null">{{preViewData.suspiction}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.suspiction-judge')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #ff0000;">
-                  <b-img draggable="false" src="/assets/img/question_mark.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.suspictionRate!=null">{{Math.round(preViewData.suspictionRate)}}%</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.suspiction-judge-rate')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #344bf3;">
-                  <b-img draggable="false" src="/assets/img/time_icon.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.limitedArtificialDuration!=null">{{preViewData.limitedArtificialDuration}}s</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.limited-artificial-time')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #1989fa;">
-                  <b-img draggable="false" src="/assets/img/right_arrow_icon2.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.avgArtificialJudgeDuration!=null">{{Math.round(preViewData.avgArtificialJudgeDuration)}}s</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.avg-artificial-time')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #19b8fa;">
-                  <b-img draggable="false" src="/assets/img/up_arrow_icon2.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.maxArtificialJudgeDuration!=null">{{Math.round(preViewData.maxArtificialJudgeDuration)}}s</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.max-artificial-time')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #00bbb0;">
-                  <b-img draggable="false" src="/assets/img/down_arrow_icon.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.minArtificialJudgeDuration!=null">{{Math.round(preViewData.minArtificialJudgeDuration)}}s</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.monitors.min-artificial-time')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-col>
-
-    </b-row>
-
-
-    <b-row class="mt-4 mb-3">
-      <b-col class="d-flex justify-content-end align-items-center">
-        <div>
-          <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
-            <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
-          </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default"
-                    :disabled="checkPermItem('judge_statistics_export')" @click="onExportButton()">
-            <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
-          </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default"
-                    :disabled="checkPermItem('judge_statistics_print')" @click="onPrintButton()">
-            <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
-          </b-button>
-        </div>
-      </b-col>
-    </b-row>
-
-    <b-row class="bottom-part mb-3">
-      <b-col v-if="pageStatus==='charts'" class="charts-part">
-        <b-row class="mb-3">
-          <b-col cols="4">
-            <b-card>
-
-              <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
-
-                <div class="d-flex align-items-center justify-content-around">
-                  <div class="pie-chart">
-
-                    <v-chart :options="pieChart1Options" :autoresize="true"/>
-
-                  </div>
-
-
-                  <div class="legend-group part-1">
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">{{$t('statistics.monitors.artificial-judge')}}</div>
-                      <div class="value" v-if="preViewData.artificialJudge!=null">
-                        {{preViewData.artificialJudge}}
-                      </div>
+                      <span v-else>0</span>
                     </div>
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">{{$t('statistics.monitors.assign')}}</div>
-                      <div class="value" v-if="preViewData.assignTimeout!=null">
-                        {{preViewData.assignTimeout}}
-                      </div>
-                    </div>
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">{{$t('statistics.monitors.judge')}}</div>
-                      <div class="value" v-if="preViewData.judgeTimeout!=null">
-                        {{preViewData.judgeTimeout}}
-                      </div>
-
-                    </div>
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">ATR</div>
-                      <div class="value" v-if="preViewData.atrResult!=null">
-                        {{preViewData.atrResult}}
-                      </div>
-                    </div>
+                    <div><span>{{$t('statistics.monitors.artificial-result')}}</span></div>
                   </div>
                 </div>
-              </div>
-
-            </b-card>
-          </b-col>
-          <b-col cols="8">
-            <b-card>
-              <b-card-header>
-                <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
-              </b-card-header>
-              <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div>
-
-                  <v-chart :options="barChart1Options" :autoresize="true" style="width: 100%; height: 300px;"/>
-
-                </div>
-              </div>
-
-            </b-card>
-          </b-col>
-        </b-row>
-        <b-row class="mb-3">
-          <b-col cols="4">
-            <b-card>
-
-
-              <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
-
-                <div class="d-flex align-items-center justify-content-around">
-                  <div class="pie-chart">
-
-                    <v-chart :options="pieChart2Options" :autoresize="true"/>
-
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #1989fa">
+                    <b-img draggable="false" src="/assets/img/user_group.svg"/>
                   </div>
-                  <div class="legend-group part-2">
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">{{$t('statistics.monitors.suspiction-judge')}}</div>
-                      <div class="value" v-if="preViewData.suspiction!=null">
-                        {{preViewData.suspiction}}
-                      </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.assignTimeout!=null">{{preViewData.assignTimeout}}</span>
+                      <span v-else>0</span>
                     </div>
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">{{$t('knowledge-base.no-suspect')}}</div>
-                      <div class="value" v-if="preViewData.noSuspiction!=null">
-                        {{preViewData.noSuspiction}}
-                      </div>
+                    <div><span>{{$t('statistics.monitors.assign-timeout')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #19b8fa;">
+                    <b-img draggable="false" src="/assets/img/picture.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.judgeTimeout!=null">{{preViewData.judgeTimeout}}</span>
+                      <span v-else>0</span>
                     </div>
+                    <div><span>{{$t('statistics.monitors.judge-timeout')}}</span></div>
                   </div>
                 </div>
-              </div>
-
-            </b-card>
-          </b-col>
-          <b-col cols="8">
-            <b-card>
-
-              <b-card-header>
-                <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
-              </b-card-header>
-
-              <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div>
-
-                  <v-chart :options="barChart2Options" :autoresize="true" style="width: 100%; height: 300px;"/>
-
-                </div>
-              </div>
-
-            </b-card>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-card>
-
-              <b-card-header>
-                <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
-              </b-card-header>
-
-              <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div>
-                  <v-chart :options="barChart3Options" :autoresize="true" style="width: 100%; height:300px;"/>
-
-                </div>
-              </div>
-
-            </b-card>
-          </b-col>
-
-        </b-row>
-      </b-col>
-      <b-col v-if="pageStatus==='table'" class="table-part">
-        <b-card class="flex-grow-1 ">
-          <b-card-header>
-
-            <h5 class="text-center my-4">{{$t('statistics.view.table-title')}}</h5>
-
-          </b-card-header>
-
-          <div class="flex-grow-1 ">
-            <div class="container-fluid">
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.fieldId === null">{{allField}}</span>
-                  <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.deviceId === null">{{allDevice}}</span>
-                  <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
-                <b-col cols="11"><span>{{$t('statistics.view.operator')}}</span></b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
-                  <span v-else>{{filter.userName}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
-                <b-col cols="11">
-                  <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
-                  <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
-                  <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
-                  <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
-                  <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
-                  <span v-else>{{$t('statistics.year')}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters">
-
-                <b-col cols>
-
-                  <div class="table-wrapper overflow-auto">
-                    <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
-                      <div class="loading_statistics"></div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #00bbb0">
+                    <b-img draggable="false" src="/assets/img/atr.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.atrResult!=null">{{preViewData.atrResult}}</span>
+                      <span v-else>0</span>
                     </div>
-                    <vuetable
-                      ref="taskVuetable"
-                      :api-url="taskVuetableItems.apiUrl"
-                      :fields="taskVuetableItems.fields"
-                      :http-fetch="taskVuetableHttpFetch"
-                      :per-page="taskVuetableItems.perPage"
-                      pagination-path="pagination"
-                      class="table-hover"
-                      @vuetable:pagination-data="onTaskVuetablePaginationData"
-                      @vuetable:loading="loadingTable = true"
-                      @vuetable:loaded="loadingTable = false"
-                    >
-
-                    </vuetable>
+                    <div><span>{{$t('statistics.monitors.atr-result')}}</span></div>
                   </div>
-                  <div class="pagination-wrapper">
-                    <vuetable-pagination-bootstrap
-                      ref="taskVuetablePagination"
-                      @vuetable-pagination:change-page="onTaskVuetableChangePage"
-                      :initial-per-page="taskVuetableItems.perPage"
-                      @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-                    />
+                </div>
+              </b-card>
+            </b-col>
+          </b-row>
+          <b-row class="mb-4">
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #009900;">
+                    <b-img draggable="false" src="/assets/img/round_check.svg"/>
                   </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.noSuspiction!=null">{{preViewData.noSuspiction}}</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('knowledge-base.no-suspect')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
 
-                </b-col>
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #009900;">
+                    <b-img draggable="false" src="/assets/img/round_check.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.noSuspictionRate!=null">{{Math.round(preViewData.noSuspictionRate)}}%</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.view.no-suspiction-judge-rate')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
 
-              </b-row>
-            </div>
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #ff0000;">
+                    <b-img draggable="false" src="/assets/img/question_mark.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.suspiction!=null">{{preViewData.suspiction}}</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.monitors.suspiction-judge')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #ff0000;">
+                    <b-img draggable="false" src="/assets/img/question_mark.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.suspictionRate!=null">{{Math.round(preViewData.suspictionRate)}}%</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.monitors.suspiction-judge-rate')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #344bf3;">
+                    <b-img draggable="false" src="/assets/img/time_icon.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.limitedArtificialDuration!=null">{{preViewData.limitedArtificialDuration}}s</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.monitors.limited-artificial-time')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #1989fa;">
+                    <b-img draggable="false" src="/assets/img/right_arrow_icon2.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.avgArtificialJudgeDuration!=null">{{Math.round(preViewData.avgArtificialJudgeDuration)}}s</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.monitors.avg-artificial-time')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #19b8fa;">
+                    <b-img draggable="false" src="/assets/img/up_arrow_icon2.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.maxArtificialJudgeDuration!=null">{{Math.round(preViewData.maxArtificialJudgeDuration)}}s</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.monitors.max-artificial-time')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #00bbb0;">
+                    <b-img draggable="false" src="/assets/img/down_arrow_icon.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.minArtificialJudgeDuration!=null">{{Math.round(preViewData.minArtificialJudgeDuration)}}s</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.monitors.min-artificial-time')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+          </b-row>
+        </b-col>
+
+      </b-row>
+
+      <b-row class="mt-4 mb-3">
+        <b-col class="d-flex justify-content-end align-items-center">
+          <div>
+            <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
+              <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default"
+                      :disabled="checkPermItem('judge_statistics_export')" @click="onExportButton()">
+              <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default"
+                      :disabled="checkPermItem('judge_statistics_print')" @click="onPrintButton()">
+              <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
+            </b-button>
           </div>
-        </b-card>
+        </b-col>
+      </b-row>
 
-      </b-col>
-    </b-row>
+      <b-row class="bottom-part mb-3">
+        <b-col v-if="pageStatus==='charts'" class="charts-part">
+          <b-row class="mb-3">
+            <b-col cols="4">
+              <b-card>
+
+                <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
+
+                  <div class="d-flex align-items-center justify-content-around">
+                    <div class="pie-chart">
+
+                      <v-chart :options="pieChart1Options" :autoresize="true"/>
+
+                    </div>
+
+
+                    <div class="legend-group part-1">
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">{{$t('statistics.monitors.artificial-judge')}}</div>
+                        <div class="value" v-if="preViewData.artificialJudge!=null">
+                          {{preViewData.artificialJudge}}
+                        </div>
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">{{$t('statistics.monitors.assign')}}</div>
+                        <div class="value" v-if="preViewData.assignTimeout!=null">
+                          {{preViewData.assignTimeout}}
+                        </div>
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">{{$t('statistics.monitors.judge')}}</div>
+                        <div class="value" v-if="preViewData.judgeTimeout!=null">
+                          {{preViewData.judgeTimeout}}
+                        </div>
+
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">ATR</div>
+                        <div class="value" v-if="preViewData.atrResult!=null">
+                          {{preViewData.atrResult}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </b-card>
+            </b-col>
+            <b-col cols="8">
+              <b-card>
+                <b-card-header>
+                  <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
+                </b-card-header>
+                <div class="w-100 flex-grow-1 d-flex flex-column ">
+                  <div>
+
+                    <v-chart :options="barChart1Options" :autoresize="true" style="width: 100%; height: 300px;"/>
+
+                  </div>
+                </div>
+
+              </b-card>
+            </b-col>
+          </b-row>
+          <b-row class="mb-3">
+            <b-col cols="4">
+              <b-card>
+
+
+                <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
+
+                  <div class="d-flex align-items-center justify-content-around">
+                    <div class="pie-chart">
+
+                      <v-chart :options="pieChart2Options" :autoresize="true"/>
+
+                    </div>
+                    <div class="legend-group part-2">
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">{{$t('statistics.monitors.suspiction-judge')}}</div>
+                        <div class="value" v-if="preViewData.suspiction!=null">
+                          {{preViewData.suspiction}}
+                        </div>
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">{{$t('knowledge-base.no-suspect')}}</div>
+                        <div class="value" v-if="preViewData.noSuspiction!=null">
+                          {{preViewData.noSuspiction}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </b-card>
+            </b-col>
+            <b-col cols="8">
+              <b-card>
+
+                <b-card-header>
+                  <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
+                </b-card-header>
+
+                <div class="w-100 flex-grow-1 d-flex flex-column ">
+                  <div>
+
+                    <v-chart :options="barChart2Options" :autoresize="true" style="width: 100%; height: 300px;"/>
+
+                  </div>
+                </div>
+
+              </b-card>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-card>
+
+                <b-card-header>
+                  <h5>{{$t('maintenance-management.process-task.judge')}}</h5>
+                </b-card-header>
+
+                <div class="w-100 flex-grow-1 d-flex flex-column ">
+                  <div>
+                    <v-chart :options="barChart3Options" :autoresize="true" style="width: 100%; height:300px;"/>
+
+                  </div>
+                </div>
+
+              </b-card>
+            </b-col>
+
+          </b-row>
+        </b-col>
+        <b-col v-if="pageStatus==='table'" class="table-part">
+          <b-card class="flex-grow-1 ">
+            <b-card-header>
+
+              <h5 class="text-center my-4">{{$t('statistics.view.table-title')}}</h5>
+
+            </b-card-header>
+
+            <div class="flex-grow-1 ">
+              <div class="container-fluid">
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.fieldId === null">{{allField}}</span>
+                    <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.deviceId === null">{{allDevice}}</span>
+                    <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
+                  <b-col cols="11"><span>{{$t('statistics.view.operator')}}</span></b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
+                    <span v-else>{{filter.userName}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
+                    <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
+                    <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
+                    <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
+                    <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
+                    <span v-else>{{$t('statistics.year')}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters">
+
+                  <b-col cols>
+
+                    <div class="table-wrapper overflow-auto">
+                      <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
+                        <div class="loading_statistics"></div>
+                      </div>
+                      <vuetable
+                        ref="taskVuetable"
+                        :api-url="taskVuetableItems.apiUrl"
+                        :fields="taskVuetableItems.fields"
+                        :http-fetch="taskVuetableHttpFetch"
+                        :per-page="taskVuetableItems.perPage"
+                        pagination-path="pagination"
+                        class="table-hover"
+                        @vuetable:pagination-data="onTaskVuetablePaginationData"
+                        @vuetable:loading="loadingTable = true"
+                        @vuetable:loaded="loadingTable = false"
+                      >
+
+                      </vuetable>
+                    </div>
+                    <div class="pagination-wrapper">
+                      <vuetable-pagination-bootstrap
+                        ref="taskVuetablePagination"
+                        @vuetable-pagination:change-page="onTaskVuetableChangePage"
+                        :initial-per-page="taskVuetableItems.perPage"
+                        @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+                      />
+                    </div>
+
+                  </b-col>
+
+                </b-row>
+              </div>
+            </div>
+          </b-card>
+
+        </b-col>
+      </b-row>
+    </div>
+
+    <div v-show="isLoading" class="loading"></div>
+
     <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
@@ -956,6 +960,7 @@
         isExpanded: false,
         isCheckAll: false,
         loadingTable:false,
+        isLoading: false,
 
         pageStatus: 'charts',
         link: '',
@@ -1437,6 +1442,7 @@
             this.pieChart2Options.series[0].data[0].value = this.preViewData.suspiction;
             this.pieChart2Options.series[0].data[1].value = this.preViewData.noSuspiction;
           }
+          this.isLoading = false;
         });
       },
 
@@ -1484,6 +1490,15 @@
               break;
 
           }
+          this.barChart1Options.series[0].data = [0];
+          this.barChart1Options.series[1].data = [0];
+          this.barChart1Options.series[2].data = [0];
+          this.barChart1Options.series[3].data = [0];
+          this.barChart2Options.series[0].data = [0];
+          this.barChart2Options.series[1].data = [0];
+          this.barChart3Options.series[0].data = [0];
+          this.barChart3Options.series[1].data = [0];
+          this.barChart3Options.series[2].data = [0];
 
           //this.bar3ChartOptions.xAxis.data = this.xDay;
           if (this.filter.statWidth !== 'year') {
@@ -1544,9 +1559,15 @@
           }
         }
 
+        this.isLoading = true;
         this.getPreviewData();
-        this.getChartData();
-        this.$refs.taskVuetable.refresh();
+        if (this.pageStatus === 'charts') {
+          this.getChartData();
+        } else {
+          this.$refs.taskVuetable.refresh();
+        }
+        // this.getChartData();
+        // this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
         this.filter = {

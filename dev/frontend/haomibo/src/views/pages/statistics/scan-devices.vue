@@ -88,333 +88,338 @@
       </b-col>
     </b-row>
 
-    <b-row class="parameter-items">
-      <b-col>
-        <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
-          <div class="statistics-item type-3">
-            <div style="">
-              <b-img draggable="false" src="/assets/img/scan.svg"/>
+    <div v-show="!isLoading">
+      <b-row class="parameter-items">
+        <b-col>
+          <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
+            <div class="statistics-item type-3">
+              <div style="">
+                <b-img draggable="false" src="/assets/img/scan.svg"/>
+              </div>
+              <div>
+                <span v-if="preViewData.totalScan!=null">{{preViewData.totalScan}}</span>
+                <span v-else>0</span>
+              </div>
+              <div><span>{{this.$t('statistics.view.scan-total')}}</span></div>
             </div>
-            <div>
-              <span v-if="preViewData.totalScan!=null">{{preViewData.totalScan}}</span>
-              <span v-else>0</span>
-            </div>
-            <div><span>{{this.$t('statistics.view.scan-total')}}</span></div>
+          </b-card>
+        </b-col>
+        <b-col>
+          <b-row class="mb-4">
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #1989fa">
+                    <b-img draggable="false" src="/assets/img/check.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.validScan!=null">{{preViewData.validScan}}</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.view.valid-scan')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #1989fa">
+                    <b-img draggable="false" src="/assets/img/check.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.validScanRate!=null">{{Math.round(preViewData.validScanRate)}}%</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.view.valid-scan-rate')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #cccccc;">
+                    <b-img draggable="false" src="/assets/img/forbidden.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.invalidScan!=null">{{preViewData.invalidScan}}</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.view.invalid-scan')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #cccccc;">
+                    <b-img draggable="false" src="/assets/img/forbidden.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.invalidScanRate!=null">{{Math.round(preViewData.invalidScanRate)}}%</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.view.invalid-scan-rate')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #009900;">
+                    <b-img draggable="false" src="/assets/img/round_check.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.passedScan!=null">{{preViewData.passedScan}}</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('permission-management.permission-control.pending-success')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #009900;">
+                    <b-img draggable="false" src="/assets/img/round_check.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.passedScanRate!=null">{{Math.round(preViewData.passedScanRate)}}%</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.view.passed-scan-rate')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #ff6600;">
+                    <b-img draggable="false" src="/assets/img/bell_icon.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.alarmScan!=null">{{preViewData.alarmScan}}</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.view.alarm-scan')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card class="no-padding" style="background-color: #fff;">
+                <div class="statistics-item type-2">
+                  <div style="background-color: #ff6600;">
+                    <b-img draggable="false" src="/assets/img/bell_icon.svg"/>
+                  </div>
+                  <div>
+                    <div>
+                      <span v-if="preViewData.alarmScanRate!=null">{{Math.round(preViewData.alarmScanRate)}}%</span>
+                      <span v-else>0</span>
+                    </div>
+                    <div><span>{{$t('statistics.view.alarm-scan-rate')}}</span></div>
+                  </div>
+                </div>
+              </b-card>
+            </b-col>
+          </b-row>
+        </b-col>
+
+      </b-row>
+
+      <b-row class="mt-4 mb-3">
+        <b-col class="d-flex justify-content-end align-items-center">
+          <div>
+            <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
+              <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default"
+                      :disabled="checkPermItem('scan_statistics_export')" @click="onExportButton()">
+              <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default"
+                      :disabled="checkPermItem('scan_statistics_print')" @click="onPrintButton()">
+              <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
+            </b-button>
           </div>
-        </b-card>
-      </b-col>
-      <b-col>
-        <b-row class="mb-4">
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #1989fa">
-                  <b-img draggable="false" src="/assets/img/check.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.validScan!=null">{{preViewData.validScan}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.view.valid-scan')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding">
-              <div class="statistics-item type-2">
-                <div style="background-color: #1989fa">
-                  <b-img draggable="false" src="/assets/img/check.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.validScanRate!=null">{{Math.round(preViewData.validScanRate)}}%</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.view.valid-scan-rate')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #cccccc;">
-                  <b-img draggable="false" src="/assets/img/forbidden.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.invalidScan!=null">{{preViewData.invalidScan}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.view.invalid-scan')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #cccccc;">
-                  <b-img draggable="false" src="/assets/img/forbidden.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.invalidScanRate!=null">{{Math.round(preViewData.invalidScanRate)}}%</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.view.invalid-scan-rate')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #009900;">
-                  <b-img draggable="false" src="/assets/img/round_check.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.passedScan!=null">{{preViewData.passedScan}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('permission-management.permission-control.pending-success')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #009900;">
-                  <b-img draggable="false" src="/assets/img/round_check.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.passedScanRate!=null">{{Math.round(preViewData.passedScanRate)}}%</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.view.passed-scan-rate')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #ff6600;">
-                  <b-img draggable="false" src="/assets/img/bell_icon.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.alarmScan!=null">{{preViewData.alarmScan}}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.view.alarm-scan')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card class="no-padding" style="background-color: #fff;">
-              <div class="statistics-item type-2">
-                <div style="background-color: #ff6600;">
-                  <b-img draggable="false" src="/assets/img/bell_icon.svg"/>
-                </div>
-                <div>
-                  <div>
-                    <span v-if="preViewData.alarmScanRate!=null">{{Math.round(preViewData.alarmScanRate)}}%</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div><span>{{$t('statistics.view.alarm-scan-rate')}}</span></div>
-                </div>
-              </div>
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-col>
+        </b-col>
+      </b-row>
 
-    </b-row>
+      <b-row class="bottom-part mb-3">
+        <b-col v-if="pageStatus==='charts'" class="charts-part">
+          <b-row>
+            <b-col>
+              <b-card>
 
-    <b-row class="mt-4 mb-3">
-      <b-col class="d-flex justify-content-end align-items-center">
-        <div>
-          <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
-            <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
-          </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default"
-                    :disabled="checkPermItem('scan_statistics_export')" @click="onExportButton()">
-            <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
-          </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default"
-                    :disabled="checkPermItem('scan_statistics_print')" @click="onPrintButton()">
-            <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
-          </b-button>
-        </div>
-      </b-col>
-    </b-row>
+                <b-card-header>
+                  <h5>{{$t('maintenance-management.process-task.scan')}}</h5>
+                </b-card-header>
+                <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
 
-    <b-row class="bottom-part mb-3">
-      <b-col v-if="pageStatus==='charts'" class="charts-part">
-        <b-row>
-          <b-col>
-            <b-card>
+                  <div class="d-flex align-items-center justify-content-around">
+                    <div>
 
-              <b-card-header>
-                <h5>{{$t('maintenance-management.process-task.scan')}}</h5>
-              </b-card-header>
-              <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
-
-                <div class="d-flex align-items-center justify-content-around">
-                  <div>
-
-                    <v-chart :options="doublePieChartOptions" :autoresize="true" style="width: 300px; height: 300px;"/>
-
-                  </div>
-                  <div class="legend-group">
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">{{$t('statistics.view.invalid-scan')}}</div>
-                      <div class="value" v-if="preViewData!=null">{{preViewData.invalidScan}}</div>
-                    </div>
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">{{$t('statistics.view.valid-scan')}}</div>
-                      <div class="value" v-if="preViewData!=null">{{preViewData.validScan}}</div>
-                    </div>
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">{{$t('statistics.view.alarm-scan')}}</div>
-                      <div class="value" v-if="preViewData!=null">{{preViewData.alarmScan}}</div>
+                      <v-chart :options="doublePieChartOptions" :autoresize="true" style="width: 300px; height: 300px;"/>
 
                     </div>
-                    <div class="legend-item">
-                      <div class="legend-icon"></div>
-                      <div class="legend-name">{{$t('permission-management.permission-control.pending-success')}}</div>
-                      <div class="value" v-if="preViewData!=null">{{preViewData.passedScan}}</div>
+                    <div class="legend-group">
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">{{$t('statistics.view.invalid-scan')}}</div>
+                        <div class="value" v-if="preViewData!=null">{{preViewData.invalidScan}}</div>
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">{{$t('statistics.view.valid-scan')}}</div>
+                        <div class="value" v-if="preViewData!=null">{{preViewData.validScan}}</div>
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">{{$t('statistics.view.alarm-scan')}}</div>
+                        <div class="value" v-if="preViewData!=null">{{preViewData.alarmScan}}</div>
+
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-icon"></div>
+                        <div class="legend-name">{{$t('permission-management.permission-control.pending-success')}}</div>
+                        <div class="value" v-if="preViewData!=null">{{preViewData.passedScan}}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-card>
 
-              <b-card-header>
-                <h5>{{$t('statistics.view.scan-history')}}</h5>
-              </b-card-header>
+                <b-card-header>
+                  <h5>{{$t('statistics.view.scan-history')}}</h5>
+                </b-card-header>
 
-              <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div>
+                <div class="w-100 flex-grow-1 d-flex flex-column ">
+                  <div>
 
-                  <v-chart :options="bar3ChartOptions" :autoresize="true" style="width: 100%; height: 300px;"/>
+                    <v-chart :options="bar3ChartOptions" :autoresize="true" style="width: 100%; height: 300px;"/>
 
+                  </div>
                 </div>
-              </div>
 
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-col>
-      <b-col v-if="pageStatus==='table'" class="table-part">
-        <b-card class="flex-grow-1 ">
-          <b-card-header>
+              </b-card>
+            </b-col>
+          </b-row>
+        </b-col>
+        <b-col v-if="pageStatus==='table'" class="table-part">
+          <b-card class="flex-grow-1 ">
+            <b-card-header>
 
-            <h5 class="text-center my-4">{{$t('statistics.view.table-title')}}</h5>
+              <h5 class="text-center my-4">{{$t('statistics.view.table-title')}}</h5>
 
-          </b-card-header>
+            </b-card-header>
 
-          <div class="flex-grow-1 ">
-            <div class="container-fluid">
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.fieldId === null">{{allField}}</span>
-                  <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.deviceId === null">{{allDevice}}</span>
-                  <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
-                <b-col cols="11"><span>{{$t('statistics.view.operator')}}</span></b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
-                  <span v-else>{{filter.userName}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
-                <b-col cols="11">
-                  <span>{{getDateTimeFormat(filter.startTime)}}-{{getDateTimeFormat(filter.endTime)}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters mb-2">
-                <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
-                <b-col cols="11">
-                  <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
-                  <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
-                  <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
-                  <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
-                  <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
-                  <span v-else>{{$t('statistics.year')}}</span>
-                </b-col>
-              </b-row>
-              <b-row class="no-gutters">
+            <div class="flex-grow-1 ">
+              <div class="container-fluid">
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('knowledge-base.site')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.fieldId === null">{{allField}}</span>
+                    <span v-else>{{getSiteLabel(filter.fieldId)}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.security-device')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.deviceId === null">{{allDevice}}</span>
+                    <span v-else>{{getDeviceLabel(filter.deviceId)}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.view.operator-type')}}:</b></b-col>
+                  <b-col cols="11"><span>{{$t('statistics.view.operator')}}</span></b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.view.operator')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.userName===null">{{$t('personal-inspection.all')}}</span>
+                    <span v-else>{{filter.userName}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.time')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span>{{getDateTimeFormat(filter.startTime)}}-{{getDateTimeFormat(filter.endTime)}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters mb-2">
+                  <b-col cols="1"><b>{{$t('statistics.evaluate-monitors.step-size')}}:</b></b-col>
+                  <b-col cols="11">
+                    <span v-if="filter.statWidth==='hour'">{{$t('statistics.hour')}}</span>
+                    <span v-else-if="filter.statWidth==='day'">{{$t('statistics.day')}}</span>
+                    <span v-else-if="filter.statWidth==='week'">{{$t('statistics.week')}}</span>
+                    <span v-else-if="filter.statWidth==='month'">{{$t('statistics.month')}}</span>
+                    <span v-else-if="filter.statWidth==='quarter'">{{$t('statistics.quarter')}}</span>
+                    <span v-else>{{$t('statistics.year')}}</span>
+                  </b-col>
+                </b-row>
+                <b-row class="no-gutters">
 
-                <b-col cols>
+                  <b-col cols>
 
-                  <div class="table-wrapper table-responsive">
-                    <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
-                      <div class="loading_statistics"></div>
+                    <div class="table-wrapper table-responsive">
+                      <div v-show="loadingTable" class="overlay_statistics flex flex-column items-center justify-center">
+                        <div class="loading_statistics"></div>
+                      </div>
+                      <vuetable
+                        ref="taskVuetable"
+                        :api-url="taskVuetableItems.apiUrl"
+                        :fields="taskVuetableItems.fields"
+                        :http-fetch="taskVuetableHttpFetch"
+                        :per-page="taskVuetableItems.perPage"
+                        pagination-path="pagination"
+                        class="table-hover"
+                        @vuetable:pagination-data="onTaskVuetablePaginationData"
+                        @vuetable:loading="loadingTable = true"
+                        @vuetable:loaded="loadingTable = false"
+                      >
+
+                      </vuetable>
                     </div>
-                    <vuetable
-                      ref="taskVuetable"
-                      :api-url="taskVuetableItems.apiUrl"
-                      :fields="taskVuetableItems.fields"
-                      :http-fetch="taskVuetableHttpFetch"
-                      :per-page="taskVuetableItems.perPage"
-                      pagination-path="pagination"
-                      class="table-hover"
-                      @vuetable:pagination-data="onTaskVuetablePaginationData"
-                      @vuetable:loading="loadingTable = true"
-                      @vuetable:loaded="loadingTable = false"
-                    >
+                    <div class="pagination-wrapper">
+                      <vuetable-pagination-bootstrap
+                        ref="taskVuetablePagination"
+                        @vuetable-pagination:change-page="onTaskVuetableChangePage"
+                        :initial-per-page="taskVuetableItems.perPage"
+                        @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+                      />
+                    </div>
 
-                    </vuetable>
-                  </div>
-                  <div class="pagination-wrapper">
-                    <vuetable-pagination-bootstrap
-                      ref="taskVuetablePagination"
-                      @vuetable-pagination:change-page="onTaskVuetableChangePage"
-                      :initial-per-page="taskVuetableItems.perPage"
-                      @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-                    />
-                  </div>
+                  </b-col>
 
-                </b-col>
-
-              </b-row>
+                </b-row>
+              </div>
             </div>
-          </div>
-        </b-card>
+          </b-card>
 
-      </b-col>
-    </b-row>
+        </b-col>
+      </b-row>
+    </div>
+
+    <div v-show="isLoading" class="loading"></div>
+
     <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
@@ -676,6 +681,7 @@
         },
 
         isExpanded: false,
+        isLoading : false,
         isCheckAll: false,
         loadingTable:false,
         pageStatus: 'charts',
@@ -1100,10 +1106,10 @@
         getApiManager().post(`${apiBaseUrl}/task/statistics/scan/total`, {
           filter: this.filter
         }).then((response) => {
+
           let message = response.data.message;
           this.preViewData = response.data.data;
           if (this.preViewData != null) {
-
             this.doublePieChartOptions.series[0].data[0].value = this.preViewData.invalidScan;
             this.doublePieChartOptions.series[0].data[1].value = this.preViewData.validScan;
             this.doublePieChartOptions.series[1].data[0].value = this.preViewData.alarmScan;
@@ -1114,7 +1120,7 @@
             this.doublePieChartOptions.series[1].data[0].value = 0;
             this.doublePieChartOptions.series[1].data[1].value = 0;
           }
-
+          this.isLoading = false;
         });
       },
 
@@ -1150,6 +1156,9 @@
               break;
 
           }
+          this.bar3ChartOptions.series[0].data = [0];
+          this.bar3ChartOptions.series[1].data = [0];
+          this.bar3ChartOptions.series[2].data = [0];
 
           //this.bar3ChartOptions.xAxis.data = this.xDay;
           if (this.filter.statWidth !== 'year') {
@@ -1191,9 +1200,16 @@
             return;
           }
         }
+        this.isLoading = true;
         this.getPreviewData();
-        this.getChartData();
-        this.$refs.taskVuetable.refresh();
+        if (this.pageStatus === 'charts') {
+          this.getChartData();
+        } else {
+          this.$refs.taskVuetable.refresh();
+        }
+
+        // this.getChartData();
+        // this.$refs.taskVuetable.refresh();
 
       },
       onResetButton() {

@@ -860,7 +860,7 @@
       "start-time": " Start time ",
       "end-time": " End time ",
       "number": "No",
-      "device-number": "Account",
+      "device-number": "Device Serial",
       "content": "Content",
       "judge" : "Judge",
       "manual" : "Manual",
