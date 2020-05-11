@@ -113,7 +113,7 @@ public class Utils {
         try {
             return Long.parseLong(obj.toString());
         } catch(Exception ex) {
-            return null;
+            return 0l;
         }
     }
 
@@ -121,7 +121,7 @@ public class Utils {
         try {
             return Double.parseDouble(obj.toString());
         } catch(Exception ex) {
-            return null;
+            return 0.0;
         }
     }
 

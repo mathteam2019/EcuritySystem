@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.export.taskmanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import org.apache.poi.ss.usermodel.Cell;
@@ -68,7 +69,7 @@ public class ProcessTaskExcelView extends BaseExcelView {
     }
 
 
-    public static InputStream buildExcelDocument(List<SerTaskSimplifiedForProcessTableManagement> exportTaskList) {
+    public static InputStream buildExcelDocument(List<HistorySimplifiedForProcessTableManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -93,7 +94,7 @@ public class ProcessTaskExcelView extends BaseExcelView {
             style.setWrapText(true);
 
             int number = 0;
-            for (SerTaskSimplifiedForProcessTableManagement task : exportTaskList) {
+            for (HistorySimplifiedForProcessTableManagement task : exportTaskList) {
 
                 Row row = sheet.createRow(counter++);
 
@@ -101,58 +102,49 @@ public class ProcessTaskExcelView extends BaseExcelView {
 
                 row.createCell(1).setCellValue(task.getTaskNumber());
 
-                if (task.getWorkFlow() != null) {
-                    if (task.getWorkFlow().getWorkMode() != null) {
-                        row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
-                    } else {
-                        row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                    }
+                if (task.getModeName() != null) {
+                    row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getModeName()));
                 } else {
-
+                    row.createCell(2).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(task.getTaskStatus()));
 
-                if (task.getField() != null) {
-                    row.createCell(4).setCellValue(task.getField().getFieldDesignation());
+                if (task.getFieldDesignation() != null) {
+                    row.createCell(4).setCellValue(task.getFieldDesignation());
                 } else {
                     row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if (task.getSerScan() != null) {
-                    if (task.getSerScan().getScanDevice() != null) {
-                        row.createCell(5).setCellValue(task.getSerScan().getScanDevice().getDeviceName());
-                    } else {
-                        row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                    }
 
-                    if (task.getSerScan().getScanPointsman() != null) {
-                        row.createCell(6).setCellValue(task.getSerScan().getScanPointsman().getUserName());
-                    } else {
-                        row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                    }
-
-                    if (task.getSerScan().getScanStartTime() != null) {
-                        row.createCell(7).setCellValue(formatDate(task.getSerScan().getScanStartTime()));
-                    }
-                    else {
-                        row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                    }
-
-                    if (task.getSerScan().getScanEndTime() != null) {
-                        row.createCell(8).setCellValue(formatDate(task.getSerScan().getScanEndTime()));
-                    }
-                    else {
-                        row.createCell(8).setCellValue(messageSource.getMessage("None", null, currentLocale));
-                    }
-
-
+                if (task.getScanDeviceName() != null) {
+                    row.createCell(5).setCellValue(task.getScanDeviceName());
                 } else {
                     row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                }
+
+                if (task.getScanPointsManName() != null) {
+                    row.createCell(6).setCellValue(task.getScanPointsManName());
+                } else {
                     row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                }
+
+                if (task.getScanStartTime() != null) {
+                    row.createCell(7).setCellValue(formatDate(task.getScanStartTime()));
+                }
+                else {
                     row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
+                }
+
+                if (task.getScanEndTime() != null) {
+                    row.createCell(8).setCellValue(formatDate(task.getScanEndTime()));
+                }
+                else {
                     row.createCell(8).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
+
+
+
 
 
             }

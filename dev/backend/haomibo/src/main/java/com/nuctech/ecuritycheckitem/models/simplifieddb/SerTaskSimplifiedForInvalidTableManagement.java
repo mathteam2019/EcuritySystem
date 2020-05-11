@@ -17,28 +17,16 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
 import com.nuctech.ecuritycheckitem.models.db.SerAssign;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.AllArgsConstructor;;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.OneToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+
+;
 
 @Getter
 @Setter
@@ -49,15 +37,12 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SER_TASK)
 @Table(name = "ser_task")
-public class SerTaskSimplifiedForProcessTaskManagement extends BaseEntity implements Serializable {
+public class SerTaskSimplifiedForInvalidTableManagement extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "TASK_ID", length = 20)
     private Long taskId;
-
-    @Column(name = "DEVICE_ID", length = 20)
-    private Long deviceId;
 
     @Column(name = "TASK_NUMBER", length = 50)
     private String taskNumber;
@@ -68,44 +53,37 @@ public class SerTaskSimplifiedForProcessTaskManagement extends BaseEntity implem
     @Column(name = "TASK_STATUS", length = 10)
     private String taskStatus;
 
-    @Column(name = "WORKFLOW_ID", length = 20)
-    private Long workflowId;
+    @Column(name = "SCAN_INVALID", length = 10)
+    private String scanInvalid;
+
 
     @OneToOne()
     @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysFieldSimplifiedForProcessTaskManagement field;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SerScanSimplifiedForTaskManagement serScan;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SerJudgeGraphSimplifiedForProcessTaskManagement serJudgeGraph;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SerHandExaminationSimplifiedForProcessTaskManagement serHandExamination;
 
     @OneToOne()
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysWorkflowSimplifiedForProcessTaskManagement workFlow;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private HistorySimplifiedForProcessTaskManagement history;
+//    @OneToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
+
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private List<SerAssign> serAssignList;
-
-    @javax.persistence.Transient
-    private SerPlatformCheckParamsSimplifiedForTaskManagement platFormCheckParams;
 }

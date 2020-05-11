@@ -15,7 +15,6 @@ package com.nuctech.ecuritycheckitem.models.simplifieddb;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
-import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
@@ -24,7 +23,6 @@ import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
@@ -34,24 +32,23 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
-@Table(name = "history_finish")
-public class HistorySimplifiedForHistoryImageManagement extends BaseEntity implements Serializable {
+@Table(name = "history_process")
+public class ProcessSimplifiedForImageManagement extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HISTORY_ID", length = 20)
     private Long historyId;
 
+    @Column(name = "TASK_ID", length = 20)
+    private Long taskId;
+
 
     @Column(name = "SCAN_START_TIME", nullable = false)
     private Date scanStartTime;
 
-    @Column(name = "TASK_ID", length = 20)
-    private Long taskId;
-
     @Column(name = "TASK_NUMBER", length = 50)
     private String taskNumber;
-
 
     @OneToOne()
     @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)

@@ -298,7 +298,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
      * @return
      */
     private String getJoinQuery() {
-        return "\thistory h\n";
+        return "\thistory_finish h\n";
     }
 
     /**
@@ -343,7 +343,6 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
 //            String idListStr = StringUtils.join(idList, ",");
 //            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
 //        }
-        whereCause.add("SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' ");
         whereCause.add("HAND_EXAMINATION_ID IS NOT NULL ");
         return whereCause;
     }

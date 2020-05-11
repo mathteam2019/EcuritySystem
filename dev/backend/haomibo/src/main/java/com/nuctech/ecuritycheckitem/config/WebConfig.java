@@ -26,6 +26,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -35,6 +36,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.rmi.Remote;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 @Configuration
 @EnableJpaRepositories("com.nuctech.ecuritycheckitem.repositories")
@@ -43,6 +45,20 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
+
+    @Bean
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(50);
+        executor.setQueueCapacity(200);
+        executor.setKeepAliveSeconds(60);
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(60);
+        executor.setThreadNamePrefix("EcurityCheck-");
+        executor.initialize();
+        return executor;
+    }
 
     /**
      * Allow CORS.

@@ -36,35 +36,7 @@ public interface HistoryService {
      */
     PageResult<HistorySimplifiedForHistoryTableManagement> getHistoryTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
 
-    /**
-     * get paginated list of history task
-     * @param taskNumber : task number
-     * @param mode : mode id
-     * @param taskStatus : task status
-     * @param fieldId : scene id
-     * @param userName : user name
-     * @param startTime :  start time
-     * @param endTime : end time
-     * @param currentPage : currentPage No
-     * @param perPage : perPage count
-     * @return
-     */
-    PageResult<HistorySimplifiedForProcessTableManagement> getProcessTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
 
-    /**
-     * get paginated list of history task
-     * @param taskNumber : task number
-     * @param mode : mode id
-     * @param taskStatus : task status
-     * @param fieldId : scene id
-     * @param userName : user name
-     * @param startTime :  start time
-     * @param endTime : end time
-     * @param currentPage : currentPage No
-     * @param perPage : perPage count
-     * @return
-     */
-    PageResult<HistorySimplifiedForInvalidTableManagement> getInvalidTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
 
 
     /**
@@ -80,6 +52,7 @@ public interface HistoryService {
      */
     List<HistorySimplifiedForHistoryTableManagement> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
 
+
     /**
      * get All history task with filter
      * @param taskNumber : task number
@@ -92,7 +65,6 @@ public interface HistoryService {
      * @return
      */
     List<HistorySimplifiedForHistoryTableManagement> getExportHistoryTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
-
 
     /**
      * get All history task with filter

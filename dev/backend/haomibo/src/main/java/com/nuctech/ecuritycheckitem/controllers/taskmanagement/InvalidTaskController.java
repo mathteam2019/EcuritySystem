@@ -29,11 +29,9 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
 import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForInvalidTableManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
+import com.nuctech.ecuritycheckitem.service.taskmanagement.InvalidService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
@@ -67,6 +65,9 @@ public class InvalidTaskController extends BaseController {
 
     @Autowired
     PlatformCheckService platformCheckService;
+
+    @Autowired
+    InvalidService invalidService;
 
     /**
      * Invalid Task datatable request body.
@@ -156,7 +157,7 @@ public class InvalidTaskController extends BaseController {
 
         Long id = requestBody.getTaskId();
 
-        SerTaskSimplifiedForProcessTaskManagement optionalTask = taskService.getOne(id);
+        SerTaskSimplifiedForInvalidTaskManagement optionalTask = invalidService.getOne(id);
 
         if (optionalTask == null) { //if invalid task with specified id does not exist
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -199,7 +200,7 @@ public class InvalidTaskController extends BaseController {
         currentPage --;
 
         //get result from service
-        PageResult<HistorySimplifiedForInvalidTableManagement> result = historyService.getInvalidTaskByFilter(
+        PageResult<HistorySimplifiedForInvalidTableManagement> result = invalidService.getInvalidTaskByFilter(
                 requestBody.getFilter().getTaskNumber(), //task number from request body
                 requestBody.getFilter().getMode(), //modeId from request body
                 requestBody.getFilter().getStatus(), //status from request body
@@ -280,9 +281,9 @@ public class InvalidTaskController extends BaseController {
         return exportList;
     }
 
-    private List<SerTaskSimplifiedForProcessTableManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
-        List<SerTaskSimplifiedForProcessTableManagement> taskList = new ArrayList<>();
-        taskList = taskService.getExportInvalidTask(
+    private List<HistorySimplifiedForInvalidTableManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
+        List<HistorySimplifiedForInvalidTableManagement> taskList = new ArrayList<>();
+        taskList = invalidService.getExportInvalidTask(
                 requestBody.getFilter().getTaskNumber(),//get task numer from request body
                 requestBody.getFilter().getMode(),//get mode id from request body
                 requestBody.getFilter().getStatus(), //get status from request body
@@ -338,7 +339,8 @@ public class InvalidTaskController extends BaseController {
             }
 
             //get all pending case deal list
-            List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+            List<InvalidSimplifiedForImageManagement> exportList = invalidService.getExportInvalidImage(sortParams.get("sortBy"),
+                    sortParams.get("order"),requestBody.getIdList());
             List<String> cartoonImageList = new ArrayList<>();
             List<String> originalImageList = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -393,7 +395,7 @@ public class InvalidTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        List<HistorySimplifiedForInvalidTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         setDictionary(requestBody.getLocale()); //set dictionary key and values
         InvalidTaskExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -434,7 +436,7 @@ public class InvalidTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        List<HistorySimplifiedForInvalidTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         setDictionary(requestBody.getLocale()); //set dictionary key and values
         InvalidTaskWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -476,7 +478,7 @@ public class InvalidTaskController extends BaseController {
         }
 
         //get all pending case deal list
-        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        List<HistorySimplifiedForInvalidTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         InvalidTaskPdfView.setResource(getFontResource()); //set header font
         setDictionary(requestBody.getLocale()); //set dicionary key and values
         InvalidTaskPdfView.setMessageSource(messageSource);

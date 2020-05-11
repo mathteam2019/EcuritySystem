@@ -39,7 +39,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
-@Table(name = "history")
+@Table(name = "history_finish")
 public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implements Serializable {
 
     @Id
@@ -273,10 +273,6 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
     @NotFound(action = NotFoundAction.IGNORE)
     private SerKnowledgeCaseSimplifiedForHistoryTaskManagement serKnowledgeCase;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
 
     @OneToMany()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)

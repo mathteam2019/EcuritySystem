@@ -322,7 +322,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
      * @return
      */
     private String getQueryForJoin() {
-        return "\thistory \n";
+        return "\thistory_finish \n";
     }
 
     /**
@@ -362,7 +362,6 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
             String strDate = dateFormat.format(date);
             whereCause.add("HAND_END_TIME <= '" + strDate + "'");
         }
-        whereCause.add("SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' ");
         whereCause.add("HAND_EXAMINATION_ID IS NOT NULL ");
 //        CategoryUser categoryUser = authService.getDataCategoryUserList();
 //        if(categoryUser.isAll() == false) {

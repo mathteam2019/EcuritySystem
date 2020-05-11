@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.export.taskmanagement;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForInvalidTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
@@ -83,7 +84,7 @@ public class InvalidTaskWordView extends BaseWordView {
      * @param exportTaskList
      * @return
      */
-    public static InputStream buildWordDocument(List<SerTaskSimplifiedForProcessTableManagement> exportTaskList) {
+    public static InputStream buildWordDocument(List<HistorySimplifiedForInvalidTableManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -100,57 +101,52 @@ public class InvalidTaskWordView extends BaseWordView {
             int number = 0;
             for (Integer i = 0; i < exportTaskList.size(); i ++) {
 
-                SerTaskSimplifiedForProcessTableManagement task = exportTaskList.get(i);
+                HistorySimplifiedForInvalidTableManagement task = exportTaskList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
                 tableRow.getCell(0).setText(String.valueOf(++ number));
                 tableRow.getCell(1).setText(task.getTaskNumber());
 
-                if (task.getWorkFlow() != null && task.getWorkFlow().getWorkMode()!= null) {
-                    tableRow.getCell(2).setText(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
+                if (task.getModeName()!= null) {
+                    tableRow.getCell(2).setText(ConstantDictionary.getDataValue(task.getModeName()));
                 } else {
                     tableRow.getCell(2).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if (task.getField() != null) {
-                    tableRow.getCell(3).setText(task.getField().getFieldDesignation());
+                if (task.getFieldDesignation() != null) {
+                    tableRow.getCell(3).setText(task.getFieldDesignation());
                 } else {
                     tableRow.getCell(3).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if (task.getSerScan() != null) {
-                    if (task.getSerScan().getScanDevice() != null) {
-                        tableRow.getCell(4).setText(task.getSerScan().getScanDevice().getDeviceName());
-                    } else {
-                        tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
-                    }
 
-                    if (task.getSerScan().getScanPointsman() != null) {
-                        tableRow.getCell(5).setText(task.getSerScan().getScanPointsman().getUserName());
-                    } else {
-                        tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
-                    }
-
-                    if (task.getSerScan().getScanStartTime() != null) {
-                        tableRow.getCell(6).setText(formatDate(task.getSerScan().getScanStartTime()));
-                    }
-                    else {
-                        tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
-                    }
-
-                    if (task.getSerScan().getScanEndTime() != null) {
-                        tableRow.getCell(7).setText(formatDate(task.getSerScan().getScanEndTime()));
-                    }
-                    else {
-                        tableRow.getCell(7).setText(messageSource.getMessage("None", null, currentLocale));
-                    }
-
+                if (task.getScanDeviceName() != null) {
+                    tableRow.getCell(4).setText(task.getScanDeviceName());
                 } else {
                     tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
+                }
+
+                if (task.getScanPointsManName() != null) {
+                    tableRow.getCell(5).setText(task.getScanPointsManName());
+                } else {
                     tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
+                }
+
+                if (task.getScanStartTime() != null) {
+                    tableRow.getCell(6).setText(formatDate(task.getScanStartTime()));
+                }
+                else {
                     tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
+                }
+
+                if (task.getScanEndTime() != null) {
+                    tableRow.getCell(7).setText(formatDate(task.getScanEndTime()));
+                }
+                else {
                     tableRow.getCell(7).setText(messageSource.getMessage("None", null, currentLocale));
                 }
+
+
             }
 
             setWidth(table, document);

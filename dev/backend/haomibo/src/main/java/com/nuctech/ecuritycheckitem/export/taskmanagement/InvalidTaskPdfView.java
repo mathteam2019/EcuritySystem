@@ -22,6 +22,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForInvalidTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 
@@ -38,7 +39,7 @@ public class InvalidTaskPdfView extends BasePdfView {
      * @param exportTaskList
      * @return
      */
-    public static InputStream buildPDFDocument(List<SerTaskSimplifiedForProcessTableManagement> exportTaskList) {
+    public static InputStream buildPDFDocument(List<HistorySimplifiedForInvalidTableManagement> exportTaskList) {
 
         Document document = new Document();
 
@@ -65,61 +66,51 @@ public class InvalidTaskPdfView extends BasePdfView {
                     });
 
             int number = 0;
-            for (SerTaskSimplifiedForProcessTableManagement task : exportTaskList) {
+            for (HistorySimplifiedForInvalidTableManagement task : exportTaskList) {
 
                 addTableCell(table, String.valueOf(++ number));
 
                 addTableCell(table, task.getTaskNumber());
 
-                if (task.getWorkFlow() != null && task.getWorkFlow().getWorkMode()!= null) {
-                    addTableCell(table, ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
+                if (task.getModeName()!= null) {
+                    addTableCell(table, ConstantDictionary.getDataValue(task.getModeName()));
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if (task.getField() != null) {
-                    addTableCell(table, task.getField().getFieldDesignation());
+                if (task.getFieldDesignation() != null) {
+                    addTableCell(table, task.getFieldDesignation());
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if (task.getSerScan() != null) {
-
-                    if (task.getSerScan().getScanDevice() != null) {
-                        addTableCell(table, task.getSerScan().getScanDevice().getDeviceName());
-                    } else {
-                        addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    }
-
-                    if (task.getSerScan().getScanPointsman() != null) {
-                        addTableCell(table, task.getSerScan().getScanPointsman().getUserName());
-                    } else {
-                        addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    }
-
-                    if (task.getSerScan().getScanStartTime() != null) {
-                        addTableCell(table, formatDate(task.getSerScan().getScanStartTime()));
-                    }
-                    else {
-                        addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    }
-
-                    if (task.getSerScan().getScanEndTime() != null) {
-                        addTableCell(table, formatDate(task.getSerScan().getScanEndTime()));
-                    }
-                    else {
-                        addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    }
 
 
-
+                if (task.getScanDeviceName() != null) {
+                    addTableCell(table, task.getScanDeviceName());
                 } else {
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
-                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
+                if (task.getScanPointsManName() != null) {
+                    addTableCell(table, task.getScanPointsManName());
+                } else {
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                }
+
+                if (task.getScanStartTime() != null) {
+                    addTableCell(table, formatDate(task.getScanStartTime()));
+                }
+                else {
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                }
+
+                if (task.getScanEndTime() != null) {
+                    addTableCell(table, formatDate(task.getScanEndTime()));
+                }
+                else {
+                    addTableCell(table, messageSource.getMessage("None", null, currentLocale));
+                }
             }
 
             document.add(table);

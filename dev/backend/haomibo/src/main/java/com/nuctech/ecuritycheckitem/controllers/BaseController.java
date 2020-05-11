@@ -15,14 +15,13 @@ package com.nuctech.ecuritycheckitem.controllers;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
 import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.*;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
-import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
+import com.nuctech.ecuritycheckitem.service.taskmanagement.ProcessService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -183,7 +182,7 @@ public class BaseController {
     public SerDeviceRegisterRepository serDeviceRegisterRepository;
 
     @Autowired
-    public TaskService taskService;
+    public ProcessService taskService;
 
     @Autowired
     public StatisticsByUserService userStatisticsService;

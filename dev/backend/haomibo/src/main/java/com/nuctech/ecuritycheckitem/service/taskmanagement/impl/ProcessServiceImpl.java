@@ -3,9 +3,9 @@
  *
  * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
  *
- * 项目：	Haomibo V1.0（历史任务 service 1.0)
- * 文件名：	HistoryServiceImpl.java
- * 描述：	Service to get invalid task data from database using models and repositories
+ * 项目：	Haomibo V1.0（TaskServiceImpl)
+ * 文件名：	TaskServiceImpl.java
+ * 描述：	Service to get task data from database using models and repositories
  * 作者名：	Tiny
  * 日期：	2019/12/20
  *
@@ -14,13 +14,12 @@
 package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
-import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
-import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
+import com.nuctech.ecuritycheckitem.service.taskmanagement.ProcessService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
@@ -31,35 +30,30 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class HistoryServiceImpl implements HistoryService {
-
-
+public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
-    HistoryRepository historyRepository;
+    SerTaskRepository serTaskRepository;
+
+    @Autowired
+    SerTaskTableRepository serTaskTableRepository;
+
+    @Autowired
+    SerPlatformCheckParamRepository serPlatformCheckParamRepository;
 
     @Autowired
     HistoryTableProcessRepository historyTableProcessRepository;
 
     @Autowired
-    HistoryTableInvalidRepository historyTableInvalidRepository;
-
-    @Autowired
-    HistoryImageRepository historyImageRepository;
-
-    @Autowired
-    HistoryTableRepository historyTableRepository;
+    ProcessImageRepository processImageRepository;
 
     @Autowired
     AuthService authService;
-
-    @Autowired
-    SerPlatformCheckParamRepository serPlatformCheckParamRepository;
-    private QHistorySimplifiedForHistoryTableManagement builder;
 
     /**
      * Get filter condition from input parameters
@@ -72,14 +66,18 @@ public class HistoryServiceImpl implements HistoryService {
      * @param endTime
      * @return
      */
-    private BooleanBuilder getPredicate(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
+    private BooleanBuilder getPredicateProcess(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
 
-        QHistorySimplifiedForHistoryTableManagement builder = QHistorySimplifiedForHistoryTableManagement.historySimplifiedForHistoryTableManagement;
+        QHistorySimplifiedForProcessTableManagement builder = QHistorySimplifiedForProcessTableManagement.historySimplifiedForProcessTableManagement;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
         if (!StringUtils.isEmpty(taskNumber)) { //if task number is input
             predicate.and(builder.taskNumber.contains(taskNumber));
+        }
+
+        if (!StringUtils.isEmpty(taskStatus)) { //if task number is input
+            predicate.and(builder.taskStatus.eq(taskStatus));
         }
         if (modeId != null) { //if mode id is input
             predicate.and(builder.modeId.eq(modeId));
@@ -111,9 +109,6 @@ public class HistoryServiceImpl implements HistoryService {
         return predicate;
     }
 
-
-
-
     /**
      * Get paginated and filtered records of HistorySimplifiedForHistoryTaskManagement task
      * @param taskNumber : task number
@@ -128,12 +123,16 @@ public class HistoryServiceImpl implements HistoryService {
      * @return
      */
     @Override
-    public PageResult<HistorySimplifiedForHistoryTableManagement> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
+    public PageResult<HistorySimplifiedForProcessTableManagement> getProcessTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
         Date start = new Date();
-        QHistorySimplifiedForHistoryTableManagement builder = QHistorySimplifiedForHistoryTableManagement.historySimplifiedForHistoryTableManagement;
-        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
-        //predicate.and(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ALL));
-        //predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.FALSE));
+        QHistorySimplifiedForProcessTableManagement builder = QHistorySimplifiedForProcessTableManagement.historySimplifiedForProcessTableManagement;
+        BooleanBuilder predicate = getPredicateProcess(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
+//        predicate.and((builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.ASSIGN))
+//                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.SECURITY))
+//                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.JUDGE))
+//                        .or(builder.taskStatus.eq(HistorySimplifiedForHistoryTableManagement.TaskStatusType.HAND)));
+//        predicate.and(builder.scanInvalid.eq(HistorySimplifiedForHistoryTableManagement.InvalidType.FALSE));
+
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
 
@@ -148,79 +147,29 @@ public class HistoryServiceImpl implements HistoryService {
         }
 
 
-        long total = historyTableRepository.count(predicate); //get total count from database using repsitory
+        long total = historyTableProcessRepository.count(predicate); //get total count from database using repsitory
         Date end = new Date();
         long diff = end.getTime() - start.getTime();
-        List<HistorySimplifiedForHistoryTableManagement> data = historyTableRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
+        List<HistorySimplifiedForProcessTableManagement> data = historyTableProcessRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
         end = new Date();
         long diff1 = end.getTime() - start.getTime();
         return new PageResult<>(total, data);
-
     }
 
-
-
-
-
-    /**
-     * get all filtered records of HistorySimplifiedForHistoryTaskManagement task
-     * @param taskNumber : task number
-     * @param modeId : workmode id
-     * @param taskStatus : task status
-     * @param fieldId : scene id
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
-     * @return
-     */
     @Override
-    public List<HistorySimplifiedForHistoryTableManagement> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
+    public List<ProcessSimplifiedForImageManagement> getExportProcessImage(String sortBy, String order, String idList) {
 
-        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
+        QProcessSimplifiedForImageManagement builder = QProcessSimplifiedForImageManagement.processSimplifiedForImageManagement;
 
-        Sort sort = null;
-        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            if(sortBy.equals("taskNumber")) {
-                sortBy = "task.taskNumber";
-            }
-
-            sort = Sort.by(sortBy).ascending();
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = Sort.by(sortBy).descending();
-            }
-        }
-
-        List<HistorySimplifiedForHistoryTableManagement> data = new ArrayList<>();
-        if (sort != null) {
-            data = StreamSupport
-                    .stream(historyTableRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-        else {
-            data = StreamSupport
-                    .stream(historyTableRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-
-        return data;
-    }
-
-
-
-
-    @Override
-    public List<HistorySimplifiedForHistoryTableManagement> getExportHistoryTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
-
-        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
         String[] splits = idList.split(",");
         List<Long> historyIdList = new ArrayList<>();
         for(String idStr: splits) {
             historyIdList.add(Long.valueOf(idStr));
         }
-        predicate.and(QHistorySimplifiedForHistoryTableManagement.historySimplifiedForHistoryTableManagement.taskId.in(historyIdList));
+        predicate.and(builder.taskId.in(historyIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-
 
             sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
@@ -230,38 +179,33 @@ public class HistoryServiceImpl implements HistoryService {
             sort = Sort.by("scanStartTime").descending();
         }
 
-        List<HistorySimplifiedForHistoryTableManagement> data = new ArrayList<>();
+        List<ProcessSimplifiedForImageManagement> data = new ArrayList<>();
         if (sort != null) {
             data = StreamSupport
-                    .stream(historyTableRepository.findAll(predicate, sort).spliterator(), false)
+                    .stream(processImageRepository.findAll(predicate, sort).spliterator(), false)
                     .collect(Collectors.toList());
         }
         else {
             data = StreamSupport
-                    .stream(historyTableRepository.findAll(predicate).spliterator(), false)
+                    .stream(processImageRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
 
         return data;
     }
 
-
     @Override
-    public List<HistorySimplifiedForHistoryImageManagement> getExportHistoryImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+    public List<HistorySimplifiedForProcessTableManagement> getExportProcessTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
 
-        QHistorySimplifiedForHistoryImageManagement builder = QHistorySimplifiedForHistoryImageManagement.historySimplifiedForHistoryImageManagement;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        BooleanBuilder predicate = getPredicateProcess(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
         String[] splits = idList.split(",");
         List<Long> taskIdList = new ArrayList<>();
         for(String idStr: splits) {
             taskIdList.add(Long.valueOf(idStr));
         }
-        predicate.and(builder.taskId.in(taskIdList));
+        predicate.and(QHistorySimplifiedForProcessTableManagement.historySimplifiedForProcessTableManagement.taskId.in(taskIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-
-
             sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
                 sort = Sort.by(sortBy).descending();
@@ -270,15 +214,15 @@ public class HistoryServiceImpl implements HistoryService {
             sort = Sort.by("scanStartTime").descending();
         }
 
-        List<HistorySimplifiedForHistoryImageManagement> data = new ArrayList<>();
+        List<HistorySimplifiedForProcessTableManagement> data = new ArrayList<>();
         if (sort != null) {
             data = StreamSupport
-                    .stream(historyImageRepository.findAll(predicate, sort).spliterator(), false)
+                    .stream(historyTableProcessRepository.findAll(predicate, sort).spliterator(), false)
                     .collect(Collectors.toList());
         }
         else {
             data = StreamSupport
-                    .stream(historyImageRepository.findAll(predicate).spliterator(), false)
+                    .stream(historyTableProcessRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
 
@@ -286,15 +230,17 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     /**
-     * Get one HistorySimplifiedForHistoryTaskManagement information
-     * @param taskId : id of a HistorySimplifiedForHistoryTaskManagement task
+     * get detailed info of an invalid task
+     *
+     * @param taskId
      * @return
      */
     @Override
-    public HistorySimplifiedForHistoryTaskManagement getOne(Long taskId) {
+    public SerTaskSimplifiedForProcessTaskManagement getOne(Long taskId) {
+
         Date startTime = new Date();
-        QHistorySimplifiedForHistoryTaskManagement builder = QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement;
-        Optional<HistorySimplifiedForHistoryTaskManagement> data = historyRepository.findOne(builder.taskId.eq(taskId)); //get a HistorySimplifiedForHistoryTaskManagement record from database using repository
+        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
+        Optional<SerTaskSimplifiedForProcessTaskManagement> data = serTaskRepository.findOne(builder.taskId.eq(taskId));
         if (!data.isPresent()) {
             return null;
         }
@@ -311,12 +257,17 @@ public class HistoryServiceImpl implements HistoryService {
             platformCheckParams.setDisplayDeleteSuspicion(checkParams.getDisplayDeleteSuspicion());
         }
 
-        HistorySimplifiedForHistoryTaskManagement history = data.get();
-        history.setPlatFormCheckParams(platformCheckParams);
+        SerTaskSimplifiedForProcessTaskManagement serTask = data.get();
+        serTask.setPlatFormCheckParams(platformCheckParams);
         Date endTime = new Date();
         long diff = endTime.getTime() - startTime.getTime();
-        return history;
+        return data.get();
     }
+
+
+
+
+
 
 
 }

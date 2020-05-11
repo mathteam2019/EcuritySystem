@@ -122,10 +122,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         temp = temp.replace(":judgeGroupBy", judgeGroupBy);
         temp = temp.replace(":handGroupBy", handGroupBy);
 
-        temp = temp + " WHERE (IFNULL(totalScan, 0) + IFNULL(validScan, 0) + IFNULL(passedScan, 0) + " +
-                "IFNULL(alarmScan, 0) + IFNULL(totalJudge, 0) + IFNULL(suspictionJudge, 0) + " +
-                "IFNULL(noSuspictionJudge, 0) + IFNULL(totalHand, 0) + " +
-                "IFNULL(seizureHand, 0) + IFNULL(noSeizureHand, 0)) > 0";
+//        temp = temp + " WHERE (IFNULL(totalScan, 0) + IFNULL(validScan, 0) + IFNULL(passedScan, 0) + " +
+//                "IFNULL(alarmScan, 0) + IFNULL(totalJudge, 0) + IFNULL(suspictionJudge, 0) + " +
+//                "IFNULL(noSuspictionJudge, 0) + IFNULL(totalHand, 0) + " +
+//                "IFNULL(seizureHand, 0) + IFNULL(noSeizureHand, 0)) > 0";
 
         String tempCount = temp.replace(":selectQuery", "\tcount(q)\n");
         Query countQuery = entityManager.createNativeQuery(tempCount);
@@ -192,10 +192,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         temp = temp.replace(":judgeGroupBy", judgeGroupBy);
         temp = temp.replace(":handGroupBy", handGroupBy);
 
-        temp = temp + " WHERE (IFNULL(totalScan, 0) + IFNULL(validScan, 0) + IFNULL(passedScan, 0) + " +
-                "IFNULL(alarmScan, 0) + IFNULL(totalJudge, 0) + IFNULL(suspictionJudge, 0) + " +
-                "IFNULL(noSuspictionJudge, 0) + IFNULL(totalHand, 0) + " +
-                "IFNULL(seizureHand, 0) + IFNULL(noSeizureHand, 0)) > 0";
+//        temp = temp + " WHERE (IFNULL(totalScan, 0) + IFNULL(validScan, 0) + IFNULL(passedScan, 0) + " +
+//                "IFNULL(alarmScan, 0) + IFNULL(totalJudge, 0) + IFNULL(suspictionJudge, 0) + " +
+//                "IFNULL(noSuspictionJudge, 0) + IFNULL(totalHand, 0) + " +
+//                "IFNULL(seizureHand, 0) + IFNULL(noSeizureHand, 0)) > 0";
 
 
         //.... Get Detailed Statistics
@@ -433,7 +433,6 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add(" JUDGE_USER_ID in (" + relateUserIdListStr + ") ");
         }
 
-        whereCause.add(" SCAN_INVALID = 'FALSE' ");
         whereCause.add(" JUDGE_ID IS NOT NULL ");
         if (!whereCause.isEmpty()) {
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
@@ -516,12 +515,14 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     }
 
     private String getMainSelect() {
-        return "\tq,\n" +
-                "\tIFNULL(totalScan, 0) as totalScan,\n" + "\tIFNULL(validScan, 0) as validScan,\n" + "\tIFNULL(invalidScan, 0) as invalidScan,\n"
-                + "\tIFNULL(passedScan, 0) as passedScan,\n" + "\tIFNULL(alarmScan, 0) as alarmScan,\n" +
-                "\tIFNULL(totalJudge, 0) as totalJudge,\n" + "\tIFNULL(suspictionJudge, 0) as suspictionJudge,\n" + "\tIFNULL(noSuspictionJudge, 0) as noSuspictionJudge,\n" +
-                "\tIFNULL(totalHand, 0) as totalHand,\n" + "\tIFNULL(seizureHand, 0) as seizureHand,\n" + "\tIFNULL(noSeizureHand, 0) as noSeizureHand\n";
+        return "\t*\n";
     }
+//        return "\tq,\n" +
+//                "\tIFNULL(totalScan, 0) as totalScan,\n" + "\tIFNULL(validScan, 0) as validScan,\n" + "\tIFNULL(invalidScan, 0) as invalidScan,\n"
+//                + "\tIFNULL(passedScan, 0) as passedScan,\n" + "\tIFNULL(alarmScan, 0) as alarmScan,\n" +
+//                "\tIFNULL(totalJudge, 0) as totalJudge,\n" + "\tIFNULL(suspictionJudge, 0) as suspictionJudge,\n" + "\tIFNULL(noSuspictionJudge, 0) as noSuspictionJudge,\n" +
+//                "\tIFNULL(totalHand, 0) as totalHand,\n" + "\tIFNULL(seizureHand, 0) as seizureHand,\n" + "\tIFNULL(noSeizureHand, 0) as noSeizureHand\n";
+//    }
 
     /**
      * query of select part
@@ -538,15 +539,27 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:scanGroupBy AS q \n" +
                 "\t\tFROM\n" +
-                "\t\t\thistory  UNION\n" +
+                "\t\t\thistory_process  UNION\n" +
+                "\t\tSELECT DISTINCT \n" +
+                "\t\t:scanGroupBy AS q \n" +
+                "\t\tFROM\n" +
+                "\t\t\thistory_finish  UNION\n" +
+                "\t\tSELECT DISTINCT \n" +
+                "\t\t:scanGroupBy AS q \n" +
+                "\t\tFROM\n" +
+                "\t\t\thistory_invalid  UNION\n" +
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:judgeGroupBy AS q \n" +
                 "\t\tFROM\n" +
-                "\t\t\thistory WHERE JUDGE_ID IS NOT NULL UNION\n" +
+                "\t\t\thistory_process WHERE JUDGE_ID IS NOT NULL UNION\n" +
+                "\t\tSELECT DISTINCT \n" +
+                "\t\t:judgeGroupBy AS q \n" +
+                "\t\tFROM\n" +
+                "\t\t\thistory_finish WHERE JUDGE_ID IS NOT NULL UNION\n" +
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:handGroupBy AS q \n" +
                 "\t\tFROM\n" +
-                "\t\t\thistory h where HAND_EXAMINATION_ID IS NOT NULL\n" +
+                "\t\t\thistory_finish h where HAND_EXAMINATION_ID IS NOT NULL\n" +
                 "\t\t) AS t00 \n" +
                 "\t) AS t0 ";
     }
@@ -571,18 +584,38 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
-                "\t\tcount( SCAN_ID ) AS totalScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID = '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS validScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID = '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalidScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' AND SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID = '" + SerScan.Invalid.FALSE + "' AND SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScan,\n" +
-                "\t\t:scanGroupBy AS q1 \n" +
+                "\t\tcount( SCAN_ID ) AS totalScanProcess,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScanProcess,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScanProcess,\n" +
+                "\t\t:scanGroupBy AS q11 \n" +
                 "\tFROM\n" +
-                "\t\thistory  \n" +
+                "\t\thistory_process  \n" +
                 "\t:whereScan\t" +
                 "\tGROUP BY\n" +
-                "\t\tq1 \n" +
-                "\t) AS t1 ON t0.q = t1.q1\t";
+                "\t\tq11 \n" +
+                "\t) AS t11 ON t0.q = t11.q11\t" +
+                "LEFT JOIN (\n" +
+                "\tSELECT\n" +
+                "\t\tcount( SCAN_ID ) AS totalScanFinish,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScanFinish,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScanFinish,\n" +
+                "\t\t:scanGroupBy AS q12 \n" +
+                "\tFROM\n" +
+                "\t\thistory_finish  \n" +
+                "\t:whereScan\t" +
+                "\tGROUP BY\n" +
+                "\t\tq12 \n" +
+                "\t) AS t12 ON t0.q = t12.q12\t" +
+                "LEFT JOIN (\n" +
+                "\tSELECT\n" +
+                "\t\tcount( SCAN_ID ) AS totalScanInvalid,\n" +
+                "\t\t:scanGroupBy AS q13 \n" +
+                "\tFROM\n" +
+                "\t\thistory_invalid  \n" +
+                "\t:whereScan\t" +
+                "\tGROUP BY\n" +
+                "\t\tq13 \n" +
+                "\t) AS t13 ON t0.q = t13.q13\t";
     }
 
     /**
@@ -594,16 +627,28 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
-                "\t\tcount( judge_id ) AS totalJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
-                "\t\t:judgeGroupBy AS q2 \n" +
+                "\t\tcount( judge_id ) AS totalJudgeProcess,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudgeProcess,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudgeProcess,\n" +
+                "\t\t:judgeGroupBy AS q21 \n" +
                 "\tFROM\n" +
-                "\t\thistory  \n" +
+                "\t\thistory_process  \n" +
                 "\t:whereJudge\t" +
                 "\tGROUP BY\n" +
-                "\t\tq2 \n" +
-                "\t) AS t2 ON t0.q = t2.q2\t";
+                "\t\tq21 \n" +
+                "\t) AS t21 ON t0.q = t21.q21\t" +
+                "LEFT JOIN (\n" +
+                "\tSELECT\n" +
+                "\t\tcount( judge_id ) AS totalJudgeFinish,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudgeFinish,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudgeFinish,\n" +
+                "\t\t:judgeGroupBy AS q22 \n" +
+                "\tFROM\n" +
+                "\t\thistory_finish  \n" +
+                "\t:whereJudge\t" +
+                "\tGROUP BY\n" +
+                "\t\tq22 \n" +
+                "\t) AS t22 ON t0.q = t22.q22\t";
     }
 
     /**
@@ -620,7 +665,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.FALSE + "', 1, 0 ) ) AS noSeizureHand,\n" +
                 "\t\t:handGroupBy AS q3 \n" +
                 "\tFROM\n" +
-                "\t\thistory  \n" +
+                "\t\thistory_finish  \n" +
                 "\t:whereHand\t" +
                 "\tGROUP BY\n" +
                 "\t\tq3 \n" +
@@ -642,17 +687,43 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             JudgeStatisticsModelForPreview judgeStat = new JudgeStatisticsModelForPreview();
             HandExaminationStatisticsForPreview handStat = new HandExaminationStatisticsForPreview();
 
-            scanStat.setTotalScan(Utils.parseLong(item[1].toString()));
-            scanStat.setValidScan(Utils.parseLong(item[2].toString()));
-            scanStat.setInvalidScan(Utils.parseLong(item[3].toString()));
-            scanStat.setPassedScan(Utils.parseLong(item[4].toString()));
-            scanStat.setAlarmScan(Utils.parseLong(item[5].toString()));
-            judgeStat.setTotalJudge(Utils.parseLong(item[6].toString()));
-            judgeStat.setSuspictionJudge(Utils.parseLong(item[7].toString()));
-            judgeStat.setNoSuspictionJudge(Utils.parseLong(item[8].toString()));
-            handStat.setTotalHandExamination(Utils.parseLong(item[9].toString()));
-            handStat.setSeizureHandExamination(Utils.parseLong(item[10].toString()));
-            handStat.setNoSeizureHandExamination(Utils.parseLong(item[11].toString()));
+
+            Long totalScanProcess = Utils.parseLong(item[1]);
+            Long totalScanFinish = Utils.parseLong(item[5]);
+            Long totalScanInvalid = Utils.parseLong(item[9]);
+            Long passScanProcess = Utils.parseLong(item[2]);
+            Long passScanFinish = Utils.parseLong(item[6]);
+            Long alarmScanProcess = Utils.parseLong(item[3]);
+            Long alarmScanFinish = Utils.parseLong(item[7]);
+
+            Long totalJudgeProcess = Utils.parseLong(item[11]);
+            Long totalJudgeFinish = Utils.parseLong(item[15]);
+
+            Long suspectionJudgeProcess = Utils.parseLong(item[12]);
+            Long suspectionJudgeFinish = Utils.parseLong(item[16]);
+
+            Long noSuspectionJudgeProcess = Utils.parseLong(item[13]);
+            Long noSuspectionJudgeFinish = Utils.parseLong(item[17]);
+
+
+
+            scanStat.setTotalScan(totalScanProcess + totalScanFinish + totalScanInvalid);
+            scanStat.setValidScan(totalScanProcess + totalScanFinish);
+            scanStat.setInvalidScan(totalScanInvalid);
+            scanStat.setPassedScan(passScanProcess + passScanFinish);
+            scanStat.setAlarmScan(alarmScanProcess + alarmScanFinish);
+            judgeStat.setTotalJudge(totalJudgeProcess + totalJudgeFinish);
+            judgeStat.setSuspictionJudge(suspectionJudgeProcess + suspectionJudgeFinish);
+            judgeStat.setNoSuspictionJudge(noSuspectionJudgeProcess + noSuspectionJudgeFinish);
+            handStat.setTotalHandExamination(Utils.parseLong(item[19]));
+            handStat.setSeizureHandExamination(Utils.parseLong(item[20]));
+            handStat.setNoSeizureHandExamination(Utils.parseLong(item[21]));
+
+
+            scanStat.setValidScanRate(0);
+            scanStat.setInvalidScanRate(0);
+            scanStat.setPassedScanRate(0);
+            scanStat.setAlarmScanRate(0);
 
             if (scanStat.getTotalScan() > 0) {
                 scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double) scanStat.getTotalScan());
@@ -660,10 +731,16 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 scanStat.setPassedScanRate(scanStat.getPassedScan() * 100 / (double) scanStat.getTotalScan());
                 scanStat.setAlarmScanRate(scanStat.getAlarmScan() * 100 / (double) scanStat.getTotalScan());
             }
+
+            judgeStat.setSuspictionJudgeRate(0);
+            judgeStat.setNoSuspictionJudgeRate(0);
             if (judgeStat.getTotalJudge() > 0) {
                 judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
                 judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
             }
+
+            handStat.setSeizureHandExaminationRate(0);
+            handStat.setNoSeizureHandExaminationRate(0);
             if (handStat.getTotalHandExamination() > 0) {
                 handStat.setSeizureHandExaminationRate(handStat.getSeizureHandExamination() * 100 / (double) handStat.getTotalHandExamination());
                 handStat.setNoSeizureHandExaminationRate(handStat.getNoSeizureHandExamination() * 100 / (double) handStat.getTotalHandExamination());

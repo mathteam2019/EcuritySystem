@@ -187,7 +187,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sortBy = "task.taskNumber";
+            sortBy = "history.taskNumber";
             if (order.equals(Constants.SortOrder.ASC)) {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
             }
@@ -227,7 +227,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         predicate.and(QSerKnowledgeCaseDeal.serKnowledgeCaseDeal.caseDealId.in(caseDealIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sortBy = "task.taskNumber";
+            sortBy = "history.taskNumber";
             sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
                 sort = Sort.by(sortBy).descending();
@@ -275,7 +275,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         predicate.and(QSerKnowledgeCaseDealImage.serKnowledgeCaseDealImage.caseDealId.in(caseDealIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sortBy = "task.taskNumber";
+            sortBy = "history.taskNumber";
             sort = Sort.by(sortBy).ascending();
             if (order.equals(Constants.SortOrder.DESC)) {
                 sort = Sort.by(sortBy).descending();

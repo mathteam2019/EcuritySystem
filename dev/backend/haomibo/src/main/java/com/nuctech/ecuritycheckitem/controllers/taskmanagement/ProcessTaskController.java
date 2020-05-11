@@ -28,10 +28,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
 import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForProcessTableManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTableManagement;
-import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -205,7 +202,7 @@ public class ProcessTaskController extends BaseController {
         Integer currentPage = requestBody.getCurrentPage();
         Integer perPage = requestBody.getPerPage();
         currentPage --;
-        PageResult<HistorySimplifiedForProcessTableManagement> result = historyService.getProcessTaskByFilter(
+        PageResult<HistorySimplifiedForProcessTableManagement> result = taskService.getProcessTaskByFilter(
                 requestBody.getFilter().getTaskNumber(),//task number from request body
                 requestBody.getFilter().getMode(), //modeId from request body
                 requestBody.getFilter().getTaskStatus(), //status from request body
@@ -286,8 +283,8 @@ public class ProcessTaskController extends BaseController {
         return exportList;
     }
 
-    private List<SerTaskSimplifiedForProcessTableManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
-        List<SerTaskSimplifiedForProcessTableManagement> taskList = new ArrayList<>();
+    private List<HistorySimplifiedForProcessTableManagement> getExportListFromRequest(TaskGenerateRequestBody requestBody, Map<String, String> sortParams) {
+        List<HistorySimplifiedForProcessTableManagement> taskList = new ArrayList<>();
         taskList = taskService.getExportProcessTask(
                 requestBody.getFilter().getTaskNumber(),//get task numer from request body
                 requestBody.getFilter().getMode(),//get mode id from request body
@@ -344,7 +341,8 @@ public class ProcessTaskController extends BaseController {
             }
 
             //get all pending case deal list
-            List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+            List<ProcessSimplifiedForImageManagement> exportList = taskService.getExportProcessImage(sortParams.get("sortBy"), //field name
+                    sortParams.get("order"), requestBody.getIdList());
             List<String> cartoonImageList = new ArrayList<>();
             List<String> originalImageList = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -397,7 +395,7 @@ public class ProcessTaskController extends BaseController {
             }
         }
 
-        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        List<HistorySimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         setDictionary(requestBody.getLocale());
         ProcessTaskExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -437,7 +435,7 @@ public class ProcessTaskController extends BaseController {
             }
         }
 
-        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        List<HistorySimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         setDictionary(requestBody.getLocale());  //set dictionary key and values
         ProcessTaskWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -476,7 +474,7 @@ public class ProcessTaskController extends BaseController {
             }
         }
 
-        List<SerTaskSimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
+        List<HistorySimplifiedForProcessTableManagement> exportList = getExportListFromRequest(requestBody, sortParams);
         ProcessTaskPdfView.setResource(getFontResource()); //set header font
         setDictionary(requestBody.getLocale()); //set dictionary key and values
         ProcessTaskPdfView.setMessageSource(messageSource);

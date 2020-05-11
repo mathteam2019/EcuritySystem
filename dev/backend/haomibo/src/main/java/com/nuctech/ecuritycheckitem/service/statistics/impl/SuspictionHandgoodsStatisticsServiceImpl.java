@@ -274,7 +274,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
 
     private String getJoinQuery() {
         return "FROM\n" +
-                "\thistory h \n" +
+                "\thistory_finish h \n" +
                 "\n" +
                 "\n:where\n" +
                 "\nGROUP BY time\n";

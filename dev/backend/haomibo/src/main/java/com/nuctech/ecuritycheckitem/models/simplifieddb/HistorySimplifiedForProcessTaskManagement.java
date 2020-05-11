@@ -37,7 +37,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
-@Table(name = "history")
+@Table(name = "history_process")
 public class HistorySimplifiedForProcessTaskManagement extends BaseEntitySimple implements Serializable {
 
     @Id
