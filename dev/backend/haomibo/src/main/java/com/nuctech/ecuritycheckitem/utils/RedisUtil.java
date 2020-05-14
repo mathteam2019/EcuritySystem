@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -130,6 +131,14 @@ public class RedisUtil {
 
     public String get(String key) {
         return key == null ? null : redisTemplate.opsForValue().get(key);
+    }
+
+    public Map<Object, Object> getEntities(String hashKey) {
+        try {
+            return redisTemplate.opsForHash().entries(hashKey);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }

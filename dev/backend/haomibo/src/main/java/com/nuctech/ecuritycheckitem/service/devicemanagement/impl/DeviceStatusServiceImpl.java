@@ -13,6 +13,7 @@
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.redis.HardwareStatusModel;
@@ -38,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -262,22 +264,36 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         List<SerDeviceStatus> statusList = new ArrayList<>();
         List<HardwareStatusModel> hardwareList = new ArrayList<>();
         Date startDate = new Date();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
+            String redisKey = "sys.device.hardware.info.first";
+            Map<Object, Object> hardwareHash = redisUtil.getEntities(redisKey);
+            if(hardwareHash != null) {
+                hardwareHash.forEach((key, value) -> {
+                    try {
+                        HardwareStatusModel hardwareStatusModel = objectMapper.readValue(value.toString(), HardwareStatusModel.class);
+                        hardwareList.add(hardwareStatusModel);
+                    } catch (Exception ex) {}
 
-            String redisKey = "sys.device.hardware.info";
-            String dataStr = redisUtil.get(redisKey);
-            JSONArray dataContent = JSONArray.parseArray(dataStr);
-            hardwareList = dataContent.toJavaList(HardwareStatusModel.class);
-        } catch (Exception ex) {}
+                });
+            }
+        }catch (Exception ex) {}
         Date endDate = new Date();
         long difHardware = endDate.getTime() - startDate.getTime();
         //log.error("Redis hardware time is " + difHardware);
         List<SerDeviceStatusModel> statusModelList = new ArrayList<>();
         try {
-            String redisKey = "sys.device.current.info";
-            String dataStr = redisUtil.get(redisKey);
-            JSONArray dataContent = JSONArray.parseArray(dataStr);
-            statusModelList = dataContent.toJavaList(SerDeviceStatusModel.class);
+            String redisKey = "sys.device.current.info.first";
+            Map<Object, Object> currentHash = redisUtil.getEntities(redisKey);
+            if(currentHash != null) {
+                currentHash.forEach((key, value) -> {
+                    try {
+                        SerDeviceStatusModel deviceStatusModel = objectMapper.readValue(value.toString(), SerDeviceStatusModel.class);
+                        statusModelList.add(deviceStatusModel);
+                    } catch (Exception ex) {}
+
+                });
+            }
         } catch (Exception ex) {}
         endDate = new Date();
         long difCurrent = endDate.getTime() - startDate.getTime();
