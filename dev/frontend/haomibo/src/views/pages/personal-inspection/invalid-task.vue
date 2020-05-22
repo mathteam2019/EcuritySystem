@@ -507,12 +507,11 @@
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled class="form-input-border"
-                                v-if="showPage.serHandExamination == null"/>
-                  <b-form-input disabled class="form-input-border"
-                                v-else-if="showPage.serHandExamination.handDevice == null"/>
-                  <b-form-input disabled class="form-input-border" v-else
-                                v-model="showPage.serHandExamination.handDevice.deviceName"/>
+                  <b-form-input disabled class="form-input-border"/>
+<!--                  <b-form-input disabled class="form-input-border"-->
+<!--                                v-else-if="showPage.serHandExamination.handDevice == null"/>-->
+<!--                  <b-form-input disabled class="form-input-border" v-else-->
+<!--                                v-model="showPage.serHandExamination.handDevice.deviceName"/>-->
                 </b-form-group>
               </b-col>
               <b-col>
@@ -521,12 +520,11 @@
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled class="form-input-border"
-                                v-if="showPage.serJudgeGraph == null"/>
-                  <b-form-input disabled class="form-input-border"
-                                v-else-if="showPage.serJudgeGraph.judgeDevice == null"/>
-                  <b-form-input disabled class="form-input-border" v-else
-                                v-model="showPage.serJudgeGraph.judgeDevice.deviceName"/>
+                  <b-form-input disabled class="form-input-border"/>
+<!--                  <b-form-input disabled class="form-input-border"-->
+<!--                                v-else-if="showPage.serJudgeGraph.judgeDevice == null"/>-->
+<!--                  <b-form-input disabled class="form-input-border" v-else-->
+<!--                                v-model="showPage.serJudgeGraph.judgeDevice.deviceName"/>-->
                 </b-form-group>
               </b-col>
               <b-col>
@@ -545,10 +543,9 @@
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled class="form-input-border"
-                                v-if="showPage.history == null"/>
-                  <b-form-input disabled class="form-input-border" v-else
-                                :value="getOptionValue(showPage.history.handAppraise) + ' ' + getOptionValue(showPage.history.handAppraiseSecond)"/>
+                  <b-form-input disabled class="form-input-border"/>
+<!--                  <b-form-input disabled class="form-input-border" v-else-->
+<!--                                :value="getOptionValue(showPage.history.handAppraise) + ' ' + getOptionValue(showPage.history.handAppraiseSecond)"/>-->
                 </b-form-group>
               </b-col>
             </b-row>
@@ -1598,7 +1595,6 @@
               case responseMessages['ok']:
                 this.showPage = response.data.data;
                 this.apiBaseURL = apiBaseUrl;
-                //if(this.showPage.workFlow.modeName
                 let modeName;
                 this.judgeStartTime = null;
                 this.judgeDeviceName = null;
@@ -1608,20 +1604,20 @@
                 this.handDeviceName = null;
                 this.handUserName = null;
 
-                for (let i = 0; i < this.showPage.serAssignList.length; i++) {
-                  if (this.showPage.serAssignList[i].handDevice !== null) {
-                    this.handDeviceName = this.showPage.serAssignList[i].handDevice.deviceName;
-                    this.handUserName = this.showPage.serAssignList[i].assignUser.userName;
-                    this.handStartTime = this.showPage.serAssignList[i].assignEndTime;
-                  } else {
-                    if (this.showPage.serAssignList[i].judgeDevice !== null) {
-                      this.judgeDeviceName = this.showPage.serAssignList[i].judgeDevice.deviceName;
-                    }
-                    this.judgeUserName = this.showPage.serAssignList[i].assignUser.userName;
-                    this.judgeStartTime = this.showPage.serAssignList[i].assignEndTime;
-                    this.judgeUserId = this.showPage.serAssignList[i].assignUser.userId;
-                  }
-                }
+                // for (let i = 0; i < this.showPage.serAssignList.length; i++) {
+                //   if (this.showPage.serAssignList[i].handDevice !== null) {
+                //     this.handDeviceName = this.showPage.serAssignList[i].handDevice.deviceName;
+                //     this.handUserName = this.showPage.serAssignList[i].assignUser.userName;
+                //     this.handStartTime = this.showPage.serAssignList[i].assignEndTime;
+                //   } else {
+                //     if (this.showPage.serAssignList[i].judgeDevice !== null) {
+                //       this.judgeDeviceName = this.showPage.serAssignList[i].judgeDevice.deviceName;
+                //     }
+                //     this.judgeUserName = this.showPage.serAssignList[i].assignUser.userName;
+                //     this.judgeStartTime = this.showPage.serAssignList[i].assignEndTime;
+                //     this.judgeUserId = this.showPage.serAssignList[i].assignUser.userId;
+                //   }
+                // }
 
 
                 this.thumbs = [];

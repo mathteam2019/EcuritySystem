@@ -92,7 +92,7 @@
               </div>
               <vuetable
                 ref="taskVuetable"
-                track-by="historyId"
+                track-by="taskId"
                 :api-url="taskVuetableItems.apiUrl"
                 :fields="taskVuetableItems.fields"
                 :http-fetch="taskVuetableHttpFetch"

@@ -1006,8 +1006,11 @@
         if (value === null || this.onSiteOption === null) return "";
         else {
           for (let i = 0; i < this.onSiteOption.length; i++) {
-            if (this.onSiteOption[i].value === value)
-              return this.onSiteOption[i].text;
+            if (this.onSiteOption[i].value === value){
+              var string = this.onSiteOption[i].html.replace(/&nbsp;/g, '');
+              return string;
+            }
+
           }
         }
       },

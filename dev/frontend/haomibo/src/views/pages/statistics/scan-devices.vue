@@ -656,7 +656,7 @@
               show: false
             }
           },
-          color: ['#ff6600', '#009900', '#cccccc'],
+          color: ['#009900', '#ff6600', '#cccccc'],
           series: [
             {
               name: this.$t('permission-management.permission-control.pending-success'),
@@ -957,7 +957,7 @@
         else {
           for (let i = 0; i < this.onSiteOption.length; i++) {
             if (this.onSiteOption[i].value === value)
-              return this.onSiteOption[i].text;
+              return this.onSiteOption[i].html.replace(/&nbsp;/g, '');
           }
         }
       },

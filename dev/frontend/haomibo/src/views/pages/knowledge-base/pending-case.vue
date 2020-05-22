@@ -154,22 +154,22 @@
             </div>
             <b-row class="mb-1">
               <b-col style="margin-bottom: 6px;" class="icon-container">
-                <div v-if="showPage.workFlow==null"></div>
-                <div v-else-if="showPage.workFlow.workMode==null"></div>
+                <div v-if="showPage.workMode==null"></div>
+
                 <div v-else>
-                  <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('all')">
+                  <div v-if="showPage.workMode.modeName===getModeDataCode('all')">
                     <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                   </div>
-                  <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan')">
+                  <div v-if="showPage.workMode.modeName===getModeDataCode('scan')">
                     <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                   </div>
-                  <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge')">
+                  <div v-if="showPage.workMode.modeName===getModeDataCode('scan+judge')">
                     <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     <b-img draggable="false" src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                   </div>
-                  <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand')">
+                  <div v-if="showPage.workMode.modeName===getModeDataCode('scan+hand')">
                     <b-img draggable="false" src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     <b-img draggable="false" src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                   </div>
@@ -177,10 +177,10 @@
               </b-col>
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
                 <span><i class="icofont-star"/></span>
-                <span v-if="judgeUserId===null || judgeUserId === defaultUserId">
+                <span v-if="showPage.judgeUser != null && showPage.judgeUser.userId != defaultUserId"><i
+                  class="icofont-search-user"/></span>
+                <span v-else>
                   <b-img draggable="false" src="/assets/img/system_scan.svg" style="width: 20px; height: 22px;"/></span>
-                <span v-else><i
-                    class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000001'"><i
@@ -376,20 +376,17 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.scan')}}</div>
                     <div>
-                      <div v-if="showPage.serScan == null"></div>
-                      <div v-else-if="showPage.serScan.scanPointsman == null"></div>
-                      <div v-else>{{showPage.serScan.scanPointsman.userName}}</div>
+                      <div v-if="showPage.scanPointsmanName != null">{{showPage.scanPointsmanName}}</div>
                     </div>
                   </div>
 
                   <div class="top-date">
                     <label
-                      v-if="showPage.serScan != null">{{this.getDateTimeFormat2(showPage.serScan.scanStartTime)}}</label>
+                      v-if="showPage.scanStartTime != null">{{this.getDateTimeFormat2(showPage.scanStartTime)}}</label>
                     <label v-else/>
                   </div>
                   <div class="bottom-date">
-                    <label
-                      v-if="showPage.serScan != null">{{this.getDateTimeFormat2(showPage.serScan.scanEndTime)}}</label>
+                    <label v-if="showPage.scanEndTime != null">{{this.getDateTimeFormat2(showPage.scanEndTime)}}</label>
                     <label v-else/>
                   </div>
                 </div>
@@ -398,21 +395,20 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
-                      <div v-if="judgeUserName == null">{{$t('maintenance-management.process-task.default-user')}}</div>
-                      <div v-else>{{judgeUserName}}</div>
+                      <div v-if="showPage.judgeUser != null">{{showPage.judgeUser.userName}}</div>
+                      <div v-else>{{$t('maintenance-management.process-task.default-user')}}</div>
                     </div>
                   </div>
 
                   <div class="top-date">
-                    <label v-if="judgeStartTime==null"/>
+                    <label v-if="showPage.judgeStartTime==null"/>
                     <label
-                      v-else>{{this.getDateTimeFormat2(judgeStartTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.judgeStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.serJudgeGraph==null"/>
+                    <label v-if="showPage.judgeEndTime==null"/>
                     <label
-                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
-                    <label v-else/>
+                      v-else>{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
                   </div>
                 </div>
 
@@ -420,20 +416,22 @@
                   <div class="left">
                     <div>{{$t('device-config.maintenance-config.inspection')}}</div>
                     <div>
-                      <div v-if="handUserName == null"></div>
-                      <div v-else>{{handUserName}}</div>
+                      <div v-if="showPage.handUser == null"></div>
+                      <div v-else>{{showPage.handUser.userName}}</div>
                     </div>
                   </div>
 
                   <div class="top-date">
-                    <label v-if="showPage.serJudgeGraph == null || showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('scan')"/>
+                    <label v-if="showPage.workMode==null || showPage.handUserId === null || showPage.judgeEndTime ===null"/>
+                    <label v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('scan')"/>
                     <label
-                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.serHandExamination == null || showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('scan')"/>
+                    <label v-if="showPage.workMode==null || showPage.handUserId === null || showPage.handEndTime ===null"/>
+                    <label v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('scan')"/>
                     <label
-                      v-else>{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.handEndTime)}}</label>
                   </div>
                 </div>
 
@@ -453,8 +451,10 @@
                     {{$t('personal-inspection.task-number')}}
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-model="showPage.taskNumber"
-                                class="form-input-border"/>
+                  <b-form-input disabled class="form-input-border"
+                                v-if="showPage.task == null"/>
+                  <b-form-input disabled class="form-input-border" v-else
+                                v-model="showPage.task.taskNumber"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -463,8 +463,11 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.field==null" class="form-input-border"/>
-                  <b-form-input disabled v-else v-model="showPage.field.fieldDesignation"
+                  <b-form-input disabled v-if="showPage.task==null"
+                                class="form-input-border"/>
+                  <b-form-input disabled v-else-if="showPage.task.field==null"
+                                class="form-input-border"/>
+                  <b-form-input disabled v-else v-model="showPage.task.field.fieldDesignation"
                                 class="form-input-border"/>
                 </b-form-group>
               </b-col>
@@ -474,11 +477,8 @@
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.serScan == null"
-                                class="form-input-border"/>
-                  <b-form-input disabled v-else-if="showPage.serScan.scanDevice == null"
-                                class="form-input-border"/>
-                  <b-form-input disabled v-else v-model="showPage.serScan.scanDevice.deviceName"
+                  <b-form-input disabled v-if="showPage.scanDevice == null" class="form-input-border"/>
+                  <b-form-input disabled v-else v-model="showPage.scanDevice.deviceName"
                                 class="form-input-border"/>
                 </b-form-group>
               </b-col>
@@ -504,9 +504,9 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="handDeviceName == null"/>
+                                v-if="showPage.handDevice == null"/>
                   <b-form-input disabled class="form-input-border" v-else
-                                v-model="handDeviceName"/>
+                                v-model="showPage.handDevice.deviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -516,9 +516,9 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="judgeDeviceName == null"/>
+                                v-if="showPage.judgeDevice == null"/>
                   <b-form-input disabled class="form-input-border" v-else
-                                v-model="judgeDeviceName"/>
+                                v-model="showPage.judgeDevice.deviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -528,11 +528,9 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="showPage.workFlow==null"/>
-                  <b-form-input disabled class="form-input-border"
-                                v-else-if="showPage.workFlow.workMode==null"/>
+                                v-if="showPage.workMode==null"/>
                   <b-form-input disabled class="form-input-border" v-else
-                                :value="getModeName(showPage.workFlow.workMode.modeName)"/>
+                                :value="getModeName(showPage.workMode.modeName)"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -542,10 +540,10 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="judgeUserId===null || judgeUserId === defaultUserId"
-                                :value="$t('maintenance-management.process-task.system')"/>
-                  <b-form-input disabled class="form-input-border" v-else
+                                v-if="showPage.judgeUser != null && showPage.judgeUser.userId != defaultUserId"
                                 :value="$t('maintenance-management.process-task.artificial')"/>
+                  <b-form-input disabled class="form-input-border" v-else
+                                :value="$t('maintenance-management.process-task.system')"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -557,9 +555,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="showPage.history == null"/>
-                  <b-form-input disabled class="form-input-border" v-else
-                                :value="getOptionValue(showPage.history.handAppraise) + ' ' + getOptionValue(showPage.history.handAppraiseSecond)"/>
+                                :value="getOptionValue(showPage.handAppraise) + ' ' + getOptionValue(showPage.handAppraiseSecond)"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -569,8 +565,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="showPage.serScan == null || showPage.serScan.scanOffLine==null"
-                                :value="getOptionValue(0)"/>
+                                v-if="showPage.serScan == null || showPage.serScan.scanOffLine==null" :value="getOptionValue(0)"/>
                   <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(showPage.serScan.scanOffLine)"/>
                 </b-form-group>
@@ -654,12 +649,42 @@
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
-                  <b-col cols="12" class="align-self-end text-right mt-3" style="height: 130px;">
-                    <b-img draggable="false" v-if="validIcon === 'TRUE'" hidden src="/assets/img/icon_invalid.png" class="align-self-end"
-                           style="width: 100px; height: 95px;"/>
-                    <b-img draggable="false" v-else hidden src="/assets/img/icon_valid.png" class="align-self-end"
-                           style="width: 100px; height: 95px;"/>
-
+                  <b-col v-if="getLocale()==='zh' || getLocale() === null" cols="12" class="align-self-end text-right mt-3"
+                         style="width: 100%; height: 130px !important;">
+                    <div v-if="showPage.handResult !== null">
+                      <b-img draggable="false" v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid.png"
+                             class="align-self-end img-result"/>
+                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid.png"
+                             class="align-self-end img-result"/>
+                    </div>
+                    <div v-else-if="showPage.judgeResult!==null">
+                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid.png"
+                             class="align-self-end img-result"/>
+                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid.png"
+                             class="align-self-end img-result"/>
+                    </div>
+                    <div v-else>
+                      <b-img draggable="false" src="/assets/img/icon_valid.png"
+                             class="align-self-end img-result"/>
+                    </div>
+                  </b-col>
+                  <b-col v-if="getLocale()==='en'" cols="12" class="align-self-end text-right mt-3">
+                    <div v-if="showPage.handResult !== null">
+                      <b-img draggable="false" v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
+                             class="align-self-end img-result"/>
+                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
+                             class="align-self-end img-result"/>
+                    </div>
+                    <div v-else-if="showPage.judgeResult!==null">
+                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
+                             class="align-self-end img-result"/>
+                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
+                             class="align-self-end img-result"/>
+                    </div>
+                    <div v-else>
+                      <b-img draggable="false" src="/assets/img/icon_valid.png"
+                             class="align-self-end img-result"/>
+                    </div>
                   </b-col>
                 </b-row>
                 <b-row style="margin-top: 1rem">
@@ -974,7 +999,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
-  import {loadImageCanvas, imageFilterById, getDirection, getLocale} from '../../../utils'
+  import {loadImageCanvas, getLoginInfo, imageFilterById, getLocale, getDirection} from '../../../utils'
   import VueSlideBar from 'vue-slide-bar'
   import {checkPermissionItem} from "../../../utils";
   import Videoplayer from '../../../components/Common/VideoPlayer';
@@ -1674,6 +1699,7 @@
           "1000002303": `${this.$t('maintenance-management.process-task.artificial')}`,
           "1000001801": `${this.$t('maintenance-management.process-task.underreport')}`,
           "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`,
+          "1000001803": `${this.$t('maintenance-management.process-task.underreportfalsepositive')}`,
           "0": `${this.$t('maintenance-management.process-task.online')}`,
           "1": `${this.$t('maintenance-management.process-task.offline')}`
         };
@@ -1722,6 +1748,11 @@
           });
 
       },
+      
+       getLocale() {
+
+        return getLocale();
+      },
       onRowClicked: function (data) {
 
         this.pageStatus = 'show';
@@ -1741,7 +1772,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/task/process-task/get-one`, {
+          .post(`${apiBaseUrl}/task/history-task/get-one`, {
             'taskId': data.taskId,
           })
           .then((response) => {
@@ -1761,31 +1792,6 @@
                 this.handStartTime = null;
                 this.handDeviceName = null;
                 this.handUserName = null;
-
-
-
-                for (let i = 0; i < this.showPage.serAssignList.length; i++) {
-                  if (this.showPage.serAssignList[i].handDevice !== null) {
-                    this.handDeviceName = this.showPage.serAssignList[i].handDevice.deviceName;
-                    this.handUserName = this.showPage.serAssignList[i].assignUser.userName;
-                    this.handStartTime = this.showPage.serAssignList[i].assignEndTime;
-                  } else {
-                    if (this.showPage.serAssignList[i].judgeDevice !== null) {
-                      this.judgeDeviceName = this.showPage.serAssignList[i].judgeDevice.deviceName;
-                    }
-                    //this.judgeUserName = this.showPage.serAssignList[i].assignUser.userName;
-                    this.judgeStartTime = this.showPage.serAssignList[i].assignEndTime;
-                    this.judgeUserId = this.showPage.serAssignList[i].assignUser.userId;
-                  }
-                }
-
-                if (this.showPage.serJudgeGraph !== null) {
-                  // this.judgeStartTime = this.showPage.serJudgeGraph.judgeStartTime;
-                  // this.judgeDeviceName = this.showPage.serJudgeGraph.judgeDevice.deviceName;
-                  this.judgeUserId = this.showPage.serJudgeGraph.judgeUserId;
-                  this.judgeUserName = this.showPage.serJudgeGraph.judgeUser.userName;
-                }
-
 
                 this.thumbs = [];
                 this.videos = [];
@@ -2021,8 +2027,9 @@
 
                 loadImageCanvas(url1, url2, this.imageRectL, this.imageRectR, this.power);
 
-                let handGoodsStr = this.showPage.serCheckResult.handGoods;
-                let handAttactedStr = this.showPage.serCheckResult.handAttached;
+                let handGoodsStr = this.showPage.handGoods;
+                let handAttactedStr = this.showPage.handAttached;
+
                 if (handGoodsStr !== null) {
                   handGood = handGoodsStr.split(",");
                 }
@@ -2068,8 +2075,6 @@
           })
           .catch((error) => {
           });
-
-
       },
       getDateTimeFormat2(dataTime) {
         if (dataTime == null) {

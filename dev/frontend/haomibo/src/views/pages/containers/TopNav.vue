@@ -161,10 +161,11 @@
   import {mapActions, mapGetters, mapMutations} from 'vuex'
   import {MenuIcon, MobileMenuIcon} from '../../../components/Svg'
   import {apiBaseUrl, defaultColor, localeOptions, menuHiddenBreakpoint} from '../../../constants/config'
-  import {getDirection, removeLoginInfo, saveLanguageInfo, setLocale, setDirection} from '../../../utils'
-  import {getApiManager, isAccountValid} from "../../../api";
+  import {getDirection, removeLoginInfo, saveLanguageInfo, setLocale, setDirection, getAuthTokenInfo} from '../../../utils'
+  import {getApiManager, isAccountValid, encrypt} from "../../../api";
   import {responseMessages} from "../../../constants/response-messages";
   import {validationMixin} from 'vuelidate';
+  import sha256 from 'sha256';
 
   const {required, minLength, maxLength, sameAs} = require('vuelidate/lib/validators');
   export default {
@@ -192,6 +193,8 @@
       return {
         selectedParentMenu: '',
         menuHiddenBreakpoint,
+        hashPassword:'',
+        oldHash:'',
         localeOptions,
         notifications,
         portrait: '',
@@ -254,10 +257,14 @@
           }
           return;
         }
+        console.log(getAuthTokenInfo().token);
+        this.hashPassword = encrypt(getAuthTokenInfo().token, this.passwordForm.password);
+        console.log(this.hashPassword);
+        this.oldHash = sha256(this.passwordForm.oldPassword);
         getApiManager()
           .post(`${apiBaseUrl}/auth/change-password`, {
-            oldPassword: this.passwordForm.oldPassword,
-            password: this.passwordForm.password
+            oldPassword: this.oldHash,
+            password: this.hashPassword
           })
           .then((response) => {
             let message = response.data.message;

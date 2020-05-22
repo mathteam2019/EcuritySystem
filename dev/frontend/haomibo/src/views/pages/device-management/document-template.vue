@@ -874,11 +874,13 @@
         });
       },
       initialize(data = null, isUpdated = true) {
+        //console.log(data.archiveIndicatorsList)
+        this.indicatorData = [];
         this.indicatorForm = {
           indicatorsId: 0,
           indicatorsName: null,
           indicatorsUnit: null,
-          isNull: "1000000602"
+          isNull: "1000000601"
         };
         if (data == null) {
           this.basicForm = {
@@ -891,7 +893,6 @@
             note: '',
             archivesTemplateId: 0
           };
-          this.indicatorData = [];
         } else {
           //this.basicForm = data;
           this.basicForm = {
@@ -900,14 +901,24 @@
             categoryId: data.categoryId,
             manufacturer: data.manufacturer,
             originalModel: data.originalModel,
-            archiveIndicatorsList: data.archiveIndicatorsList,
+            archiveIndicatorsList : [],
             note: data.note,
             status: data.status,
             archivesTemplateId: data.archivesTemplateId
           };
+          let archiveIndicators = [];
+          data.archiveIndicatorsList.forEach((item) => {
+            archiveIndicators.push({
+              indicatorsId: item.indicatorsId,
+              indicatorsName: item.indicatorsName,
+              indicatorsUnit: item.indicatorsUnit,
+              isNull: item.isNull
+            });
+            this.basicForm.archiveIndicatorsList = archiveIndicators;
+          });
           if (isUpdated) {
             let items = [];
-            this.indicatorData = [];
+
             this.basicForm.archiveIndicatorsList.forEach((item) => {
               items.push({
                 indicatorsId: item.indicatorsId,

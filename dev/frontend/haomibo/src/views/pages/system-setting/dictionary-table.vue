@@ -109,7 +109,9 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-textarea
-                    v-model="dicForm.note" rows="4" :placeholder="$t('system-setting.please-enter-remarks')"
+                    v-model="dicForm.note" rows="4"
+                    :state="!$v.dicForm.note.$invalid"
+                    :placeholder="$t('system-setting.please-enter-remarks')"
                   />
                 </b-form-group>
 
@@ -251,7 +253,9 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-textarea
-                    v-model="dicDataForm.note" rows="4" :placeholder="$t('system-setting.please-enter-remarks')"
+                    v-model="dicDataForm.note" rows="4"
+                    :state="!$v.dicDataForm.note.$invalid"
+                    :placeholder="$t('system-setting.please-enter-remarks')"
                   />
                 </b-form-group>
 
@@ -550,6 +554,9 @@
       dicForm: {
         dicName: {
           required
+        },
+        note:{
+          required
         }
       },
       dicDataForm: {
@@ -558,6 +565,9 @@
           required, minLength: minLength(10), maxLength: maxLength(10),
         },
         dicDataValue: {
+          required
+        },
+        note: {
           required
         }
       },
@@ -641,6 +651,14 @@
               duration: 3000,
               permanent: false
             });
+            return;
+          }
+          if(this.dicForm.note===""){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.please-enter-remarks`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
           }
           return;
         }
@@ -759,6 +777,13 @@
               });
               return;
 
+          }
+          if(this.dicDataForm.note===""){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.please-enter-remarks`), {
+              duration: 3000,
+              permanent: false
+            });
+            return;
           }
           return;
         }

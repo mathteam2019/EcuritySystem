@@ -1091,7 +1091,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import {
-    checkPermissionItem,
+    checkPermissionItem, getAuthTokenInfo,
     getDirection,
     getLocale,
     getPermissionInfoId,
@@ -1105,7 +1105,7 @@
     isPasswordValid,
     isGroupNumberValid,
     printFileFromServer,
-    getApiManagerError
+    getApiManagerError, encrypt, decrypt
   } from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
@@ -1114,6 +1114,7 @@
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
+  import sha256 from 'sha256';
 
   const {required, email, minLength, maxLength, alphaNum, sameAs} = require('vuelidate/lib/validators');
 
@@ -1265,6 +1266,7 @@
           password: null,
           confirmPassword: null
         },
+        hashPassword: null,
         promptTemp: {
           userId: 0,
           action: ''
@@ -1990,10 +1992,13 @@
         for (let key in this.profileForm) {
 
 
-          if (key !== 'portrait' && key !== 'avatar')
+          if (key !== 'portrait' && key !== 'avatar' && key !== 'passwordValue')
             formData.append(key, this.profileForm[key]);
           else if (key === 'portrait' && this.profileForm['portrait'] !== null) {
             formData.append(key, this.profileForm[key], this.profileForm[key].name);
+          }
+          else if (key === 'passwordValue' && this.profileForm['passwordValue'] !== null) {
+            formData.append(key, encrypt(getAuthTokenInfo().token, this.profileForm['passwordValue']));
           }
         }
         this.isLoading = true;
@@ -2118,10 +2123,11 @@
           }
           return;
         }
+        this.hashPassword = encrypt(getAuthTokenInfo().token, this.passwordForm.password);
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/user-management/user/modify-password`, {
             userId: this.promptTemp.userId,
-            password: this.passwordForm.password
+            password: this.hashPassword
           })
           .then((response) => {
             let message = response.data.message;
@@ -2180,11 +2186,12 @@
         }
         this.profileForm.portrait = null;
 
-        if (data.password === 'default') {
+        if (data.isDefaultUser === 1) {
           this.profileForm.passwordType = 'default';
         } else {
           this.profileForm.passwordType = 'other';
-          this.profileForm.passwordValue = data.password;
+          this.profileForm.passwordValue = decrypt(getAuthTokenInfo().token, data.password);
+          console.log(this.profileForm.passwordValue);
         }
         this.pageStatus = 'create';
         this.$v.profileForm.$reset();
@@ -2201,11 +2208,12 @@
 
         this.profileForm.portrait = null;
 
-        if (data.password === 'default') {
+        if (data.isDefaultUser === 1) {
           this.profileForm.passwordType = 'default';
         } else {
           this.profileForm.passwordType = 'other';
-          this.profileForm.passwordValue = data.password;
+          this.profileForm.passwordValue = decrypt(getAuthTokenInfo().token, data.password);
+          console.log(this.profileForm.passwordValue);
         }
         this.pageStatus = 'show';
         this.$v.profileForm.$reset();

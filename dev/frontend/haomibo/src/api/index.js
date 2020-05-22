@@ -477,10 +477,73 @@ function isPasswordValid(value) {
 
 }
 
+let baseString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
+let key = 11;
+
+function getXorString(plainText) {
+  let changeStr = "";
+  let length = plainText.length;
+  for(let i = 0; i < length; i ++) {
+    let index = 0;
+    for(let j = 0; j < baseString.length; j ++) {
+      if(baseString[j] === plainText[i]) {
+        index = j;
+      }
+    }
+    index = index ^ key;
+    changeStr = changeStr + baseString[index];
+  }
+  return changeStr;
+}
+
+function getPermutation(preAnswer) {
+  let length = preAnswer.length;
+  let answer = "";
+  for(let i = 0; i < length; i += 2) {
+    let first = preAnswer[i];
+    let j = i + 1;
+    if(j === length) {
+      answer = answer + first;
+      break;
+    }
+    let second = preAnswer[j];
+    answer = answer + second + first;
+  }
+  return answer;
+}
+function reverseString(str) {
+  return str.split("").reverse().join("");
+}
+function encrypt(token, plainText) {
+  let changeStr = getXorString(plainText);
+  console.log("changestr", changeStr);
+  let preAnswer = token;
+  preAnswer = preAnswer + changeStr;
+  preAnswer = reverseString(preAnswer);
+  console.log("reverse", preAnswer);
+  let answer = getPermutation(preAnswer);
+
+  return answer;
+}
+
+/**
+ * decrypt
+ *
+ * @param cryptedText
+ * @return String
+ */
+function decrypt(token, cryptedText) {
+  let original = getPermutation(cryptedText);
+  original = reverseString(original);
+  let realStr = original.substring(token.length, original.length);
+  let answer = getXorString(realStr);
+  return answer;
+}
+
 // function downloadPath() {
 //   var browser;
 //   browser.downloads.showDefaultFolder();
 // }
 
 
-export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isPasswordValid, isDataCodeValid, isInputLengthValid, isGuidValid, isColorValid, isGroupNumberValid, isRoleNumberValid, isSpaceContain, isDataGroupNumberValid};
+export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer, downLoadImageFromUrl, isPhoneValid, isAccountValid, isPasswordValid, isDataCodeValid, isInputLengthValid, isGuidValid, isColorValid, isGroupNumberValid, isRoleNumberValid, isSpaceContain, isDataGroupNumberValid, encrypt, decrypt};

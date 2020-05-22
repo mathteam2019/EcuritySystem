@@ -1057,14 +1057,15 @@
       },
       mainForm: {
         deviceName: {
-          required, maxLength: maxLength(16),
-          isInputLengthValid
+          required, maxLength: maxLength(50),
+
         },
         archiveId: {
           required
         },
         deviceSerial: {
-          required, maxLength: maxLength(16)
+          required, maxLength: maxLength(16),
+          isInputLengthValid
         },
         guid: {
           isGuidValid,
@@ -1666,15 +1667,8 @@
         this.$v.mainForm.$touch();
         if (this.$v.mainForm.$invalid) {
           if(this.$v.mainForm.deviceSerial.$invalid){
-            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-number-input`), {
-              duration: 3000,
-              permanent: false
-            });
-            return;
-          }
-          if(this.$v.mainForm.deviceName.$invalid){
-            if(this.mainForm.deviceName === '') {
-              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-input`), {
+            if(this.mainForm.deviceSerial === '') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-number-input`), {
                 duration: 3000,
                 permanent: false
               });
@@ -1685,6 +1679,15 @@
                 permanent: false
               });
             }
+
+            return;
+          }
+          if(this.$v.mainForm.deviceName.$invalid){
+
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-input`), {
+                duration: 3000,
+                permanent: false
+              });
             return;
           }
           if(this.$v.mainForm.archiveId.$invalid){

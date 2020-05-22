@@ -290,6 +290,9 @@
   } from '../../utils'
   import {getApiManager} from "../../api";
   import {responseMessages} from "../../constants/response-messages";
+  import MD5 from "crypto-js/md5";
+  import sha1 from 'sha1';
+  import sha256 from 'sha256'
 
 
   export default {
@@ -298,6 +301,7 @@
       return {
         account: '',
         password: '',
+        hashPassword : '',
         count: null,
         currentLanguage: null,
         localeOptions,
@@ -468,10 +472,12 @@
           return;
         }
 
+        this.hashPassword = sha256(this.password);
+        console.log(this.password);
         getApiManager()
           .post(`${apiBaseUrl}/auth/login`, {
             userAccount: this.account,
-            password: this.password,
+            password: this.hashPassword,
             count: this.count
           })
           .then(response => {

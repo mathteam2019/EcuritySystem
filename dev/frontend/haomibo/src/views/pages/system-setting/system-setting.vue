@@ -170,8 +170,8 @@
                 <b-row>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('permission-management.password')">
-                      <b-form-input type="text" v-model="platFormOtherData.initialPassword"
-                                    :state="!$v.platFormOtherData.initialPassword.$dirty ? null : !$v.platFormOtherData.initialPassword.$invalid"/>
+                      <b-form-input type="text" v-model="hashPassword"
+                                    :state="!$v.hashPassword.$dirty ? null : !$v.hashPassword.$invalid"/>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
@@ -738,12 +738,21 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
-  import {getApiManager, isColorValid, getApiManagerError, isAccountValid, isSpaceContain, isDataCodeValid, getDateTimeWithFormat} from '../../../api';
+  import {
+    getApiManager,
+    isColorValid,
+    getApiManagerError,
+    isAccountValid,
+    isSpaceContain,
+    isDataCodeValid,
+    getDateTimeWithFormat,
+    encrypt, decrypt
+  } from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {apiBaseUrl, apiParamUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
   import {validationMixin} from 'vuelidate';
-  import {checkPermissionItem, getDirection, getLocale} from "../../../utils";
+  import {checkPermissionItem, getAuthTokenInfo, getDirection, getLocale} from "../../../utils";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
 
@@ -828,12 +837,12 @@
           required
         }
       },
+      hashPassword: {
+        required,
+        isAccountValid,isSpaceContain,
+        minLength: minLength(6), maxLength: maxLength(20)
+      },
       platFormOtherData: {
-        initialPassword: {
-          required,
-          isAccountValid,isSpaceContain,
-          minLength: minLength(6), maxLength: maxLength(20)
-        },
         loginNumber: {
           required,
           minValue: minValue(0), maxValue: maxValue(8)
@@ -916,6 +925,7 @@
         isLoading: false,
         loadingTable:false,
         direction: getDirection().direction,
+        hashPassword : '',
         tabIndex: 0,
         submitted: false,
         pageStatus: 'table',
@@ -1008,7 +1018,7 @@
         },
         platFormOtherData: {
           id: 0,
-          initialPassword: null,
+          initialPassword : null,
           loginNumber: null,
           operatingTimeLimit:null,
           logMaxNumber: null,
@@ -1417,8 +1427,11 @@
               if (result.length > 0) {
                 result = result[0];
                 for (let key in this.platFormOtherData) {
-                  if (Object.keys(result).includes(key)) {
+                  if (Object.keys(result).includes(key) && key !== 'initialPassword') {
                     this.platFormOtherData[key] = result[key];
+                  }
+                  else if(key === 'initialPassword') {
+                    this.hashPassword = decrypt(getAuthTokenInfo().token, result[key]);
                   }
 
                 }
@@ -1578,6 +1591,7 @@
         else { //save platform other data
           this.submitted = true;
           this.$v.platFormOtherData.$touch();
+          this.$v.hashPassword.$touch();
 
           if(parseInt(this.platFormOtherData.deviceTrafficHigh) <= parseInt(this.platFormOtherData.deviceTrafficMiddle)){
             this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.security-instrument-flow-high-middle`), {
@@ -1586,30 +1600,30 @@
             });
             return;
           }
-          if (this.$v.platFormOtherData.$invalid) {
-            if (this.$v.platFormOtherData.initialPassword.$invalid) {
-              if(this.platFormOtherData.initialPassword==='') {
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-password`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                return;
-              }
-              else if(this.platFormOtherData.initialPassword.length <6 || this.platFormOtherData.initialPassword.length>20) {
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.password-length`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                return;
-              }
-              else {
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.password-valid`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                return;
-              }
+          if (this.$v.hashPassword.$invalid) {
+            if(this.hashPassword==='') {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-password`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
             }
+            else if(this.hashPassword.length <6 || this.hashPassword.length>20) {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`password-reset.password-length`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+            else {
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.password-valid`), {
+                duration: 3000,
+                permanent: false
+              });
+              return;
+            }
+          }
+          if (this.$v.platFormOtherData.$invalid) {
             if (this.$v.platFormOtherData.loginNumber.$invalid) {
               if(this.platFormOtherData.loginNumber==='') {
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.parameter-setting.login-fail-count-input`), {
@@ -1741,6 +1755,7 @@
             }
             return;
           }
+          this.platFormOtherData.initialPassword = encrypt(getAuthTokenInfo().token, this.hashPassword);
           getApiManager().post(`${apiBaseUrl}/system-setting/platform-other/modify`, this.platFormOtherData
           ).then((response) => {
             let message = response.data.message;

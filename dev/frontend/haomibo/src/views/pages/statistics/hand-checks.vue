@@ -1103,7 +1103,7 @@
         else {
           for (let i = 0; i < this.onSiteOption.length; i++) {
             if (this.onSiteOption[i].value === value)
-              return this.onSiteOption[i].text;
+              return this.onSiteOption[i].html.replace(/&nbsp;/g, '');
           }
         }
       },

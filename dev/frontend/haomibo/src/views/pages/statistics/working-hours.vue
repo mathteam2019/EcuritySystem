@@ -58,7 +58,7 @@
       </b-col>
     </b-row>
 
-    <b-row v-show="!isLoading">
+    <b-row v-if="!isLoading">
       <b-col>
         <b-card class="no-padding" style="background-color: #1989fa;">
           <div class="statistics-item type-1">
@@ -66,7 +66,7 @@
               <b-img draggable="false" src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{totalData['day'].value}} {{totalData['hour'].value}}: {{totalData['minute'].value}}: {{totalData['second'].value}}</span>
+              <div><span class="span-font">{{totalData['day'].value}}d {{totalData['hour'].value}}h {{totalData['minute'].value}}m {{totalData['second'].value}}s</span>
               </div>
               <div><span>{{$t('statistics.operating-hours.total-time') }}</span></div>
             </div>
@@ -80,7 +80,7 @@
               <b-img draggable="false" src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{scanData['day'].value}} {{scanData['hour'].value}}: {{scanData['minute'].value}}: {{scanData['second'].value}}</span>
+              <div><span class="span-font">{{scanData['day'].value}}d {{scanData['hour'].value}}h {{scanData['minute'].value}}m {{scanData['second'].value}}s</span>
               </div>
               <div><span>{{$t('statistics.working-hours.security-time') }}</span></div>
             </div>
@@ -94,7 +94,7 @@
               <b-img draggable="false" src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{judgeData['day'].value}} {{judgeData['hour'].value}}: {{judgeData['minute'].value}}: {{judgeData['second'].value}}</span>
+              <div><span class="span-font">{{judgeData['day'].value}}d {{judgeData['hour'].value}}h {{judgeData['minute'].value}}m {{judgeData['second'].value}}s</span>
               </div>
               <div><span>{{$t('statistics.working-hours.judge-time') }}</span></div>
             </div>
@@ -108,7 +108,7 @@
               <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span class="span-font">D{{handData['day'].value}} {{handData['hour'].value}}: {{handData['minute'].value}}: {{handData['second'].value}}</span>
+              <div><span class="span-font">{{handData['day'].value}}d {{handData['hour'].value}}h {{handData['minute'].value}}m {{handData['second'].value}}s</span>
               </div>
               <div><span>{{$t('statistics.working-hours.hand-time') }}</span></div>
             </div>
@@ -116,7 +116,7 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row v-show="!isLoading" class="mt-4 mb-2">
+    <b-row v-if="!isLoading" class="mt-4 mb-2">
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
@@ -134,7 +134,7 @@
       </b-col>
     </b-row>
 
-    <b-row v-show="!isLoading" class="bottom-part mt-3 mb-3">
+    <b-row v-if="!isLoading" class="bottom-part mt-3 mb-3">
       <b-col v-if="pageStatus==='charts'" class="charts-part">
         <b-row style="width: 100%;">
           <b-col>
@@ -275,7 +275,7 @@
         </b-card>
       </b-col>
     </b-row>
-    <div v-show="isLoading" class="loading"></div>
+    <div v-if="isLoading" class="loading"></div>
     <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
@@ -436,8 +436,8 @@
           //   right: 25,
           // },
           grid: {
-            left: '3%',
-            right: '4%',
+            left: '30px',
+            right: '40px',
             bottom: '3%',
             containLabel: true
           },
@@ -925,11 +925,17 @@
           let message = response.data.message;
           this.preViewData = response.data.data;
           this.taskVuetableItems.fields = [];
-
-          let totalSeconds = this.preViewData.detailedStatistics[0].workingTime;
-          let scanSeconds = this.preViewData.detailedStatistics[1].workingTime;
-          let judgeSeconds = this.preViewData.detailedStatistics[2].workingTime;
-          let handSeconds = this.preViewData.detailedStatistics[3].workingTime;
+          this.tableWidth = '';
+          let totalSeconds = 0;
+          let scanSeconds = 0;
+          let judgeSeconds = 0;
+          let handSeconds = 0;
+          if(this.preViewData.detailedStatistics != null){
+            totalSeconds = this.preViewData.detailedStatistics[0].workingTime;
+            scanSeconds = this.preViewData.detailedStatistics[1].workingTime;
+            judgeSeconds = this.preViewData.detailedStatistics[2].workingTime;
+            handSeconds = this.preViewData.detailedStatistics[3].workingTime;
+          }
 
           this.totalData['second'].value = totalSeconds % 60;
           this.totalData['minute'].value = ((totalSeconds - totalSeconds % 60) / 60) % 60;
@@ -968,8 +974,12 @@
           this.doublePieChartOptions.series[0].data[2].value = this.handData['rate'].value;
 
 
-          let keyData = Object.keys(this.preViewData.detailedStatistics);
-          this.tableWidth = 80/keyData.length + '%';
+          let keyData = []
+          if(this.preViewData.detailedStatistics != null){
+            keyData = Object.keys(this.preViewData.detailedStatistics);
+            this.tableWidth = 80/keyData.length + '%';
+          }
+
           //this.taskVuetableItems.fields = this.initialFields;
 
           for(let i = 0; i < this.initialFields.length; i++){
@@ -1117,7 +1127,20 @@
         let ss = Math.floor(msec);
         msec -= ss;
         console.log(value);
-        let diffString = 'D' + dd + ' ' + h + ':' + mm + ':' + ss;
+        let diffString = '';
+        if(dd != 0){
+          diffString = dd + 'd ';
+        }
+        if(h != 0) {
+          diffString = diffString + h + 'h';
+        }
+        if(mm != 0){
+          diffString = diffString + mm + 'm';
+        }
+        if(ss != 0) {
+          diffString = diffString + ss + 's';
+        }
+        //let diffString = 'D' + dd + ' ' + h + ':' + mm + ':' + ss;
         return diffString;
       },
       transform(response) {
