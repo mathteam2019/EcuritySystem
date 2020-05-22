@@ -13,6 +13,7 @@
 package com.nuctech.ecuritycheckitem.controllers.settingmanagement.platformmanagement;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -21,6 +22,7 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
+import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -85,7 +87,7 @@ public class PlatformOtherManagementController extends BaseController {
         SerPlatformOtherParams convert2SerPlatformOtherParam() {//create new object from input parameters
             return SerPlatformOtherParams
                     .builder()
-                    .initialPassword(this.getInitialPassword())
+                    .initialPassword(CryptUtil.decrypt(Constants.token, this.getInitialPassword()))
                     .loginNumber(this.getLoginNumber())
                     .logMaxNumber(this.getLogMaxNumber())
                     .deviceTrafficSettings(this.getDeviceTrafficSettings())
@@ -107,6 +109,11 @@ public class PlatformOtherManagementController extends BaseController {
     public Object platformOtherGet() {
 
         List<SerPlatformOtherParams> serPlatformOtherParamsList = platformOtherService.findAll();
+        for(int i = 0; i < serPlatformOtherParamsList.size(); i ++) {
+            String password = serPlatformOtherParamsList.get(i).getInitialPassword();
+            password = CryptUtil.encrypt(Constants.token, password);
+            serPlatformOtherParamsList.get(i).setInitialPassword(password);
+        }
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serPlatformOtherParamsList));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         value.setFilters(filters);

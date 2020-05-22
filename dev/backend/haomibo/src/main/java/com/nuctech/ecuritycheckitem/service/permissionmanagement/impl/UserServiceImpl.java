@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.controllers.permissionmanagement.UserManagementController;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
@@ -547,7 +548,8 @@ public class UserServiceImpl implements UserService {
         if(sysUser.getStatus().equals(SysUser.Status.PENDING)) {
             String valueBefore = getJsonFromUser(sysUser);
             sysUser.setStatus(SysUser.Status.ACTIVE);
-            sysUser.setPassword(CryptUtil.encode(password));
+            sysUser.setPassword(CryptUtil.decrypt(Constants.token, password));
+            sysUser.setIsDefaultUser(Constants.NON_DEFAULT_USER);
             sysUser.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
             sysUserRepository.save(sysUser);

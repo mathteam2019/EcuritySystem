@@ -13,6 +13,8 @@
 package com.nuctech.ecuritycheckitem.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
@@ -22,14 +24,42 @@ import java.util.Random;
 @Slf4j
 public class CryptUtil {
 
-    @Value("${client.public.key}")
-    private static String CLIENT_PUBLIC_KEY;
 
-    @Value("${aes.private.key}")
-    private static String AES_PRIVATE_KEY;
 
-    @Value("${server.private.key}")
-    private static String SERVER_PRIVATE_KEY;
+    private static String baseString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
+    private static int key = 11;
+
+    private static String getXorString(String plainText) {
+        String changeStr = "";
+        int length = plainText.length();
+        for(int i = 0; i < length; i ++) {
+            int index = 0;
+            for(int j = 0; j < baseString.length(); j ++) {
+                if(baseString.charAt(j) == plainText.charAt(i)) {
+                    index = j;
+                }
+            }
+            index = index ^ key;
+            changeStr = changeStr + baseString.charAt(index);
+        }
+        return changeStr;
+    }
+
+    private static String getPermutation(String preAnswer) {
+        int length = preAnswer.length();
+        String answer = "";
+        for(int i = 0; i < length; i += 2) {
+            char first = preAnswer.charAt(i);
+            int j = i + 1;
+            if(j == length) {
+                answer = answer + first;
+                break;
+            }
+            char second = preAnswer.charAt(j);
+            answer = answer + second + first;
+        }
+        return answer;
+    }
 
     /**
      * encrypt
@@ -37,23 +67,14 @@ public class CryptUtil {
      * @param plainText
      * @return String
      */
-    public static String encrypt(String plainText) {
-/*        try {
-            // 生成aes秘钥
-            String aseKey = getRandomString(16);
-            // rsa加密
-            String encrypted = RSAUtil.encryptedDataOnJava(aseKey, CLIENT_PUBLIC_KEY);
-            // aes加密
-            String encryptedData = AESUtil.encrypt(plainText, aseKey);
-            Map<String, String> map = new HashMap<>();
-            map.put("encrypted", encrypted);
-            map.put("requestData", encryptedData);
-            // return map;
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("返回数据进行解密出现异常：" + e.getMessage());
-        }*/
-        return plainText;
+    public static String encrypt(String token, String plainText) {
+        String changeStr = getXorString(plainText);
+        String preAnswer = token;
+        preAnswer = preAnswer + changeStr;
+        preAnswer = StringUtils.reverse(preAnswer);
+        String answer = getPermutation(preAnswer);
+
+        return answer;
     }
 
     /**
@@ -62,36 +83,12 @@ public class CryptUtil {
      * @param cryptedText
      * @return String
      */
-    public static String decrypt(String cryptedText) {
-/*        if(cryptedText != null && !cryptedText.equals("")){
-            Map<String,String> requestMap = new Gson().fromJson(cryptedText, new TypeToken<Map<String,String>>() {
-            }.getType());
-            // 密文
-            String data = requestMap.get("requestData");
-            // 加密的ase秘钥
-            String encrypted = requestMap.get("encrypted");
-            if(StringUtils.isEmpty(data) || StringUtils.isEmpty(encrypted)){
-                return cryptedText;
-            }else{
-                String content = null ;
-                String aesKey = null;
-                try {
-                    aesKey = RSAUtil.decryptDataOnJava(encrypted, SERVER_PRIVATE_KEY);
-                }catch (Exception e){
-                    return cryptedText;
-                }
-                try {
-                    content  = AESUtil.decrypt(data, aesKey);
-                }catch (Exception e){
-                    return cryptedText;
-                }
-                if (StringUtils.isEmpty(content) || StringUtils.isEmpty(aesKey)){
-                    return cryptedText;
-                }
-                return content;
-            }
-        }*/
-        return cryptedText;
+    public static String decrypt(String token, String cryptedText) {
+        String original = getPermutation(cryptedText);
+        original = StringUtils.reverse(original);
+        String realStr = original.substring(token.length());
+        String answer = getXorString(realStr);
+        return answer;
     }
 
     /**
@@ -116,9 +113,9 @@ public class CryptUtil {
         //return BCrypt.hashpw(rawPassword.toString(), BCrypt.gensalt(4));
     }
 
-    public static boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return rawPassword.toString().equals(encodedPassword);
-        //return BCrypt.checkpw(rawPassword.toString(), encodedPassword);
+    public static boolean matches(String encodedPassword, String originalString) {
+        String sha256hex = DigestUtils.sha256Hex(originalString);
+        return sha256hex.equals(encodedPassword);
     }
 
 }

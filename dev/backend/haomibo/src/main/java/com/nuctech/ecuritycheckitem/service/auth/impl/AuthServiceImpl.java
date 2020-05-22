@@ -24,6 +24,7 @@ import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
+import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import com.nuctech.ecuritycheckitem.utils.RedisUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
@@ -129,7 +130,8 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
         SysUser user = optionalSysUser.get();
-        user.setPassword(password);
+        user.setPassword(CryptUtil.decrypt(Constants.token, password));
+        user.setIsDefaultUser(Constants.NON_DEFAULT_USER);
         user.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
         sysUserRepository.save(user);
 

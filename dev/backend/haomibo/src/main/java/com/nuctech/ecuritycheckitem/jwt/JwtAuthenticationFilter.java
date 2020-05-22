@@ -106,6 +106,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         ForbiddenToken forbiddenToken = forbiddenTokenData.get();
+
         Date endTime = new Date();
         long dif_fotbi_get = endTime.getTime() - startTime.getTime();
 
@@ -120,7 +121,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch(Exception ex) {
             jwt_validity_second = Constants.DEFAULT_JWT_VALIDITY_SECONDS;
         }
-
+        Constants.token = forbiddenToken.getToken();
 
 
         if(jwt_validity_second > 0 && diff > jwt_validity_second) {

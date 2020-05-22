@@ -132,7 +132,7 @@ public class UserManagementController extends BaseController {
                     .orgId(this.getOrgId())
                     .userName(this.getUserName())
                     .userAccount(this.getUserAccount())
-                    .password(PasswordType.DEFAULT.equals(this.getPasswordType()) ? Constants.DEFAULT_PASSWORD_FOR_NEW_SYS_USER : this.getPasswordValue())
+                    .password(PasswordType.DEFAULT.equals(this.getPasswordType()) ? "" : CryptUtil.decrypt(Constants.token, this.passwordValue))
                     .userNumber(this.getUserNumber())
                     .gender(this.getGender())
                     .identityCard(this.getIdentityCard())
@@ -144,6 +144,7 @@ public class UserManagementController extends BaseController {
                     .address(this.getAddress())
                     .category(SysUser.Category.NORMAL)
                     .status(SysUser.Status.INACTIVE)
+                    .isDefaultUser(PasswordType.DEFAULT.equals(this.getPasswordType()) ? Constants.DEFAULT_USER : Constants.NON_DEFAULT_USER)
                     .note(this.getNote())
                     .dataRangeCategory(SysUser.DataRangeCategory.PERSON.getValue())
                     .build();
@@ -197,7 +198,7 @@ public class UserManagementController extends BaseController {
                     .userAccount(this.getUserAccount())
                     .userNumber(this.getUserNumber())
                     .gender(this.getGender())
-                    .password(UserCreateRequestBody.PasswordType.DEFAULT.equals(this.getPasswordType()) ? Constants.DEFAULT_PASSWORD_FOR_NEW_SYS_USER : this.getPasswordValue())
+                    .password(UserCreateRequestBody.PasswordType.DEFAULT.equals(this.getPasswordType()) ? "" : CryptUtil.decrypt(Constants.token, this.passwordValue))
                     .identityCard(this.getIdentityCard())
                     .post(this.getPost())
                     .education(this.getEducation())
@@ -206,6 +207,7 @@ public class UserManagementController extends BaseController {
                     .mobile(this.getMobile())
                     .address(this.getAddress())
                     .category(SysUser.Category.NORMAL)
+                    .isDefaultUser(UserCreateRequestBody.PasswordType.DEFAULT.equals(this.getPasswordType()) ? Constants.DEFAULT_USER : Constants.NON_DEFAULT_USER)
                     .note(this.getNote())
                     .build();
         }
@@ -592,6 +594,12 @@ public class UserManagementController extends BaseController {
         long total = result.getTotal();
         List<SysUser> data = result.getDataList();
 
+        for(int i = 0; i < data.size(); i ++) {
+            String password = data.get(i).getPassword();
+            password = CryptUtil.encrypt(Constants.token, password);
+            data.get(i).setPassword(password);
+        }
+
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
@@ -606,6 +614,7 @@ public class UserManagementController extends BaseController {
                         .build()));
 
         FilterProvider filters = ModelJsonFilters.getDefaultFilters().addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children", "users")) //return all fields except "children", "users" from SysOrg model
+                //.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("password")) //return all fields except users password
                 .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users")); //return all fields except users from SysDataGroup model
         value.setFilters(filters);
 

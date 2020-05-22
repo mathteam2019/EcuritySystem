@@ -138,11 +138,20 @@ public class Utils {
         long day = time / 24;
         String answer = "";
         if(day > 0) {
-            answer = answer + "D" + String.format("%02d", day) + " ";
+            answer = answer + "" + day + "d ";
         }
-        answer = answer + String.format("%02d", hour) + ": ";
-        answer = answer + String.format("%02d", minutes) + ": ";
-        answer = answer + String.format("%02d", sec);
+        if(hour > 0) {
+            answer = answer + hour + "h ";
+        }
+
+        if(minutes > 0) {
+            answer = answer + minutes + "m ";
+        }
+
+        if(sec > 0) {
+            answer = answer + sec + "s";
+        }
+
         return answer;
     }
 
@@ -450,8 +459,8 @@ public class Utils {
                 startDate = dateSplit[0] + "-" + dateSplit[1] + "-" + dateSplit[2] + " " + dateSplit[3] + ":00";
 
                 calendar.set(Calendar.YEAR, Integer.valueOf(dateSplit[0]));
-                calendar.set(Calendar.MONTH, Integer.valueOf(dateSplit[1]));
-                calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(dateSplit[2]) - 1);
+                calendar.set(Calendar.MONTH, Integer.valueOf(dateSplit[1]) - 1);
+                calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(dateSplit[2]));
                 calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(dateSplit[3]));
                 calendar.add(Calendar.HOUR, 1);
 

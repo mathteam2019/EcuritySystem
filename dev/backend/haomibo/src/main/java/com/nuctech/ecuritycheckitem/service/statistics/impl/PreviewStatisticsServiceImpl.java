@@ -122,10 +122,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         temp = temp.replace(":judgeGroupBy", judgeGroupBy);
         temp = temp.replace(":handGroupBy", handGroupBy);
 
-//        temp = temp + " WHERE (IFNULL(totalScan, 0) + IFNULL(validScan, 0) + IFNULL(passedScan, 0) + " +
-//                "IFNULL(alarmScan, 0) + IFNULL(totalJudge, 0) + IFNULL(suspictionJudge, 0) + " +
-//                "IFNULL(noSuspictionJudge, 0) + IFNULL(totalHand, 0) + " +
-//                "IFNULL(seizureHand, 0) + IFNULL(noSeizureHand, 0)) > 0";
+        temp = temp + " \tWHERE (IFNULL(totalScanProcess, 0) + IFNULL(totalScanFinish, 0)  + IFNULL(totalScanInvalid, 0)" +
+                "+ IFNULL(totalJudgeProcess, 0) + IFNULL(totalJudgeFinish, 0)  + IFNULL(totalHand, 0)) > 0 ";
 
         String tempCount = temp.replace(":selectQuery", "\tcount(q)\n");
         Query countQuery = entityManager.createNativeQuery(tempCount);

@@ -132,6 +132,11 @@ public class SysUser extends BaseEntity implements Serializable {
     @Column(name = "TASK_ID", length = 20)
     private Long taskId;
 
+    @Column(name = "DEFAULT_USER", length = 10)
+    private Integer isDefaultUser;
+
+
+
     @Column(name = "FAIL_COUNT", length = 10)
     private Integer failCount;
 

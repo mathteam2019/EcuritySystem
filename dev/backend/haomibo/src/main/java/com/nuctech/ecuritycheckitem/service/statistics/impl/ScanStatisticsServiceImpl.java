@@ -80,6 +80,8 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         String temp = strQuery;
         temp = temp.replace(":scanGroupBy", scanGroupBy);
 
+        temp = temp + " \tWHERE (IFNULL(totalScanProcess, 0) + IFNULL(totalScanFinish, 0)  + IFNULL(totalScanInvalid, 0)) > 0 ";
+
 //        temp = temp + " WHERE (IFNULL(totalScan, 0) + IFNULL(validScan, 0) + IFNULL(passedScan, 0) + " +
 //                "IFNULL(alarmScan, 0) + IFNULL(totalJudge, 0) + IFNULL(suspictionJudge, 0) + " +
 //                "IFNULL(noSuspictionJudge, 0) + IFNULL(totalHand, 0) + " +

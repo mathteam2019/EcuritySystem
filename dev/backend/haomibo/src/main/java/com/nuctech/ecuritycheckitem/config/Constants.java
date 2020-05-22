@@ -23,6 +23,8 @@ public class Constants {
     public static final String REQUEST_HEADER_AUTH_TOKEN_KEY = "X-AUTH-TOKEN";
     public static final long TASK_PERIOD_SECONDS_CLEAN_FORBIDDEN_TOKEN_TABLE = 24 * 60 * 60;
     public static final String DEFAULT_PASSWORD_FOR_NEW_SYS_USER = "default";
+    public static final int DEFAULT_USER = 1;
+    public static final int NON_DEFAULT_USER = 0;
 
     public static final String PORTRAIT_FILE_UPLOAD_DIRECTORY = "portrait";//"storage" + File.separator + "portrait";
     public static final String PORTRAIT_FILE_SERVING_BASE_URL = "/portrait/";
@@ -41,6 +43,7 @@ public class Constants {
     public static final String CHINESE_LOCALE = "zh";
     public static final String ENGLISH_LOCALE = "en";
     public static final int EXPIRE_TIME = 24 * 60 * 60;
+    public static String token = "";
 
     public static final String[] EXCLUDE_URL_PATTERNS = {
             "/",

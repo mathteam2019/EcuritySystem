@@ -194,7 +194,7 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USER_NON_ACTIVE_STATUS);
         }
         String password = sysUser.getPassword();
-        if(password.equals(Constants.DEFAULT_PASSWORD_FOR_NEW_SYS_USER)) {
+        if(sysUser.getIsDefaultUser().equals(Constants.DEFAULT_USER)) {
             password = platformOtherService.findAll().get(0).getInitialPassword();
         }
 
@@ -309,7 +309,7 @@ public class AuthController extends BaseController {
         Long userId = (Long) authenticationFacade.getAuthentication().getPrincipal();
         SysUser sysUser = authService.getUserById(userId);
         String password = sysUser.getPassword();
-        if(password.equals(Constants.DEFAULT_PASSWORD_FOR_NEW_SYS_USER)) {
+        if(sysUser.getIsDefaultUser().equals(Constants.DEFAULT_USER)) {
             password = platformOtherService.findAll().get(0).getInitialPassword();
         }
         if (CryptUtil.matches(requestBody.getOldPassword(), password) == false) {
@@ -328,7 +328,7 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        sysUser.setPassword(requestBody.getPassword());
+        sysUser.setPassword(CryptUtil.decrypt(Constants.token, requestBody.getPassword()));
         String valueAfter = getJsonFromUser(sysUser);
         auditLogService.saveAudioLog(messageSource.getMessage("ModifyPassword", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("User", null, currentLocale), "", sysUser.getUserId().toString(), null, true, valueBefore, valueAfter);

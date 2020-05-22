@@ -216,7 +216,7 @@ public class DeviceLogController extends BaseController {
                 .getDefaultFilters()
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent")) //return all fields except parent from SysField model
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")) //return all fields except parent from SysDeviceCategory model
-                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups")); //return all fields except specified fields from SysUser model
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups", "password")); //return all fields except specified fields from SysUser model
         value.setFilters(filters);
 
         return value;

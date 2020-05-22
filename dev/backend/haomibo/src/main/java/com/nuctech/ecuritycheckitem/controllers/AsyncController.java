@@ -77,7 +77,7 @@ public class AsyncController extends BaseController {
         try {
             String dataStr = objectMapper.writeValueAsString(detailModel);
             String key = redisKey + guid;
-            redisUtil.set(key, CryptUtil.encrypt(dataStr), Constants.EXPIRE_TIME);
+            redisUtil.set(key, dataStr, Integer.MAX_VALUE);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -87,6 +87,8 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         String temp = strQuery;
         temp = temp.replace(":judgeGroupBy", judgeGroupBy);
 
+        temp = temp + " \tWHERE (IFNULL(totalProcess, 0) + IFNULL(total, 0)) > 0 ";
+
 //        temp = temp + " WHERE (IFNULL(totalScan, 0) + IFNULL(validScan, 0) + IFNULL(passedScan, 0) + " +
 //                "IFNULL(alarmScan, 0) + IFNULL(totalJudge, 0) + IFNULL(suspictionJudge, 0) + " +
 //                "IFNULL(noSuspictionJudge, 0) + IFNULL(totalHand, 0) + " +

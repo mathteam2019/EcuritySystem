@@ -167,7 +167,6 @@ public class PlatformCheckManagementController extends BaseController {
 
 
             String serPlatformCheckParamsStr = objectMapper.writeValueAsString(serPlatformCheckParamsInfo);
-            serPlatformCheckParamsStr = CryptUtil.encrypt(serPlatformCheckParamsStr);
             redisUtil.set(Constants.REDIS_PLATFORM_CHECK,
                     serPlatformCheckParamsStr, 8 * 60 * 60);
         } catch(Exception ex) {

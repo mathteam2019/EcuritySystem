@@ -96,6 +96,9 @@ public class DeviceServiceImpl implements DeviceService {
     SerAssignRepository serAssignRepository;
 
     @Autowired
+    SerDeviceStatusRepository serDeviceStatusRepository;
+
+    @Autowired
     Utils utils;
 
     @Autowired
@@ -556,6 +559,13 @@ public class DeviceServiceImpl implements DeviceService {
             scanParam.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
             serScanParamRepository.save(scanParam);
         }
+
+        SerDeviceStatus serDeviceStatus = SerDeviceStatus.builder()
+                .deviceId(sysDevice.getDeviceId())
+                .build();
+        serDeviceStatus.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
+        serDeviceStatusRepository.save(serDeviceStatus);
+
         String valueAfter = getJsonFromDevice(sysDevice);
         auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, "", valueAfter);
