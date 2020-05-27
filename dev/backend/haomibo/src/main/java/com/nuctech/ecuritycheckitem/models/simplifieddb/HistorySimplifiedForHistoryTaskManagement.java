@@ -281,4 +281,7 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
 
     @javax.persistence.Transient
     private SerPlatformCheckParamsSimplifiedForTaskManagement platFormCheckParams;
+
+    @javax.persistence.Transient
+    private List<String> handGoodsList;
 }

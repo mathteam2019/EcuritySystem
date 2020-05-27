@@ -110,7 +110,7 @@ public class SuspictionHandgoodsStatisticsWordView extends BaseWordView {
 
                 for (int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
 
-                    tableRow.getCell(i + 2).setText(record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)));
+                    tableRow.getCell(i + 2).setText(record.get(ConstantDictionary.getDataValue(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i))));
 
                 }
 

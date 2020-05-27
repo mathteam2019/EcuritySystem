@@ -57,13 +57,13 @@ public interface InvalidService {
      * @param endTime : end time
      * @return
      */
-    List<HistorySimplifiedForInvalidTableManagement> getExportInvalidTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
+    List<HistorySimplifiedForInvalidTableManagement> getExportInvalidTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList);
     /**
      * get All history task with filter
 
      * @return
      */
-    List<InvalidSimplifiedForImageManagement> getExportInvalidImage(String sortBy, String order, String idList);
+    List<InvalidSimplifiedForImageManagement> getExportInvalidImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList);
 
     /**
      * Get one history task with id

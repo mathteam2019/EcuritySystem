@@ -15,7 +15,8 @@ package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
-import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -63,7 +64,7 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
      * @param exportDealList
      * @return
      */
-    public static InputStream buildExcelDocument(List<SerKnowledgeCaseDeal> exportDealList) {
+    public static InputStream buildExcelDocument(List<SerKnowledgeCase> exportDealList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
 
@@ -86,13 +87,13 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
             int number = 0;
-            for (SerKnowledgeCaseDeal deal : exportDealList) {
+            for (SerKnowledgeCase deal : exportDealList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(String.valueOf(++ number));
-                row.createCell(1).setCellValue(deal.getHistory().getTaskNumber());
-                row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(!StringUtils.isEmpty(deal.getHistory().getFieldDesignation())) {
-                    row.createCell(3).setCellValue(deal.getHistory().getFieldDesignation());
+                row.createCell(1).setCellValue(deal.getTaskNumber());
+                row.createCell(2).setCellValue(Utils.getTaskResultFromKnowledge(deal));
+                if(!StringUtils.isEmpty(deal.getFieldDesignation())) {
+                    row.createCell(3).setCellValue(deal.getFieldDesignation());
                 } else {
                     row.createCell(3).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

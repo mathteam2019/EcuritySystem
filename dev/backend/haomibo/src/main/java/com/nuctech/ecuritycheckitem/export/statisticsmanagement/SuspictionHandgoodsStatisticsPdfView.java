@@ -89,7 +89,7 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
 
                 for (int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
 
-                    addTableCell(table, record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)));
+                    addTableCell(table, record.get(ConstantDictionary.getDataValue(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i))));
 
                 }
 

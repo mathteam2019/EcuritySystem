@@ -12,7 +12,6 @@
 
 package com.nuctech.ecuritycheckitem.repositories;
 
-import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDealImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;

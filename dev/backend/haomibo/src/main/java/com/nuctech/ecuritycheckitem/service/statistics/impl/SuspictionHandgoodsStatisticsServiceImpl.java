@@ -12,6 +12,8 @@
 
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.SuspicionHandgoodsStatisticsController;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
@@ -165,7 +167,9 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         for (int i = 0; i < resultTotal.size(); i++) {
             Object[] item = (Object[]) resultTotal.get(i);
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
-                record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Utils.parseLong(item[j + 1].toString()));
+                String handGood = ConstantDictionary.getDataValue(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j),
+                        String.valueOf(Constants.SEIZED_DICTIONARY_ID));
+                record.put(handGood, Utils.parseLong(item[j + 1].toString()));
             }
         }
 
@@ -195,7 +199,9 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             }
             TreeMap<String, String> record = new TreeMap<>();
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
-                record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), item[j + 1].toString());
+                String handGood = ConstantDictionary.getDataValue(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j),
+                        String.valueOf(Constants.SEIZED_DICTIONARY_ID));
+                record.put(handGood, item[j + 1].toString());
             }
             record.put("time", Utils.formatDateByStatisticWidth(statWidth, item[0].toString()));
             data.add(record);
@@ -264,12 +270,24 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
     }
 
     private String getMainSelectQuery() {
-        return "\tsum( IF ( hand_goods LIKE '%1000001601%', 1, 0 ) ) AS a1,\n" +
-                "\tsum( IF ( hand_goods LIKE '%1000001602%', 1, 0 ) ) AS a2,\n" +
-                "\tsum( IF ( hand_goods LIKE '%1000001603%', 1, 0 ) ) AS a3,\n" +
-                "\tsum( IF ( hand_goods LIKE '%1000001604%', 1, 0 ) ) AS a4,\n" +
-                "\tsum( IF ( hand_goods LIKE '%1000001605%', 1, 0 ) ) AS a5\n" +
-                getJoinQuery();
+        String str = "";
+        for(int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
+            str = str + "\tsum( IF ( hand_goods LIKE '%" + SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)
+                    + "%', 1, 0 ) ) AS a" + (i + 1);
+            if(i != SuspicionHandgoodsStatisticsController.handGoodsIDList.size() - 1) {
+                str = str + ",\n";
+            } else {
+                str = str + "\n";
+            }
+        }
+        str = str + getJoinQuery();
+        return str;
+//        return "\tsum( IF ( hand_goods LIKE '%1000001601%', 1, 0 ) ) AS a1,\n" +
+//                "\tsum( IF ( hand_goods LIKE '%1000001602%', 1, 0 ) ) AS a2,\n" +
+//                "\tsum( IF ( hand_goods LIKE '%1000001603%', 1, 0 ) ) AS a3,\n" +
+//                "\tsum( IF ( hand_goods LIKE '%1000001604%', 1, 0 ) ) AS a4,\n" +
+//                "\tsum( IF ( hand_goods LIKE '%1000001605%', 1, 0 ) ) AS a5\n" +
+//                getJoinQuery();
     }
 
     private String getJoinQuery() {
@@ -281,7 +299,17 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
     }
 
     private String getNoZeroQuery(String query) {
-        return "SELECT * FROM(" + query + ")as zt WHERE (a1 + a2 + a3 + a4 + a5 > 0)";
+        String str =  "SELECT * FROM(" + query + ")as zt WHERE (";
+        for(int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
+            str = str + "a" + (i + 1);
+            if(i != SuspicionHandgoodsStatisticsController.handGoodsIDList.size() - 1) {
+                str = str + " + ";
+            } else {
+                str = str + " > 0";
+            }
+        }
+        str = str + ")";
+        return str;
     }
 
     /**
@@ -321,25 +349,25 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         }
         if (startTime != null) {
             Date date = startTime;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(date);
             whereCause.add("HAND_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             Date date = endTime;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(date);
             whereCause.add("HAND_START_TIME <= '" + strDate + "'");
         }
 
 
 
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("HAND_USER_ID in (" + idListStr + ") ");
+        }
 
         return whereCause;
     }

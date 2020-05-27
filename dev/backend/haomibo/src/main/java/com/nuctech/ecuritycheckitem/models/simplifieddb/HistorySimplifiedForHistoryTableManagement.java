@@ -36,7 +36,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
 @Table(name = "history_finish")
-public class HistorySimplifiedForHistoryTableManagement implements Serializable {
+public class HistorySimplifiedForHistoryTableManagement extends BaseEntity implements Serializable {
 
 
     public static class TaskStatusType {
@@ -69,6 +69,14 @@ public class HistorySimplifiedForHistoryTableManagement implements Serializable 
     @Column(name = "SCAN_END_TIME", nullable = false)
     private Date scanEndTime;
 
+    @Column(name = "SCAN_ATR_RESULT", length = 10)
+    private String scanAtrResult;
+
+    @Column(name = "JUDGE_USER_ID", length = 20)
+    private Long judgeUserId;
+
+    @Column(name = "JUDGE_RESULT", length = 10)
+    private String judgeResult;
 
     @Column(name = "HAND_TASK_RESULT", length = 10)
     private String handTaskResult;
@@ -93,6 +101,9 @@ public class HistorySimplifiedForHistoryTableManagement implements Serializable 
 
     @Column(name = "HAND_DEVICE_NAME", length = 50)
     private String handDeviceName;
+
+    @Column(name = "HAND_GOODS", length = 255)
+    private String handGoods;
 
     @Column(name = "SCAN_POINTSMAN_NAME", length = 50)
     private String scanPointsManName;

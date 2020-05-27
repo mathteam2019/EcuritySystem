@@ -270,24 +270,24 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         }
         if (startTime != null) {
             Date date = startTime;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(date);
             whereCause.add("JUDGE_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             Date date = endTime;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(date);
             whereCause.add("JUDGE_END_TIME <= '" + strDate + "'");
         }
         whereCause.add("JUDGE_ID IS NOT NULL");
 
-
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("SCAN_POINTSMAN_ID in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("JUDGE_USER_ID in (" + idListStr + ") ");
+        }
 
 
 
@@ -370,11 +370,10 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 "\tsum( IF (JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + ", 1, 0 ) ) AS artificialJudgeProcess,\n" +
                 "\tsum( IF ( ASSIGN_JUDGE_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.TRUE + "', 1, 0 ) ) AS assignResultProcess,\n" +
                 "\tsum( IF ( JUDGE_USER_ID = " + Constants.DEFAULT_SYSTEM_USER + " AND ASSIGN_JUDGE_DEVICE_ID IS NOT NULL " + " AND JUDGE_TIMEOUT = '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeoutProcess,\n" +
-                "\tsum( IF ( (ASSIGN_JUDGE_ID IS NULL OR ASSIGN_JUDGE_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.FALSE + "') AND ASSIGN_JUDGE_DEVICE_ID IS NULL " + ", 1, 0 ) ) AS atrResultProcess,\n" +
-                "\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "' " +
-                " AND JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionProcess,\n" +
-                "\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "' " +
-                " OR JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionProcess,\n" +
+                "\t1 AS atrResultProcess,\n" +
+                "\tsum( IF ( (SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "' AND JUDGE_USER_ID = " + Constants.DEFAULT_SYSTEM_USER + ")" +
+                " OR (JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "' AND JUDGE_USER_ID <> " + Constants.DEFAULT_SYSTEM_USER + ")" + ", 1, 0 ) ) AS suspictionProcess,\n" +
+                "\t1 AS noSuspictionProcess,\n" +
                 "\tcount( JUDGE_ID ) AS totalProcess ,\n" +
                 "\tAVG( TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ) AS avgDurationProcess,\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ) AS maxDurationProcess,\n" +
@@ -396,11 +395,10 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 "\tsum( IF (JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + ", 1, 0 ) ) AS artificialJudge,\n" +
                 "\tsum( IF ( ASSIGN_JUDGE_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.TRUE + "', 1, 0 ) ) AS assignResult,\n" +
                 "\tsum( IF ( JUDGE_USER_ID = " + Constants.DEFAULT_SYSTEM_USER + " AND ASSIGN_JUDGE_DEVICE_ID IS NOT NULL " + " AND JUDGE_TIMEOUT = '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeout,\n" +
-                "\tsum( IF ( (ASSIGN_JUDGE_ID IS NULL OR ASSIGN_JUDGE_TIMEOUT = '" + SerJudgeGraph.AssignTimeout.FALSE + "') AND ASSIGN_JUDGE_DEVICE_ID IS NULL " + ", 1, 0 ) ) AS atrResult,\n" +
-                "\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "' " +
-                " AND JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspiction,\n" +
-                "\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "' " +
-                " OR JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspiction,\n" +
+                "\t1 AS atrResult,\n" +
+                "\tsum( IF ( (SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "' AND JUDGE_USER_ID = " + Constants.DEFAULT_SYSTEM_USER + ")" +
+                " OR (JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "' AND JUDGE_USER_ID <> " + Constants.DEFAULT_SYSTEM_USER + ")" + ", 1, 0 ) ) AS suspiction,\n" +
+                "\t1 AS noSuspiction,\n" +
                 "\tcount( JUDGE_ID ) AS total ,\n" +
                 "\tAVG( TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ) AS avgDuration,\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, JUDGE_START_TIME, JUDGE_END_TIME ) ) AS maxDuration,\n" +
@@ -444,6 +442,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             Double avgArtificialDurationProcess = Utils.parseDouble(item[11]);
             Double maxArtificialDurationProcess = Utils.parseDouble(item[12]);
             Double minAtificialDuratinoProcess = Utils.parseDouble(item[13]);
+            atrResultProcess = totalProcess - artififcialJudgeProcess - assignTimeoutProcess - judgeTimeoutProcess;
 
 
             Long artififcialJudgeFinish = Utils.parseLong(item[15]);
@@ -459,6 +458,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             Double avgArtificialDurationFinish = Utils.parseDouble(item[25]);
             Double maxArtificialDurationFinish = Utils.parseDouble(item[26]);
             Double minAtificialDuratinoFinish = Utils.parseDouble(item[27]);
+            atrResultFinish = totalFinish - artififcialJudgeFinish - assignTimeoutFinish - judgeTimeoutFinish;
 
             Double maxDuration = maxDurationProcess;
             Double maxArtificialDuration = maxArtificialDurationProcess;
@@ -482,8 +482,8 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             record.setJudgeTimeout(judgeTimeoutProcess + judgeTimeoutFinish);
             record.setAtrResult(atrResultProcess + atrResultFinish);
             record.setSuspiction(suspictionProcess + suspictionFinish);
-            record.setNoSuspiction(noSuspictionFinish + noSuspictionProcess);
             record.setTotal(totalFinish + totalProcess);
+            record.setNoSuspiction(record.getTotal() - record.getSuspiction());
             record.setAvgDuration(0);
             record.setMaxDuration(maxDuration);
             record.setMinDuration(minDuration);

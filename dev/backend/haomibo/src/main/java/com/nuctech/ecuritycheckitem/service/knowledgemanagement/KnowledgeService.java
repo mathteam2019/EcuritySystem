@@ -13,17 +13,16 @@
 package com.nuctech.ecuritycheckitem.service.knowledgemanagement;
 
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
-import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDealImage;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 import java.util.List;
 
 public interface KnowledgeService {
-    PageResult<SerKnowledgeCaseDeal> getDealListByFilter(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
+    PageResult<SerKnowledgeCase> getDealListByFilter(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
                                                          Long fieldId, String handGoods, int currentPage, int perPage);
 
-    List<SerKnowledgeCaseDeal> getDealExportList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
+    List<SerKnowledgeCase> getDealExportList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
                                                  Long fieldId, String handGoods, boolean isAll, String idList);
 
     List<SerKnowledgeCaseDealImage> getDealImageList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
@@ -38,9 +37,5 @@ public interface KnowledgeService {
     void delete(Long caseDealId);
 
     Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase, List<String> tagList);
-
-    Long insertNewKnowledgeCaseDeal(SerKnowledgeCaseDeal knowledgeCaseDeal);
-
-    Long updateKnowledgeCase(Long knowledgeId, SerKnowledgeCase knowledgeCase);
 
 }

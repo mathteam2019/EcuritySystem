@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatisticsResponse;
@@ -256,12 +257,12 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(startTime);
             whereCause.add("SCAN_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(endTime);
             whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
         }
@@ -269,12 +270,12 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
             whereCause.add("SCAN_POINTSMAN_NAME like '%" + userName + "%' ");
         }
 
-
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("SCAN_POINTSMAN_ID in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("SCAN_POINTSMAN_ID in (" + idListStr + ") ");
+        }
 
 
 
@@ -358,8 +359,8 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( SCAN_ID ) AS totalScanProcess,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScanProcess,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScanProcess,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS passedScanProcess,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS alarmScanProcess,\n" +
                 "\t\t:scanGroupBy AS q11 \n" +
                 "\tFROM\n" +
                 "\t\thistory_process  \n" +
@@ -370,8 +371,8 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
                 "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( SCAN_ID ) AS totalScanFinish,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScanFinish,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScanFinish,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS passedScanFinish,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS alarmScanFinish,\n" +
                 "\t\t:scanGroupBy AS q12 \n" +
                 "\tFROM\n" +
                 "\t\thistory_finish  \n" +

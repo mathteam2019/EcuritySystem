@@ -63,6 +63,9 @@ public class DeviceExcelView extends BaseExcelView {
 
         Cell headerCellOriginalModel = header.createCell(7);
         headerCellOriginalModel.setCellValue(messageSource.getMessage("Device.OriginalModel", null, currentLocale));
+
+        Cell headerCellGuid = header.createCell(8);
+        headerCellGuid.setCellValue(messageSource.getMessage("Device.GUID", null, currentLocale));
     }
 
     /**
@@ -119,6 +122,7 @@ public class DeviceExcelView extends BaseExcelView {
                     row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
                     row.createCell(7).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
+                row.createCell(8).setCellValue(device.getGuid());
 
             }
 

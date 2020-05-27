@@ -171,9 +171,6 @@ public class BaseController {
 
     @Autowired
     public SerHandExaminationRepository serHandExaminationRepository;
-    
-    @Autowired
-    public SerKnowledgeCaseDealRepository serKnowledgeCaseDealRepository;
 
     @Autowired
     public SerKnowledgeCaseRepository serKnowledgeCaseRepository;
@@ -227,13 +224,15 @@ public class BaseController {
         }
         ConstantDictionary.Dictionary[] dictionaryList = new ConstantDictionary.Dictionary[dictionaryDataList.size() + originalDictionaryList.length];
         int index = 0;
-        for(int i = 0; i < originalDictionaryList.length; i ++) {
-            dictionaryList[index ++] = originalDictionaryList[i];
-        }
+
         for(int i = 0; i < dictionaryDataList.size(); i ++) {
             ConstantDictionary.Dictionary dictionary = new ConstantDictionary.Dictionary(dictionaryDataList.get(i).getDataCode(),
-                    dictionaryDataList.get(i).getDataValue());
+                    dictionaryDataList.get(i).getDataValue(), dictionaryDataList.get(i).getDictionaryId().toString());
             dictionaryList[index ++] = dictionary;
+        }
+
+        for(int i = 0; i < originalDictionaryList.length; i ++) {
+            dictionaryList[index ++] = originalDictionaryList[i];
         }
 
         ConstantDictionary.setDictionaryList(dictionaryList);

@@ -64,7 +64,7 @@ public interface HistoryService {
      * @param endTime : end time
      * @return
      */
-    List<HistorySimplifiedForHistoryTableManagement> getExportHistoryTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
+    List<HistorySimplifiedForHistoryTableManagement> getExportHistoryTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList);
 
     /**
      * get All history task with filter
@@ -77,7 +77,7 @@ public interface HistoryService {
      * @param endTime : end time
      * @return
      */
-    List<HistorySimplifiedForHistoryImageManagement> getExportHistoryImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
+    List<HistorySimplifiedForHistoryImageManagement> getExportHistoryImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList);
 
     /**
      * Get one history task with id
@@ -85,6 +85,13 @@ public interface HistoryService {
      * @return
      */
     HistorySimplifiedForHistoryTaskManagement getOne(Long taskId);
+
+    /**
+     * Get one history task with id
+     * @param taskId
+     * @return
+     */
+    HistoryDetail getDetail(Long taskId);
 
 
 }

@@ -50,6 +50,18 @@ public class ProcessSimplifiedForImageManagement extends BaseEntity implements S
     @Column(name = "TASK_NUMBER", length = 50)
     private String taskNumber;
 
+    @Column(name = "MODE", length = 20)
+    private Long modeId;
+
+    @Column(name = "SCENE", length = 20)
+    private Long fieldId;
+
+    @Column(name = "SCAN_POINTSMAN_NAME", length = 50)
+    private String scanPointsManName;
+
+    @Column(name = "TASK_STATUS", length = 10)
+    private String taskStatus;
+
     @OneToOne()
     @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)

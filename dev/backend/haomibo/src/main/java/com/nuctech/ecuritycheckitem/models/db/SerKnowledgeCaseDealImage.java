@@ -33,31 +33,46 @@ import java.io.Serializable;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE_DEAL)
-@Table(name = "ser_knowledge_case_deal")
+@Table(name = "ser_knowledge_case")
 public class SerKnowledgeCaseDealImage extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CASE_DETAL_ID", length = 20)
+    @Column(name = "CASE_ID", length = 20)
     private Long caseDealId;
 
+    @Column(name = "CASE_STATUS", length = 20)
+    private String caseStatus;
+
+    @Column(name = "MODE_NAME", length = 50)
+    private String modeName;
+
+    @Column(name = "HAND_TASK_RESULT", length = 10)
+    private String handTaskResult;
+
+    @Column(name = "HAND_GOODS", length = 255)
+    private String handGoods;
+
+    @Column(name = "SCENE", length = 20)
+    private Long fieldId;
+
+    @Column(name = "TASK_NUMBER", length = 50)
+    private String taskNumber;
+
+    @Column(name = "JUDGE_USER_ID", length = 20)
+    private Long judgeUserId;
+
+    @Column(name = "SCAN_ATR_RESULT", length = 10)
+    private String scanAtrResult;
+
+    @Column(name = "JUDGE_RESULT", length = 10)
+    private String judgeResult;
 
     @OneToOne()
     @JoinColumn(name = "SCAN_ID", referencedColumnName = "SCAN_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SerScanSimplifiedForTaskManagement serScan;
 
-
-
-//    @OneToOne()
-//    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
-//    @NotFound(action = NotFoundAction.IGNORE)
-//    private SerImage scanImage;
-
-    @OneToOne()
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SerTaskSimple task;
 
 
 

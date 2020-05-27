@@ -96,7 +96,7 @@ public class ArchiveServiceImpl implements ArchiveService {
      * @param categoryId
      * @return
      */
-    private BooleanBuilder getPredicate(String archiveName, String templateName, String status, Long categoryId) {
+    private BooleanBuilder getPredicate(String archiveName, Long templateId, String status, Long categoryId) {
         QSerArchive builder = QSerArchive.serArchive;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -105,8 +105,8 @@ public class ArchiveServiceImpl implements ArchiveService {
             predicate.and(builder.archivesName.contains(archiveName));
         }
 
-        if (!StringUtils.isEmpty(templateName)) {
-            predicate.and(builder.archiveTemplate.templateName.contains(templateName));
+        if (templateId != null) {
+            predicate.and(builder.archiveTemplate.archivesTemplateId.eq(templateId));
         }
         if (!StringUtils.isEmpty(status)) {
             predicate.and(builder.status.eq(status));
@@ -132,8 +132,8 @@ public class ArchiveServiceImpl implements ArchiveService {
      * @return
      */
     @Override
-    public PageResult<SerArchive> getArchiveListByPage(String sortBy, String order, String archiveName, String templateName, String status, Long categoryId, int currentPage, int perPage) {
-        BooleanBuilder predicate = getPredicate(archiveName, templateName, status, categoryId);
+    public PageResult<SerArchive> getArchiveListByPage(String sortBy, String order, String archiveName, Long templateId, String status, Long categoryId, int currentPage, int perPage) {
+        BooleanBuilder predicate = getPredicate(archiveName, templateId, status, categoryId);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
 
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -448,8 +448,8 @@ public class ArchiveServiceImpl implements ArchiveService {
      * @return
      */
     @Override
-    public List<SerArchive> getExportListByFilter(String sortBy, String order, String archiveName, String templateName, String status, Long categoryId, boolean isAll, String idList) {
-        BooleanBuilder predicate = getPredicate(archiveName, templateName, status, categoryId);
+    public List<SerArchive> getExportListByFilter(String sortBy, String order, String archiveName, Long templateId, String status, Long categoryId, boolean isAll, String idList) {
+        BooleanBuilder predicate = getPredicate(archiveName, templateId, status, categoryId);
 
         //get all archive list
         Sort sort = null;
@@ -461,12 +461,15 @@ public class ArchiveServiceImpl implements ArchiveService {
         } else {
             sort = Sort.by(defaultSort).ascending();
         }
-        String[] splits = idList.split(",");
-        List<Long> archiveIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            archiveIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> archiveIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                archiveIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QSerArchive.serArchive.archiveId.in(archiveIdList));
         }
-        predicate.and(QSerArchive.serArchive.archiveId.in(archiveIdList));
+
         List<SerArchive> archiveList;
         archiveList = StreamSupport
                 .stream(serArchiveRepository.findAll(predicate, sort).spliterator(), false)

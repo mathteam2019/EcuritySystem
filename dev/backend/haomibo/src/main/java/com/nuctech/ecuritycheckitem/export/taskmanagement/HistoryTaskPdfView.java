@@ -24,6 +24,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -77,7 +78,7 @@ public class HistoryTaskPdfView extends BasePdfView {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
 
-                addTableCell(table, ConstantDictionary.getDataValue(task.getHandTaskResult()));
+                addTableCell(table, Utils.getTaskResult(task));
 
                 if (!StringUtils.isEmpty(task.getFieldDesignation())){
                     addTableCell(table, task.getFieldDesignation());

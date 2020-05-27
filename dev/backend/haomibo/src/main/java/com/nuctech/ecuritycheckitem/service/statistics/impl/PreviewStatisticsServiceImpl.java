@@ -62,6 +62,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     @Override
     public TotalStatistics getTotalStatistics(Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth) {
         categoryUser = authService.getDataCategoryUserList();
+        if(userCategory != null) {
+            List<Long> relateUserIdList = userService.getUserListByResource(Constants.userCategory.get(userCategory));
+            relateUserIdListStr = StringUtils.join(relateUserIdList, ",");
+        }
         String strQuery = makeQuery().replace(":whereScan", getWhereCauseScan(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
         strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
         strQuery = strQuery.replace(":whereHand", getWhereCauseHand(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
@@ -164,10 +168,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     public TotalStatisticsResponse getChartStatistics(String sortBy, String order, Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
         categoryUser = authService.getDataCategoryUserList();
         TotalStatisticsResponse response = new TotalStatisticsResponse();
-        //categoryUser = authService.getDataCategoryUserList();
 
         if(userCategory != null) {
             List<Long> relateUserIdList = userService.getUserListByResource(Constants.userCategory.get(userCategory));
+
             relateUserIdListStr = StringUtils.join(relateUserIdList, ",");
         }
 
@@ -343,12 +347,12 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(startTime);
             whereCause.add("SCAN_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(endTime);
             whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
         }
@@ -360,11 +364,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("SCAN_POINTSMAN_ID in (" + idListStr + ") ");
-//        }
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("SCAN_POINTSMAN_ID in (" + idListStr + ") ");
+        }
 
         if (userCategory != null && !userCategory.isEmpty()) {
             whereCause.add(" SCAN_POINTSMAN_ID in (" + relateUserIdListStr + ") ");
@@ -404,12 +408,12 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(startTime);
             whereCause.add("JUDGE_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(endTime);
             whereCause.add("JUDGE_END_TIME <= '" + strDate + "'");
         }
@@ -421,11 +425,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("JUDGE_USER_ID in (" + idListStr + ") ");
-//        }
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("JUDGE_USER_ID in (" + idListStr + ") ");
+        }
 
         if (userCategory != null && !userCategory.isEmpty()) {
             whereCause.add(" JUDGE_USER_ID in (" + relateUserIdListStr + ") ");
@@ -463,12 +467,12 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(startTime);
             whereCause.add("HAND_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(endTime);
             whereCause.add("HAND_END_TIME <= '" + strDate + "'");
         }
@@ -480,11 +484,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             //whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("HAND_USER_ID in (" + idListStr + ") ");
-//        }
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("HAND_USER_ID in (" + idListStr + ") ");
+        }
 
         if (userCategory != null && !userCategory.isEmpty()) {
             whereCause.add(" HAND_USER_ID in (" + relateUserIdListStr + ") ");
@@ -583,8 +587,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( SCAN_ID ) AS totalScanProcess,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScanProcess,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScanProcess,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS passedScanProcess,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS alarmScanProcess,\n" +
                 "\t\t:scanGroupBy AS q11 \n" +
                 "\tFROM\n" +
                 "\t\thistory_process  \n" +
@@ -595,8 +599,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( SCAN_ID ) AS totalScanFinish,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScanFinish,\n" +
-                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS alarmScanFinish,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.FALSE + "', 1, 0 ) ) AS passedScanFinish,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS alarmScanFinish,\n" +
                 "\t\t:scanGroupBy AS q12 \n" +
                 "\tFROM\n" +
                 "\t\thistory_finish  \n" +
@@ -626,8 +630,9 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( judge_id ) AS totalJudgeProcess,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudgeProcess,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudgeProcess,\n" +
+                "\t\tsum( IF ( (SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "' AND JUDGE_USER_ID = " + Constants.DEFAULT_SYSTEM_USER + ")" +
+                " OR (JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "' AND JUDGE_USER_ID <> " + Constants.DEFAULT_SYSTEM_USER + ")" + ", 1, 0 ) ) AS suspictionJudgeProcess,\n" +
+                "\t\t1 AS noSuspictionJudgeProcess,\n" +
                 "\t\t:judgeGroupBy AS q21 \n" +
                 "\tFROM\n" +
                 "\t\thistory_process  \n" +
@@ -638,8 +643,9 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( judge_id ) AS totalJudgeFinish,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudgeFinish,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT = '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudgeFinish,\n" +
+                "\t\tsum( IF ( (SCAN_ATR_RESULT = '" + SerScan.ATRResult.TRUE + "' AND JUDGE_USER_ID = " + Constants.DEFAULT_SYSTEM_USER + ")" +
+                " OR (JUDGE_RESULT = '" + SerJudgeGraph.Result.TRUE + "' AND JUDGE_USER_ID <> " + Constants.DEFAULT_SYSTEM_USER + ")" + ", 1, 0 ) ) AS suspictionJudgeFinish,\n" +
+                "\t\t1 AS noSuspictionJudgeFinish,\n" +
                 "\t\t:judgeGroupBy AS q22 \n" +
                 "\tFROM\n" +
                 "\t\thistory_finish  \n" +
@@ -659,8 +665,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( HAND_EXAMINATION_ID ) AS totalHand,\n" +
-                "\t\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.TRUE + "', 1, 0 ) ) AS seizureHand,\n" +
-                "\t\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.FALSE + "', 1, 0 ) ) AS noSeizureHand,\n" +
+                "\t\tsum( IF ( HAND_GOODS IS NOT NULL AND HAND_GOODS <> '', 1, 0 ) ) AS seizureHand,\n" +
+                "\t\tsum( IF ( HAND_GOODS IS NULL OR HAND_GOODS = '', 1, 0 ) ) AS noSeizureHand,\n" +
                 "\t\t:handGroupBy AS q3 \n" +
                 "\tFROM\n" +
                 "\t\thistory_finish  \n" +
@@ -700,8 +706,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             Long suspectionJudgeProcess = Utils.parseLong(item[12]);
             Long suspectionJudgeFinish = Utils.parseLong(item[16]);
 
-            Long noSuspectionJudgeProcess = Utils.parseLong(item[13]);
-            Long noSuspectionJudgeFinish = Utils.parseLong(item[17]);
+            Long noSuspectionJudgeProcess = totalJudgeProcess - suspectionJudgeProcess;
+            Long noSuspectionJudgeFinish = totalJudgeFinish - suspectionJudgeFinish;
 
 
 

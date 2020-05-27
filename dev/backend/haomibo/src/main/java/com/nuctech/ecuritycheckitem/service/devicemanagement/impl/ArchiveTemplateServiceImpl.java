@@ -524,12 +524,15 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         } else {
             sort = Sort.by(defaultSort).ascending();
         }
-        String[] splits = idList.split(",");
-        List<Long> templateIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            templateIdList.add(Long.valueOf(idStr));
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> templateIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                templateIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QSerArchiveTemplate.serArchiveTemplate.archivesTemplateId.in(templateIdList));
         }
-        predicate.and(QSerArchiveTemplate.serArchiveTemplate.archivesTemplateId.in(templateIdList));
         //get all archive list
         List<SerArchiveTemplate> archiveTemplateList;
         archiveTemplateList = StreamSupport

@@ -41,7 +41,7 @@ public interface ScanParamService {
      * @param perPage
      * @return
      */
-    PageResult<SerScanParam> getScanParamListByFilter(String sortBy, String order, String deviceName, String status, Integer currentPage, Integer perPage);
+    PageResult<SerScanParam> getScanParamListByFilter(String sortBy, String order, String deviceName, String status, String fromDeviceName, Integer currentPage, Integer perPage);
 
     /**
      * get filtered list of scan param list

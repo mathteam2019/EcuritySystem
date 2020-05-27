@@ -43,10 +43,10 @@ public class DevicePdfView extends BasePdfView {
 
             document.add(getTitle(messageSource.getMessage("Device.Title", null, currentLocale)));
             document.add(getTime());
-            PdfPTable table = new PdfPTable(8);
+            PdfPTable table = new PdfPTable(9);
 
             table.setWidthPercentage(99);
-            Stream.of("Device.No", "Device.Device", "Device.Name", "Device.Status", "Device.Archive.Name", "Device.Category", "Device.Manufacturer", "Device.OriginalModel")
+            Stream.of("Device.No", "Device.Device", "Device.Name", "Device.Status", "Device.Archive.Name", "Device.Category", "Device.Manufacturer", "Device.OriginalModel", "Device.GUID")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -81,6 +81,7 @@ public class DevicePdfView extends BasePdfView {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
+                addTableCell(table, device.getGuid());
             }
 
             document.add(table);

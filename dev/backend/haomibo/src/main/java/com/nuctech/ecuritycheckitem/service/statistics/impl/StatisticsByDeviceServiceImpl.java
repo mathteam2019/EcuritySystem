@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
@@ -319,12 +320,12 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             whereCause.add("d.DEVICE_TYPE = '" + deviceType + "'");
         }
         if (startTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(startTime);
             whereCause.add("r.REGISTER_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(endTime);
             whereCause.add("r.UNREGISTER_TIME <= '" + strDate + "'");
         }

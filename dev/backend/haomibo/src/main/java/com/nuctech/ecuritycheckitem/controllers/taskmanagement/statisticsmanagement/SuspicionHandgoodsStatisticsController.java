@@ -17,14 +17,17 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.*;
+import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.DictionaryService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -44,6 +47,9 @@ import java.util.*;
 @RestController
 @RequestMapping("/task/statistics/")
 public class SuspicionHandgoodsStatisticsController extends BaseController {
+
+    @Autowired
+    DictionaryService dictionaryService;
 
     /**
      * Suspiction hand goods Statistics RequestBody
@@ -83,13 +89,22 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
     /**
      * Hand goods list
      */
-    public static final List<String> handGoodsIDList = Arrays.asList(new String[]{
+    public static List<String> handGoodsIDList = Arrays.asList(new String[]{
             "1000001601",
             "1000001602",
             "1000001603",
             "1000001604",
             "1000001605"
     });
+
+
+    private void setHandGoodsIDList() {
+        List<SysDictionaryData> dictionaryDataList = dictionaryService.getDictionaryListById(Constants.SEIZED_DICTIONARY_ID);
+        handGoodsIDList = new ArrayList<>();
+        for(int i = 0; i < dictionaryDataList.size(); i ++) {
+            handGoodsIDList.add(dictionaryDataList.get(i).getDataCode());
+        }
+    }
 
     /**
      * Suspiction hand goods statistics generate request body.
@@ -136,6 +151,8 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        setHandGoodsIDList();
+        setDictionary(Constants.CHINESE_LOCALE);   //set dictionary data key and values
 
         SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
         response = suspictionHandgoodsStatisticsService.getStatistics(sortBy, order,
@@ -169,6 +186,8 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        setHandGoodsIDList();
+        setDictionary(Constants.CHINESE_LOCALE);   //set dictionary data key and values
 
         TreeMap<String, Long> response = suspictionHandgoodsStatisticsService.getChartStatistics(
                 requestBody.getFilter().getFieldId(), //get field if from input parameter
@@ -205,6 +224,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        setHandGoodsIDList();
         SuspicionHandGoodsPaginationResponse response = suspictionHandgoodsStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(), //get field if from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter
@@ -217,7 +237,6 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 Integer.MAX_VALUE); //get record count per page from input parameter
 
         //TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(null, requestBody.getIsAll(), requestBody.getIdList());
-        HandExaminationStatisticsPdfView.setResource(getFontResource()); //get header font
         setDictionary(requestBody.getLocale());//set dictionary data key and values
         SuspictionHandgoodsStatisticsPdfView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -258,6 +277,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        setHandGoodsIDList();
         SuspicionHandGoodsPaginationResponse response = suspictionHandgoodsStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(), //get field if from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter
@@ -310,6 +330,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 order = sortParams.get("order");
             }
         }
+        setHandGoodsIDList();
         SuspicionHandGoodsPaginationResponse response = suspictionHandgoodsStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(), //get field if from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter

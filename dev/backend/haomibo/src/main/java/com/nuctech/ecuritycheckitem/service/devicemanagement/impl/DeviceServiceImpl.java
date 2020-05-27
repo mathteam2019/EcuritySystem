@@ -410,12 +410,15 @@ public class DeviceServiceImpl implements DeviceService {
     public List<SysDevice> getExportDataList(String sortBy, String order, Long archiveId, String deviceName, String status, Long fieldId, Long categoryId,
                                              boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(archiveId, deviceName, status, fieldId, categoryId);
-        String[] splits = idList.split(",");
-        List<Long> deviceIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            deviceIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> deviceIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                deviceIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QSysDevice.sysDevice.deviceId.in(deviceIdList));
         }
-        predicate.and(QSysDevice.sysDevice.deviceId.in(deviceIdList));
+
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = Sort.by(sortBy).ascending();

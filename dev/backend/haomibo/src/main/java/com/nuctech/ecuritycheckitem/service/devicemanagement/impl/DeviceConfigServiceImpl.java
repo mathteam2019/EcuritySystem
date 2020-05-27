@@ -178,7 +178,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
      * @return
      */
     @Override
-    public PageResult<SysDeviceConfig> findConfigByFilter(String sortBy, String order, String deviceName, Long fieldId, Long categoryId, Long mode, int currentPage, int perPage) {
+    public PageResult<SysDeviceConfig> findConfigByFilter(String sortBy, String order, String deviceName, Long fieldId, Long categoryId, Long mode, String fromDeviceName, int currentPage, int perPage) {
         QSysDeviceConfig builder = QSysDeviceConfig.sysDeviceConfig;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -192,6 +192,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         if (mode != null) {
             predicate.and(builder.modeId.eq(mode));
         }
+        if (!StringUtils.isEmpty(fromDeviceName)) {
+            predicate.and(builder.fromConfigIdList.any().device.deviceName.contains(fromDeviceName));
+        }
+
         categoryId = 3L;
         predicate.and(builder.device.categoryId.eq(categoryId));
         predicate.and(builder.device.status.eq(SysDevice.Status.ACTIVE));

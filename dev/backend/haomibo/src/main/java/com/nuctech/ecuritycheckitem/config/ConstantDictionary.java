@@ -259,8 +259,24 @@ public class ConstantDictionary {
             new Dictionary("scan_param_update_status", "更新状态", "Resource"),
             new Dictionary("menu_security", "安检仪设备", "Resource"),
             new Dictionary("menu_judge", "判图设备", "Resource"),
-            new Dictionary("menu_hand", "手检设备", "Resource")
+            new Dictionary("menu_hand", "手检设备", "Resource"),
+            new Dictionary("tab_security_log", "安检仪日志", "Resource"),
+            new Dictionary("tab_judge_log", "判图站日志", "Resource"),
+            new Dictionary("tab_hand_log", "手检端日志", "Resource"),
+            new Dictionary("judge_device_log_print", "打印", "Resource"),
+            new Dictionary("judge_device_log_export", "导出", "Resource"),
+            new Dictionary("hand_device_log_print", "打印", "Resource"),
+            new Dictionary("hand_device_log_export", "导出", "Resource"),
+            new Dictionary("security_device_log_print", "打印", "Resource"),
+            new Dictionary("security_device_log_export", "导出", "Resource")
+
     };
+
+
+
+
+
+
 
 
     public static Dictionary[] originalEnglishDictionaryList = {
@@ -497,6 +513,16 @@ public class ConstantDictionary {
             new Dictionary("menu_security", "Security Equipment", "Resource"),
             new Dictionary("menu_judge", "Image Judgment Device", "Resource"),
             new Dictionary("menu_hand", "Hand Inspection Equipment", "Resource"),
+            new Dictionary("tab_security_log", "Security Device Log", "Resource"),
+            new Dictionary("tab_judge_log", "Judge Device Log", "Resource"),
+            new Dictionary("tab_hand_log", "Hand Device Log", "Resource"),
+            new Dictionary("judge_device_log_print", "Print", "Resource"),
+            new Dictionary("judge_device_log_export", "Export", "Resource"),
+            new Dictionary("hand_device_log_print", "Print", "Resource"),
+            new Dictionary("hand_device_log_export", "Export", "Resource"),
+            new Dictionary("security_device_log_print", "Print", "Resource"),
+            new Dictionary("security_device_log_export", "Export", "Resource")
+
 
     };
 
@@ -513,9 +539,8 @@ public class ConstantDictionary {
         String answer = "";
         for(int i = 0; i < dictionaryList.length; i ++) {
             Dictionary dicationary = dictionaryList[i];
-            if(dicationary.dataCode.equals(dataCode) && StringUtils.isEmpty(dicationary.dictionaryName)) {
+            if(dicationary.dataCode.equals(dataCode)) {
                 answer = dicationary.dataValue;
-                return answer;
             }
         }
         return answer;
@@ -533,7 +558,6 @@ public class ConstantDictionary {
             Dictionary dicationary = dictionaryList[i];
             if(dicationary.dataCode.equals(dataCode) && dictionaryName.equals(dicationary.dictionaryName)) {
                 answer = dicationary.dataValue;
-                return answer;
             }
         }
         return answer;

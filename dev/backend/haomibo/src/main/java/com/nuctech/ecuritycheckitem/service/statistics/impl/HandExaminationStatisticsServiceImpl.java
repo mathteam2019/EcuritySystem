@@ -246,8 +246,8 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
     private String getMainSelectQuery() {
         return
                 "\tcount( HAND_EXAMINATION_ID ) AS total,\n" +
-                "\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.TRUE + "' , 1, 0 ) ) AS seizure,\n" +
-                "\tsum( IF ( HAND_RESULT = '" + SerHandExamination.Result.FALSE + "' , 1, 0 ) ) AS noSeizure,\n" +
+                "\tsum( IF ( HAND_GOODS IS NOT NULL AND HAND_GOODS <> '', 1, 0 ) ) AS seizure,\n" +
+                "\tsum( IF ( HAND_GOODS IS NULL OR HAND_GOODS = '', 1, 0  ) ) AS noSeizure,\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, HAND_START_TIME, HAND_END_TIME ) ) AS maxDuration,\n" +
                 "\tMIN( TIMESTAMPDIFF( SECOND, HAND_START_TIME, HAND_END_TIME ) ) AS minDuration,\n" +
                 "\tAVG( TIMESTAMPDIFF( SECOND, HAND_START_TIME, HAND_END_TIME ) ) AS avgDuration \n";
@@ -326,23 +326,23 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         }
         if (startTime != null) {
             Date date = startTime;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(date);
             whereCause.add("HAND_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             Date date = endTime;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(date);
             whereCause.add("HAND_END_TIME <= '" + strDate + "'");
         }
 
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("HAND_USER_ID in (" + idListStr + ") ");
+        }
         whereCause.add("HAND_EXAMINATION_ID IS NOT NULL ");
         return whereCause;
     }

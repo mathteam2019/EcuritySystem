@@ -159,6 +159,7 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
 
+        predicate.and(builder.sysDictionaryData.dictionaryId.isNotNull());
         if (!StringUtils.isEmpty(goodsCode)) {
             predicate.and(builder.sysDictionaryData.dataValue.contains(goodsCode));
         }

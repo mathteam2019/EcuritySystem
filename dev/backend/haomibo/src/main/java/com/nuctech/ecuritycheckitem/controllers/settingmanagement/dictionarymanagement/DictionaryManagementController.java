@@ -354,12 +354,12 @@ public class DictionaryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if (dictionaryService.checkDictionaryChildExist(requestBody.getDictionaryId())) { // Check if goods id is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("Dictionary", null, currentLocale),
-                    messageSource.getMessage("HaveChild", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
-        }
+//        if (dictionaryService.checkDictionaryChildExist(requestBody.getDictionaryId())) { // Check if goods id is existing.
+//            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+//                    "", messageSource.getMessage("Dictionary", null, currentLocale),
+//                    messageSource.getMessage("HaveChild", null, currentLocale), "", null, false, "", "");
+//            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+//        }
 
         if(dictionaryService.checkDictionary(requestBody.getDictionaryName(), requestBody.getDictionaryId())) {
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),

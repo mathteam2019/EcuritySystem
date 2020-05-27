@@ -385,12 +385,15 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public List<SysField> getExportList(String sortBy, String order, String  designation, String status, Long parentFieldId, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(designation, status, parentFieldId);
-        String[] splits = idList.split(",");
-        List<Long> fieldIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            fieldIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> fieldIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                fieldIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QSysField.sysField.fieldId.in(fieldIdList));
         }
-        predicate.and(QSysField.sysField.fieldId.in(fieldIdList));
+
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = Sort.by(sortBy).ascending();

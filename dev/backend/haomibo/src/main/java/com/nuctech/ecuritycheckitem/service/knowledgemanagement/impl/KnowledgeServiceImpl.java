@@ -20,7 +20,6 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseDealImageRepository;
-import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseDealRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerTaskTagRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
@@ -44,9 +43,6 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class KnowledgeServiceImpl implements KnowledgeService {
-
-    @Autowired
-    SerKnowledgeCaseDealRepository serKnowledgeCaseDealRepository;
 
     @Autowired
     SerKnowledgeCaseDealImageRepository serKnowledgeCaseDealImageRepository;
@@ -74,7 +70,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     public String getJsonFromKnowledge(SerKnowledgeCase knowledgeCase) {
         SerKnowledgeCase newKnowledge = SerKnowledgeCase.builder()
                 .caseId(knowledgeCase.getCaseId())
-                .caseDealId(knowledgeCase.getCaseDealId())
                 .taskId(knowledgeCase.getTaskId())
                 .caseStatus(knowledgeCase.getCaseStatus())
                 .caseCollectUserId(knowledgeCase.getCaseCollectUserId())
@@ -102,23 +97,35 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      */
     private BooleanBuilder getPredicate(String caseStatus, String taskNumber, String modeName, String taskResult,
                                         Long fieldId, String handGoods) {
-        QSerKnowledgeCaseDeal builder = QSerKnowledgeCaseDeal.serKnowledgeCaseDeal;
+        QSerKnowledgeCase builder = QSerKnowledgeCase.serKnowledgeCase;
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
 
-        predicate.and(builder.knowledgeCase.caseStatus.eq(caseStatus));
+        predicate.and(builder.caseStatus.eq(caseStatus));
         if (!StringUtils.isEmpty(taskNumber)) {
-            predicate.and(builder.history.taskNumber.contains(taskNumber));
+            predicate.and(builder.taskNumber.contains(taskNumber));
         }
         if (!StringUtils.isEmpty(modeName)) {
-            predicate.and(builder.history.modeName.eq(modeName));
+            predicate.and(builder.modeName.eq(modeName));
         }
 
         if (!StringUtils.isEmpty(taskResult)) {
-            predicate.and(builder.history.handTaskResult.eq(taskResult));
+            if(SerKnowledgeCase.TaskResult.Seized.equals(taskResult)) {
+                predicate.and(builder.handGoods.isNotEmpty());
+            } else if(SerKnowledgeCase.TaskResult.NoSeized.equals(taskResult)) {
+                predicate.and(builder.handTaskResult.isNotEmpty()).and(builder.handGoods.isEmpty());
+            } else if(SerKnowledgeCase.TaskResult.Suspection.equals(taskResult)) {
+                predicate.and(builder.handTaskResult.isNull());
+                predicate.and((builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE)))
+                        .or(builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE))));
+            } else {
+                predicate.and(builder.handTaskResult.isNull());
+                predicate.and((builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.ne(SerScan.ATRResult.TRUE)))
+                        .or(builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.ne(SerJudgeGraph.Result.TRUE))));
+            }
         }
         if (fieldId != null) {
-            predicate.and(builder.history.fieldId.eq(fieldId));
+            predicate.and(builder.fieldId.eq(fieldId));
         }
         if (!StringUtils.isEmpty(handGoods)) {
             predicate.and(builder.handGoods.contains(handGoods));
@@ -132,40 +139,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return predicate;
     }
 
-    /**
-     * get knowledge case deal export list
-     * @param dealList
-     * @param isAll
-     * @param idList
-     * @return
-     */
-    private List<SerKnowledgeCaseDeal> getExportList(List<SerKnowledgeCaseDeal> dealList, boolean isAll, String idList) {
-        List<SerKnowledgeCaseDeal> exportList = new ArrayList<>();
-        if (isAll == false) {
-            String[] splits = idList.split(",");
-            for (int i = 0; i < dealList.size(); i++) {
-                SerKnowledgeCaseDeal deal = dealList.get(i);
-                boolean isExist = false;
-                for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(deal.getCaseDealId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if (isExist == true) {
-                    exportList.add(deal);
-                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
-                        break;
-                    }
-                }
-            }
-        } else {
-            for(int i = 0; i < dealList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
-                exportList.add(dealList.get(i));
-            }
-        }
-        return exportList;
-    }
+
 
     /**
      * get filtered knowledge case deal list
@@ -180,14 +154,14 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      * @return
      */
     @Override
-    public PageResult<SerKnowledgeCaseDeal> getDealListByFilter(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
+    public PageResult<SerKnowledgeCase> getDealListByFilter(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
                                                                 Long fieldId, String handGoods, int currentPage, int perPage) {
         BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldId, handGoods);
 
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sortBy = "history.taskNumber";
+            sortBy = "taskNumber";
             if (order.equals(Constants.SortOrder.ASC)) {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
             }
@@ -195,10 +169,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("caseDealId").descending());
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("caseId").descending());
         }
-        long total = serKnowledgeCaseDealRepository.count(predicate);
-        List<SerKnowledgeCaseDeal> data = serKnowledgeCaseDealRepository.findAll(predicate, pageRequest).getContent();
+        long total = serKnowledgeCaseRepository.count(predicate);
+        List<SerKnowledgeCase> data = serKnowledgeCaseRepository.findAll(predicate, pageRequest).getContent();
         Date endTime = new Date();
         return new PageResult<>(total, data);
     }
@@ -216,35 +190,38 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      * @return
      */
     @Override
-    public List<SerKnowledgeCaseDeal> getDealExportList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
+    public List<SerKnowledgeCase> getDealExportList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
                                                         Long fieldId, String handGoods, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldId, handGoods);
-        String[] splits = idList.split(",");
-        List<Long> caseDealIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            caseDealIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> caseDealIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                caseDealIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QSerKnowledgeCase.serKnowledgeCase.caseId.in(caseDealIdList));
         }
-        predicate.and(QSerKnowledgeCaseDeal.serKnowledgeCaseDeal.caseDealId.in(caseDealIdList));
-        Sort sort = null;
+
+        Long limit = Constants.MAX_EXPORT_NUMBER;
+        int currentPage = 0;
+        int perPage = limit.intValue();
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sortBy = "history.taskNumber";
-            sort = Sort.by(sortBy).ascending();
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = Sort.by(sortBy).descending();
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            sort = Sort.by("caseDealId").descending();
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("caseId").descending());
         }
-        List<SerKnowledgeCaseDeal> dealList;
-        if(sort != null) {
-            dealList = StreamSupport
-                    .stream(serKnowledgeCaseDealRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        } else {
-            dealList = StreamSupport
-                    .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+
+
+        List<SerKnowledgeCase> dealList;
+        dealList = StreamSupport
+                .stream(serKnowledgeCaseRepository.findAll(predicate, pageRequest).spliterator(), false)
+                .collect(Collectors.toList());
 
         //List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, isAll, idList);
         return dealList;
@@ -267,32 +244,69 @@ public class KnowledgeServiceImpl implements KnowledgeService {
                                                         Long fieldId, String handGoods, boolean isAll, String idList) {
         QSerKnowledgeCaseDealImage builder = QSerKnowledgeCaseDealImage.serKnowledgeCaseDealImage;
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        String[] splits = idList.split(",");
-        List<Long> caseDealIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            caseDealIdList.add(Long.valueOf(idStr));
+
+        predicate.and(builder.caseStatus.eq(caseStatus));
+        if (!StringUtils.isEmpty(taskNumber)) {
+            predicate.and(builder.taskNumber.contains(taskNumber));
         }
-        predicate.and(QSerKnowledgeCaseDealImage.serKnowledgeCaseDealImage.caseDealId.in(caseDealIdList));
-        Sort sort = null;
+        if (!StringUtils.isEmpty(modeName)) {
+            predicate.and(builder.modeName.eq(modeName));
+        }
+
+        if (!StringUtils.isEmpty(taskResult)) {
+            if(SerKnowledgeCase.TaskResult.Seized.equals(taskResult)) {
+                predicate.and(builder.handGoods.isNotEmpty());
+            } else if(SerKnowledgeCase.TaskResult.NoSeized.equals(taskResult)) {
+                predicate.and(builder.handTaskResult.isNotEmpty()).and(builder.handGoods.isEmpty());
+            } else if(SerKnowledgeCase.TaskResult.Suspection.equals(taskResult)) {
+                predicate.and(builder.handTaskResult.isNull());
+                predicate.and((builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE)))
+                        .or(builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE))));
+            } else {
+                predicate.and(builder.handTaskResult.isNull());
+                predicate.and((builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.ne(SerScan.ATRResult.TRUE)))
+                        .or(builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.ne(SerJudgeGraph.Result.TRUE))));
+            }
+        }
+        if (fieldId != null) {
+            predicate.and(builder.fieldId.eq(fieldId));
+        }
+        if (!StringUtils.isEmpty(handGoods)) {
+            predicate.and(builder.handGoods.contains(handGoods));
+        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+        }
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> caseDealIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                caseDealIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(builder.caseDealId.in(caseDealIdList));
+        }
+
+        Long limit = Constants.MAX_EXPORT_NUMBER;
+        int currentPage = 0;
+        int perPage = limit.intValue();
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sortBy = "history.taskNumber";
-            sort = Sort.by(sortBy).ascending();
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = Sort.by(sortBy).descending();
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            sort = Sort.by("caseDealId").descending();
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("caseDealId").descending());
         }
+
         List<SerKnowledgeCaseDealImage> dealList;
-        if(sort != null) {
-            dealList = StreamSupport
-                    .stream(serKnowledgeCaseDealImageRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        } else {
-            dealList = StreamSupport
-                    .stream(serKnowledgeCaseDealImageRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+        dealList = StreamSupport
+                .stream(serKnowledgeCaseDealImageRepository.findAll(predicate, pageRequest).spliterator(), false)
+                .collect(Collectors.toList());
 
         //List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, isAll, idList);
         return dealList;
@@ -315,13 +329,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public void delete(Long caseDealId) {
-        Optional<SerKnowledgeCaseDeal> optionalSerKnowledgeCase = serKnowledgeCaseDealRepository.findOne(QSerKnowledgeCaseDeal.serKnowledgeCaseDeal
-                .caseDealId.eq(caseDealId));
-        SerKnowledgeCaseDeal serKnowledgeCaseDeal = optionalSerKnowledgeCase.get();
-        SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseDeal.getKnowledgeCase();
+        SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseRepository.findOne(QSerKnowledgeCase.serKnowledgeCase.caseId.eq(caseDealId)).get();
         String valueBefore = getJsonFromKnowledge(serKnowledgeCase);
         serKnowledgeCaseRepository.delete(serKnowledgeCase);
-        serKnowledgeCaseDealRepository.delete(serKnowledgeCaseDeal);
         auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("KnowledgeCase", null, currentLocale), "", serKnowledgeCase.getCaseId().toString(), null, true, valueBefore, "");
     }
@@ -409,20 +419,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return serKnowledgeCaseRepository.findOne(QSerKnowledgeCase.serKnowledgeCase.taskId.eq(knowledgeCase.getTaskId())).orElse(null);
     }
 
-    /**
-     * insert new knowledge case deal
-     * @param knowledgeCaseDeal
-     * @return
-     */
-    public Long insertNewKnowledgeCaseDeal(SerKnowledgeCaseDeal knowledgeCaseDeal) {
 
-        knowledgeCaseDeal.addCreatedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
-        SerKnowledgeCaseDeal serKnowledgeCaseDeal = serKnowledgeCaseDealRepository.save(knowledgeCaseDeal);
-        if (serKnowledgeCaseDeal != null) {
-            return serKnowledgeCaseDeal.getCaseDealId();
-        } else
-            return null;
-    }
 
     /**
      * update knowledge case

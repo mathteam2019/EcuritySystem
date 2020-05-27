@@ -16,7 +16,8 @@ package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
-import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -80,7 +81,7 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
      * @param exportList
      * @return
      */
-    public static InputStream buildWordDocument(List<SerKnowledgeCaseDeal> exportList) {
+    public static InputStream buildWordDocument(List<SerKnowledgeCase> exportList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -94,17 +95,17 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
             int number = 0;
             for (Integer i = 0; i < exportList.size(); i ++) {
 
-                SerKnowledgeCaseDeal deal = exportList.get(i);
+                SerKnowledgeCase deal = exportList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
 
                 tableRow.getCell(0).setText(String.valueOf(++ number));
-                tableRow.getCell(1).setText(deal.getHistory().getTaskNumber());
+                tableRow.getCell(1).setText(deal.getTaskNumber());
 
 
-                tableRow.getCell(2).setText(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(!StringUtils.isEmpty(deal.getHistory().getFieldDesignation())) {
-                    tableRow.getCell(3).setText(deal.getHistory().getFieldDesignation());
+                tableRow.getCell(2).setText(Utils.getTaskResultFromKnowledge(deal));
+                if(!StringUtils.isEmpty(deal.getFieldDesignation())) {
+                    tableRow.getCell(3).setText(deal.getFieldDesignation());
                 } else {
                     tableRow.getCell(3).setText(messageSource.getMessage("None", null, currentLocale));
                 }

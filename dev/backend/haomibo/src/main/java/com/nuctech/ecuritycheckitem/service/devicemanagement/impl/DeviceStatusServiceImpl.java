@@ -20,6 +20,7 @@ import com.nuctech.ecuritycheckitem.models.redis.HardwareStatusModel;
 import com.nuctech.ecuritycheckitem.models.redis.SerDeviceStatusModel;
 import com.nuctech.ecuritycheckitem.models.redis.SysMonitoringDeviceStatusInfoVO;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.QSerScanSimple;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerScanParamSimple;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerScanSimple;
 import com.nuctech.ecuritycheckitem.repositories.*;
@@ -158,6 +159,7 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         if (!StringUtils.isEmpty(deviceName)) {
             predicate.and(builder.device.deviceName.contains(deviceName));
         }
+        predicate.and(builder.device.deviceId.isNotNull());
 
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {

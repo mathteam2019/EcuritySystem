@@ -293,6 +293,7 @@ public class InvalidTaskController extends BaseController {
                 requestBody.getFilter().getEndTime(), //get end time from request body
                 sortParams.get("sortBy"), //field name
                 sortParams.get("order"),
+                requestBody.getIsAll(),
                 requestBody.getIdList()); //asc or desc
 
         //List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
@@ -339,8 +340,17 @@ public class InvalidTaskController extends BaseController {
             }
 
             //get all pending case deal list
-            List<InvalidSimplifiedForImageManagement> exportList = invalidService.getExportInvalidImage(sortParams.get("sortBy"),
-                    sortParams.get("order"),requestBody.getIdList());
+            List<InvalidSimplifiedForImageManagement> exportList = invalidService.getExportInvalidImage(requestBody.getFilter().getTaskNumber(),//get task numer from request body
+                    requestBody.getFilter().getMode(),//get mode id from request body
+                    requestBody.getFilter().getStatus(), //get status from request body
+                    requestBody.getFilter().getFieldId(),//get field id from request body
+                    requestBody.getFilter().getUserName(),//get user name from request body
+                    requestBody.getFilter().getStartTime(),//get start time from request body
+                    requestBody.getFilter().getEndTime(), //get end time from request body
+                    sortParams.get("sortBy"), //field name
+                    sortParams.get("order"),
+                    requestBody.getIsAll(),
+                    requestBody.getIdList());
             List<String> cartoonImageList = new ArrayList<>();
             List<String> originalImageList = new ArrayList<>();
             ObjectMapper objectMapper = new ObjectMapper();

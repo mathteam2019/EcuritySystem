@@ -73,6 +73,7 @@ public class DeviceWordView extends BaseWordView {
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Category", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Manufacturer", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.OriginalModel", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.GUID", null, currentLocale));
 
     }
 
@@ -122,6 +123,7 @@ public class DeviceWordView extends BaseWordView {
                     tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
                     tableRow.getCell(7).setText(messageSource.getMessage("None", null, currentLocale));
                 }
+                tableRow.getCell(8).setText(device.getGuid());
             }
 
             setWidth(table, document);

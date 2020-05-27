@@ -92,7 +92,7 @@ public class ArchiveManagementController extends BaseController {
         @AllArgsConstructor
         static class Filter {
             String archivesName; //archieve name
-            String templateName; //template name
+            Long templateId; //template name
             String status; //status
             Long categoryId; //category id
         }
@@ -247,7 +247,7 @@ public class ArchiveManagementController extends BaseController {
         }
 
         String archiveName = "";
-        String templateName = "";
+        Long templateId = null;
         String status = "";
         Long categoryId = null;
 
@@ -255,7 +255,7 @@ public class ArchiveManagementController extends BaseController {
             archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input paramter
             status = requestBody.getFilter().getStatus(); //get status from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get category id from input parameter
-            templateName = requestBody.getFilter().getTemplateName();
+            templateId = requestBody.getFilter().getTemplateId();
         }
 
         String sortBy = "";
@@ -274,7 +274,7 @@ public class ArchiveManagementController extends BaseController {
         currentPage--;
 
         //get archive list from database through service
-        PageResult<SerArchive> result = archiveService.getArchiveListByPage(sortBy, order, archiveName, templateName, status, categoryId,
+        PageResult<SerArchive> result = archiveService.getArchiveListByPage(sortBy, order, archiveName, templateId, status, categoryId,
                 currentPage, perPage);
 
         long total = result.getTotal(); //get total count of result
@@ -546,12 +546,12 @@ public class ArchiveManagementController extends BaseController {
         }
 
         String archiveName = "";
-        String templateName = "";
+        Long templateId = null;
         String status = "";
         Long categoryId = null;
         if (requestBody.getFilter() != null) {
             archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input parameter
-            templateName = requestBody.getFilter().getTemplateName();
+            templateId = requestBody.getFilter().getTemplateId();
             status = requestBody.getFilter().getStatus(); //get archive status from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
         }
@@ -568,7 +568,7 @@ public class ArchiveManagementController extends BaseController {
         }
 
         //get list of archives from database through archiveService
-        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, templateId, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale());
         DeviceArchiveExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -605,14 +605,14 @@ public class ArchiveManagementController extends BaseController {
         }
 
         String archiveName = "";
-        String templateName = "";
+        Long templateId = null;
         String status = "";
         Long categoryId = null;
         if (requestBody.getFilter() != null) {
             archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input parameter
             status = requestBody.getFilter().getStatus(); //get archive status from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
-            templateName = requestBody.getFilter().getTemplateName();
+            templateId = requestBody.getFilter().getTemplateId();
         }
 
         String sortBy = "";
@@ -627,7 +627,7 @@ public class ArchiveManagementController extends BaseController {
         }
 
         //get list of archives from database through archiveService
-        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, templateId, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(requestBody.getLocale());
         DeviceArchiveWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -665,14 +665,14 @@ public class ArchiveManagementController extends BaseController {
         }
 
         String archiveName = "";
-        String templateName = "";
+        Long templateId = null;
         String status = "";
         Long categoryId = null;
         if (requestBody.getFilter() != null) {
             archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input parameter
             status = requestBody.getFilter().getStatus(); //get archive status from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
-            templateName = requestBody.getFilter().getTemplateName();
+            templateId = requestBody.getFilter().getTemplateId();
         }
 
         String sortBy = "";
@@ -687,7 +687,7 @@ public class ArchiveManagementController extends BaseController {
         }
 
         //get list of archives from database through archiveService
-        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, templateId, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         DeviceArchivePdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale()); //set dictionary data
         DeviceArchivePdfView.setMessageSource(messageSource);

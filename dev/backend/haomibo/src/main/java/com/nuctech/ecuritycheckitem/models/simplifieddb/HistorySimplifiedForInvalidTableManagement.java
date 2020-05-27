@@ -14,6 +14,7 @@ package com.nuctech.ecuritycheckitem.models.simplifieddb;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
 import com.nuctech.ecuritycheckitem.models.db.SerAssign;
 import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import lombok.*;
@@ -35,7 +36,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
 @Table(name = "history_invalid")
-public class HistorySimplifiedForInvalidTableManagement implements Serializable {
+public class HistorySimplifiedForInvalidTableManagement extends BaseEntity implements Serializable {
 
 
     @Id

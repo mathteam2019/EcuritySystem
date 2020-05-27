@@ -199,7 +199,6 @@ public class AuditLogServiceImpl implements AuditLogService {
     public List<SysAuditLog> getExportList(String sortBy, String order, String userName, String action, String operateResult, String operateObject, Date operateStartTime,
                                     Date operateEndTime, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(userName, action, operateResult, operateObject, operateStartTime, operateEndTime);
-        String[] splits = idList.split(",");
         Long max_size = 5000L;
         try {
             SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
@@ -209,14 +208,25 @@ public class AuditLogServiceImpl implements AuditLogService {
         if(max_size == 0) {
             max_size = Long.MAX_VALUE;
         }
-        List<Long> logIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            logIdList.add(Long.valueOf(idStr));
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> logIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                logIdList.add(Long.valueOf(idStr));
+            }
+            if(max_size < logIdList.size()) {
+                return null;
+            }
+            predicate.and(QSysAuditLog.sysAuditLog.id.in(logIdList));
+        } else {
+            long count = sysAuditLogRepository.count(predicate);
+            if(max_size < count) {
+                return null;
+            }
         }
-        if(max_size < logIdList.size()) {
-            return null;
-        }
-        predicate.and(QSysAuditLog.sysAuditLog.id.in(logIdList));
+
+
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = Sort.by(sortBy).ascending();
@@ -236,12 +246,8 @@ public class AuditLogServiceImpl implements AuditLogService {
                     .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
-        List<SysAuditLog> answerList = new ArrayList<>();
-        for(int i = 0; i < logList.size() && i < max_size; i ++) {
-            answerList.add(logList.get(i));
-        }
 
-        return answerList;//getExportList(logList, isAll, idList);
+        return logList;//getExportList(logList, isAll, idList);
     }
 
 

@@ -275,12 +275,12 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
             whereCause.add("d.DEVICE_TYPE = '" + modeId + "'");
         }
         if (startTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(startTime);
             whereCause.add("l.TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(endTime);
             whereCause.add("l.LOGOUT_TIME <= '" + strDate + "'");
         }

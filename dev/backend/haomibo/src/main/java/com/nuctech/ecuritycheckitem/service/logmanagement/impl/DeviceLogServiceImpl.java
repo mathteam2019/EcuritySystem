@@ -202,11 +202,7 @@ public class DeviceLogServiceImpl implements DeviceLogService {
     public List<SerDevLog> getExportList(String sortBy, String order, String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
                                          Date operateEndTime, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(deviceType, deviceName, userName, category, level, operateStartTime, operateEndTime);
-        String[] splits = idList.split(",");
-        List<Long> logIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            logIdList.add(Long.valueOf(idStr));
-        }
+
         Long max_size = 5000L;
         try {
             SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
@@ -215,10 +211,25 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         if(max_size == 0) {
             max_size = Long.MAX_VALUE;
         }
-        if(max_size < logIdList.size()) {
-            return null;
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> logIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                logIdList.add(Long.valueOf(idStr));
+            }
+            if(max_size < logIdList.size()) {
+                return null;
+            }
+            predicate.and(QSerDevLog.serDevLog.id.in(logIdList));
+        } else {
+            long count = serDevLogRepository.count(predicate);
+            if(max_size < count) {
+                return null;
+            }
         }
-        predicate.and(QSerDevLog.serDevLog.id.in(logIdList));
+
+
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             if(!sortBy.equals("time")) {
@@ -241,12 +252,8 @@ public class DeviceLogServiceImpl implements DeviceLogService {
                     .stream(serDevLogRepository.findAll(predicate).spliterator(), false)
                     .collect(Collectors.toList());
         }
-        List<SerDevLog> answerList = new ArrayList<>();
-        for(int i = 0; i < logList.size() && i < max_size; i ++) {
-            answerList.add(logList.get(i));
-        }
 
-        return answerList;
+        return logList;//getExportList(logList, isAll, idList);
 
     }
 }

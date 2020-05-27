@@ -476,12 +476,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<SysUser> getExportUserListByPage(String sortBy, String order, String userName, String status, String gender, Long orgId, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(userName, status, gender, orgId);
-        String[] splits = idList.split(",");
-        List<Long> userIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            userIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> userIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                userIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QSysUser.sysUser.userId.in(userIdList));
         }
-        predicate.and(QSysUser.sysUser.userId.in(userIdList));
+
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = Sort.by(sortBy).ascending();
@@ -550,6 +553,7 @@ public class UserServiceImpl implements UserService {
             sysUser.setStatus(SysUser.Status.ACTIVE);
             sysUser.setPassword(CryptUtil.decrypt(Constants.token, password));
             sysUser.setIsDefaultUser(Constants.NON_DEFAULT_USER);
+            sysUser.setFailCount(0);
             sysUser.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
             sysUserRepository.save(sysUser);
@@ -711,12 +715,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<SysUserGroup> getExportUserGroupListByPage(String sortBy, String order, String groupName, String userName, boolean isAll, String idList) {
         BooleanBuilder predicate = getUserGroupPredicate(groupName, userName);
-        String[] splits = idList.split(",");
-        List<Long> userGroupIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            userGroupIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> userGroupIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                userGroupIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QSysUserGroup.sysUserGroup.userGroupId.in(userGroupIdList));
         }
-        predicate.and(QSysUserGroup.sysUserGroup.userGroupId.in(userGroupIdList));
+
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = Sort.by(sortBy).ascending();

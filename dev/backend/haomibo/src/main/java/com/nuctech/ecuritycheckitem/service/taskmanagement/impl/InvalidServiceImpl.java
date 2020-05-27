@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
@@ -114,10 +115,10 @@ public class InvalidServiceImpl implements InvalidService {
 
 
         //predicate.and(builder.serCheckResultList.isNotEmpty());
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+        }
         //predicate.and(builder.serCheckResult.checkResultId.isNotNull());
         return predicate;
     }
@@ -170,77 +171,106 @@ public class InvalidServiceImpl implements InvalidService {
 
 
     @Override
-    public List<HistorySimplifiedForInvalidTableManagement> getExportInvalidTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+    public List<HistorySimplifiedForInvalidTableManagement> getExportInvalidTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList) {
 
         BooleanBuilder predicate = getInvalidPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
-        String[] splits = idList.split(",");
-        List<Long> taskIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            taskIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> taskIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                taskIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QHistorySimplifiedForInvalidTableManagement.historySimplifiedForInvalidTableManagement.taskId.in(taskIdList));
         }
-        predicate.and(QHistorySimplifiedForInvalidTableManagement.historySimplifiedForInvalidTableManagement.taskId.in(taskIdList));
-        Sort sort = null;
+
+        Long limit = Constants.MAX_EXPORT_NUMBER;
+        int currentPage = 0;
+        int perPage = limit.intValue();
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
 
-
-            sort = Sort.by(sortBy).ascending();
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = Sort.by(sortBy).descending();
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            sort = Sort.by("scanStartTime").descending();
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
         }
 
         List<HistorySimplifiedForInvalidTableManagement> data = new ArrayList<>();
-        if (sort != null) {
-            data = StreamSupport
-                    .stream(historyTableInvalidRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-        else {
-            data = StreamSupport
-                    .stream(historyTableInvalidRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+        data = StreamSupport
+                .stream(historyTableInvalidRepository.findAll(predicate, pageRequest).spliterator(), false)
+                .collect(Collectors.toList());
 
         return data;
     }
 
 
     @Override
-    public List<InvalidSimplifiedForImageManagement> getExportInvalidImage(String sortBy, String order, String idList) {
+    public List<InvalidSimplifiedForImageManagement> getExportInvalidImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList) {
 
         QInvalidSimplifiedForImageManagement builder = QInvalidSimplifiedForImageManagement.invalidSimplifiedForImageManagement;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        String[] splits = idList.split(",");
-        List<Long> taskIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            taskIdList.add(Long.valueOf(idStr));
+
+        if (!StringUtils.isEmpty(taskNumber)) { //if task number is input
+            predicate.and(builder.taskNumber.contains(taskNumber));
         }
-        predicate.and(builder.taskId.in(taskIdList));
-        Sort sort = null;
+        if (modeId != null) { //if mode id is input
+            predicate.and(builder.modeId.eq(modeId));
+        }
+
+        if (fieldId != null) { //if field id is input
+            predicate.and(builder.fieldId.eq(fieldId));
+        }
+        if (!StringUtils.isEmpty(userName)) { //if username is input
+            Predicate scanUserName = builder.scanPointsManName.contains(userName);
+            predicate.and(scanUserName);
+        }
+        if (startTime != null) { //if start time is input
+            predicate.and(builder.scanStartTime.after(startTime));
+        }
+        if (endTime != null) { //if end time is input
+            predicate.and(builder.scanStartTime.before(endTime));
+        }
+
+        //predicate.and(builder.serCheckResultList.isNotEmpty());
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+        }
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> taskIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                taskIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(builder.taskId.in(taskIdList));
+        }
+
+        Long limit = Constants.MAX_EXPORT_NUMBER;
+        int currentPage = 0;
+        int perPage = limit.intValue();
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
 
-            sort = Sort.by(sortBy).ascending();
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = Sort.by(sortBy).descending();
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            sort = Sort.by("scanStartTime").descending();
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
         }
 
         List<InvalidSimplifiedForImageManagement> data = new ArrayList<>();
-        if (sort != null) {
-            data = StreamSupport
-                    .stream(invalidImageRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-        else {
-            data = StreamSupport
-                    .stream(invalidImageRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+        data = StreamSupport
+                .stream(invalidImageRepository.findAll(predicate, pageRequest).spliterator(), false)
+                .collect(Collectors.toList());
 
         return data;
     }

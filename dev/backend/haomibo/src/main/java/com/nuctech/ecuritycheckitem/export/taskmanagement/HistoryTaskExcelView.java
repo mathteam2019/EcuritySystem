@@ -14,9 +14,14 @@
 package com.nuctech.ecuritycheckitem.export.taskmanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
+import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
+import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
+import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -108,7 +113,8 @@ public class HistoryTaskExcelView extends BaseExcelView {
 
                 row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getModeName()));
 
-                row.createCell(3).setCellValue(ConstantDictionary.getDataValue(task.getHandTaskResult()));
+
+                row.createCell(3).setCellValue(Utils.getTaskResult(task));
 
                 if (!StringUtils.isEmpty(task.getFieldDesignation())) {
                     row.createCell(4).setCellValue(task.getFieldDesignation());

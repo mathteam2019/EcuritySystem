@@ -92,6 +92,7 @@ public class ScanParamManagementController extends BaseController {
         static class Filter {
             String deviceName;
             String status;
+            String fromDeviceName;
         }
 
         @NotNull
@@ -233,6 +234,7 @@ public class ScanParamManagementController extends BaseController {
         PageResult<SerScanParam> result = scanParamService.getScanParamListByFilter(sortBy, order,
                 requestBody.getFilter().getDeviceName(), //get device name from input parameters
                 requestBody.getFilter().getStatus(), //get status from input parameters
+                requestBody.getFilter().getFromDeviceName(),
                 currentPage,
                 perPage);
 

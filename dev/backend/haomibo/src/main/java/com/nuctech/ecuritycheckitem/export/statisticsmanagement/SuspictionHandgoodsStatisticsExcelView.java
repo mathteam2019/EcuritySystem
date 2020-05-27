@@ -91,7 +91,7 @@ public class SuspictionHandgoodsStatisticsExcelView extends BaseExcelView {
                 row.createCell(1).setCellValue(record.get("time"));
 
                 for (int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
-                    row.createCell(i + 2).setCellValue(record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)));
+                    row.createCell(i + 2).setCellValue(record.get(ConstantDictionary.getDataValue(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i))));
                 }
             }
 

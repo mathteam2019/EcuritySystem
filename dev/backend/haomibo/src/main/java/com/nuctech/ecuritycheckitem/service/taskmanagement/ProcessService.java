@@ -53,7 +53,7 @@ public interface ProcessService {
      * @param endTime : end time
      * @return
      */
-    List<HistorySimplifiedForProcessTableManagement> getExportProcessTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList);
+    List<HistorySimplifiedForProcessTableManagement> getExportProcessTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList);
 
     /**
      *
@@ -62,7 +62,7 @@ public interface ProcessService {
      * @param idList
      * @return
      */
-    public List<ProcessSimplifiedForImageManagement> getExportProcessImage(String sortBy, String order, String idList);
+    public List<ProcessSimplifiedForImageManagement> getExportProcessImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList);
 
     /**
      * get detailed information of a process task with ID

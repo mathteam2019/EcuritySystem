@@ -22,7 +22,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
-import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -38,7 +39,7 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
      * @param exportDealList
      * @return
      */
-    public static InputStream buildPDFDocument(List<SerKnowledgeCaseDeal> exportDealList) {
+    public static InputStream buildPDFDocument(List<SerKnowledgeCase> exportDealList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -65,15 +66,15 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
 
 
             int number = 0;
-            for (SerKnowledgeCaseDeal deal : exportDealList) {
+            for (SerKnowledgeCase deal : exportDealList) {
                 addTableCell(table, String.valueOf(++ number));
-                addTableCell(table, deal.getHistory().getTaskNumber());
+                addTableCell(table, deal.getTaskNumber());
 
 
 
-                addTableCell(table, ConstantDictionary.getDataValue(deal.getHandTaskResult()));
-                if(!StringUtils.isEmpty(deal.getHistory().getFieldDesignation())) {
-                    addTableCell(table, deal.getHistory().getFieldDesignation());
+                addTableCell(table, Utils.getTaskResultFromKnowledge(deal));
+                if(!StringUtils.isEmpty(deal.getFieldDesignation())) {
+                    addTableCell(table, deal.getFieldDesignation());
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }

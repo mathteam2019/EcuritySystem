@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.controllers.settingmanagement.seizedgoodmanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.fieldmanagement.FieldManagementController;
@@ -282,7 +283,7 @@ public class SeizedGoodsManagementController extends BaseController {
         if(requestBody.getFilter() != null) {
             goodsCode = requestBody.getFilter().getGoodsCode();
         }
-        List<SysDictionaryData> dictionaryDataList = dictionaryService.getDictionaryListById(Constants.SEIZED_DICTIONARY_ID);
+
 
         String sortBy = "";
         String order = "";

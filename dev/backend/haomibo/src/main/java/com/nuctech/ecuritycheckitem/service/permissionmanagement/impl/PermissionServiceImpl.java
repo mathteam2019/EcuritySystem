@@ -310,12 +310,14 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, String resourceName, boolean isAll, String idList) {
         BooleanBuilder predicate = getRolePredicate(roleName, resourceName);
-        String[] splits = idList.split(",");
-        List<Long> roleIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            roleIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> roleIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                roleIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QSysRole.sysRole.roleId.in(roleIdList));
         }
-        predicate.and(QSysRole.sysRole.roleId.in(roleIdList));
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = Sort.by(sortBy).ascending();
@@ -652,12 +654,15 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<SysDataGroup> getExportGroupListByFilter(String sortBy, String order, String dataGroupName, String userName, boolean isAll, String idList) {
         BooleanBuilder predicate = getDataGroupPredicate(dataGroupName, userName);
-        String[] splits = idList.split(",");
-        List<Long> dataGroupIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            dataGroupIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> dataGroupIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                dataGroupIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QSysDataGroup.sysDataGroup.dataGroupId.in(dataGroupIdList));
         }
-        predicate.and(QSysDataGroup.sysDataGroup.dataGroupId.in(dataGroupIdList));
+
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = Sort.by(sortBy).ascending();

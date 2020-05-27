@@ -55,6 +55,9 @@ public class HistoryServiceImpl implements HistoryService {
     HistoryTableRepository historyTableRepository;
 
     @Autowired
+    HistoryDetailRepository historyDetailRepository;
+
+    @Autowired
     AuthService authService;
 
     @Autowired
@@ -100,14 +103,10 @@ public class HistoryServiceImpl implements HistoryService {
         }
 
 
-
-
-        //predicate.and(builder.serCheckResultList.isNotEmpty());
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
-//        }
-        //predicate.and(builder.serCheckResult.checkResultId.isNotNull());
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+        }
         return predicate;
     }
 
@@ -209,78 +208,108 @@ public class HistoryServiceImpl implements HistoryService {
 
 
     @Override
-    public List<HistorySimplifiedForHistoryTableManagement> getExportHistoryTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+    public List<HistorySimplifiedForHistoryTableManagement> getExportHistoryTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList) {
 
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
-        String[] splits = idList.split(",");
-        List<Long> historyIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            historyIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> historyIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                historyIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QHistorySimplifiedForHistoryTableManagement.historySimplifiedForHistoryTableManagement.taskId.in(historyIdList));
         }
-        predicate.and(QHistorySimplifiedForHistoryTableManagement.historySimplifiedForHistoryTableManagement.taskId.in(historyIdList));
-        Sort sort = null;
+
+        Long limit = Constants.MAX_EXPORT_NUMBER;
+        int currentPage = 0;
+        int perPage = limit.intValue();
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
 
-
-            sort = Sort.by(sortBy).ascending();
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = Sort.by(sortBy).descending();
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            sort = Sort.by("scanStartTime").descending();
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
         }
 
+
         List<HistorySimplifiedForHistoryTableManagement> data = new ArrayList<>();
-        if (sort != null) {
-            data = StreamSupport
-                    .stream(historyTableRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-        else {
-            data = StreamSupport
-                    .stream(historyTableRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+        data = StreamSupport
+                .stream(historyTableRepository.findAll(predicate, pageRequest).spliterator(), false)
+                .collect(Collectors.toList());
 
         return data;
     }
 
 
     @Override
-    public List<HistorySimplifiedForHistoryImageManagement> getExportHistoryImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+    public List<HistorySimplifiedForHistoryImageManagement> getExportHistoryImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList) {
 
         QHistorySimplifiedForHistoryImageManagement builder = QHistorySimplifiedForHistoryImageManagement.historySimplifiedForHistoryImageManagement;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        String[] splits = idList.split(",");
-        List<Long> taskIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            taskIdList.add(Long.valueOf(idStr));
+
+        if (!StringUtils.isEmpty(taskNumber)) { //if task number is input
+            predicate.and(builder.taskNumber.contains(taskNumber));
         }
-        predicate.and(builder.taskId.in(taskIdList));
-        Sort sort = null;
+        if (modeId != null) { //if mode id is input
+            predicate.and(builder.modeId.eq(modeId));
+        }
+
+        if (fieldId != null) { //if field id is input
+            predicate.and(builder.fieldId.eq(fieldId));
+        }
+        if (!StringUtils.isEmpty(userName)) { //if username is input
+            Predicate scanUserName = builder.scanPointsManName.contains(userName);
+            predicate.and(scanUserName);
+        }
+        if (startTime != null) { //if start time is input
+            predicate.and(builder.scanStartTime.after(startTime));
+        }
+        if (endTime != null) { //if end time is input
+            predicate.and(builder.scanStartTime.before(endTime));
+        }
+
+
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+        }
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> taskIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                taskIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(builder.taskId.in(taskIdList));
+        }
+
+
+        Long limit = Constants.MAX_EXPORT_NUMBER;
+        int currentPage = 0;
+        int perPage = limit.intValue();
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
 
-
-            sort = Sort.by(sortBy).ascending();
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = Sort.by(sortBy).descending();
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            sort = Sort.by("scanStartTime").descending();
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
         }
 
         List<HistorySimplifiedForHistoryImageManagement> data = new ArrayList<>();
-        if (sort != null) {
-            data = StreamSupport
-                    .stream(historyImageRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-        else {
-            data = StreamSupport
-                    .stream(historyImageRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+        data = StreamSupport
+                .stream(historyImageRepository.findAll(predicate, pageRequest).spliterator(), false)
+                .collect(Collectors.toList());
 
         return data;
     }
@@ -312,9 +341,26 @@ public class HistoryServiceImpl implements HistoryService {
         }
 
         HistorySimplifiedForHistoryTaskManagement history = data.get();
+
         history.setPlatFormCheckParams(platformCheckParams);
         Date endTime = new Date();
         long diff = endTime.getTime() - startTime.getTime();
+        return history;
+    }
+
+    /**
+     * Get one HistorySimplifiedForHistoryTaskManagement information
+     * @param taskId : id of a HistorySimplifiedForHistoryTaskManagement task
+     * @return
+     */
+    @Override
+    public HistoryDetail getDetail(Long taskId) {
+        QHistoryDetail builder = QHistoryDetail.historyDetail;
+        Optional<HistoryDetail> data = historyDetailRepository.findOne(builder.taskId.eq(taskId)); //get a HistorySimplifiedForHistoryTaskManagement record from database using repository
+        if (!data.isPresent()) {
+            return null;
+        }
+        HistoryDetail history = data.get();
         return history;
     }
 

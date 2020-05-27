@@ -99,6 +99,7 @@ public class DeviceConfigManagementController extends BaseController {
             Long categoryId; //device category id
             Long mode;
             Long fieldId; //field id
+            String fromDeviceName;
         }
 
         @NotNull
@@ -224,11 +225,13 @@ public class DeviceConfigManagementController extends BaseController {
         Long fieldId = null;
         Long categoryId = null;
         Long mode = null;
+        String fromDeviceName = "";
         if(requestBody.getFilter() != null) {
             deviceName = requestBody.getFilter().getDeviceName(); //get device name from input parameter
             fieldId = requestBody.getFilter().getFieldId(); //get field id from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get device category id from input parameter
             mode = requestBody.getFilter().getMode();
+            fromDeviceName = requestBody.getFilter().getFromDeviceName();
         }
 
         String sortBy = "";
@@ -241,7 +244,7 @@ public class DeviceConfigManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        PageResult<SysDeviceConfig> result = deviceConfigService.findConfigByFilter(sortBy, order, deviceName, fieldId, categoryId, mode, currentPage, perPage); //get result from database through deviceConfigService
+        PageResult<SysDeviceConfig> result = deviceConfigService.findConfigByFilter(sortBy, order, deviceName, fieldId, categoryId, mode, fromDeviceName, currentPage, perPage); //get result from database through deviceConfigService
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK

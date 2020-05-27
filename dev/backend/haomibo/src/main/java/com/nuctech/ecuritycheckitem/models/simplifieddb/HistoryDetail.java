@@ -3,22 +3,19 @@
  *
  * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
  *
- * 项目：	Haomibo V1.0（SerKnowledgeCase）
- * 文件名：	SerKnowledgeCase.java
- * 描述：	SerKnowledgeCase Model
- * 作者名：	Choe
- * 日期：	2019/11/26
+ * 项目：	Haomibo V1.0（HistorySimplifiedForHistoryTaskManagement）
+ * 文件名：	HistorySimplifiedForHistoryTaskManagement.java
+ * 描述：	Simplified History Model
+ * 作者名：	Tiny
+ * 日期：	2019/12/27
  */
 
-package com.nuctech.ecuritycheckitem.models.db;
+package com.nuctech.ecuritycheckitem.models.simplifieddb;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -26,7 +23,6 @@ import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
@@ -35,40 +31,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@JsonFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE)
-@Table(name = "ser_knowledge_case")
-public class SerKnowledgeCase extends BaseEntity implements Serializable {
-
-    public static class Status {
-        public static final String SUBMIT_APPROVAL = "1000002501";
-        public static final String DISMISS = "1000002502";
-        public static final String SUCCESS_APPROVAL = "1000002503";
-    }
-
-
-    public static class TaskResult {
-        public static final String Seized = "0";
-        public static final String NoSeized = "1";
-        public static final String Suspection = "2";
-        public static final String NoSuspection = "3";
-    }
+@JsonFilter(ModelJsonFilters.FILTER_HISTORY)
+@Table(name = "history_finish")
+public class HistoryDetail extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CASE_ID", length = 20)
-    private Long caseId;
-
-    @Column(name = "CASE_STATUS", length = 20)
-    private String caseStatus;
-
-    @Column(name = "CASE_COLLECT_USERID", length = 20)
-    private Long caseCollectUserId;
-
-    @Column(name = "CASE_APPROVAL_USERID", length = 20)
-    private Long caseApprovalUserId;
+    @Column(name = "HISTORY_ID", length = 20)
+    private Long historyId;
 
 
-//    @ManyToOne
+    //    @ManyToOne
 //    @JoinColumn(name = "TASK_ID")
 //    private SerTask serTask;
 
@@ -114,7 +87,7 @@ public class SerKnowledgeCase extends BaseEntity implements Serializable {
     private String scanInvalid;
 
     @Column(name = "SCAN_ATR_RESULT", length = 10)
-    private String scanAtrResult;
+    private String scanATRResult;
 
     @Column(name = "SCAN_FOOT_ALARM", length = 10)
     private String scanFootAlarm;
@@ -365,17 +338,6 @@ public class SerKnowledgeCase extends BaseEntity implements Serializable {
 
     @Column(name = "HAND_USER_NAME", length = 50)
     private String handUserName;
-
-
-    @ManyToOne()
-    @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SysDevice scanDevice;
-
-    @javax.persistence.Transient
-    private List<String> handGoodsList;
-
-
 
 
 }

@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
+import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.*;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
@@ -101,10 +102,10 @@ public class ProcessServiceImpl implements ProcessService {
 
 
         //predicate.and(builder.serCheckResultList.isNotEmpty());
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+        }
         //predicate.and(builder.serCheckResult.checkResultId.isNotNull());
         return predicate;
     }
@@ -157,74 +158,112 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public List<ProcessSimplifiedForImageManagement> getExportProcessImage(String sortBy, String order, String idList) {
+    public List<ProcessSimplifiedForImageManagement> getExportProcessImage(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList) {
 
         QProcessSimplifiedForImageManagement builder = QProcessSimplifiedForImageManagement.processSimplifiedForImageManagement;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        String[] splits = idList.split(",");
-        List<Long> historyIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            historyIdList.add(Long.valueOf(idStr));
+
+        if (!StringUtils.isEmpty(taskNumber)) { //if task number is input
+            predicate.and(builder.taskNumber.contains(taskNumber));
         }
-        predicate.and(builder.taskId.in(historyIdList));
-        Sort sort = null;
+
+        if (!StringUtils.isEmpty(taskStatus)) { //if task number is input
+            predicate.and(builder.taskStatus.eq(taskStatus));
+        }
+        if (modeId != null) { //if mode id is input
+            predicate.and(builder.modeId.eq(modeId));
+        }
+
+        if (fieldId != null) { //if field id is input
+            predicate.and(builder.fieldId.eq(fieldId));
+        }
+        if (!StringUtils.isEmpty(userName)) { //if username is input
+            Predicate scanUserName = builder.scanPointsManName.contains(userName);
+            predicate.and(scanUserName);
+        }
+        if (startTime != null) { //if start time is input
+            predicate.and(builder.scanStartTime.after(startTime));
+        }
+        if (endTime != null) { //if end time is input
+            predicate.and(builder.scanStartTime.before(endTime));
+        }
+
+
+
+
+        //predicate.and(builder.serCheckResultList.isNotEmpty());
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            predicate.and(builder.createdBy.in(categoryUser.getUserIdList()).or(builder.editedBy.in(categoryUser.getUserIdList())));
+        }
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> historyIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                historyIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(builder.taskId.in(historyIdList));
+        }
+
+        Long limit = Constants.MAX_EXPORT_NUMBER;
+        int currentPage = 0;
+        int perPage = limit.intValue();
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
 
-            sort = Sort.by(sortBy).ascending();
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = Sort.by(sortBy).descending();
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            sort = Sort.by("scanStartTime").descending();
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
         }
 
         List<ProcessSimplifiedForImageManagement> data = new ArrayList<>();
-        if (sort != null) {
-            data = StreamSupport
-                    .stream(processImageRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-        else {
-            data = StreamSupport
-                    .stream(processImageRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+        data = StreamSupport
+                .stream(processImageRepository.findAll(predicate, pageRequest).spliterator(), false)
+                .collect(Collectors.toList());
 
         return data;
     }
 
     @Override
-    public List<HistorySimplifiedForProcessTableManagement> getExportProcessTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, String idList) {
+    public List<HistorySimplifiedForProcessTableManagement> getExportProcessTask(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, boolean isAll, String idList) {
 
         BooleanBuilder predicate = getPredicateProcess(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
-        String[] splits = idList.split(",");
-        List<Long> taskIdList = new ArrayList<>();
-        for(String idStr: splits) {
-            taskIdList.add(Long.valueOf(idStr));
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            List<Long> taskIdList = new ArrayList<>();
+            for(String idStr: splits) {
+                taskIdList.add(Long.valueOf(idStr));
+            }
+            predicate.and(QHistorySimplifiedForProcessTableManagement.historySimplifiedForProcessTableManagement.taskId.in(taskIdList));
         }
-        predicate.and(QHistorySimplifiedForProcessTableManagement.historySimplifiedForProcessTableManagement.taskId.in(taskIdList));
-        Sort sort = null;
+
+        Long limit = Constants.MAX_EXPORT_NUMBER;
+        int currentPage = 0;
+        int perPage = limit.intValue();
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
-            sort = Sort.by(sortBy).ascending();
-            if (order.equals(Constants.SortOrder.DESC)) {
-                sort = Sort.by(sortBy).descending();
+
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
             }
         } else {
-            sort = Sort.by("scanStartTime").descending();
+            pageRequest = PageRequest.of(currentPage, perPage, Sort.by("scanStartTime").descending());
         }
 
         List<HistorySimplifiedForProcessTableManagement> data = new ArrayList<>();
-        if (sort != null) {
-            data = StreamSupport
-                    .stream(historyTableProcessRepository.findAll(predicate, sort).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-        else {
-            data = StreamSupport
-                    .stream(historyTableProcessRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
+        data = StreamSupport
+                .stream(historyTableProcessRepository.findAll(predicate, pageRequest).spliterator(), false)
+                .collect(Collectors.toList());
 
         return data;
     }

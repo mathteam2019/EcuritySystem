@@ -15,20 +15,21 @@ package com.nuctech.ecuritycheckitem.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
-import com.nuctech.ecuritycheckitem.models.db.SysDevice;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.DetailTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalTimeStatistics;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.net.ftp.FTPSClient;
@@ -212,6 +213,61 @@ public class Utils {
             }
         }
         return answer;
+    }
+
+    public static String getTaskResultFromKnowledge(SerKnowledgeCase task) {
+        String taskResult = "";
+        if(task.getHandTaskResult() != null) {
+            if(StringUtils.isEmpty(task.getHandGoods())) {
+                taskResult = ConstantDictionary.getDataValue(SerHandExamination.Result.FALSE);
+            } else {
+                taskResult = ConstantDictionary.getDataValue(SerHandExamination.Result.TRUE);
+            }
+        } else {
+            boolean result = false;
+            if(task.getJudgeUserId().equals(Constants.DEFAULT_SYSTEM_USER)) {
+                if(SerScan.ATRResult.TRUE.equals(task.getScanAtrResult())) {
+                    result = true;
+                }
+            } else {
+                if(SerJudgeGraph.Result.TRUE.equals(task.getScanAtrResult())) {
+                    result = true;
+                }
+            }
+            if(result == false) {
+                taskResult = ConstantDictionary.getDataValue("nodoubt");
+            } else {
+                taskResult = ConstantDictionary.getDataValue("doubt");
+            }
+        }
+        return taskResult;
+    }
+    public static String getTaskResult(HistorySimplifiedForHistoryTableManagement task) {
+        String taskResult = "";
+        if(task.getHandTaskResult() != null) {
+            if(StringUtils.isEmpty(task.getHandGoods())) {
+                taskResult = ConstantDictionary.getDataValue(SerHandExamination.Result.FALSE);
+            } else {
+                taskResult = ConstantDictionary.getDataValue(SerHandExamination.Result.TRUE);
+            }
+        } else {
+            boolean result = false;
+            if(task.getJudgeUserId().equals(Constants.DEFAULT_SYSTEM_USER)) {
+                if(SerScan.ATRResult.TRUE.equals(task.getScanAtrResult())) {
+                    result = true;
+                }
+            } else {
+                if(SerJudgeGraph.Result.TRUE.equals(task.getScanAtrResult())) {
+                    result = true;
+                }
+            }
+            if(result == false) {
+                taskResult = ConstantDictionary.getDataValue("nodoubt");
+            } else {
+                taskResult = ConstantDictionary.getDataValue("doubt");
+            }
+        }
+        return taskResult;
     }
 
     /**

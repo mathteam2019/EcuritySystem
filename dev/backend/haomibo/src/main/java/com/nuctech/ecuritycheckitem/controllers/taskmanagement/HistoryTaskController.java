@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
@@ -40,6 +41,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -158,7 +160,18 @@ public class HistoryTaskController extends BaseController {
         if (optionalHistory == null) { //if history task with specified id does not exist
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER); //return invalid parameter
         }
+        String handGoods = optionalHistory.getHandGoods();
+        List<String> handGoodsList = new ArrayList<>();
 
+        if(!StringUtils.isEmpty(handGoods)) {
+            setDictionary(Constants.CHINESE_LOCALE);
+            String[] splits = handGoods.split(",");
+            for(int i = 0; i < splits.length; i ++) {
+                String convertHandGoods = ConstantDictionary.getDataValue(splits[i], String.valueOf(Constants.SEIZED_DICTIONARY_ID));
+                handGoodsList.add(convertHandGoods);
+            }
+        }
+        optionalHistory.setHandGoodsList(handGoodsList);
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalHistory)); //make response body : response message - ok
 
         // Set filters.
@@ -260,7 +273,9 @@ public class HistoryTaskController extends BaseController {
                 requestBody.getFilter().getEndTime(), //get end time from input parameter
                 sortParams.get("sortBy"), //field name
                 sortParams.get("order"),
+                requestBody.getIsAll(),
                 requestBody.getIdList()); //asc or desc
+
 
         //List<HistorySimplifiedForHistoryTableManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
         return taskList;
@@ -316,6 +331,7 @@ public class HistoryTaskController extends BaseController {
                     requestBody.getFilter().getEndTime(), //get end time from input parameter
                     sortParams.get("sortBy"), //field name
                     sortParams.get("order"),
+                    requestBody.getIsAll(),
                     requestBody.getIdList());
             List<String> cartoonImageList = new ArrayList<>();
             List<String> originalImageList = new ArrayList<>();

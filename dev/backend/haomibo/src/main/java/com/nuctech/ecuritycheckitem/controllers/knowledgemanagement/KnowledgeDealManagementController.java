@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.HistoryTaskController;
@@ -28,13 +29,13 @@ import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPers
 import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
-import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDealImage;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.DeviceImageModel;
 import com.nuctech.ecuritycheckitem.models.reusables.DownImage;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistoryDetail;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
@@ -46,6 +47,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
@@ -203,7 +205,7 @@ public class KnowledgeDealManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        HistorySimplifiedForHistoryTaskManagement history = historyService.getOne(requestBody.getHistoryId());
+        HistoryDetail history = historyService.getDetail(requestBody.getHistoryId());
         if (history == null) { //if specified history id doesn't exist
             auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
@@ -219,9 +221,10 @@ public class KnowledgeDealManagementController extends BaseController {
         }
 
         //prepare knowledgecase object to insert
-        SerKnowledgeCase knowledgeCase = new SerKnowledgeCase();
+        SerKnowledgeCase knowledgeCase = initSerKnowCaseDealFromHistory(history);
         knowledgeCase.setTaskId(history.getTaskId());
         knowledgeCase.setCaseStatus(SerKnowledgeCase.Status.SUBMIT_APPROVAL);
+
         knowledgeCase.setCaseCollectUserId(requestBody.getUserId());
 
         //insert new knowledge case and get new id
@@ -234,64 +237,56 @@ public class KnowledgeDealManagementController extends BaseController {
         }
         knowledgeCase.setCaseId(knowledgeId);
 
-        //prepare new knowledgecasedeal to insert
-        SerKnowledgeCaseDeal knowledgeCaseDeal = initSerKnowCaseDealFromHistory(history);
-        knowledgeCaseDeal.setCaseId(knowledgeId);
-        Long knowledgeCaseDealId = knowledgeService.insertNewKnowledgeCaseDeal(knowledgeCaseDeal);
-        if (knowledgeCaseDealId == null) { //failed inserting
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
-                    messageSource.getMessage("InsertKnowledgeCase", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.FAILED_INSERT_KNOWLEDGECASEDEAL);
-        }
-        knowledgeCase.setCaseDealId(knowledgeCaseDealId); //set new knowledgecasedeal id to knowledgecase and update it
-        if (knowledgeService.updateKnowledgeCase(knowledgeId, knowledgeCase) == null) { //failed updating
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
-                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
-                    messageSource.getMessage("UpdateKnowledgeCase", null, currentLocale), "", null, false, "", "");
-            return new CommonResponseBody(ResponseMessage.FAILED_UPDATE_KNOWLEDGECASE);
-        }
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-    private SerKnowledgeCaseDeal initSerKnowCaseDealFromHistory(HistorySimplifiedForHistoryTaskManagement history) {
+    private SerKnowledgeCase initSerKnowCaseDealFromHistory(HistoryDetail history) {
 
-        SerKnowledgeCaseDeal serKnowledgeCaseDeal = new SerKnowledgeCaseDeal();
-
-        serKnowledgeCaseDeal.setTaskId(history.getTaskId());
-        serKnowledgeCaseDeal.setMode(history.getMode());
-        serKnowledgeCaseDeal.setScanId(history.getScanId());
-        serKnowledgeCaseDeal.setScanWorkflowId(history.getScanWorkflowId());
-        serKnowledgeCaseDeal.setScanDeviceId(history.getScanDeviceId());
-        serKnowledgeCaseDeal.setScanImageId(history.getScanImageId());
-        serKnowledgeCaseDeal.setScanAtrResult(history.getScanAtrResult());
+        SerKnowledgeCase serKnowledgeCaseDeal = new SerKnowledgeCase();
+        serKnowledgeCaseDeal.setTaskId(history.getTaskId());//.setSerTask(history.getSerTask());
+        serKnowledgeCaseDeal.setModeId(history.getModeId());//.setSysWorkMode(history.getSysWorkMode());
+        serKnowledgeCaseDeal.setScanId(history.getScanId());//.setSerScan(history.getSerScan());
+        serKnowledgeCaseDeal.setWorkflowId(history.getWorkflowId());//.setSysWorkflow(history.getSysWorkflow());
+        serKnowledgeCaseDeal.setScanDeviceId(history.getScanDeviceId());//.setScanDevice(history.getScanDevice());
+        serKnowledgeCaseDeal.setScanImageId(history.getScanImageId());//.setScanImage(history.getScanImage());
+        serKnowledgeCaseDeal.setScanAtrResult(history.getScanATRResult());
         serKnowledgeCaseDeal.setScanFootAlarm(history.getScanFootAlarm());
         serKnowledgeCaseDeal.setScanStartTime(history.getScanStartTime());
         serKnowledgeCaseDeal.setScanEndTime(history.getScanEndTime());
-        serKnowledgeCaseDeal.setScanPointsmanId(history.getScanPointsmanId());
+        serKnowledgeCaseDeal.setScanPointmanId(history.getScanPointmanId());//.setScanPointsman(history.getScanPointsman());
         serKnowledgeCaseDeal.setScanPointsmanName(history.getScanPointsmanName());
-//        serKnowledgeCaseDeal.setAssignscanId(history.getAssignScanId());
-//        serKnowledgeCaseDeal.setAssignWorkflowId(history.getAssignWorkflowId());
-//        serKnowledgeCaseDeal.setAssignUserId(history.getAssignUserId());
-//        serKnowledgeCaseDeal.setAssignUserName(history.getAssignUserName());
-        serKnowledgeCaseDeal.setAssignJudgeDeviceId(history.getAssignJudgeDeviceId());
-        serKnowledgeCaseDeal.setAssignHandDeviceId(history.getAssignHandDeviceId());
-//        serKnowledgeCaseDeal.setAssignStartTime(history.getAssignStartTime());
-//        serKnowledgeCaseDeal.setAssignEndTime(history.getAssignEndTime());
-//        serKnowledgeCaseDeal.setAssignTimeout(history.getAssignTimeout());
-//        serKnowledgeCaseDeal.setAssignStatus(history.getAssignStatus());
-        serKnowledgeCaseDeal.setJudgeId(history.getJudgeId());
-        serKnowledgeCaseDeal.setJudgeWorkflowId(history.getJudgeWorkflowId());
-        serKnowledgeCaseDeal.setJudgeDeviceId(history.getJudgeDeviceId());
+        serKnowledgeCaseDeal.setAssignJudgeId(history.getAssignJudgeId());
+        serKnowledgeCaseDeal.setAssignHandId(history.getAssignHandId());
+        serKnowledgeCaseDeal.setAssignWorkflowJudgeId(history.getAssignWorkflowJudgeId());
+        serKnowledgeCaseDeal.setAssignWorkflowHandId(history.getAssignWorkflowHandId());
+        serKnowledgeCaseDeal.setAssignUserJudgeId(history.getAssignUserJudgeId());
+        serKnowledgeCaseDeal.setAssignHandId(history.getAssignHandId());
+        serKnowledgeCaseDeal.setAssignJudgeUserName(history.getAssignJudgeUserName());
+        serKnowledgeCaseDeal.setAssignHandUserName(history.getAssignHandUserName());
+        serKnowledgeCaseDeal.setAssignJudgeDeviceId(history.getAssignJudgeDeviceId());//.setAssignJudgeDevice(history.getAssignJudgeDevice());
+        serKnowledgeCaseDeal.setAssignHandDeviceId(history.getAssignHandDeviceId());//.setAssignHandDevice(history.getAssignHandDevice());
+        serKnowledgeCaseDeal.setAssignJudgeStartTime(history.getAssignJudgeStartTime());
+        serKnowledgeCaseDeal.setAssignJudgeEndTime(history.getAssignJudgeEndTime());
+        serKnowledgeCaseDeal.setAssignHandStartTime(history.getAssignHandStartTime());
+        serKnowledgeCaseDeal.setAssignHandEndTime(history.getAssignHandEndTime());
+        serKnowledgeCaseDeal.setAssignJudgeTimeout(history.getAssignJudgeTimeout());
+        serKnowledgeCaseDeal.setAssignHandTimeout(history.getAssignHandTimeout());
+        serKnowledgeCaseDeal.setAssignJudgeStatus(history.getAssignJudgeStatus());
+        serKnowledgeCaseDeal.setAssignHandStatus(history.getAssignHandStatus());
+
+
+        serKnowledgeCaseDeal.setJudgeGraphId(history.getJudgeGraphId());//.setJudgeGraph(history.getJudgeGraph());
+        serKnowledgeCaseDeal.setJudgeWorkflowId(history.getJudgeWorkflowId());//.setJudgeWorkflow(history.getJudgeWorkflow());
+        serKnowledgeCaseDeal.setJudgeDeviceId(history.getJudgeDeviceId());//.setJudgeDevice(history.getJudgeDevice());
         serKnowledgeCaseDeal.setJudgeResult(history.getJudgeResult());
         serKnowledgeCaseDeal.setJudgeTimeout(history.getJudgeTimeout());
-        serKnowledgeCaseDeal.setHandExaminationId(history.getHandExaminationId());
-        serKnowledgeCaseDeal.setHandWorkflowId(history.getHandWorkflowId());
-        serKnowledgeCaseDeal.setHandDeviceId(history.getHandDeviceId());
+        serKnowledgeCaseDeal.setHandExaminationId(history.getHandExaminationId());//.setHandExamination(history.getHandExamination());
+        serKnowledgeCaseDeal.setHandWorkflowId(history.getHandWorkflowId());//.setHandWorkflow(history.getHandWorkflow());
+        serKnowledgeCaseDeal.setHandDeviceId(history.getHandDeviceId());//.setHandDevice(history.getHandDevice());
         serKnowledgeCaseDeal.setHandResult(history.getHandResult());
         serKnowledgeCaseDeal.setHandStartTime(history.getHandStartTime());
         serKnowledgeCaseDeal.setHandEndTime(history.getHandEndTime());
-        serKnowledgeCaseDeal.setHandUserId(history.getHandUserId());
+        serKnowledgeCaseDeal.setHandUserId(history.getHandUserId());//.setHandUser(history.getHandUser());
         serKnowledgeCaseDeal.setHandTaskResult(history.getHandTaskResult());
         serKnowledgeCaseDeal.setHandGoods(history.getHandGoods());
         serKnowledgeCaseDeal.setHandGoodsGrade(history.getHandGoodsGrade());
@@ -302,10 +297,24 @@ public class KnowledgeDealManagementController extends BaseController {
         serKnowledgeCaseDeal.setHandAppraiseSecond(history.getHandAppraiseSecond());
         serKnowledgeCaseDeal.setJudgeStartTime(history.getJudgeStartTime());
         serKnowledgeCaseDeal.setJudgeEndTime(history.getJudgeEndTime());
-        serKnowledgeCaseDeal.setJudgeUserId(history.getJudgeUserId());
+        serKnowledgeCaseDeal.setJudgeUserId(history.getJudgeUserId());//.setJudgeUser(history.getJudgeUser());
         serKnowledgeCaseDeal.setJudgeAssignTimeout(history.getJudgeAssignTimeout());
         serKnowledgeCaseDeal.setJudgeStatus(history.getJudgeStatus());
 
+        serKnowledgeCaseDeal.setTaskStatus(history.getTaskStatus());
+        serKnowledgeCaseDeal.setModeName(history.getModeName());
+        serKnowledgeCaseDeal.setFieldId(history.getFieldId());
+
+        serKnowledgeCaseDeal.setFieldDesignation(history.getFieldDesignation());
+
+        serKnowledgeCaseDeal.setTaskNumber(history.getTaskNumber());
+        serKnowledgeCaseDeal.setScanDeviceName(history.getScanDeviceName());
+        serKnowledgeCaseDeal.setJudgeDeviceName(history.getJudgeDeviceName());
+        serKnowledgeCaseDeal.setHandDeviceName(history.getHandDeviceName());
+        serKnowledgeCaseDeal.setAssignJudgeDeviceName(history.getAssignJudgeDeviceName());
+        serKnowledgeCaseDeal.setAssignHandDeviceName(history.getAssignHandDeviceName());
+        serKnowledgeCaseDeal.setJudgeUserName(history.getJudgeUserName());
+        serKnowledgeCaseDeal.setHandUserName(history.getHandUserName());
         return serKnowledgeCaseDeal;
     }
 
@@ -355,10 +364,25 @@ public class KnowledgeDealManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        PageResult<SerKnowledgeCaseDeal> result = knowledgeService.getDealListByFilter(sortBy, order, caseStatus, taskNumber, modeName, taskResult,
+        PageResult<SerKnowledgeCase> result = knowledgeService.getDealListByFilter(sortBy, order, caseStatus, taskNumber, modeName, taskResult,
                 fieldId, handGoods, currentPage, perPage); //get result from database through service
         long total = result.getTotal();
-        List<SerKnowledgeCaseDeal> data = result.getDataList();
+        List<SerKnowledgeCase> data = result.getDataList();
+        setDictionary(Constants.CHINESE_LOCALE);
+        for(int index = 0; index < data.size(); index ++) {
+            String originalHandGoods = data.get(index).getHandGoods();
+            List<String> handGoodsList = new ArrayList<>();
+
+            if(!StringUtils.isEmpty(originalHandGoods)) {
+
+                String[] splits = originalHandGoods.split(",");
+                for(int i = 0; i < splits.length; i ++) {
+                    String convertHandGoods = ConstantDictionary.getDataValue(splits[i], String.valueOf(Constants.SEIZED_DICTIONARY_ID));
+                    handGoodsList.add(convertHandGoods);
+                }
+            }
+            data.get(index).setHandGoodsList(handGoodsList);
+        }
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
@@ -445,7 +469,7 @@ public class KnowledgeDealManagementController extends BaseController {
      * @param idList
      * @return
      */
-    private List<SerKnowledgeCaseDeal> getExportList(String sortBy, String order, KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+    private List<SerKnowledgeCase> getExportList(String sortBy, String order, KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String caseStatus = "";
         String modeName = "";
         String taskNumber = "";
@@ -460,7 +484,7 @@ public class KnowledgeDealManagementController extends BaseController {
             fieldId = filter.getFieldId(); //get field name from input parameter
             handGoods = filter.getHandGoods(); //get handgoods from input parameter
         }
-        List<SerKnowledgeCaseDeal> exportList = knowledgeService.getDealExportList(sortBy, order, caseStatus, modeName, taskNumber, taskResult,
+        List<SerKnowledgeCase> exportList = knowledgeService.getDealExportList(sortBy, order, caseStatus, modeName, taskNumber, taskResult,
                 fieldId, handGoods, isAll, idList); //get export list from service
         return exportList;
     }
@@ -589,7 +613,7 @@ public class KnowledgeDealManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
+        List<SerKnowledgeCase> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
         setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPendingExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -635,7 +659,7 @@ public class KnowledgeDealManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
+        List<SerKnowledgeCase> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
         setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPendingWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -681,7 +705,7 @@ public class KnowledgeDealManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be printed
+        List<SerKnowledgeCase> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be printed
         KnowledgeDealPendingPdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale());  //set dictionary data
         KnowledgeDealPendingPdfView.setMessageSource(messageSource);
@@ -729,7 +753,7 @@ public class KnowledgeDealManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+        List<SerKnowledgeCase> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPersonalExcelView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -775,7 +799,7 @@ public class KnowledgeDealManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+        List<SerKnowledgeCase> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPersonalWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -821,7 +845,7 @@ public class KnowledgeDealManagementController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+        List<SerKnowledgeCase> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         KnowledgeDealPersonalPdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale()); //set dictionary data
         KnowledgeDealPersonalPdfView.setMessageSource(messageSource);

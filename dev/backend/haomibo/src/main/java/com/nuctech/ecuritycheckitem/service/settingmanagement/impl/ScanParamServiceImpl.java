@@ -108,7 +108,7 @@ public class ScanParamServiceImpl implements ScanParamService {
      * @param status
      * @return
      */
-    BooleanBuilder getPredicate(String deviceName, String status) {
+    BooleanBuilder getPredicate(String deviceName, String status, String fromDeviceName) {
         QSerScanParam builder = QSerScanParam.serScanParam;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -120,6 +120,10 @@ public class ScanParamServiceImpl implements ScanParamService {
         if (!StringUtils.isEmpty(status)) {
             predicate.and(builder.status.eq(status));
         }
+        if (!StringUtils.isEmpty(fromDeviceName)) {
+            predicate.and(builder.fromParamsList.any().device.deviceName.contains(fromDeviceName));
+        }
+
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {
             List<Long> userIdList = categoryUser.getUserIdList();
@@ -174,9 +178,9 @@ public class ScanParamServiceImpl implements ScanParamService {
      * @param perPage
      * @return
      */
-    public PageResult<SerScanParam> getScanParamListByFilter(String sortBy, String order, String deviceName, String status, Integer currentPage, Integer perPage) {
+    public PageResult<SerScanParam> getScanParamListByFilter(String sortBy, String order, String deviceName, String status, String fromDeviceName, Integer currentPage, Integer perPage) {
 
-        BooleanBuilder predicate = getPredicate(deviceName, status);
+        BooleanBuilder predicate = getPredicate(deviceName, status, fromDeviceName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -204,7 +208,7 @@ public class ScanParamServiceImpl implements ScanParamService {
      */
     public List<SerScanParam> getAllWithFilter(String deviceName, String status) {
 
-        BooleanBuilder predicate = getPredicate(deviceName, status);
+        BooleanBuilder predicate = getPredicate(deviceName, status, null);
 
         List<SerScanParam> data = StreamSupport
                 .stream(serScanParamRepository.findAll(predicate).spliterator(), false)

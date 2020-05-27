@@ -74,6 +74,8 @@ public class Constants {
     public static final String EXCEL_DATETIME_FORMAT = "yyyy/MM/dd";
     public static final String LOG_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    public static final String SQL_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     public static final String REDIS_SECURITY_INFO = "sys.security.info";
     public static final String REDIS_PLATFORM_CHECK = "sys.setting.platform.check";
     public static final String REDIS_CATEGORY_USER_INFO = "sys.category.user.info";

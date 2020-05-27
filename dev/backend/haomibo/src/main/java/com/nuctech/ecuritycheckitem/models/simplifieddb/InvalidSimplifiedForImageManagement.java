@@ -50,7 +50,14 @@ public class InvalidSimplifiedForImageManagement extends BaseEntity implements S
     @Column(name = "TASK_ID", length = 20)
     private Long taskId;
 
+    @Column(name = "MODE", length = 20)
+    private Long modeId;
 
+    @Column(name = "SCENE", length = 20)
+    private Long fieldId;
+
+    @Column(name = "SCAN_POINTSMAN_NAME", length = 50)
+    private String scanPointsManName;
 
 
     @OneToOne()

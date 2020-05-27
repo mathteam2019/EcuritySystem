@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTableManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -115,7 +116,7 @@ public class HistoryTaskWordView extends BaseWordView {
                     tableRow.getCell(2).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                tableRow.getCell(3).setText(ConstantDictionary.getDataValue(task.getHandTaskResult()));
+                tableRow.getCell(3).setText(Utils.getTaskResult(task));
 
                 if (!StringUtils.isEmpty(task.getFieldDesignation())){
                     tableRow.getCell(4).setText(task.getFieldDesignation());

@@ -263,9 +263,9 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
                 "\tsum( IF ( JUDGE_USER_ID != 10000 and HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as artificialJudgeMissing,\n" +
                 "\tsum( IF ( JUDGE_USER_ID != 10000 and HAND_APPRAISE2 = '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as artificialJudgeMistake,\n" +
                 "\t\n" +
-                "\tsum( IF ( JUDGE_USER_ID = 10000, 1, 0)) as intelligenceJudge,\n" +
-                "\tsum( IF ( JUDGE_USER_ID = 10000 and HAND_APPRAISE = '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as intelligenceJudgeMissing,\n" +
-                "\tsum( IF ( JUDGE_USER_ID = 10000 and HAND_APPRAISE2 = '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as intelligenceJudgeMistake,\n" +
+                "\t1 intelligenceJudge,\n" +
+                "\t1 as intelligenceJudgeMissing,\n" +
+                "\t1 as intelligenceJudgeMistake,\n" +
                 "\t\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, HAND_START_TIME, HAND_END_TIME ) ) AS maxDuration,\n" +
                 "\tMIN( TIMESTAMPDIFF( SECOND, HAND_START_TIME, HAND_END_TIME ) ) AS minDuration,\n" +
@@ -352,23 +352,23 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
         }
         if (startTime != null) {
             Date date = startTime;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(date);
             whereCause.add("HAND_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             Date date = endTime;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat(Constants.SQL_DATETIME_FORMAT);
             String strDate = dateFormat.format(date);
             whereCause.add("HAND_END_TIME <= '" + strDate + "'");
         }
         whereCause.add("HAND_EXAMINATION_ID IS NOT NULL ");
-//        CategoryUser categoryUser = authService.getDataCategoryUserList();
-//        if(categoryUser.isAll() == false) {
-//            List<Long> idList = categoryUser.getUserIdList();
-//            String idListStr = StringUtils.join(idList, ",");
-//            whereCause.add("h.CREATEDBY in (" + idListStr + ") ");
-//        }
+        CategoryUser categoryUser = authService.getDataCategoryUserList();
+        if(categoryUser.isAll() == false) {
+            List<Long> idList = categoryUser.getUserIdList();
+            String idListStr = StringUtils.join(idList, ",");
+            whereCause.add("HAND_USER_ID in (" + idListStr + ") ");
+        }
 
         return whereCause;
     }
@@ -392,9 +392,9 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
             record.setArtificialJudge(Utils.parseLong(item[7].toString()));
             record.setArtificialJudgeMissing(Utils.parseLong(item[8].toString()));
             record.setArtificialJudgeMistake(Utils.parseLong(item[9].toString()));
-            record.setIntelligenceJudge(Utils.parseLong(item[10].toString()));
-            record.setIntelligenceJudgeMissing(Utils.parseLong(item[11].toString()));
-            record.setIntelligenceJudgeMistake(Utils.parseLong(item[12].toString()));
+            record.setIntelligenceJudge(record.getTotal() - record.getArtificialJudge());
+            record.setIntelligenceJudgeMissing(record.getMissingReport() - record.getArtificialJudgeMissing());
+            record.setIntelligenceJudgeMistake(record.getMistakeReport() - record.getArtificialJudgeMistake());
             record.setMaxDuration(Utils.parseDouble(item[13].toString()));
             record.setMinDuration(Utils.parseDouble(item[14].toString()));
             record.setAvgDuration(Utils.parseDouble(item[15].toString()));
