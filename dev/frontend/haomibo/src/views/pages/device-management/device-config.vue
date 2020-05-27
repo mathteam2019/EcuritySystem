@@ -347,6 +347,11 @@
                     </b-form-group>
                   </b-col>
                   <b-col cols="3">
+                    <b-form-group :label="$t('system-setting.parameter-setting.suitable-for')">
+                      <b-form-input v-model="pendingFilter.fromDeviceName"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="3">
                     <b-form-group :label="$t('maintenance-management.maintenance-task.position')">
                       <b-form-select v-model="pendingFilter.fieldId" :options="siteSelectOptions" plain/>
                     </b-form-group>
@@ -754,6 +759,7 @@
         selectedFieldId: 0,
         pendingFilter: {
           deviceName: null,
+          fromDeviceName:null,
           categoryId: null,
           fieldId: null,
           mode:null
@@ -845,6 +851,16 @@
               width: '17%'
             },
             {
+              name: 'fromConfigIdList',
+              title: this.$t('system-setting.parameter-setting.suitable-for'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (fromConfigIdList) => {
+                if (fromConfigIdList == null) return '';
+                return this.getHandGoodString(fromConfigIdList);
+              }
+            },
+            {
               name: 'siteNameWithParent',
               title: this.$t('device-management.site'),
               titleClass: 'text-center',
@@ -924,6 +940,26 @@
       getLocale() {
 
         return getLocale();
+      },
+
+      getHandGoodString(string) {
+
+        if (string.length === 0) return '';
+        let handGood = string;
+        let k = 0, handGoodStr = '';
+        // for (let j = 0; j < 5; j++) {
+        //if (handGood[0] === this.handGoodDataCode[j]) {
+        handGoodStr = handGood[0].device.deviceName;
+        //}
+        //}
+        for (let i = 1; i < handGood.length; i++) {
+          //for (let j = 0; j < 5; j++) {
+          //if (handGood[i] === this.handGoodDataCode[j]) {
+          handGoodStr += ',' + handGood[i].device.deviceName;
+          //}
+          //}
+        }
+        return handGoodStr;
       },
 
       generatSpace(count) {
@@ -1286,9 +1322,10 @@
         let checkedAll = this.$refs.configListTable.checkedAllStatus;
         let checkedIds = this.$refs.configListTable.selectedTo;
         let httpOption = this.$refs.configListTable.httpOptions;
+        let pagination = this.$refs.configListTable.tablePagination;
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.configFilter,
           'idList': checkedIds.join()
@@ -1324,8 +1361,9 @@
         let checkedAll = this.$refs.configListTable.checkedAllStatus;
         let checkedIds = this.$refs.configListTable.selectedTo;
         let httpOption = this.$refs.configListTable.httpOptions;
+        let pagination = this.$refs.configListTable.tablePagination;
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'locale' : getLocale(),
           'sort' : httpOption.params.sort,
           'filter': this.configFilter,
@@ -1538,6 +1576,7 @@
       onPendingResetButton() {
         this.pendingFilter = {
           deviceName: '',
+          fromDeviceName:null,
           categoryId: null,
           fieldId: null,
           mode:null,
@@ -1849,7 +1888,6 @@
           }));
         }
         this.deviceCategoryOptions = JSON.parse(JSON.stringify(options));
-        console.log(this.deviceCategoryOptions);
         this.deviceCategoryOptions.unshift({value: null, text: this.$t('permission-management.all')});
         this.$refs.fieldSelectList.setFilterOptions(this.deviceCategoryOption);
       },

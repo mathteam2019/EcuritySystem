@@ -1468,9 +1468,10 @@
         let checkedAll = this.$refs.userVuetable.checkedAllStatus;
         let checkedIds = this.$refs.userVuetable.selectedTo;
         let httpOption = this.$refs.userVuetable.httpOptions;
+        let pagination = this.$refs.userVuetable.tablePagination;
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.userFilter,
           'idList': checkedIds.join()
@@ -1486,10 +1487,11 @@
         let checkedAll = this.$refs.userVuetable.checkedAllStatus;
         let checkedIds = this.$refs.userVuetable.selectedTo;
         let httpOption = this.$refs.userVuetable.httpOptions;
+        let pagination = this.$refs.userVuetable.tablePagination;
         //'isAll': checkedIds.length > 0 ? checkedAll : true,
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.userFilter,
           'idList': checkedIds.join()
@@ -1501,9 +1503,10 @@
         let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
         let checkedIds = this.$refs.userGroupTable.selectedTo;
         let httpOption = this.$refs.userGroupTable.httpOptions;
+        let pagination = this.$refs.userGroupTable.tablePagination;
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll':checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.groupFilter,
           'idList': checkedIds.join()
@@ -1519,9 +1522,10 @@
         let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
         let checkedIds = this.$refs.userGroupTable.selectedTo;
         let httpOption = this.$refs.userGroupTable.httpOptions;
+        let pagination = this.$refs.userGroupTable.tablePagination;
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.groupFilter,
           'idList': checkedIds.join()
@@ -1580,6 +1584,14 @@
           case 'modify-item':
             if (this.pageStatus === 'modify') {
               let permInfoId = getPermissionInfoId();
+
+              if(this.showForm.roles.length === 0) {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.please-select-user-role`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                return;
+              }
               getApiManager()
                 .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/modify/assign-role-and-data-range`, {
                   userId: this.showForm.userId,

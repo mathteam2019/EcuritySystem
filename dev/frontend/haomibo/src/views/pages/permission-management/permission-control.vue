@@ -1120,9 +1120,10 @@
         let checkedAll = this.$refs.roleVuetable.checkedAllStatus;
         let checkedIds = this.$refs.roleVuetable.selectedTo;
         let httpOption = this.$refs.roleVuetable.httpOptions;
+        let pagination = this.$refs.roleVuetable.tablePagination;
         this.params = {
           'locale': getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort': httpOption.params.sort,
           'filter': {
             roleName: this.roleKeyword,
@@ -1141,9 +1142,10 @@
         let checkedAll = this.$refs.roleVuetable.checkedAllStatus;
         let checkedIds = this.$refs.roleVuetable.selectedTo;
         let httpOption = this.$refs.roleVuetable.httpOptions;
+        let pagination = this.$refs.roleVuetable.tablePagination;
         let params = {
           'locale': getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort': httpOption.params.sort,
           'filter': {roleName: this.roleKeyword, resourceName: this.resourceName},
           'idList': checkedIds.join()
@@ -1155,9 +1157,10 @@
         let checkedAll = this.$refs.dataGroupVuetable.checkedAllStatus;
         let checkedIds = this.$refs.dataGroupVuetable.selectedTo;
         let httpOption = this.$refs.dataGroupVuetable.httpOptions;
+        let pagination = this.$refs.dataGroupVuetable.tablePagination;
         this.params = {
           'locale': getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort': httpOption.params.sort,
           'filter': {
             dataGroupName: this.groupKeyword,
@@ -1176,9 +1179,10 @@
         let checkedAll = this.$refs.dataGroupVuetable.checkedAllStatus;
         let checkedIds = this.$refs.dataGroupVuetable.selectedTo;
         let httpOption = this.$refs.dataGroupVuetable.httpOptions;
+        let pagination = this.$refs.dataGroupVuetable.tablePagination;
         let params = {
           'locale': getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort': httpOption.params.sort,
           'filter': {
             dataGroupName: this.groupKeyword,
@@ -1469,7 +1473,6 @@
         });
       },
       transform(response) {
-        console.log(response);
 
         let transformed = {};
 
@@ -1513,7 +1516,6 @@
           this.renderedCheckList.push(data.data[i].roleId);
           transformed.data.push(temp);
         }
-        console.log(transformed);
 
         return transformed
 

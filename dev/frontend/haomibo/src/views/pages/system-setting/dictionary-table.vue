@@ -187,7 +187,7 @@
                       <span v-if="checkPermItem('dictionary_data_modify')" class="cursor-p text-primary">
                         {{props.rowData.dataCode}}
                       </span>
-                      <span v-else class="cursor-p text-primary" @click="onDicDataModifyClicked(props.rowData)">
+                      <span v-else class="cursor-p text-primary" @click="onDicDataRowClicked(props.rowData)">
                         {{props.rowData.dataCode}}
                       </span>
                     </template>
@@ -261,13 +261,12 @@
 
                 <div class="d-flex align-items-end justify-content-end pt-3">
                   <div>
-                    <b-button @click="onClickSaveDicData" :disabled="dicIdType === 1" size="sm" variant="info default" class="mr-3">
+                    <b-button @click="onClickSaveDicData" :disabled="dicIdType === 1 || rowClicked" size="sm" variant="info default" class="mr-3">
                       <i class="icofont-save"/>
                       {{$t('permission-management.permission-control.save')}}
                     </b-button>
                   </div>
                 </div>
-
               </b-form>
             </div>
           </div>
@@ -412,6 +411,7 @@
       return {
         pageStatus: 'table',
         pageStatus1: '',
+        rowClicked:false,
         isLoading: false,
         loadingTable:false,
         dicForm: {
@@ -636,6 +636,7 @@
       },
       onClickCreateDicData() {
         this.selectedDicData = null;
+        this.rowClicked = false;
         this.dicDataForm = {
           visible: true,
           dicDataCode: '',
@@ -900,8 +901,16 @@
         this.dicForm.dicName = this.selectedDic.dictionaryName;
         this.dicForm.note = this.selectedDic.note;
       },
+      onDicDataRowClicked(dataItem) {
+        this.rowClicked = true;
+        this.selectedDicData = JSON.parse(JSON.stringify(dataItem));
+        this.dicDataForm.dicDataCode = this.selectedDicData.dataCode;
+        this.dicDataForm.dicDataValue = this.selectedDicData.dataValue;
+        this.dicDataForm.note = this.selectedDicData.note;
+      },
       onDicDataModifyClicked(dataItem) {
         this.dicDataForm.visible = false;
+        this.rowClicked = false;
         this.selectedDicData = JSON.parse(JSON.stringify(dataItem));
         this.dicDataForm.dicDataCode = this.selectedDicData.dataCode;
         this.dicDataForm.dicDataValue = this.selectedDicData.dataValue;

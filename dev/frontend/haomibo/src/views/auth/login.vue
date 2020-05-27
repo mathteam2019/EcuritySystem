@@ -220,6 +220,7 @@
     <img class="position-absolute logo" src="../../assets/img/logo.png" draggable="false"/>
     <b-col md=10 class="mx-auto my-auto auth-content-only-ie">
       <h2 class="mb-5 text-white header-title">{{$t('login.title')}}</h2>
+      <div style="color: white">2020 05 26</div>
       <b-row class="auth-card ">
         <b-col cols="9">
           <div class="form-side line-form">
@@ -473,7 +474,7 @@
         }
 
         this.hashPassword = sha256(this.password);
-        console.log(this.password);
+
         getApiManager()
           .post(`${apiBaseUrl}/auth/login`, {
             userAccount: this.account,

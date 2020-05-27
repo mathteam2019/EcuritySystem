@@ -70,7 +70,7 @@
               </b-col>
               <b-col cols="3">
                 <b-form-group :label="$t('device-management.template')">
-                  <b-form-input v-model="filterOption.templateName"/>
+                  <b-form-select v-model="filterOption.templateId" :options="templateOption" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -450,6 +450,7 @@
         ],
         isModalVisible: false,
         templateOptions: [],
+        templateOption:[],
         categoryData: [],
         categoryFilterData: [],
         categoryFilterDatas: [
@@ -471,7 +472,7 @@
         filterOption: {
           archivesName: '',
           status: null,
-          templateName: '',
+          templateId: null,
           categoryId: null
         },
         templateForm: {
@@ -655,8 +656,9 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         this.params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'locale': getLocale(),
           'sort': httpOption.params.sort,
           'filter': this.filterOption,
@@ -685,8 +687,9 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'locale': getLocale(),
           'sort': httpOption.params.sort,
           'filter': this.filterOption,
@@ -733,7 +736,7 @@
       },
       onResetButton() {
         this.filterOption = {
-          templateName: '',
+          templateId: null,
           archivesName: '',
           status: null,
           categoryId: null
@@ -1100,8 +1103,13 @@
       templateData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         this.templateOptions = [];
+        this.templateOption = [];
         if (newVal.length === 0) {
           this.templateOptions.push({
+            value: null,
+            html: `${this.$t('system-setting.none')}`
+          });
+          this.templateOption.push({
             value: null,
             html: `${this.$t('system-setting.none')}`
           });
@@ -1110,7 +1118,12 @@
             text: template.templateName,
             value: template.archivesTemplateId
           }));
+          this.templateOption = newVal.map(template => ({
+            text: template.templateName,
+            value: template.archivesTemplateId
+          }));
         }
+        this.templateOption.push({value: null, text: `${this.$t('permission-management.all')}`})
 
       },
       'archivesForm.archivesTemplateId': function (newVal, oldVal) {

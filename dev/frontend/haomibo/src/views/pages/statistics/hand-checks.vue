@@ -86,7 +86,7 @@
           <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
             <div class="statistics-item type-3">
               <div style="">
-                <b-img draggable="false" src="/assets/img/scan.svg"/>
+                <b-img draggable="false" src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
                 <span class="font-weight-bold" v-if="preViewData.total!=null">{{preViewData.total}}</span>
@@ -427,10 +427,10 @@
                   </div>
                   <vuetable
                     ref="taskVuetable2"
-                    :api-url="taskVuetable2Items.apiUrl"
-                    :fields="taskVuetable2Items.fields"
+                    :api-url="handGoodTableItems.apiUrl"
+                    :fields="handGoodTableItems.fields"
                     :http-fetch="taskVuetable2HttpFetch"
-                    :per-page="taskVuetable2Items.perPage"
+                    :per-page="handGoodTableItems.perPage"
                     pagination-path="pagination"
                     class="table-hover"
                     @vuetable:pagination-data="onTaskVuetable2PaginationData"
@@ -443,8 +443,8 @@
                   <vuetable-pagination-bootstrap
                     ref="taskVuetable2Pagination"
                     @vuetable-pagination:change-page="onTaskVuetable2ChangePage"
-                    :initial-per-page="taskVuetable2Items.perPage"
-                    @onUpdatePerPage="taskVuetable2Items.perPage = Number($event)"
+                    :initial-per-page="handGoodTableItems.perPage"
+                    @onUpdatePerPage="handGoodTableItems.perPage = Number($event)"
                   />
                 </div>
               </b-col>
@@ -490,7 +490,6 @@
       :link="link" :params="params" :name="name"
       @close="closeModal"
     />
-
   </div>
 </template>
 
@@ -859,7 +858,9 @@
               dataClass: 'text-center',
               callback: (noSeizureRate) => {
                 if (noSeizureRate == null) return '';
-                return noSeizureRate.toFixed(1);
+                if(noSeizureRate === 0) return 0;
+                if(Number.isInteger(noSeizureRate)) return noSeizureRate;
+                return noSeizureRate.toFixed(2);
               }
             },
             {
@@ -875,14 +876,22 @@
               dataClass: 'text-center',
               callback: (seizureRate) => {
                 if (seizureRate == null) return '';
-                return seizureRate.toFixed(1);
+                if(seizureRate === 0) return 0;
+                if(Number.isInteger(seizureRate)) return seizureRate;
+                return seizureRate.toFixed(2);
               }
             },
             {
               name: 'avgDuration',
               title: this.$t('statistics.hand-checks.avg'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (avgDuration) => {
+                if (avgDuration == null) return '';
+                if(avgDuration === 0) return 0;
+                if(Number.isInteger(avgDuration)) return avgDuration;
+                return avgDuration.toFixed(2);
+              }
             },
             {
               name: 'maxDuration',
@@ -899,6 +908,27 @@
           ],
           perPage: 10,
         },
+
+        handGoodTableItems:{
+          apiUrl: `${apiBaseUrl}/task/statistics/get-suspicionhandgoods-statistics/detail`,
+          fields: [],
+          perPage: 10,
+        },
+        initialFields: [
+          {
+            name: '__sequence',
+            title: this.$t('personal-inspection.serial-number'),
+            titleClass: 'text-center',
+            dataClass: 'text-center',
+
+          },
+          {
+            name: 'time',
+            title: this.$t('statistics.view.periods'),
+            titleClass: 'text-center',
+            dataClass: 'text-center'
+          }
+        ],
 
         taskVuetable2Items: {
           apiUrl: `${apiBaseUrl}/task/statistics/get-suspicionhandgoods-statistics/detail`,
@@ -955,7 +985,7 @@
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
       },
-      'taskVuetable2Items.perPage': function (newVal) {
+      'handGoodTableItems.perPage': function (newVal) {
         this.$refs.taskVuetable2.refresh();
       },
       siteData: function (newVal, oldVal) {
@@ -1340,6 +1370,7 @@
           let message = response.data.message;
           this.graphData = response.data.data;
           this.wordCloudData = [];
+          this.handGoodTableItems.fields = [];
 
           let tmpKey = Object.keys(this.graphData);
           let keyData = [];
@@ -1373,15 +1404,17 @@
               if (this.graphData != null) {
                 let key = xAxis[i];
 
-                keyData[i] = this.getDataCodeValue(xAxis[i]);
+                keyData[i] = xAxis[i];
                 this.bar3ChartOptions.series[0].data[i] = this.graphData[key];
 
               }
             }
           }
           else {
-            this.bar3ChartOptions.series[0].data = [0, 0, 0, 0, 0];
-            keyData = [`安眠药`, `仿真枪`, `玩具枪`, `气枪`, `打火机`]
+            //this.bar3ChartOptions.series[0].data = [0, 0, 0, 0, 0];
+            //keyData = [`安眠药`, `仿真枪`, `玩具枪`, `气枪`, `打火机`];
+            this.bar3ChartOptions.series[0].data = [0];
+            keyData = []
           }
 
           this.bar3ChartOptions.xAxis.data = keyData;
@@ -1390,7 +1423,7 @@
 
             for (let i = 0; i < xAxis.length; i++) {
               this.wordCloudData.push({
-                name: this.getDataCodeValue(xAxis[i]),
+                name: xAxis[i],
                 weight: this.graphData[xAxis[i]]
               });
             }
@@ -1404,6 +1437,26 @@
               });
             }
             this.drawWordCloud();
+          }
+
+          for(let i = 0; i < this.initialFields.length; i++){
+            this.handGoodTableItems.fields.push(this.initialFields[i]);
+          }
+
+          for (let i = 0; i < keyData.length; i++) {
+
+            let key = keyData[i];
+
+            this.handGoodTableItems.fields.push({
+              name: key,
+              title: key,
+              titleClass: 'text-center min-width',
+              dataClass: 'text-center min-width',
+              callback: (value) => {
+                if (value != null) return value;
+                return 0;
+              }
+            });
           }
 
         });
@@ -1423,19 +1476,16 @@
         }
 
         this.isLoading = true;
-        console.log(this.isLoading);
         this.getPreviewData();
         if (this.pageStatus1 === 'charts') {
           this.getChartData();
         } else {
           this.$refs.taskVuetable.refresh();
         }
-        if (this.pageStatus2 === 'charts') {
-          this.getGraphData();
-        } else {
+        this.getGraphData();
+        if (this.pageStatus2 !== 'charts') {
           this.$refs.taskVuetable2.refresh();
         }
-
 
       },
       onResetButton() {
@@ -1514,7 +1564,7 @@
       taskVuetable2HttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
-          perPage: this.taskVuetable2Items.perPage,
+          perPage: this.handGoodTableItems.perPage,
           filter: this.filter,
         });
       },
@@ -1631,8 +1681,6 @@
           }
         }
       }
-
-
     }
 
 

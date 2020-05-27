@@ -725,7 +725,7 @@ export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => 
   // });
 };
 
-export const imageFilterById = (id, rectInfoL, rectInfoR) => {
+export const imageFilterById = (id, rectInfoL, rectInfoR, value=0) => {
   if (imgObj == null || imgObj2 == null) {
     alert("Choose an image first!");
     return;
@@ -746,17 +746,17 @@ export const imageFilterById = (id, rectInfoL, rectInfoR) => {
     imgObj.crossProcess();
     imgObj2.crossProcess();
   } else if (id == 5) {
-    imgObj.brightness(0.5);
-    imgObj2.brightness(0.5);
+    imgObj.brightness(1.5*value);
+    imgObj2.brightness(1.5*value);
   } else if (id == 6) {
-    imgObj.brightness(-0.5);
-    imgObj2.brightness(-0.5);
+    imgObj.brightness(-1.5*value);
+    imgObj2.brightness(-1.5*value);
   } else if (id == 7) {
-    imgObj.contrast(1);
-    imgObj2.contrast(1);
+    imgObj.contrast(10*value);
+    imgObj2.contrast(10*value);
   } else if (id == 8) {
-    imgObj.contrast(-1);
-    imgObj2.contrast(-1);
+    imgObj.contrast(-4*value);
+    imgObj2.contrast(-4*value);
   } else if (id == 9) {
     imgObj.noise();
     imgObj2.noise();

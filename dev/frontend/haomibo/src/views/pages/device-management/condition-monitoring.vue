@@ -625,7 +625,7 @@
     checkPermissionItem,
     getDeviceDicDataByDicIdForOptions,
     getDicDataByDicIdForOptions,
-    getDirection
+    getDirection, getLocale
   } from "../../../utils";
   import Vue from 'vue'
   import ECharts from 'vue-echarts'
@@ -1028,7 +1028,7 @@
             this.items[index].landTime = getDateTimeWithFormat(data.loginTime, 'monitor');
         }
         if(data.deviceLoginTime != null) {
-            this.items[index].runningTimeValue = getDateTimeWithFormat(data.deviceLoginTime, 'monitor-diff', this.$i18n.locale);
+            this.items[index].runningTimeValue = getDateTimeWithFormat(data.deviceLoginTime, 'monitor-diff', getLocale());
         }
         if(data.diskSpace != null) {
             this.items[index].diskSpace = data.diskSpace;
@@ -1096,12 +1096,13 @@
       },
       //pagination methods
       pageRange() {
-        let min = 0, max = 0;
+        let min = 0
         min = this.pagination.currentPage < 3 ? 1 :
           this.pagination.lastPage - this.pagination.currentPage < 2 ?
-            5 - this.pagination.lastPage + this.pagination.currentPage : this.pagination.currentPage - 2;
+            this.pagination.lastPage -4 : this.pagination.currentPage - 2;
+
         let array = [], j = 0;
-        max = this.pagination.lastPage > min + 4 ? min + 4 : this.pagination.lastPage;
+        let max = this.pagination.lastPage > min + 4 ? min + 4 : this.pagination.lastPage;
         min = max - 4;
         for (let i = min; i <= max; i++) {
           array[j] = i;

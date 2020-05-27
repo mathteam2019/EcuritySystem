@@ -71,19 +71,21 @@
         //   }
         // }
         //downLoadImageFromUrl(url);
-        if(this.params.isAll===true&&this.params.idList===""){
+        if(this.params.isAll===false && this.params.idList===""){
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-messages.select-data`), {
             duration: 3000,
             permanent: false
           });
+          return;
         }
         if(this.fileSelection.length === 0){
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-messages.select-file-type`), {
             duration: 3000,
             permanent: false
           });
+          return;
         }
-        if (this.fileSelection.length !== 0 && !(this.params.isAll===true&&this.params.idList==="")) {
+
           this.imgUrl = [];
           if(this.imgLink!==undefined) {
             getApiManagerError()
@@ -112,7 +114,7 @@
           }
           downLoadFileFromServer(this.link, this.params, this.name, this.fileSelection);
           this.close();
-        }
+
       },
 
       // readDirectory() {

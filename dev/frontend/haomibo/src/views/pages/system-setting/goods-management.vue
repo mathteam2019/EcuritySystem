@@ -151,8 +151,8 @@
     <div v-show="isLoading" class="loading"></div>
 
     <b-modal centered id="modal-delete-goods" ref="modal-delete-goods"
-             title="物被删除">
-      您确定要删除扣押的货物吗？
+             :title="$t('system-setting.delete-confirm')">
+      {{$t('system-setting.delete-confirm-prompt')}}
       <template slot="modal-footer">
         <b-button size="sm" variant="primary" @click="deleteGoods" class="mr-1">{{$t('system-setting.ok')}}</b-button>
         <b-button size="sm" variant="danger" @click="hideModal('modal-delete-goods')">{{$t('system-setting.cancel')}}

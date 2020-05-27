@@ -97,16 +97,14 @@
         subMenuIndex: 0,
         activatedParentMenu: '',
         currentUrl: '',
+        permittedMenu:[],
       }
     },
     mounted() {
       this.checkMenuPermission();
-      //this.selectMenu(); //removed this mount to prevent menu showing..
       window.addEventListener('resize', this.handleWindowResize);
       document.addEventListener('click', this.handleDocumentClick);
       this.handleWindowResize();
-
-
     },
     beforeDestroy() {
       document.removeEventListener('click', this.handleDocumentClick)
@@ -118,18 +116,30 @@
 
       checkMenuPermission() {
 
-        let tmp = this.menuTmp;
-        for (let i = 0; i < tmp.length; i++) {
-          if (tmp[i].permissionId != null) {
-            if (checkPermissionItemById(tmp[i].permissionId)) {
-              tmp = _.without(tmp, tmp[i]);
+        this.permittedMenu=[];
+        for(let i = 0; i<this.menuTmp.length; i++){
+          this.permittedMenu.push({
+            icon: this.menuTmp[i].icon,
+            id: this.menuTmp[i].id,
+            label: this.menuTmp[i].label,
+            newWindow: this.menuTmp[i].newWindow,
+            permissionId: this.menuTmp[i].permissionId,
+            subs: this.menuTmp[i].subs,
+            to: this.menuTmp[i].to,
+          });
+        }
+
+        for (let i = 0; i < this.permittedMenu.length; i++) {
+          if (this.permittedMenu[i].permissionId != null) {
+            if (checkPermissionItemById(this.permittedMenu[i].permissionId)) {
+              this.permittedMenu = _.without(this.permittedMenu, this.permittedMenu[i]);
               i--;
             } else {
-              if (tmp[i].subs != null) {
-                for (let j = 0; j < tmp[i].subs.length; j++) {
-                  if (tmp[i].subs[j].permissionId != null) {
-                    if (checkPermissionItemById(tmp[i].subs[j].permissionId)) {
-                      tmp[i].subs = _.without(tmp[i].subs, tmp[i].subs[j]);
+              if (this.permittedMenu[i].subs != null) {
+                for (let j = 0; j < this.permittedMenu[i].subs.length; j++) {
+                  if (this.permittedMenu[i].subs[j].permissionId != null) {
+                    if (checkPermissionItemById(this.permittedMenu[i].subs[j].permissionId)) {
+                      this.permittedMenu[i].subs = _.without(this.permittedMenu[i].subs, this.permittedMenu[i].subs[j]);
                       j--;
                     }
                   }
@@ -138,9 +148,8 @@
             }
           }
         }
-        this.menuItems = tmp;
+        this.menuItems = this.permittedMenu;
         this.currentUrl = (this.$route.path.split('/').filter(x => x !== '')[1]).toLowerCase();
-
       },
 
       selectMenu() {

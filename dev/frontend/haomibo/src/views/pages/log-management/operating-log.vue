@@ -640,9 +640,10 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.accessFilter,
           'idList': checkedIds.join()
@@ -658,9 +659,10 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.accessFilter,
           'idList': checkedIds.join()
@@ -672,9 +674,10 @@
         let checkedAll = this.$refs.operatingLogTable.checkedAllStatus;
         let checkedIds = this.$refs.operatingLogTable.selectedTo;
         let httpOption = this.$refs.operatingLogTable.httpOptions;
+        let pagination = this.$refs.operatingLogTable.tablePagination;
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.operatingFilter,
           'idList': checkedIds.join()
@@ -690,9 +693,10 @@
         let checkedAll = this.$refs.operatingLogTable.checkedAllStatus;
         let checkedIds = this.$refs.operatingLogTable.selectedTo;
         let httpOption = this.$refs.operatingLogTable.httpOptions;
+        let pagination = this.$refs.operatingLogTable.tablePagination;
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.operatingFilter,
           'idList': checkedIds.join()

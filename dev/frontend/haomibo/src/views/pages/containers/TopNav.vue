@@ -257,9 +257,8 @@
           }
           return;
         }
-        console.log(getAuthTokenInfo().token);
+
         this.hashPassword = encrypt(getAuthTokenInfo().token, this.passwordForm.password);
-        console.log(this.hashPassword);
         this.oldHash = sha256(this.passwordForm.oldPassword);
         getApiManager()
           .post(`${apiBaseUrl}/auth/change-password`, {
