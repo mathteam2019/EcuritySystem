@@ -924,6 +924,8 @@
 
         this.treeData = nest(newVal)[0];
 
+        this.parentOrganizationNameSelectOptions =[];
+
         this.changeOrgTree(this.treeData.children, 1);
         this.parentOrganizationNameSelectOptions.unshift({
           text: this.treeData.orgName,
@@ -1067,9 +1069,10 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1083,9 +1086,10 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1472,6 +1476,7 @@
                 // back to table
                 this.pageStatus = 'table';
                 this.$refs.vuetable.refresh();
+                this.orgData = [];
                 this.getOrgDataAll();
                 this.isLoading = false;
                 break;
@@ -1574,6 +1579,7 @@
 
                 this.pageStatus = 'table';
                 this.$refs.vuetable.reload();
+                this.orgData = [];
                 this.getOrgDataAll();
 
                 break;
@@ -1662,6 +1668,7 @@
                 });
                 this.pageStatus = 'table';
                 this.$refs.vuetable.refresh();
+                this.orgData = [];
                 this.getOrgDataAll();
                 break;
               case responseMessages["has-children"]: // has children
@@ -1738,6 +1745,7 @@
                   this.modifyPage.selectedOrg.status = '1000000701';
 
                 this.$refs.vuetable.reload();
+                this.orgData = [];
                 this.getOrgDataAll();
                 break;
               case responseMessages['has-children']:
@@ -1821,6 +1829,7 @@
                   this.modifyPage.selectedOrg.status = '1000000702';
                 //this.pageStatus = 'table';
                 this.$refs.vuetable.reload();
+                this.orgData = [];
                 this.getOrgDataAll();
                 break;
               case responseMessages['has-children']:

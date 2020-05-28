@@ -343,19 +343,23 @@
               <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
                 <vue-slider
                   v-model="slidebar2value"
-                  :min="-50"
-                  :max="50"
+                  :min="-10"
+                  :max="10"
                   :dot-options="dotOptions"
                   :order="false"
+                  @drag-start="setOldContrast"
+                  @drag-end="changeContrast"
                 />
               </b-col>
               <b-col v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
                 <vue-slider
                   v-model="slidebar1value"
-                  :min="-50"
-                  :max="50"
+                  :min="-10"
+                  :max="10"
                   :dot-options="dotOptions"
                   :order="false"
+                  @drag-start="setOldBrightness"
+                  @drag-end="changeBrightness"
                 />
               </b-col>
             </b-row>
@@ -993,6 +997,10 @@
         isSlidebar2Expended: false,
         slidebar1value: [0, 0],
         slidebar2value: [0, 0],
+        slider1OldValue:0,
+        slider1NewValue:0,
+        slider2OldValue:0,
+        slider2NewValue:0,
 
         slider: {
           lineHeight: 10,
@@ -1244,33 +1252,66 @@
         this.loadImage();
       },
 
-      slidebar1value(newsValue, oldValue) {
-
-        if (oldValue[1] < newsValue[1]) {
-          for (let i = oldValue[1]; i < newsValue[1]; i++) {
-            this.filterId(5);
-          }
-        } else {
-          for (let i = newsValue[1]; i < oldValue[1]; i++) {
-            this.filterId(6);
-          }
-        }
-      },
-
-      slidebar2value(newsValue, oldValue) {
-
-        if (oldValue[1] < newsValue[1]) {
-          for (let i = oldValue[1]; i < newsValue[1]; i++) {
-            this.filterId(7);
-          }
-        } else {
-          for (let i = newsValue[1]; i < oldValue[1]; i++) {
-            this.filterId(8);
-          }
-        }
-      },
+      // slidebar1value(newsValue, oldValue) {
+      //
+      //   if (oldValue[1] < newsValue[1]) {
+      //     for (let i = oldValue[1]; i < newsValue[1]; i++) {
+      //       this.filterId(5);
+      //     }
+      //   } else {
+      //     for (let i = newsValue[1]; i < oldValue[1]; i++) {
+      //       this.filterId(6);
+      //     }
+      //   }
+      // },
+      //
+      // slidebar2value(newsValue, oldValue) {
+      //
+      //   if (oldValue[1] < newsValue[1]) {
+      //     for (let i = oldValue[1]; i < newsValue[1]; i++) {
+      //       this.filterId(7);
+      //     }
+      //   } else {
+      //     for (let i = newsValue[1]; i < oldValue[1]; i++) {
+      //       this.filterId(8);
+      //     }
+      //   }
+      // },
     },
     methods: {
+     setOldBrightness(){
+        this.slider1OldValue = this.slidebar1value[1];
+      },
+      changeBrightness(){
+
+          if (this.slider1OldValue < this.slidebar1value[1]) {
+            //for (let i = this.slider1OldValue; i < slidebar1value; i++) {
+            this.filterId(5, this.slidebar1value[1]-this.slider1OldValue);
+            //}
+          } else if(this.slider1OldValue > this.slidebar1value[1]) {
+            //for (let i = slidebar1value; i < this.slider1OldValue; i++) {
+            this.filterId(6, this.slider1OldValue - this.slidebar1value[1]);
+            //}
+          }
+          //this.slider1OldValue = this.slidebar1value[1];
+
+      },
+      setOldContrast(){
+        this.slider2OldValue = this.slidebar2value[1]
+      },
+      changeContrast(){
+
+        if (this.slider2OldValue < this.slidebar2value[1]) {
+           //for (let i = this.slider2OldValue; i < this.slidebar2value[1]; i++) {
+           this.filterId(7, this.slidebar2value[1]-this.slider2OldValue);
+           //}
+        } else if(this.slider2OldValue > this.slidebar2value[1]) {
+           //for (let i = this.slidebar2value[1]; i < this.slider2OldValue; i++) {
+           this.filterId(8, this.slider2OldValue - this.slidebar2value[1]);
+           //}
+        }
+        //this.slider2OldValue = this.slidebar2value[1]
+      },
       cancelAutoUpdate() {
         //clearInterval(this.timer)
       },
@@ -1362,13 +1403,13 @@
         }
       },
 
-      filterId(id) {
+      filterId(id, value=0) {
         if (id < 5 || id > 8) {
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
         }
         if (this.power === true) {
-          imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
+          imageFilterById(id, this.cartoonRectL, this.cartoonRectR, value);
         }
       },
 
@@ -1502,9 +1543,18 @@
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let httpOption = this.$refs.taskVuetable.httpOptions;
+        let pagination = this.$refs.taskVuetable.tablePagination;
+        if(!(checkedIds.length === 0 && pagination.total !== 0) && checkedIds.join()===""){
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-messages.select-data`), {
+            duration: 3000,
+            permanent: false
+          });
+          return;
+        }
+        console.log(pagination);
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1540,9 +1590,10 @@
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let httpOption = this.$refs.taskVuetable.httpOptions;
+        let pagination = this.$refs.taskVuetable.tablePagination;
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1750,7 +1801,7 @@
                 //       this.videos.push({
                 //         name: iHandAttached[0],
                 //         src: handAttached[i],
-                //         poster: '',//todo if client need to show different poster for each videos, should get its poster image from server.
+                //         poster: '',
                 //       });
                 //     }
                 //   }

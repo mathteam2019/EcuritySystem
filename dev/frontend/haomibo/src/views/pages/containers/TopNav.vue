@@ -29,7 +29,7 @@
 
 </style>
 <template>
-  <nav class="navbar fixed-top">
+  <nav :style="{'background' : themeColor + ' ' + 'url(' + themeUrl + ') no-repeat'}" class="navbar fixed-top">
     <div class="d-flex align-items-center navbar-left">
       <a href="#" class="menu-button d-none d-md-block" v-if="false"
          @click.prevent="changeSideMenuStatus({step :menuClickCount+1,classNames:menuType,selectedMenuHasSubItems})">
@@ -39,8 +39,6 @@
          @click.prevent="changeSideMenuForMobile(menuType)">
         <mobile-menu-icon/>
       </a>
-
-
     </div>
 
     <router-link class="navbar-logo" tag="a" to="/">
@@ -54,28 +52,31 @@
 
     <div class="navbar-right">
       <div class="d-inline-block mr-2">
-        <b-dropdown id="langddm" variant="empty" size="sm" toggle-class="language-button" class="mr-4">
+        <b-dropdown id="langddm" variant="empty" size="sm" toggle-class="language-button" class="mr-4" style="margin-top: 4px;">
           <template slot="button-content">
             <span>
                 <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()" draggable="false"/>
             </span>
             <span class="name ml-2 mr-3">{{$i18n.locale.toUpperCase()}}</span>
           </template>
-          <b-dropdown-item v-for="(l,index) in localeOptions" :key="index" @click="changeLocale(l)">
+          <b-dropdown-item v-for="(l,index) in localeOptions" :key="index" :class="[{'active' :  l.id === $i18n.locale}, 'dropdown-item_' + themeOptionSelect]" @click="changeLocale(l)">
             {{l.name}}
           </b-dropdown-item>
         </b-dropdown>
       </div>
       <div class="user d-inline-block">
-        <b-dropdown class="dropdown-menu-right dropdown-menu-item-hidden" right variant="empty" toggle-class="p-0"
+        <b-dropdown class="dropdown-menu-right" variant="empty" toggle-class="p-0"
                     menu-class="mt-3" no-caret>
           <template slot="button-content" v-if="currentUser">
-            <span @click="showPasswordResetView()">
+            <span>
                 <img :alt="currentUser.title" :src="this.portrait" @error="portraitOnError" draggable="false"/>
             </span>
-            <span @click="showPasswordResetView()" class="name ml-1 mr-2">{{currentUser.name}}</span>
+            <span class="name ml-1 mr-2">{{currentUser.name}}</span>
           </template>
-          <b-dropdown-item @click="showPasswordResetView()">{{this.$t('menu.account')}}</b-dropdown-item>
+          <b-dropdown-item @click="showPasswordResetView()" :class="'dropdown-item_' + themeOptionSelect">{{this.$t('menu.account')}}</b-dropdown-item>
+          <b-dropdown-item v-for="(l,index) in colorOptions" :key="index" :class="[{'active' :  l.id === themeOptionSelect}, 'dropdown-item_' + themeOptionSelect]"  @click="changeColor(l)">
+            {{l.label}}
+          </b-dropdown-item>
         </b-dropdown>
       </div>
       <div class="d-inline-block">
@@ -195,6 +196,16 @@
         menuHiddenBreakpoint,
         hashPassword:'',
         oldHash:'',
+        localeId:'',
+        themeColor:'',
+        themeName:'',
+        themeUrl:'',
+        themeOptionSelect :'',
+        colorOptions: [
+        {id : 0, value: '#0272d0', imageUrl: '/assets/img/nav-bg.png', label: this.$t('menu.theme')},
+        {id : 1, value: '#736fbf', imageUrl: '/assets/img/nav-bg-red.jpg', label: this.$t('menu.theme-red')},
+        {id : 2, value: '#03a2ef', imageUrl: '/assets/img/nav-bg-blue.jpg', label: this.$t('menu.theme-blue')},
+        ],
         localeOptions,
         notifications,
         portrait: '',
@@ -209,6 +220,7 @@
     mounted() {
       this.portrait = `${this.currentUser.portrait}`;
       this.setLanguageInfo();
+      this.getThemeColorOption();
     },
     methods: {
       ...mapMutations(['changeSideMenuStatus', 'changeSideMenuForMobile']),
@@ -257,9 +269,8 @@
           }
           return;
         }
-        console.log(getAuthTokenInfo().token);
+
         this.hashPassword = encrypt(getAuthTokenInfo().token, this.passwordForm.password);
-        console.log(this.hashPassword);
         this.oldHash = sha256(this.passwordForm.oldPassword);
         getApiManager()
           .post(`${apiBaseUrl}/auth/change-password`, {
@@ -301,6 +312,15 @@
       },
       setLanguageInfo(){
         setLocale(this.$i18n.locale);
+      },
+      changeColor(l){
+        sessionStorage.setItem('themeOption', l.id);
+        // this.themeColor = l.value;
+        // this.themeName = l.label;
+        // this.themeUrl = l.imageUrl;
+        //let localeId = sessionStorage.getItem('currentLanguage');
+        window.location.reload();
+        //this.setLang();
       },
       changeLocale(l) {
         let locale = l.id;
@@ -346,6 +366,29 @@
           .catch((error) => {
 
           });
+      },
+
+      getThemeColorOption(){
+        let themeOptionId = sessionStorage.getItem('themeOption');
+
+        if(themeOptionId === '2') {
+          this.themeColor = '#03a2ef';
+          // this.themeName = 'Blue';
+          this.themeUrl = '/assets/img/nav-bg-blue.jpg';
+          this.themeOptionSelect = 2;
+        }
+        else if(themeOptionId === '1') {
+          this.themeColor = '#736fbf';
+          // this.themeName = 'Red';
+          this.themeUrl = '/assets/img/nav-bg-red.jpg';
+          this.themeOptionSelect = 1;
+        }
+        else{
+          // this.themeName = 'Black';
+          this.themeUrl = '/assets/img/nav-bg.png';
+          this.themeColor = '#0272d0';
+          this.themeOptionSelect = 0;
+        }
       },
 
       getThemeColor() {

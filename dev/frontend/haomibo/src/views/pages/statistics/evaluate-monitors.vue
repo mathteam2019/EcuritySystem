@@ -27,7 +27,7 @@
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group :label="$t('statistics.evaluate-monitors.time')">
+              <b-form-group :label="$t('statistics.view.step-size')">
                 <b-form-select v-model="filter.statWidth" :options="statisticalStepSizeOptions" plain/>
               </b-form-group>
             </b-col>
@@ -952,7 +952,9 @@
               dataClass: 'text-center',
               callback: (missingReportRate) => {
                 if (missingReportRate == null) return '';
-                return missingReportRate.toFixed(1);
+                if(missingReportRate === 0) return 0;
+                if(Number.isInteger(missingReportRate)) return missingReportRate;
+                return missingReportRate.toFixed(2);
               }
             },
             {
@@ -965,7 +967,13 @@
               name: 'mistakeReportRate',
               title: this.$t('statistics.evaluate-monitors.mistake-report-rate'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (mistakeReportRate) => {
+                if (mistakeReportRate == null) return '';
+                if(mistakeReportRate === 0) return 0;
+                if(Number.isInteger(mistakeReportRate)) return mistakeReportRate;
+                return mistakeReportRate.toFixed(2);
+              }
             },
             {
               name: 'artificialJudge',
@@ -986,7 +994,9 @@
               dataClass: 'text-center',
               callback: (artificialJudgeMissingRate) => {
                 if (artificialJudgeMissingRate == null) return '';
-                return artificialJudgeMissingRate.toFixed(1);
+                if(artificialJudgeMissingRate === 0) return 0;
+                if(Number.isInteger(artificialJudgeMissingRate)) return artificialJudgeMissingRate;
+                return artificialJudgeMissingRate.toFixed(2);
               }
             },
             {
@@ -1002,7 +1012,9 @@
               dataClass: 'text-center',
               callback: (artificialJudgeMistakeRate) => {
                 if (artificialJudgeMistakeRate == null) return '';
-                return artificialJudgeMistakeRate.toFixed(1);
+                if(artificialJudgeMistakeRate === 0) return 0;
+                if(Number.isInteger(artificialJudgeMistakeRate)) return artificialJudgeMistakeRate;
+                return artificialJudgeMistakeRate.toFixed(2);
               }
             },
             {
@@ -1024,7 +1036,9 @@
               dataClass: 'text-center',
               callback: (intelligenceJudgeMissingRate) => {
                 if (intelligenceJudgeMissingRate == null) return '';
-                return intelligenceJudgeMissingRate.toFixed(1);
+                if(intelligenceJudgeMissingRate === 0) return 0;
+                if(Number.isInteger(intelligenceJudgeMissingRate)) return intelligenceJudgeMissingRate;
+                return intelligenceJudgeMissingRate.toFixed(2);
               }
             },
             {
@@ -1040,7 +1054,9 @@
               dataClass: 'text-center',
               callback: (intelligenceJudgeMistakeRate) => {
                 if (intelligenceJudgeMistakeRate == null) return '';
-                return intelligenceJudgeMistakeRate.toFixed(1);
+                if(intelligenceJudgeMistakeRate === 0) return 0;
+                if(Number.isInteger(intelligenceJudgeMistakeRate)) return intelligenceJudgeMistakeRate;
+                return intelligenceJudgeMistakeRate.toFixed(2);
               }
             }
           ],

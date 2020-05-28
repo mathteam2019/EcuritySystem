@@ -762,7 +762,7 @@
             <b-button :disabled="checkPermItem('user_modify')" v-if="profileForm.status==='1000000304'"
                       class="mr-1" @click="onAction('reset-password', profileForm)"
                       variant="purple default" size="sm"><i class="icofont-ui-password"/> {{
-              $t('permission-management.pending') }}
+              $t('permission-management.unpending') }}
             </b-button>
 
             <b-button :disabled="checkPermItem('user_modify')" v-if="profileForm.status==='1000000303'"
@@ -1179,7 +1179,7 @@
         },
         userAccount: {
           isAccountValid,
-          required, maxLength: maxLength(20),
+          required, maxLength: maxLength(16),
         },
         passwordValue: {
           isPasswordValid,
@@ -1782,9 +1782,10 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         this.params = {
           'locale': getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort': httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1796,9 +1797,10 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         let params = {
           'locale': getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort': httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1811,9 +1813,10 @@
         let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
         let checkedIds = this.$refs.userGroupTable.selectedTo;
         let httpOption = this.$refs.userGroupTable.httpOptions;
+        let pagination = this.$refs.userGroupTable.tablePagination;
         this.params = {
           'locale': getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort': httpOption.params.sort,
           'filter': this.groupFilter,
           'idList': checkedIds.join()
@@ -1829,9 +1832,10 @@
         let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
         let checkedIds = this.$refs.userGroupTable.selectedTo;
         let httpOption = this.$refs.userGroupTable.httpOptions;
+        let pagination = this.$refs.userGroupTable.tablePagination;
         let params = {
           'locale': getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort': httpOption.params.sort,
           'filter': this.groupFilter,
           'idList': checkedIds.join()
@@ -2191,7 +2195,7 @@
         } else {
           this.profileForm.passwordType = 'other';
           this.profileForm.passwordValue = decrypt(getAuthTokenInfo().token, data.password);
-          console.log(this.profileForm.passwordValue);
+
         }
         this.pageStatus = 'create';
         this.$v.profileForm.$reset();
@@ -2213,7 +2217,7 @@
         } else {
           this.profileForm.passwordType = 'other';
           this.profileForm.passwordValue = decrypt(getAuthTokenInfo().token, data.password);
-          console.log(this.profileForm.passwordValue);
+
         }
         this.pageStatus = 'show';
         this.$v.profileForm.$reset();

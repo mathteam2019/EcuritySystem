@@ -732,8 +732,9 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         this.params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'locale' : getLocale(),
           'sort' : httpOption.params.sort,
           'filter': this.filterOption,
@@ -748,7 +749,7 @@
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': '',
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
@@ -762,9 +763,10 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
@@ -874,7 +876,7 @@
         });
       },
       initialize(data = null, isUpdated = true) {
-        //console.log(data.archiveIndicatorsList)
+
         this.indicatorData = [];
         this.indicatorForm = {
           indicatorsId: 0,

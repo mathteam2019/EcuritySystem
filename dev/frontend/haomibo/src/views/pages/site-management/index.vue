@@ -249,7 +249,7 @@
                 <img draggable="false" v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
                 <img draggable="false" v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
               </div>
-              <div v-if="getLocale()==='en'" class="position-absolute" style="lbottom: 4%;left: 28%">
+              <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: 4%;left: 28%">
                 <img draggable="false" v-if="pageStatus === 'create'" src="../../../assets/img/no_active_stamp_en.png">
                 <img draggable="false" v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
                 <img draggable="false" v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
@@ -363,7 +363,7 @@
               <img draggable="false" v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
               <img draggable="false" v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
             </div>
-            <div v-if="getLocale()==='en'" class="position-absolute" style="lbottom: 4%;left: 28%">
+            <div v-if="getLocale()==='en'" class="position-absolute" style="bottom: 4%;left: 28%">
               <img draggable="false" v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp_en.png" class="img-rotate">
               <img draggable="false" v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp_en.png" class="img-rotate">
             </div>
@@ -549,12 +549,16 @@
           return orgNumber;
         }
         this.treeData = nest(newVal)[0];
+        this.superSiteOptions = [];
+        this.superSiteOption = [];
+        this.superSiterFilterOptions = [];
         this.changeOrgTree(this.treeData.children, 1);
+
         this.superSiteOption.unshift({
           text: this.treeData.fieldDesignation,
           value: this.treeData.fieldId
         });
-        this.superSiterFilterOptions = [];
+
         this.superSiteOption.forEach(site => {
             this.superSiterFilterOptions.push(site);
         })
@@ -584,7 +588,7 @@
           }
           return string;
         };
-        this.superSiteOptions = [];
+
         this.superSiteOptions = newVal.map(site => ({
           value: site.fieldId,
           html: `${generateSpace(getLevel(site))}${site.fieldDesignation}`
@@ -854,9 +858,10 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
@@ -884,9 +889,10 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.filterOption,
           'idList': checkedIds.join()
@@ -1087,6 +1093,7 @@
                   });
                 }
                 this.pageStatus = 'table';
+                this.siteData = [];
                 this.getSiteData();
                 this.$refs.vuetable.reload();
                 this.isLoading = false;
@@ -1219,6 +1226,7 @@
                 if (this.siteForm.fieldId > 0)
                   this.siteForm.status = statusValue;
                   this.$refs.vuetable.reload();
+                this.siteData = [];
                 this.getSiteData();
                 break;
               case responseMessages["has-children"]: // has children
@@ -1263,6 +1271,7 @@
                 if (this.siteForm.fieldId > 0)
                   this.siteForm = null;
                 this.$refs.vuetable.refresh();
+                this.siteData = [];
                 this.getSiteData();
                 break;
               case responseMessages["has-children"]: // has children

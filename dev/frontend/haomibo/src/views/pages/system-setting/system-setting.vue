@@ -354,8 +354,13 @@
                       <b-form-select v-model="filter.status" :options="stateOptions" plain/>
                     </b-form-group>
                   </b-col>
+
                   <b-col>
+                    <b-form-group :label="$t('system-setting.parameter-setting.suitable-for')">
+                      <b-form-input v-model="filter.fromDeviceName"/>
+                    </b-form-group>
                   </b-col>
+
 
                 </b-row>
               </b-col>
@@ -931,6 +936,7 @@
         pageStatus: 'table',
         filter: {
           deviceName: '',
+          fromDeviceName:'',
           status: null
         },
         stateOptions: [
@@ -965,6 +971,16 @@
               title: this.$t('log-management.device-log.device'),
               titleClass: 'text-center',
               dataClass: 'text-center'
+            },
+            {
+              name: 'fromParamsList',
+              title: this.$t('system-setting.parameter-setting.suitable-for'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (fromParamsList) => {
+                if (fromParamsList == null) return '';
+                return this.getHandGoodString(fromParamsList);
+              }
             },
             {
               name: 'siteName',
@@ -1075,6 +1091,25 @@
       }
     },
     methods: {
+      getHandGoodString(string) {
+
+        if (string.length === 0) return '';
+        let handGood = string;
+        let k = 0, handGoodStr = '';
+        // for (let j = 0; j < 5; j++) {
+        //if (handGood[0] === this.handGoodDataCode[j]) {
+        handGoodStr = handGood[0].device.deviceName;
+        //}
+        //}
+        for (let i = 1; i < handGood.length; i++) {
+          //for (let j = 0; j < 5; j++) {
+          //if (handGood[i] === this.handGoodDataCode[j]) {
+          handGoodStr += ',' + handGood[i].device.deviceName;
+          //}
+          //}
+        }
+        return handGoodStr;
+      },
       getEvent(e){
 
       },
@@ -1137,6 +1172,7 @@
       onResetButton() {
         this.filter = {
           deviceName: '',
+          fromDeviceName:'',
           status: null
         };
       },

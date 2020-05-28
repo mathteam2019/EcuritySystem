@@ -227,19 +227,6 @@
                 </b-row>
                 <b-row v-show="mainForm.archiveId>0">
                   <b-col cols="4">
-                    <b-form-group>
-                      <template slot="label">{{$t('device-management.device-table.guid')}}<span
-                        class="text-danger">*</span>
-                      </template>
-                      <b-form-input v-model="mainForm.guid" :disabled="true"
-                                    :state="(!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid) && invalidGuid"/>
-                      <div class="invalid-feedback d-block">
-                        {{ (submitted && !$v.mainForm.guid.required) ?
-                        $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
-                      </div>
-                    </b-form-group>
-                  </b-col>
-                  <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.original-number')">
                       <b-form-input v-model="mainForm.originalFactoryNumber"/>
                     </b-form-group>
@@ -285,6 +272,19 @@
                       <b-form-input v-model="mainForm.algorithmVersion"/>
                     </b-form-group>
                   </b-col>
+                  <b-col cols="5">
+                    <b-form-group style="max-width: 100%;">
+                      <template slot="label">{{$t('device-management.device-table.guid')}}<span
+                        class="text-danger">*</span>
+                      </template>
+                      <b-form-input v-model="mainForm.guid" :disabled="true" style="max-width: 100%;"
+                                    :state="(!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid) && invalidGuid"/>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted && !$v.mainForm.guid.required) ?
+                        $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                      </div>
+                    </b-form-group>
+                  </b-col>
                 </b-row>
               </b-col>
 
@@ -318,7 +318,6 @@
                   </b-button>
                 </div>
               </b-col>
-
             </b-row>
           </b-tab>
           <b-tab :title="$t('device-management.device-table.archive-info')" style="height: 100% !important;">
@@ -683,19 +682,7 @@
                   </b-col>
                 </b-row>
                 <b-row>
-                  <b-col cols="4">
-                    <b-form-group>
-                      <template slot="label">{{$t('device-management.device-table.guid')}}<span
-                        class="text-danger">*</span>
-                      </template>
-                      <b-form-input v-model="mainForm.guid" :disabled="true"
-                                    :state="!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid"/>
-                      <div v-if="pageStatus === 'edit'" class="invalid-feedback d-block">
-                        {{ (submitted && !$v.mainForm.guid.required) ?
-                        $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
-                      </div>
-                    </b-form-group>
-                  </b-col>
+
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.original-number')">
                       <b-form-input v-model="mainForm.originalFactoryNumber"/>
@@ -740,6 +727,19 @@
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.algorithm-version')">
                       <b-form-input v-model="mainForm.algorithmVersion"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="5">
+                    <b-form-group style="max-width: 100%;">
+                      <template slot="label">{{$t('device-management.device-table.guid')}}<span
+                        class="text-danger">*</span>
+                      </template>
+                      <b-form-input v-model="mainForm.guid" :disabled="true" style="max-width: 100%"
+                                    :state="!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid"/>
+                      <div v-if="pageStatus === 'edit'" class="invalid-feedback d-block">
+                        {{ (submitted && !$v.mainForm.guid.required) ?
+                        $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                      </div>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -1201,11 +1201,17 @@
               dataClass: 'text-center'
             },
             {
+              name: 'guid',
+              title: 'GUID',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
               name: '__slot:operating',
               title: this.$t('system-setting.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '210px'
+              width: '180px'
             }
           ]
         },
@@ -1330,8 +1336,9 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         this.params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'locale' : getLocale(),
           'sort' : httpOption.params.sort,
           'filter': this.filterOption,
@@ -1360,8 +1367,9 @@
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let httpOption = this.$refs.vuetable.httpOptions;
+        let pagination = this.$refs.vuetable.tablePagination;
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'locale' : getLocale(),
           'sort' : httpOption.params.sort,
           'filter': this.filterOption,
@@ -1415,7 +1423,6 @@
         this.archiveDetailData = {};
         for (let item of this.archivesData) {
           if (item.archiveId === archiveId) {
-            console.log(item);
             this.archiveForm.name = item.archivesName;
             this.archiveForm.number = item.archivesNumber;
             this.archiveForm.templateName = item.archiveTemplate.templateName;

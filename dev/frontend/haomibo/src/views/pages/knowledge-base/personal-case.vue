@@ -19,8 +19,14 @@
               </b-col>
 
               <b-col>
+                <b-form-group :label="$t('knowledge-base.operating-mode')">
+                  <b-form-select v-model="filter.modeName" :options="operationModeOptions" @change="filter.taskResult = null" plain/>
+                </b-form-group>
+              </b-col>
+
+              <b-col>
                 <b-form-group :label="$t('knowledge-base.task-result')">
-                  <b-form-select v-model="filter.taskResult" :options="handResultOption" plain/>
+                  <b-form-select v-model="filter.taskResult" :options="handResultOption2" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -30,7 +36,7 @@
               </b-col>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.seized-item')">
-                  <b-form-select v-model="filter.handGoods" :options="onHandGoodsOption" plain/>
+                  <b-form-select v-model="filter.handGoods" :options="onHandGoodNameOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -63,7 +69,7 @@
               </div>
               <vuetable
                 ref="pendingListTable"
-                track-by="caseDealId"
+                track-by="caseId"
                 :api-url="pendingListTableItems.apiUrl"
                 :fields="pendingListTableItems.fields"
                 :http-fetch="pendingListTableHttpFetch"
@@ -76,9 +82,9 @@
                 class="table-striped"
               >
                 <template slot="task" slot-scope="props">
-                    <span  v-if="props.rowData.history !==null" class="cursor-p text-primary"
+                    <span v-if="props.rowData !==null" class="cursor-p text-primary"
                           @click="onRowClicked(props.rowData)">
-                      {{props.rowData.history.taskNumber}}
+                      {{props.rowData.taskNumber}}
                     </span>
 
                 </template>
@@ -87,7 +93,7 @@
                     size="sm"
                     variant="danger default btn-square"
                     :disabled="checkPermItem('personal_knowledge_delete')"
-                    @click="showModal(props.rowData.caseDealId)">
+                    @click="showModal(props.rowData.caseId)">
                     <i class="icofont-bin"/>
                   </b-button>
                 </div>
@@ -157,12 +163,14 @@
                 <canvas id="firstcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
               </b-col>
               <b-col style="padding-right: 1rem; padding-left: 0.5rem;">
-                <canvas id="secondcanvas"  style="height: 24vw;" class="img-fluid w-100 "/>
+                <canvas id="secondcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
                   <div v-if="power===true">
-                    <b-img draggable="false" :disabled="power===true" src="/assets/img/previous_cartoon.png" class="operation-icon"
+                    <b-img draggable="false" :disabled="power===true" src="/assets/img/previous_cartoon.png"
+                           class="operation-icon"
                            @click="previousImage()"/>
-                    <b-img draggable="false" src="/assets/img/next_cartoon.png" class="operation-icon" @click="nextImage()"/>
+                    <b-img draggable="false" src="/assets/img/next_cartoon.png" class="operation-icon"
+                           @click="nextImage()"/>
                   </div>
                 </div>
               </b-col>
@@ -303,19 +311,23 @@
               <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
                 <vue-slider
                   v-model="slidebar2value"
-                  :min="-50"
-                  :max="50"
+                  :min="-10"
+                  :max="10"
                   :dot-options="dotOptions"
                   :order="false"
+                  @drag-start="setOldContrast"
+                  @drag-end="changeContrast"
                 />
               </b-col>
               <b-col v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
                 <vue-slider
                   v-model="slidebar1value"
-                  :min="-50"
-                  :max="50"
+                  :min="-10"
+                  :max="10"
                   :dot-options="dotOptions"
                   :order="false"
+                  @drag-start="setOldBrightness"
+                  @drag-end="changeBrightness"
                 />
               </b-col>
             </b-row>
@@ -387,14 +399,18 @@
                   </div>
 
                   <div class="top-date">
-                    <label v-if="showPage.workMode==null || showPage.handUserId === null || showPage.judgeEndTime ===null"/>
-                    <label v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('scan')"/>
+                    <label
+                      v-if="showPage.workMode==null || showPage.handUserId === null || showPage.judgeEndTime ===null"/>
+                    <label
+                      v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('scan')"/>
                     <label
                       v-else>{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.workMode==null || showPage.handUserId === null || showPage.handEndTime ===null"/>
-                    <label v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('scan')"/>
+                    <label
+                      v-if="showPage.workMode==null || showPage.handUserId === null || showPage.handEndTime ===null"/>
+                    <label
+                      v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('scan')"/>
                     <label
                       v-else>{{this.getDateTimeFormat2(showPage.handEndTime)}}</label>
                   </div>
@@ -530,7 +546,8 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="showPage.serScan == null || showPage.serScan.scanOffLine==null" :value="getOptionValue(0)"/>
+                                v-if="showPage.serScan == null || showPage.serScan.scanOffLine==null"
+                                :value="getOptionValue(0)"/>
                   <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(showPage.serScan.scanOffLine)"/>
                 </b-form-group>
@@ -544,7 +561,7 @@
               <b-col>
                 <b-form-group class="form-group-margin">
                   <template slot="label">
-                     {{$t('permission-management.note')}}
+                    {{$t('permission-management.note')}}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border" style="max-width: 100%;"
@@ -561,36 +578,43 @@
                 <label
                   style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.seized-contraband')}}</label>
                 <b-row class="justify-content-start" style="margin-bottom: 2rem; margin-top: 1rem">
-                  <b-col>
-                    <div v-if="handGoodExpanded[0]" class="text-center"
-                         style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[0]].text}}</span>
+                  <b-col cols="3" v-for="(item, index) in handGoodItems">
+                    <div v-if="item" class="text-center"
+                         :style="'background-color:rgb(255,' + index*32 + ', 0)'"
+                         style="padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                      <span>{{item}}</span>
                     </div>
                   </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[1]" class="text-center"
-                         style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[1]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[2]" class="text-center"
-                         style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[2]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[3]" class="text-center"
-                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[3]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[4]" class="text-center"
-                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[4]].text}}</span>
-                    </div>
-                  </b-col>
+                  <!--                  <b-col>-->
+                  <!--                    <div v-if="handGoodExpanded[0]" class="text-center"-->
+                  <!--                         style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+                  <!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[0]].text}}</span>-->
+                  <!--                    </div>-->
+                  <!--                  </b-col>-->
+                  <!--                  <b-col>-->
+                  <!--                    <div v-if="handGoodExpanded[1]" class="text-center"-->
+                  <!--                         style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+                  <!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[1]].text}}</span>-->
+                  <!--                    </div>-->
+                  <!--                  </b-col>-->
+                  <!--                  <b-col>-->
+                  <!--                    <div v-if="handGoodExpanded[2]" class="text-center"-->
+                  <!--                         style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+                  <!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[2]].text}}</span>-->
+                  <!--                    </div>-->
+                  <!--                  </b-col>-->
+                  <!--                  <b-col>-->
+                  <!--                    <div v-if="handGoodExpanded[3]" class="text-center"-->
+                  <!--                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+                  <!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[3]].text}}</span>-->
+                  <!--                    </div>-->
+                  <!--                  </b-col>-->
+                  <!--                  <b-col>-->
+                  <!--                    <div v-if="handGoodExpanded[4]" class="text-center"-->
+                  <!--                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+                  <!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[4]].text}}</span>-->
+                  <!--                    </div>-->
+                  <!--                  </b-col>-->
                 </b-row>
 
                 <div
@@ -614,38 +638,57 @@
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
-                  <b-col v-if="getLocale()==='zh' || getLocale() === null" cols="12" class="align-self-end text-right mt-3"
+                  <b-col v-if="getLocale()==='zh' || getLocale() === null" cols="12"
+                         class="align-self-end text-right mt-3"
                          style="width: 100%; height: 130px !important;">
-                    <div v-if="showPage.handResult !== null">
-                      <b-img draggable="false" v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid.png"
+                    <div v-if="showPage.handTaskResults !== null">
+                      <b-img draggable="false" v-if="showPage.handTaskResults === 'TRUE'"
+                             src="/assets/img/icon_invalid.png"
                              class="align-self-end img-result"/>
-                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid.png"
+                      <b-img draggable="false" v-if="showPage.handTaskResults === 'FALSE'"
+                             src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
+                      <!--                      <b-img draggable="false" v-if="showPage.handTaskResults === '1000000601'" src="/assets/img/icon_invalid.png"-->
+                      <!--                             class="align-self-end img-result"/>-->
+                      <!--                      <b-img draggable="false" v-if="showPage.handTaskResults === '1000000602'" src="/assets/img/icon_valid.png"-->
+                      <!--                             class="align-self-end img-result"/>-->
                     </div>
-                    <div v-else-if="showPage.judgeResult!==null">
-                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid.png"
-                             class="align-self-end img-result"/>
-                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid.png"
-                             class="align-self-end img-result"/>
-                    </div>
+                    <!--                    <div v-else-if="showPage.judgeResult!==null">-->
+                    <!--                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid.png"-->
+                    <!--                             class="align-self-end img-result"/>-->
+                    <!--                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid.png"-->
+                    <!--                             class="align-self-end img-result"/>-->
+                    <!--                    </div>-->
                     <div v-else>
                       <b-img draggable="false" src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
                     </div>
                   </b-col>
                   <b-col v-if="getLocale()==='en'" cols="12" class="align-self-end text-right mt-3">
-                    <div v-if="showPage.handResult !== null">
-                      <b-img draggable="false" v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
+                    <div v-if="showPage.handTaskResults !== null">
+                      <b-img draggable="false" v-if="showPage.handTaskResults === 'TRUE'"
+                             src="/assets/img/icon_invalid_en.png"
                              class="align-self-end img-result"/>
-                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
+                      <b-img draggable="false" v-if="showPage.handTaskResults === 'FALSE'"
+                             src="/assets/img/icon_valid_en.png"
                              class="align-self-end img-result"/>
+                      <!--                      <b-img draggable="false" v-if="showPage.handTaskResults === '1000000601'" src="/assets/img/icon_invalid_en.png"-->
+                      <!--                             class="align-self-end img-result"/>-->
+                      <!--                      <b-img draggable="false" v-if="showPage.handTaskResults === '1000000602'" src="/assets/img/icon_valid_en.png"-->
+                      <!--                             class="align-self-end img-result"/>-->
                     </div>
-                    <div v-else-if="showPage.judgeResult!==null">
-                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
-                             class="align-self-end img-result"/>
-                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
-                             class="align-self-end img-result"/>
-                    </div>
+                    <!--                    <div v-if="showPage.handGoods !== null">-->
+                    <!--                      <b-img draggable="false" v-if="showPage.handGoods === 'TRUE'" src="/assets/img/icon_invalid_en.png"-->
+                    <!--                             class="align-self-end img-result"/>-->
+                    <!--                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid_en.png"-->
+                    <!--                             class="align-self-end img-result"/>-->
+                    <!--                    </div>-->
+                    <!--                    <div v-else-if="showPage.judgeResult!==null">-->
+                    <!--                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"-->
+                    <!--                             class="align-self-end img-result"/>-->
+                    <!--                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid_en.png"-->
+                    <!--                             class="align-self-end img-result"/>-->
+                    <!--                    </div>-->
                     <div v-else>
                       <b-img draggable="false" src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
@@ -679,10 +722,11 @@
         <span class="switch-action" @click="finishVideoShow()"><i class="icofont-close-line"/></span>
       </div>
     </div>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -724,33 +768,39 @@
   </div>
 </template>
 <style lang="scss">
-  .vue_slider{
+  .vue_slider {
     height: 15px !important;
     width: -moz-available;
     width: -webkit-fill-available;
   }
+
   .col-form-label {
     margin-bottom: 1px;
   }
-  .col-30{
+
+  .col-30 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 30%;
     flex: 0 0 30%;
     max-width: 30%;
   }
-  .col-70{
+
+  .col-70 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 70%;
     flex: 0 0 70%;
     max-width: 70%;
   }
-  .form-group-margin{
+
+  .form-group-margin {
     margin-bottom: 1.5rem;
   }
-  .form-input-border{
+
+  .form-input-border {
     background-color: white !important;
     border: 1px solid #ebebeb;
   }
+
   span.cursor-p {
     cursor: pointer !important;
   }
@@ -977,10 +1027,11 @@
     },
     mounted() {
       this.getSiteOption();
+      this.getHandGoodOption();
     },
     data() {
       return {
-      value1: 0,
+        value1: 0,
         value2: [0, 0],
         dotOptions: [{
           disabled: true
@@ -998,16 +1049,19 @@
         },
         selectedVideo: null,
         isExpanded: false,
-        loadingTable:false,
+        loadingTable: false,
         pageStatus: 'table',
-        power: true,
+        power: false,
         siteData: [],
         showPage: [],
-        renderedCheckList:[],
+        renderedCheckList: [],
+        onHandGoodNameData:[],
+        onHandGoodNameOptions :[],
         link: '',
         params: {},
         name: '',
-        fileSelection : [],
+        fileSelection: [],
+        handGoodItems: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -1020,10 +1074,9 @@
         isSlidebar2Expended: false,
         slidebar1value: [0, 0],
         slidebar2value: [0, 0],
-        // isSlidebar3Expended:false,
-        // isSlidebar4Expended:false,
-        // slidebar3value:0,
-        // slidebar4value:0,
+        slider1OldValue: 0,
+        slider1NewValue: 0,
+        slider2OldValue: 0,
         caseDealId: 0,
         slider: {
           lineHeight: 10,
@@ -1039,6 +1092,7 @@
           fieldId: null,
           caseStatus: "1000002503",
           taskNumber: null,
+          modeName: null,
           taskResult: null,
           fieldDesignation: null,
           handGoods: null,
@@ -1067,8 +1121,20 @@
 
         handResultOption: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'TRUE', text: this.$t('knowledge-base.seized')},
-          {value: 'FALSE', text: this.$t('knowledge-base.no-seized')},
+          {value: '0', text: this.$t('knowledge-base.seized')},
+          {value: '1', text: this.$t('knowledge-base.no-seized')},
+          {value: '2', text: this.$t('knowledge-base.suspect')},
+          {value: '3', text: this.$t('knowledge-base.no-suspect')},
+        ],
+        handResultOption1: [
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: '0', text: this.$t('knowledge-base.seized')},
+          {value: '1', text: this.$t('knowledge-base.no-seized')},
+        ],
+        handResultOption2: [
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: '2', text: this.$t('knowledge-base.suspect')},
+          {value: '3', text: this.$t('knowledge-base.no-suspect')},
         ],
 
         onSiteOption: [],
@@ -1103,31 +1169,33 @@
               dataClass: 'text-center'
             },
             {
-              name: 'handTaskResult',
+              name: 'handTaskResults',
               title: this.$t('knowledge-base.task-result'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (handTaskResult) => {
+              callback: (handTaskResults) => {
 
                 const dictionary = {
-                  "TRUE": `<span style="color:#ef6e69;">${this.$t('knowledge-base.seized')}</span>`,
-                  "FALSE": `<span style="color:#e8a23e;">${this.$t('knowledge-base.no-seized')}</span>`,
+
+                  "1000000601": `<span style="color:#ef6e69;">${this.$t('knowledge-base.suspect')}</span>`,
+                  "1000000602": `<span style="color:#e8a23e;">${this.$t('knowledge-base.no-suspect')}</span>`,
+
                 };
 
-                if (handTaskResult == null) return '';
-                if (!dictionary.hasOwnProperty(handTaskResult)) return '';
-                return dictionary[handTaskResult];
+                if (handTaskResults == null) return '';
+                if (!dictionary.hasOwnProperty(handTaskResults)) return '';
+                return dictionary[handTaskResults];
               }
             },
             {
-              name: 'history',
+              name: 'fieldDesignation',
               title: this.$t('knowledge-base.site'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (history) => {
-                if (history == null) return '';
-                return history.fieldDesignation;
-              }
+              // callback: (history) => {
+              //   if (history == null) return '';
+              //   return history.fieldDesignation;
+              // }
             },
             {
               name: 'scanDevice',
@@ -1141,13 +1209,13 @@
             },
 
             {
-              name: 'handGoods',
+              name: 'handGoodsList',
               title: this.$t('knowledge-base.seized-item'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (handGoods) => {
-                if (handGoods == null) return '';
-                return this.getHandGoodString(handGoods);
+              callback: (handGoodsList) => {
+                if (handGoodsList == null) return '';
+                return this.getHandGoodString(handGoodsList);
               }
             },
             {
@@ -1182,8 +1250,8 @@
         cartoonRectL: [],
         cntCartoon: 0,
         orderCartoon: 0,
-        mode:null,
-        conclusionType:null,
+        mode: null,
+        conclusionType: null,
         defaultUserId: 10000,
         modal_video_url: "",
         detailForm: {},
@@ -1202,44 +1270,44 @@
         this.changeCheckAllStatus();
       },
       siteData: function (newVal, oldVal) {
-          this.onSiteOption = [];
-          let nest = (newVal, id = 0, depth = 1) =>
-              newVal
-                  .filter(item => item.parentFieldId == id)
-                  .map(item => ({
-                      data: {fieldId: item.fieldId},
-                      children: nest(newVal, item.fieldId, depth + 1),
-                      text: item.fieldDesignation
-                  }));
-          let treeData = nest(newVal);
+        this.onSiteOption = [];
+        let nest = (newVal, id = 0, depth = 1) =>
+          newVal
+            .filter(item => item.parentFieldId == id)
+            .map(item => ({
+              data: {fieldId: item.fieldId},
+              children: nest(newVal, item.fieldId, depth + 1),
+              text: item.fieldDesignation
+            }));
+        let treeData = nest(newVal);
 
-          let generateSpace = (count) => {
-              let string = '';
-              while (count--) {
-                  string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-              }
-              return string;
-          };
+        let generateSpace = (count) => {
+          let string = '';
+          while (count--) {
+            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+          }
+          return string;
+        };
 
-          let changeFieldTree = (treeData, index) => {
-              if (!treeData || treeData.length === 0) {
-                  return;
-              }
-              let tmp = treeData;
-              for (let i = 0; i < tmp.length; i++) {
-                  changeFieldTree(tmp[i].children, index + 1);
-                  this.onSiteOption.unshift({
-                      value: tmp[i].data.fieldId,
-                      html: `${generateSpace(index)}${tmp[i].text}`
-                  });
-              }
-          };
+        let changeFieldTree = (treeData, index) => {
+          if (!treeData || treeData.length === 0) {
+            return;
+          }
+          let tmp = treeData;
+          for (let i = 0; i < tmp.length; i++) {
+            changeFieldTree(tmp[i].children, index + 1);
+            this.onSiteOption.unshift({
+              value: tmp[i].data.fieldId,
+              html: `${generateSpace(index)}${tmp[i].text}`
+            });
+          }
+        };
 
-          changeFieldTree(treeData, 1);
-          this.onSiteOption.unshift({
-              value: null,
-              html: `${this.$t('permission-management.all')}`
-          });
+        changeFieldTree(treeData, 1);
+        this.onSiteOption.unshift({
+          value: null,
+          html: `${this.$t('permission-management.all')}`
+        });
       },
 
       power(newValue) {
@@ -1248,77 +1316,141 @@
         this.loadImage();
       },
 
-      slidebar1value(newsValue, oldValue) {
-
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
-            this.filterId(5);
-          }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
-            this.filterId(6);
-          }
-        }
+      onHandGoodNameData(newVal, oldVal) { // maybe called when the org data is loaded from server
+        let options = [];
+        options = newVal.map(site => ({
+          text: site.dataValue,
+          value: site.dataCode
+        }));
+        this.onHandGoodNameOptions = options;
+        this.onHandGoodNameOptions.unshift({
+          text: `${this.$t('permission-management.all')}`,
+          value: null,
+        });
       },
 
-      slidebar2value(newsValue, oldValue) {
-
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
-            this.filterId(7);
-          }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
-            this.filterId(8);
-          }
-        }
-      },
+      // slidebar1value(newsValue, oldValue) {
+      //
+      //   if(oldValue[1]<newsValue[1]) {
+      //     for(let i=oldValue[1]; i<newsValue[1]; i++) {
+      //       this.filterId(5);
+      //     }
+      //   }
+      //   else {
+      //     for(let i=newsValue[1]; i<oldValue[1]; i++) {
+      //       this.filterId(6);
+      //     }
+      //   }
+      // },
+      //
+      // slidebar2value(newsValue, oldValue) {
+      //
+      //   if(oldValue[1]<newsValue[1]) {
+      //     for(let i=oldValue[1]; i<newsValue[1]; i++) {
+      //       this.filterId(7);
+      //     }
+      //   }
+      //   else {
+      //     for(let i=newsValue[1]; i<oldValue[1]; i++) {
+      //       this.filterId(8);
+      //     }
+      //   }
+      // },
     },
     methods: {
-      selectAll(value){
+      getHandGoodOption(){
+        getApiManagerError()
+          .post(`${apiBaseUrl}/dictionary-management/dictionary-data/get-by-id`, {
+            'dictionaryId': 16
+          })
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']:
+                this.onHandGoodNameData = data;
+                break;
+            }
+          })
+          .catch((error) => {
+          });
+      },
+      setOldBrightness() {
+        this.slider1OldValue = this.slidebar1value[1];
+      },
+      changeBrightness() {
+
+        if (this.slider1OldValue < this.slidebar1value[1]) {
+          //for (let i = this.slider1OldValue; i < slidebar1value; i++) {
+          this.filterId(5, this.slidebar1value[1] - this.slider1OldValue);
+          //}
+        } else if (this.slider1OldValue > this.slidebar1value[1]) {
+          //for (let i = slidebar1value; i < this.slider1OldValue; i++) {
+          this.filterId(6, this.slider1OldValue - this.slidebar1value[1]);
+          //}
+        }
+        //this.slider1OldValue = this.slidebar1value[1];
+
+      },
+      setOldContrast() {
+        this.slider2OldValue = this.slidebar2value[1]
+      },
+      changeContrast() {
+
+        if (this.slider2OldValue < this.slidebar2value[1]) {
+          //for (let i = this.slider2OldValue; i < this.slidebar2value[1]; i++) {
+          this.filterId(7, this.slidebar2value[1] - this.slider2OldValue);
+          //}
+        } else if (this.slider2OldValue > this.slidebar2value[1]) {
+          //for (let i = this.slidebar2value[1]; i < this.slider2OldValue; i++) {
+          this.filterId(8, this.slider2OldValue - this.slidebar2value[1]);
+          //}
+        }
+        //this.slider2OldValue = this.slidebar2value[1]
+      },
+      selectAll(value) {
         this.$refs.pendingListTable.toggleAllCheckboxes('__checkbox', {target: {checked: value}});
-        this.$refs.pendingListTable.isCheckAllStatus=value;
+        this.$refs.pendingListTable.isCheckAllStatus = value;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.pendingListTable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = value;
       },
-      selectNone(){
-        this.$refs.pendingListTable.isCheckAllStatus=false;
+      selectNone() {
+        this.$refs.pendingListTable.isCheckAllStatus = false;
         let checkBoxId = "vuetable-check-header-2-" + this.$refs.pendingListTable.uuid;
-        let checkAllButton =  document.getElementById(checkBoxId);
+        let checkAllButton = document.getElementById(checkBoxId);
         checkAllButton.checked = false;
       },
-      changeCheckAllStatus(){
+      changeCheckAllStatus() {
         let selectList = this.$refs.pendingListTable.selectedTo;
         let renderedList = this.renderedCheckList;
-        if(selectList.length>=renderedList.length){
+        if (selectList.length >= renderedList.length) {
           let isEqual = false;
-          for(let i=0; i<renderedList.length; i++){
+          for (let i = 0; i < renderedList.length; i++) {
             isEqual = false;
-            for(let j=0; j<selectList.length; j++){
-              if(renderedList[i]===selectList[j]) {j=selectList.length; isEqual=true}
+            for (let j = 0; j < selectList.length; j++) {
+              if (renderedList[i] === selectList[j]) {
+                j = selectList.length;
+                isEqual = true
+              }
             }
-            if(isEqual===false){
+            if (isEqual === false) {
               this.selectNone();
               break;
             }
-            if(i===renderedList.length-1){
+            if (i === renderedList.length - 1) {
               this.selectAll(true);
             }
           }
-        }
-        else {
+        } else {
           this.selectNone();
         }
 
       },
-      onCheckStatusChange(isChecked){
-        if(isChecked){
+      onCheckStatusChange(isChecked) {
+        if (isChecked) {
           this.changeCheckAllStatus();
-        }
-        else {
+        } else {
           this.selectNone();
         }
       },
@@ -1364,14 +1496,14 @@
         }
       },
 
-      filterId(id) {
+      filterId(id, value = 0) {
         if (id < 5 || id > 8) {
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
 
         }
         if (this.power === true) {
-          imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
+          imageFilterById(id, this.cartoonRectL, this.cartoonRectR, value);
         }
       },
 
@@ -1397,17 +1529,17 @@
 
           if (this.cartoonsInfo[k] !== undefined) {
             url1 = this.cartoonsInfo[k].imageUrl;
-            if(this.cartoonsInfo[k].imageRect!=null) {
-              if(this.cartoonsInfo[k].rectsDel != null){
+            if (this.cartoonsInfo[k].imageRect != null) {
+              if (this.cartoonsInfo[k].rectsDel != null) {
                 for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
                   let isDeleted = false;
                   for (let j = 0; j < this.cartoonsInfo[k].rectsDel.length; j++) {
-                    if(this.cartoonsInfo[k].imageRect[i].x === this.cartoonsInfo[k].rectsDel[j].x && this.cartoonsInfo[k].imageRect[i].y === this.cartoonsInfo[k].rectsDel[j].y && this.cartoonsInfo[k].imageRect[i].width === this.cartoonsInfo[k].rectsDel[j].width && this.cartoonsInfo[k].imageRect[i].height === this.cartoonsInfo[k].rectsDel[j].height) {
+                    if (this.cartoonsInfo[k].imageRect[i].x === this.cartoonsInfo[k].rectsDel[j].x && this.cartoonsInfo[k].imageRect[i].y === this.cartoonsInfo[k].rectsDel[j].y && this.cartoonsInfo[k].imageRect[i].width === this.cartoonsInfo[k].rectsDel[j].width && this.cartoonsInfo[k].imageRect[i].height === this.cartoonsInfo[k].rectsDel[j].height) {
                       isDeleted = true;
                       break;
                     }
                   }
-                  if(!isDeleted) {
+                  if (!isDeleted) {
                     this.cartoonRectL.push({
                       x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
                       y: this.cartoonsInfo[k].rateHeight * this.cartoonsInfo[k].imageRect[i].y,
@@ -1420,20 +1552,19 @@
                 for (let i = 0; i < this.cartoonsInfo[k].rectsDel.length; i++) {
                   let isDeleted = false;
                   for (let j = 0; j < this.cartoonsInfo[k].imageRect.length; j++) {
-                    if(this.cartoonsInfo[k].rectsDel[i].x === this.cartoonsInfo[k].imageRect[j].x && this.cartoonsInfo[k].rectsDel[i].y === this.cartoonsInfo[k].imageRect[j].y && this.cartoonsInfo[k].rectsDel[i].width === this.cartoonsInfo[k].imageRect[j].width && this.cartoonsInfo[k].rectsDel[i].height === this.cartoonsInfo[k].imageRect[j].height) {
+                    if (this.cartoonsInfo[k].rectsDel[i].x === this.cartoonsInfo[k].imageRect[j].x && this.cartoonsInfo[k].rectsDel[i].y === this.cartoonsInfo[k].imageRect[j].y && this.cartoonsInfo[k].rectsDel[i].width === this.cartoonsInfo[k].imageRect[j].width && this.cartoonsInfo[k].rectsDel[i].height === this.cartoonsInfo[k].imageRect[j].height) {
                       isDeleted = true;
                       break;
                     }
                   }
-                  if(!isDeleted) {
+                  if (!isDeleted) {
                     this.cartoonsInfo[k].rectsDel[i].x = 0;
                     this.cartoonsInfo[k].rectsDel[i].y = 0;
                     this.cartoonsInfo[k].rectsDel[i].width = 0;
                     this.cartoonsInfo[k].rectsDel[i].height = 0;
                   }
                 }
-              }
-              else {
+              } else {
                 for (let i = 0; i < this.cartoonsInfo[k].imageRect.length; i++) {
                   this.cartoonRectL.push({
                     x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].imageRect[i].x,
@@ -1446,7 +1577,7 @@
               }
             }
             if (this.cartoonsInfo[k].rectsAdd != null) {
-            for (let i = 0; i < this.cartoonsInfo[k].rectsAdd.length; i++) {
+              for (let i = 0; i < this.cartoonsInfo[k].rectsAdd.length; i++) {
 
                 this.cartoonRectL.push({
                   x: this.cartoonsInfo[k].rateWidth * this.cartoonsInfo[k].rectsAdd[i].x,
@@ -1476,16 +1607,16 @@
           if (this.cartoonsInfo[k + 1] !== undefined) {
             url2 = this.cartoonsInfo[k + 1].imageUrl;
             if (this.cartoonsInfo[k + 1].imageRect != null) {
-              if(this.cartoonsInfo[k + 1].rectsDel != null){
-                for (let i = 0; i < this.cartoonsInfo[k+ 1].imageRect.length; i++) {
+              if (this.cartoonsInfo[k + 1].rectsDel != null) {
+                for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
                   let isDeleted = false;
-                  for (let j = 0; j < this.cartoonsInfo[k+ 1].rectsDel.length; j++) {
-                    if(this.cartoonsInfo[k+ 1].imageRect[i].x === this.cartoonsInfo[k+ 1].rectsDel[j].x && this.cartoonsInfo[k+ 1].imageRect[i].y === this.cartoonsInfo[k+ 1].rectsDel[j].y && this.cartoonsInfo[k+ 1].imageRect[i].width === this.cartoonsInfo[k+ 1].rectsDel[j].width && this.cartoonsInfo[k+ 1].imageRect[i].height === this.cartoonsInfo[k+ 1].rectsDel[j].height) {
+                  for (let j = 0; j < this.cartoonsInfo[k + 1].rectsDel.length; j++) {
+                    if (this.cartoonsInfo[k + 1].imageRect[i].x === this.cartoonsInfo[k + 1].rectsDel[j].x && this.cartoonsInfo[k + 1].imageRect[i].y === this.cartoonsInfo[k + 1].rectsDel[j].y && this.cartoonsInfo[k + 1].imageRect[i].width === this.cartoonsInfo[k + 1].rectsDel[j].width && this.cartoonsInfo[k + 1].imageRect[i].height === this.cartoonsInfo[k + 1].rectsDel[j].height) {
                       isDeleted = true;
                       break;
                     }
                   }
-                  if(!isDeleted) {
+                  if (!isDeleted) {
                     this.cartoonRectR.push({
                       x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
                       y: this.cartoonsInfo[k + 1].rateHeight * this.cartoonsInfo[k + 1].imageRect[i].y,
@@ -1498,20 +1629,19 @@
                 for (let i = 0; i < this.cartoonsInfo[k + 1].rectsDel.length; i++) {
                   let isDeleted = false;
                   for (let j = 0; j < this.cartoonsInfo[k + 1].imageRect.length; j++) {
-                    if(this.cartoonsInfo[k + 1].rectsDel[i].x === this.cartoonsInfo[k + 1].imageRect[j].x && this.cartoonsInfo[k + 1].rectsDel[i].y === this.cartoonsInfo[k + 1].imageRect[j].y && this.cartoonsInfo[k + 1].rectsDel[i].width === this.cartoonsInfo[k + 1].imageRect[j].width && this.cartoonsInfo[k + 1].rectsDel[i].height === this.cartoonsInfo[k + 1].imageRect[j].height) {
+                    if (this.cartoonsInfo[k + 1].rectsDel[i].x === this.cartoonsInfo[k + 1].imageRect[j].x && this.cartoonsInfo[k + 1].rectsDel[i].y === this.cartoonsInfo[k + 1].imageRect[j].y && this.cartoonsInfo[k + 1].rectsDel[i].width === this.cartoonsInfo[k + 1].imageRect[j].width && this.cartoonsInfo[k + 1].rectsDel[i].height === this.cartoonsInfo[k + 1].imageRect[j].height) {
                       isDeleted = true;
                       break;
                     }
                   }
-                  if(!isDeleted) {
+                  if (!isDeleted) {
                     this.cartoonsInfo[k + 1].rectsDel[i].x = 0;
                     this.cartoonsInfo[k + 1].rectsDel[i].y = 0;
                     this.cartoonsInfo[k + 1].rectsDel[i].width = 0;
                     this.cartoonsInfo[k + 1].rectsDel[i].height = 0;
                   }
                 }
-              }
-              else {
+              } else {
                 for (let i = 0; i < this.cartoonsInfo[k + 1].imageRect.length; i++) {
                   this.cartoonRectR.push({
                     x: this.cartoonsInfo[k + 1].rateWidth * this.cartoonsInfo[k + 1].imageRect[i].x,
@@ -1568,20 +1698,21 @@
       },
 
       getHandGoodString(string) {
-        if (string === '') return '';
-        let handGood = string.split(",");
+
+        if (string.length === 0) return '';
+        let handGood = string;
         let k = 0, handGoodStr = '';
-        for (let j = 0; j < 5; j++) {
-          if (handGood[0] === this.handGoodDataCode[j]) {
-            handGoodStr = this.handGoodDataCodeValue[this.handGoodDataCode[j]].text;
-          }
-        }
+        // for (let j = 0; j < 5; j++) {
+        //if (handGood[0] === this.handGoodDataCode[j]) {
+        handGoodStr = handGood[0];
+        //}
+        //}
         for (let i = 1; i < handGood.length; i++) {
-          for (let j = 0; j < 5; j++) {
-            if (handGood[i] === this.handGoodDataCode[j]) {
-              handGoodStr += ',' + this.handGoodDataCodeValue[this.handGoodDataCode[j]].text;
-            }
-          }
+          //for (let j = 0; j < 5; j++) {
+          //if (handGood[i] === this.handGoodDataCode[j]) {
+          handGoodStr += ',' + handGood[i];
+          //}
+          //}
         }
         return handGoodStr;
       },
@@ -1660,8 +1791,8 @@
           });
 
       },
-      
-       getLocale() {
+
+      getLocale() {
 
         return getLocale();
       },
@@ -1674,7 +1805,32 @@
         this.cntCartoon = 0;
         this.orderCartoon = 0;
         this.judgeUserId = null;
-        this.caseDealId = data.caseDealId;
+        this.caseDealId = data.caseId;
+        this.judgeStartTime = null;
+        this.judgeDeviceName = null;
+
+        this.judgeUserName = null;
+        this.handStartTime = null;
+        this.handDeviceName = null;
+        this.handUserName = null;
+
+        this.thumbs = [];
+        this.videos = [];
+        this.images = [];
+        this.imgRect = [];
+        this.cartoonRect = [];
+        this.rRects = [];
+        this.imagesInfo = [];
+        this.cartoonsInfo = [];
+        this.imageRectR = [];
+        this.imageRectL = [];
+        this.cartoonRectR = [];
+        this.cartoonRectL = [];
+        this.collectionLabel = [];
+        this.handGoodItems = [];
+        this.handGoodExpanded = [];
+        this.handGoodDataCodeExpanded = [];
+
         let url1 = '';
         let url2 = '';
         let rateWidth, rateHeight;
@@ -1697,52 +1853,29 @@
 
                 //if(this.showPage.workFlow.modeName
                 let modeName;
-                this.judgeStartTime = null;
-                this.judgeDeviceName = null;
-
-                this.judgeUserName = null;
-                this.handStartTime = null;
-                this.handDeviceName = null;
-                this.handUserName = null;
-
-                this.thumbs = [];
-                this.videos = [];
-                this.images = [];
-                this.imgRect = [];
-                this.cartoonRect = [];
-                this.rRects = [];
-                this.imagesInfo = [];
-                this.cartoonsInfo = [];
-                this.imageRectR = [];
-                this.imageRectL = [];
-                this.cartoonRectR = [];
-                this.cartoonRectL = [];
-                this.collectionLabel = [];
-                this.handGoodExpanded = [];
-                this.handGoodDataCodeExpanded = [];
 
                 // this.conclusionType = null;
                 // if(this.judgeUserId===this.defaultUserId) {
                 //   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
                 // }
 
-                deviceImage=[];
-                submitRects=[];
+                deviceImage = [];
+                submitRects = [];
                 colourInfo = this.showPage.platFormCheckParams;
 
-                if(this.showPage.serScan!==undefined && this.showPage.serScan!==null) {
-                  if(this.showPage.serScan.scanDeviceImages!== null) {
+                if (this.showPage.serScan !== undefined && this.showPage.serScan !== null) {
+                  if (this.showPage.serScan.scanDeviceImages !== null) {
                     deviceImage = this.showPage.serScan.scanDeviceImages;
                     deviceImage = JSON.parse(deviceImage);
                   }
                 }
 
                 if (this.showPage.serJudgeGraph !== undefined && this.showPage.serJudgeGraph !== null) {
-                  if(this.showPage.serJudgeGraph.judgeCartoonRects !== undefined && this.showPage.serJudgeGraph.judgeCartoonRects !== null) {
+                  if (this.showPage.serJudgeGraph.judgeCartoonRects !== undefined && this.showPage.serJudgeGraph.judgeCartoonRects !== null) {
                     cartoonRects = this.showPage.serJudgeGraph.judgeCartoonRects;
                     cartoonRects = JSON.parse(cartoonRects);
                   }
-                  if (this.showPage.serJudgeGraph.judgeSubmitrects !== undefined &&  this.showPage.serJudgeGraph.judgeSubmitrects !== null) {
+                  if (this.showPage.serJudgeGraph.judgeSubmitrects !== undefined && this.showPage.serJudgeGraph.judgeSubmitrects !== null) {
                     submitRects = this.showPage.serJudgeGraph.judgeSubmitrects;
                     submitRects = JSON.parse(submitRects);
                   }
@@ -1754,48 +1887,48 @@
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
-                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 1 / deviceImage[i].width :0,
-                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 1 / deviceImage[i].height :0,
+                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width != null ? 1 / deviceImage[i].width : 0,
+                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 1 / deviceImage[i].height : 0,
                         imageUrl: deviceImage[i].cartoon,
                         imageRect: deviceImage[i].cartoonRects,
                         colorRect: colourInfo.scanRecogniseColour,
                         colorAdd: colourInfo.judgeRecogniseColour,
                         colorDel: colourInfo.displayDeleteSuspicionColour,
                         displayDel: colourInfo.displayDeleteSuspicion,
-                        rectsAdd: cartoonRects !=null && cartoonRects[i] != undefined? cartoonRects[i].rectsAdded : null,
-                        rectsDel: cartoonRects !=null && cartoonRects[i] != undefined?  cartoonRects[i].rectsDeleted : null
+                        rectsAdd: cartoonRects != null && cartoonRects[i] != undefined ? cartoonRects[i].rectsAdded : null,
+                        rectsDel: cartoonRects != null && cartoonRects[i] != undefined ? cartoonRects[i].rectsDeleted : null
                       });
                     }
 
 
-                      this.cartoonsInfo.push({
-                        rateWidth: deviceImage[i].width != 0 && deviceImage[i].width !=null ? 1 / deviceImage[i].width :0,
-                        rateHeight: deviceImage[i].width != 0 && deviceImage[i].width !=null ?  1 / deviceImage[i].height :0,
-                        imageUrl: deviceImage[i].image,
-                        imageRect: deviceImage[i].imageRects,
-                        colorRect: colourInfo.scanRecogniseColour,
-                        colorAdd: colourInfo.judgeRecogniseColour,
-                        colorDel: colourInfo.displayDeleteSuspicionColour,
-                        displayDel: colourInfo.displayDeleteSuspicion,
-                        rectsAdd: submitRects !=null && submitRects[i] != undefined? submitRects[i].rectsAdded : null,
-                        rectsDel: submitRects !=null && submitRects[i] != undefined?  submitRects[i].rectsDeleted : null
-                      });
+                    this.cartoonsInfo.push({
+                      rateWidth: deviceImage[i].width != 0 && deviceImage[i].width != null ? 1 / deviceImage[i].width : 0,
+                      rateHeight: deviceImage[i].width != 0 && deviceImage[i].width != null ? 1 / deviceImage[i].height : 0,
+                      imageUrl: deviceImage[i].image,
+                      imageRect: deviceImage[i].imageRects,
+                      colorRect: colourInfo.scanRecogniseColour,
+                      colorAdd: colourInfo.judgeRecogniseColour,
+                      colorDel: colourInfo.displayDeleteSuspicionColour,
+                      displayDel: colourInfo.displayDeleteSuspicion,
+                      rectsAdd: submitRects != null && submitRects[i] != undefined ? submitRects[i].rectsAdded : null,
+                      rectsDel: submitRects != null && submitRects[i] != undefined ? submitRects[i].rectsDeleted : null
+                    });
 
                   }
                 }
 
                 if (this.imagesInfo[0] !== undefined) {
                   if (this.imagesInfo[0].imageRect != null) {
-                    if(this.imagesInfo[0].rectsDel != null){
+                    if (this.imagesInfo[0].rectsDel != null) {
                       for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
                         let isDeleted = false;
                         for (let j = 0; j < this.imagesInfo[0].rectsDel.length; j++) {
-                          if(this.imagesInfo[0].imageRect[i].x === this.imagesInfo[0].rectsDel[j].x && this.imagesInfo[0].imageRect[i].y === this.imagesInfo[0].rectsDel[j].y && this.imagesInfo[0].imageRect[i].width === this.imagesInfo[0].rectsDel[j].width && this.imagesInfo[0].imageRect[i].height === this.imagesInfo[0].rectsDel[j].height) {
+                          if (this.imagesInfo[0].imageRect[i].x === this.imagesInfo[0].rectsDel[j].x && this.imagesInfo[0].imageRect[i].y === this.imagesInfo[0].rectsDel[j].y && this.imagesInfo[0].imageRect[i].width === this.imagesInfo[0].rectsDel[j].width && this.imagesInfo[0].imageRect[i].height === this.imagesInfo[0].rectsDel[j].height) {
                             isDeleted = true;
                             break;
                           }
                         }
-                        if(!isDeleted) {
+                        if (!isDeleted) {
                           this.imageRectL.push({
                             x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
                             y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].imageRect[i].y,
@@ -1808,20 +1941,19 @@
                       for (let i = 0; i < this.imagesInfo[0].rectsDel.length; i++) {
                         let isDeleted = false;
                         for (let j = 0; j < this.imagesInfo[0].imageRect.length; j++) {
-                          if(this.imagesInfo[0].rectsDel[i].x === this.imagesInfo[0].imageRect[j].x && this.imagesInfo[0].rectsDel[i].y === this.imagesInfo[0].imageRect[j].y && this.imagesInfo[0].rectsDel[i].width === this.imagesInfo[0].imageRect[j].width && this.imagesInfo[0].rectsDel[i].height === this.imagesInfo[0].imageRect[j].height) {
+                          if (this.imagesInfo[0].rectsDel[i].x === this.imagesInfo[0].imageRect[j].x && this.imagesInfo[0].rectsDel[i].y === this.imagesInfo[0].imageRect[j].y && this.imagesInfo[0].rectsDel[i].width === this.imagesInfo[0].imageRect[j].width && this.imagesInfo[0].rectsDel[i].height === this.imagesInfo[0].imageRect[j].height) {
                             isDeleted = true;
                             break;
                           }
                         }
-                        if(!isDeleted) {
+                        if (!isDeleted) {
                           this.imagesInfo[0].rectsDel[i].x = 0;
                           this.imagesInfo[0].rectsDel[i].y = 0;
                           this.imagesInfo[0].rectsDel[i].width = 0;
                           this.imagesInfo[0].rectsDel[i].height = 0;
                         }
                       }
-                    }
-                    else {
+                    } else {
                       for (let i = 0; i < this.imagesInfo[0].imageRect.length; i++) {
                         this.imageRectL.push({
                           x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].imageRect[i].x,
@@ -1864,16 +1996,16 @@
 
                 if (this.imagesInfo[1] !== undefined) {
                   if (this.imagesInfo[1].imageRect != null) {
-                    if(this.imagesInfo[1].rectsDel != null){
+                    if (this.imagesInfo[1].rectsDel != null) {
                       for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
                         let isDeleted = false;
                         for (let j = 0; j < this.imagesInfo[1].rectsDel.length; j++) {
-                          if(this.imagesInfo[1].imageRect[i].x === this.imagesInfo[1].rectsDel[j].x && this.imagesInfo[1].imageRect[i].y === this.imagesInfo[1].rectsDel[j].y && this.imagesInfo[1].imageRect[i].width === this.imagesInfo[1].rectsDel[j].width && this.imagesInfo[1].imageRect[i].height === this.imagesInfo[1].rectsDel[j].height) {
+                          if (this.imagesInfo[1].imageRect[i].x === this.imagesInfo[1].rectsDel[j].x && this.imagesInfo[1].imageRect[i].y === this.imagesInfo[1].rectsDel[j].y && this.imagesInfo[1].imageRect[i].width === this.imagesInfo[1].rectsDel[j].width && this.imagesInfo[1].imageRect[i].height === this.imagesInfo[1].rectsDel[j].height) {
                             isDeleted = true;
                             break;
                           }
                         }
-                        if(!isDeleted) {
+                        if (!isDeleted) {
                           this.imageRectR.push({
                             x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
                             y: this.imagesInfo[1].rateHeight * this.imagesInfo[1].imageRect[i].y,
@@ -1886,20 +2018,19 @@
                       for (let i = 0; i < this.imagesInfo[1].rectsDel.length; i++) {
                         let isDeleted = false;
                         for (let j = 0; j < this.imagesInfo[1].imageRect.length; j++) {
-                          if(this.imagesInfo[1].rectsDel[i].x === this.imagesInfo[1].imageRect[j].x && this.imagesInfo[1].rectsDel[i].y === this.imagesInfo[1].imageRect[j].y && this.imagesInfo[1].rectsDel[i].width === this.imagesInfo[1].imageRect[j].width && this.imagesInfo[1].rectsDel[i].height === this.imagesInfo[1].imageRect[j].height) {
+                          if (this.imagesInfo[1].rectsDel[i].x === this.imagesInfo[1].imageRect[j].x && this.imagesInfo[1].rectsDel[i].y === this.imagesInfo[1].imageRect[j].y && this.imagesInfo[1].rectsDel[i].width === this.imagesInfo[1].imageRect[j].width && this.imagesInfo[1].rectsDel[i].height === this.imagesInfo[1].imageRect[j].height) {
                             isDeleted = true;
                             break;
                           }
                         }
-                        if(!isDeleted) {
+                        if (!isDeleted) {
                           this.imagesInfo[1].rectsDel[i].x = 0;
                           this.imagesInfo[1].rectsDel[i].y = 0;
                           this.imagesInfo[1].rectsDel[i].width = 0;
                           this.imagesInfo[1].rectsDel[i].height = 0;
                         }
                       }
-                    }
-                    else {
+                    } else {
                       for (let i = 0; i < this.imagesInfo[1].imageRect.length; i++) {
                         this.imageRectR.push({
                           x: this.imagesInfo[1].rateWidth * this.imagesInfo[1].imageRect[i].x,
@@ -1942,28 +2073,32 @@
                 let handGoodsStr = this.showPage.handGoods;
                 let handAttactedStr = this.showPage.handAttached;
 
-                if (handGoodsStr !== null) {
-                  handGood = handGoodsStr.split(",");
+                // if (handGoodsStr !== null) {
+                //   handGood = handGoodsStr.split(",");
+                // }
+
+                if (this.showPage.handGoodsList.length != 0) {
+                  this.handGoodItems = this.showPage.handGoodsList;
                 }
 
                 if (handAttactedStr !== null) {
                   handAttached = handAttactedStr.split(",");
                 }
                 let k = 0;
-                if(handGood!==null) {
-                  for (let i = 0; i < handGood.length; i++) {
-                    for (let j = 0; j < 5; j++) {
-                      if (handGood[i] === this.handGoodDataCode[j]) {
-                        this.handGoodExpanded[k] = true;
-                        this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
-                        k++;
-                      }
-                    }
-                  }
-                }
+                // if(handGood!==null) {
+                //   for (let i = 0; i < handGood.length; i++) {
+                //     for (let j = 0; j < 5; j++) {
+                //       if (handGood[i] === this.handGoodDataCode[j]) {
+                //         this.handGoodExpanded[k] = true;
+                //         this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
+                //         k++;
+                //       }
+                //     }
+                //   }
+                // }
 
                 //getting media data from server.
-                if(handAttached !==null) {
+                if (handAttached !== null) {
                   for (let i = 0; i < handAttached.length; i++) {
                     let iHandAttached = handAttached[i].split(".");
                     if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {
@@ -1981,6 +2116,26 @@
                     }
                   }
                 }
+
+                if (this.showPage.handTaskResult !== null) {
+                  //if(this.showPage.handGoods !== null && this.showPage.handGoods !== ''){
+                  this.showPage.handTaskResults = this.showPage.handTaskResult;
+                  //}else{
+                  //this.showPage.handTaskResults = 'FALSE';
+                  //}
+                  //this.showPage.handTaskResults= this.showPage.handTaskResult;
+                } else {
+                  if (this.showPage.judgeUserId !== this.defaultUserId) {
+                    this.showPage.handTaskResults = this.showPage.judgeResult;
+                  } else {
+                    if (this.showPage.scanAtrResult === '1000000601') {
+                      this.showPage.handTaskResults = 'TRUE';
+                    } else {
+                      this.showPage.handTaskResults = 'FALSE';
+                    }
+                  }
+                }
+
                 break;// okay
 
             }
@@ -2009,6 +2164,7 @@
       onResetButton() {
         this.filter = {
           taskNumber: null,
+          modeName: null,
           caseStatus: "1000002503",
           taskResult: null,
           fieldId: null,
@@ -2023,10 +2179,11 @@
         let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
         let checkedIds = this.$refs.pendingListTable.selectedTo;
         let httpOption = this.$refs.pendingListTable.httpOptions;
+        let pagination = this.$refs.pendingListTable.tablePagination;
         this.params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'locale' : getLocale(),
-          'sort' : httpOption.params.sort,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
+          'locale': getLocale(),
+          'sort': httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
@@ -2036,11 +2193,11 @@
 
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
         let checkedIds = this.$refs.pendingListTable.selectedTo;
         let params = {
-          'locale' : getLocale(),
+          'locale': getLocale(),
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -2048,7 +2205,7 @@
         let link = `knowledge-base/generate/personal`;
         if (checkedIds.length > 0) {
           downLoadFileFromServer(link, params, 'Knowledge-Personal', this.fileSelection);
-        this.hideModal('model-export')
+          this.hideModal('model-export')
         }
       },
 
@@ -2056,22 +2213,20 @@
         this.$refs[modal].hide();
       },
 
-
       onPrintButton() {
         let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
         let checkedIds = this.$refs.pendingListTable.selectedTo;
         let httpOption = this.$refs.pendingListTable.httpOptions;
+        let pagination = this.$refs.pendingListTable.tablePagination;
         let params = {
-          'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'sort' : httpOption.params.sort,
+          'locale': getLocale(),
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
+          'sort': httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
         };
         let link = `knowledge-base/generate/personal`;
-
-          printFileFromServer(link, params);
-
+        printFileFromServer(link, params);
       },
 
 
@@ -2101,10 +2256,45 @@
           if (this.isCheckAll === true) {
             this.$refs.pendingListTable.selectedTo.push(idTemp);
           }
+          // if (temp.handTaskResult != null) {
+          //   //if(temp.handGoods !== null && temp.handGoods !== ''){
+          //   temp.handTaskResults = temp.handTaskResult;
+          //   //}else{
+          //   //temp.handTaskResults = 'FALSE'
+          //   //}
+          //   //temp.handTaskResults= temp.handTaskResult;
+          // }
+          // else {
+          //   if (temp.judgeUserId !== this.defaultUserId) {
+          //     temp.handTaskResults = temp.judgeResult;
+          //   } else {
+          //     if (temp.scanAtrResult === '1000000601') {
+          //       temp.handTaskResults = 'TRUE';
+          //     } else {
+          //       temp.handTaskResults = 'FALSE';
+          //     }
+          //   }
+          // }
+          if (temp.handTaskResult != null) {
+            if(temp.handGoods !== null && temp.handGoods !== ''){
+            temp.handTaskResults = '1000000601';
+            }else{
+            temp.handTaskResults = '1000000602'
+            }
+            //temp.handTaskResults= temp.handTaskResult;
+          } else {
+            if (temp.judgeUserId === this.defaultUserId) {
+              temp.handTaskResults = temp.scanAtrResult;
+            } else {
+              if (temp.judgeResult === 'TRUE') {
+                temp.handTaskResults = '1000000601';
+              } else {
+                temp.handTaskResults = '1000000602';
+              }
+            }
+          }
         }
-
         return transformed
-
       },
 
       pendingListTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
@@ -2128,7 +2318,7 @@
       },
 
       showModal(data) {
-        this.caseDealId= data;
+        this.caseDealId = data;
         this.$refs['modal-dismiss'].show();
       },
 
@@ -2147,7 +2337,7 @@
                   permanent: false
                 });
                 this.$refs['modal-dismiss'].hide();
-                this.pageStatus= 'table';
+                this.pageStatus = 'table';
                 this.$refs.pendingListTable.refresh();
                 break;
 
@@ -2155,7 +2345,6 @@
           })
           .catch((error) => {
           });
-
       },
     }
   }

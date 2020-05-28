@@ -190,7 +190,7 @@ const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
   let ext1 = [];
 
   let extension = ext.shift();
-  params.isAll = false;
+  //params.isAll = false;
 
 
   // if(ext !== null){
@@ -238,14 +238,14 @@ const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
 };
 
 const printFileFromServer = (link,params) => {
-  if(params.isAll===true&&params.idList===""){
+  if(params.isAll===false && params.idList===""){
     app.$notify('warning', app.$t('permission-management.warning'), app.$t(`response-messages.select-data`), {
       duration: 3000,
       permanent: false
     });
   }
   else {
-    params.isAll = false;
+    //params.isAll = false;
     getApiManager()
       .post(`${apiBaseUrl}/` + link + '/' + 'pdf', params, {
         responseType: 'blob'
@@ -516,11 +516,11 @@ function reverseString(str) {
 }
 function encrypt(token, plainText) {
   let changeStr = getXorString(plainText);
-  console.log("changestr", changeStr);
+
   let preAnswer = token;
   preAnswer = preAnswer + changeStr;
   preAnswer = reverseString(preAnswer);
-  console.log("reverse", preAnswer);
+
   let answer = getPermutation(preAnswer);
 
   return answer;

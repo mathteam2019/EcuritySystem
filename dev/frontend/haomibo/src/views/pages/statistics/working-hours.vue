@@ -91,7 +91,7 @@
         <b-card class="no-padding" style="background-color: #fff;">
           <div class="statistics-item type-2">
             <div style="background-color: red;">
-              <b-img draggable="false" src="/assets/img/round_check.svg"/>
+              <b-img draggable="false" src="/assets/img/picture.svg"/>
             </div>
             <div>
               <div><span class="span-font">{{judgeData['day'].value}}d {{judgeData['hour'].value}}h {{judgeData['minute'].value}}m {{judgeData['second'].value}}s</span>
@@ -1023,7 +1023,7 @@
           if(keyData.length>(this.showLength+4)){
             let percent = Math.round((keyData.length-4) / this.showLength * 100);
             this.chartWidth = percent + '%';
-            console.log(keyData.length, this.showLength, this.chartWidth);
+
           }
           else{
             this.chartWidth = '100%';
@@ -1126,7 +1126,7 @@
         msec -= mm * 60;
         let ss = Math.floor(msec);
         msec -= ss;
-        console.log(value);
+
         let diffString = '';
         if(dd != 0){
           diffString = dd + 'd ';

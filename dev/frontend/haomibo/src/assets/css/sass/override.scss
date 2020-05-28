@@ -300,9 +300,93 @@ main {
 
   }
 }
-
+$button-text-color: #fff;
 .main-hidden .main-menu, .menu-hidden .main-menu {
   transform: unset !important;
+}
+
+.dropdown-menu{
+  padding: 0 !important;
+  //margin-top: 11px !important;
+}
+.mt-3, .my-3{
+  margin-top: 11px !important;
+}
+.dropdown-item_0 {
+  background-color: $menu-color-4;
+  border: 1px solid $menu-color-5;
+  & > a{
+    color: white;
+  }
+  & > a:hover{
+    background-color: inherit;
+    color: white;
+  }
+  & > a:focus{
+    background-color: inherit;
+    color: white;
+  }
+  & > a.active, & > a:active{
+    color: white;
+    text-decoration: none;
+    background-color: inherit;
+  }
+  &.active, &:hover, &:active {
+    background-color: $menu-color-7;
+    border: 1px solid $menu-color-6;
+    color: $menu-color-5
+  }
+}
+.dropdown-item_1 {
+  background-color: #736fbf;
+  border: 1px solid blueviolet;
+  & > a{
+    color: white;
+  }
+  & > a:hover{
+    background-color: inherit;
+    color: white;
+  }
+  & > a:focus{
+    background-color: inherit;
+    color: white;
+  }
+  & > a.active, & > a:active{
+    color: white;
+    text-decoration: none;
+    background-color: inherit;
+  }
+  &.active, &:hover, &:active {
+    background-color: #464385;
+    border: 1px solid blueviolet;
+    color: white;
+  }
+
+}
+.dropdown-item_2 {
+  background-color: #03a2ef;
+  border: 1px solid skyblue;
+  & > a{
+    color: white;
+  }
+  & > a:hover{
+    background-color: inherit;
+    color: white;
+  }
+  & > a:focus{
+    background-color: inherit;
+    color: white;
+  }
+  & > a.active, & > a:active{
+    color: $menu-color-5;
+    text-decoration: none;
+    background-color: inherit;
+  }
+  &.active, &:hover, &:active {
+    background-color: #0d78d1;
+    border: 1px solid skyblue;
+    color: white;
+  }
 }
 
 @media (max-width: 1439px) {
@@ -312,17 +396,90 @@ main {
 }
 
 .sidebar {
+  .main_menu_background_0{
+    background-color: $menu-color-7;
+  }
+  .main_menu_background_1{
+    background-color: #464385;
+  }
+  .main_menu_background_2{
+    background-color: #0d78d1;
+  }
+  .menu_item_li_0{
+    background-color: $menu-color-7;
+    border-bottom: solid 1px $menu-color-6;
+    border-top: solid 1px $menu-main-color-1;
+    color: $menu-main-color-2 !important;
+    &.active, &:hover, &:focus {
+      background-color:  $menu-color-4;
+    }
+  }
+  .menu_item_li_1{
+    background-color: #464385;
+    border-bottom: solid 1px #7745ef;
+    border-top: solid 1px #c28dee;
+    color: $menu-main-color-2 !important;
+    &.active, &:hover, &:focus {
+      background-color: #736fbf;
+    }
+  }
+  .menu_item_li_2{
+    background-color: #0d78d1;
+    border-bottom: solid 1px #014d8f;
+    border-top: solid 1px #7ab9fc;
+    color: $menu-main-color-2 !important;
+    &.active, &:hover, &:focus {
+      background-color: #03a2ef;
+    }
+  }
+  .submenu_item_li_0 {
+    background-color: $menu-color-4;
+    border: 1px solid $menu-color-5;
+    border-bottom-color: $menu-color-3;
+    border-left-color: $menu-color-2;
+    &.active, &:hover, &:active {
+      background-color: $menu-color-7;
+      border: 1px solid $menu-color-6;
+      color: $menu-color-5
+    }
+  }
+  .submenu_item_li_1 {
+    background-color: #736fbf;
+    border: 1px solid blueviolet;
+    border-bottom-color: #7745ef;
+    border-left-color: #c28dee;
+    &.active, &:hover, &:active {
+      background-color: #464385;
+      border: 1px solid blueviolet;
+      color: white;
+    }
+  }
+  .submenu_item_li_2 {
+    background-color: #03a2ef;
+    border: 1px solid #0264ae;
+    border-bottom-color: deepskyblue;
+    border-left-color: dodgerblue;
+    & > a{
+      color: white !important;
+    }
+    &.active, &:hover, &:active {
+      background-color: #0d78d1;
+      border: 1px solid skyblue;
+      color: white;
+    }
+  }
+
   .main-menu {
     padding-top: 0 !important;
-    background-color: $menu-color-7;
+    //background-color: $menu-color-7;
     width: $side-bar-width;
     section {
       ul {
         li {
-          background-color: $menu-color-7;
-          border-bottom: solid 1px $menu-color-6;
-          border-top: solid 1px $menu-main-color-1;
-          color: $menu-main-color-2 !important;
+          //background-color: $menu-color-7;
+          //border-bottom: solid 1px $menu-color-6;
+          //border-top: solid 1px $menu-main-color-1;
+          //color: $menu-main-color-2 !important;
           a {
             color: inherit !important;
             border-bottom: unset !important;
@@ -333,7 +490,7 @@ main {
             }
           }
           &.active, &:hover, &:focus {
-            background-color: $menu-color-4;
+            //background-color: $menu-color-4;
             border-bottom: solid 1px transparent !important;
             color: white !important;
             &:after {
@@ -357,20 +514,20 @@ main {
         li {
           margin-left: 0 !important;
           padding: 0 0.3125rem !important;
-          background-color: $menu-color-4;
-          border: 1px solid $menu-color-5;
-          border-bottom-color: $menu-color-3;
-          border-left-color: $menu-color-2;
+          //background-color: $menu-color-4;
+          //border: 1px solid $menu-color-5;
+          //border-bottom-color: $menu-color-3;
+          //border-left-color: $menu-color-2;
           a {
             margin-bottom: 0 !important;
             line-height: 1.25rem;
           }
           &.active, &:hover, &:active {
-            background-color: $menu-color-7;
-            border: 1px solid $menu-color-6;
+            //background-color: $menu-color-7;
+            //border: 1px solid $menu-color-6;
             border-right-color: transparent;
             border-bottom-color: transparent;
-            color: $menu-color-5;
+            //color: $menu-color-5;
           }
         }
       }

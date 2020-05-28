@@ -345,19 +345,23 @@
               <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
                 <vue-slider
                   v-model="slidebar2value"
-                  :min="-50"
-                  :max="50"
+                  :min="-10"
+                  :max="10"
                   :dot-options="dotOptions"
                   :order="false"
+                  @drag-start="setOldContrast"
+                  @drag-end="changeContrast"
                 />
               </b-col>
               <b-col v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
                 <vue-slider
                   v-model="slidebar1value"
-                  :min="-50"
-                  :max="50"
+                  :min="-10"
+                  :max="10"
                   :dot-options="dotOptions"
                   :order="false"
+                  @drag-start="setOldBrightness"
+                  @drag-end="changeBrightness"
                 />
               </b-col>
             </b-row>
@@ -608,36 +612,42 @@
                 <label
                   style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.seized-contraband')}}</label>
                 <b-row class="justify-content-start" style="margin-bottom: 2rem; margin-top: 1rem">
-                  <b-col>
-                    <div v-if="handGoodExpanded[0]" class="text-center"
-                         style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[0]].text}}</span>
+                  <b-col cols="3" v-for="(item, index) in handGoodItems" style="margin-bottom: 10px">
+                    <div v-if="item" class="text-center"
+                         :style="'background-color:rgb(255,' + index*32 + ', 0)'" style="padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                      <span>{{item}}</span>
                     </div>
                   </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[1]" class="text-center"
-                         style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[1]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[2]" class="text-center"
-                         style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[2]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[3]" class="text-center"
-                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[3]].text}}</span>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div v-if="handGoodExpanded[4]" class="text-center"
-                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[4]].text}}</span>
-                    </div>
-                  </b-col>
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[0]" class="text-center"-->
+<!--                         style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[0]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[1]" class="text-center"-->
+<!--                         style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[1]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[2]" class="text-center"-->
+<!--                         style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[2]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[3]" class="text-center"-->
+<!--                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[3]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
+<!--                  <b-col>-->
+<!--                    <div v-if="handGoodExpanded[4]" class="text-center"-->
+<!--                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">-->
+<!--                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[4]].text}}</span>-->
+<!--                    </div>-->
+<!--                  </b-col>-->
                 </b-row>
 
                 <div
@@ -663,36 +673,50 @@
                 <b-row>
                   <b-col v-if="getLocale()==='zh' || getLocale() === null" cols="12" class="align-self-end text-right mt-3"
                          style="width: 100%; height: 130px !important;">
-                    <div v-if="showPage.handResult !== null">
-                      <b-img draggable="false" v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid.png"
+                    <div v-if="showPage.handTaskResults !== null">
+                      <b-img draggable="false" v-if="showPage.handTaskResults === 'TRUE'" src="/assets/img/icon_invalid.png"
                              class="align-self-end img-result"/>
-                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid.png"
+                      <b-img draggable="false" v-if="showPage.handTaskResults === 'FALSE'" src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
+<!--                      <b-img draggable="false" v-if="showPage.handTaskResults === '1000000601'" src="/assets/img/icon_invalid.png"-->
+<!--                             class="align-self-end img-result"/>-->
+<!--                      <b-img draggable="false" v-if="showPage.handTaskResults === '1000000602'" src="/assets/img/icon_valid.png"-->
+<!--                             class="align-self-end img-result"/>-->
                     </div>
-                    <div v-else-if="showPage.judgeResult!==null">
-                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid.png"
-                             class="align-self-end img-result"/>
-                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid.png"
-                             class="align-self-end img-result"/>
-                    </div>
+<!--                    <div v-else-if="showPage.judgeResult!==null">-->
+<!--                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid.png"-->
+<!--                             class="align-self-end img-result"/>-->
+<!--                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid.png"-->
+<!--                             class="align-self-end img-result"/>-->
+<!--                    </div>-->
                     <div v-else>
                       <b-img draggable="false" src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
                     </div>
                   </b-col>
                   <b-col v-if="getLocale()==='en'" cols="12" class="align-self-end text-right mt-3">
-                    <div v-if="showPage.handResult !== null">
-                      <b-img draggable="false" v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
+                    <div v-if="showPage.handTaskResults !== null">
+                      <b-img draggable="false" v-if="showPage.handTaskResults === 'TRUE'" src="/assets/img/icon_invalid_en.png"
                              class="align-self-end img-result"/>
-                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
+                      <b-img draggable="false" v-if="showPage.handTaskResults === 'FALSE'" src="/assets/img/icon_valid_en.png"
                              class="align-self-end img-result"/>
+<!--                      <b-img draggable="false" v-if="showPage.handTaskResults === '1000000601'" src="/assets/img/icon_invalid_en.png"-->
+<!--                             class="align-self-end img-result"/>-->
+<!--                      <b-img draggable="false" v-if="showPage.handTaskResults === '1000000602'" src="/assets/img/icon_valid_en.png"-->
+<!--                             class="align-self-end img-result"/>-->
                     </div>
-                    <div v-else-if="showPage.judgeResult!==null">
-                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
-                             class="align-self-end img-result"/>
-                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
-                             class="align-self-end img-result"/>
-                    </div>
+<!--                    <div v-if="showPage.handGoods !== null">-->
+<!--                      <b-img draggable="false" v-if="showPage.handGoods === 'TRUE'" src="/assets/img/icon_invalid_en.png"-->
+<!--                             class="align-self-end img-result"/>-->
+<!--                      <b-img draggable="false" v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid_en.png"-->
+<!--                             class="align-self-end img-result"/>-->
+<!--                    </div>-->
+<!--                    <div v-else-if="showPage.judgeResult!==null">-->
+<!--                      <b-img draggable="false" v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"-->
+<!--                             class="align-self-end img-result"/>-->
+<!--                      <b-img draggable="false" v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid_en.png"-->
+<!--                             class="align-self-end img-result"/>-->
+<!--                    </div>-->
                     <div v-else>
                       <b-img draggable="false" src="/assets/img/icon_valid.png"
                              class="align-self-end img-result"/>
@@ -1150,6 +1174,7 @@
         siteData: [],
         showPage: [],
         renderedCheckList:[],
+        handGoodItems: [],
 
         fileSelection: [],
         direction: getDirection().direction,
@@ -1164,6 +1189,10 @@
         isSlidebar2Expended: false,
         slidebar1value: [0, 0],
         slidebar2value: [0, 0],
+        slider1OldValue:0,
+        slider1NewValue:0,
+        slider2OldValue:0,
+        slider2NewValue:0,
 
         slider: {
           lineHeight: 10,
@@ -1321,22 +1350,22 @@
               dataClass: 'text-center',
             },
             {
-              name: 'handTaskResult',
+              name: 'handTaskResults',
               title: this.$t('personal-inspection.task-result'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (handTaskResult) => {
+              callback: (handTaskResults) => {
 
                 const dictionary = {
 
-                  "TRUE": `<span style="color:#ef6e69;">${this.$t('knowledge-base.seized')}</span>`,
-                  "FALSE": `<span style="color:#e8a23e;">${this.$t('knowledge-base.no-seized')}</span>`,
+                  "TRUE": `<span style="color:#ef6e69;">${this.$t('knowledge-base.suspect')}</span>`,
+                  "FALSE": `<span style="color:#e8a23e;">${this.$t('knowledge-base.no-suspect')}</span>`,
 
                 };
 
-                if (handTaskResult == null) return '';
-                if (!dictionary.hasOwnProperty(handTaskResult)) return '';
-                return dictionary[handTaskResult];
+                if (handTaskResults == null) return '';
+                if (!dictionary.hasOwnProperty(handTaskResults)) return '';
+                return dictionary[handTaskResults];
               }
             },
             {
@@ -1384,14 +1413,12 @@
         },
       }
     },
-
     created() {
       //this.timer = setInterval(this.autoUpdate, 20000)
     },
     beforeDestroy() {
-      clearInterval(this.timer)
+      //clearInterval(this.timer)
     },
-
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
@@ -1455,33 +1482,66 @@
 
       },
 
-      slidebar1value(newsValue, oldValue) {
-
-        if (oldValue[1] < newsValue[1]) {
-          for (let i = oldValue[1]; i < newsValue[1]; i++) {
-            this.filterId(5);
-          }
-        } else {
-          for (let i = newsValue[1]; i < oldValue[1]; i++) {
-            this.filterId(6);
-          }
-        }
-      },
-      slidebar2value(newsValue, oldValue) {
-
-        if (oldValue[1] < newsValue[1]) {
-          for (let i = oldValue[1]; i < newsValue[1]; i++) {
-            this.filterId(7);
-          }
-        } else {
-          for (let i = newsValue[1]; i < oldValue[1]; i++) {
-            this.filterId(8);
-          }
-        }
-      },
+    //   slidebar1value(newsValue, oldValue) {
+    //
+    //     if (oldValue[1] < newsValue[1]) {
+    //       for (let i = oldValue[1]; i < newsValue[1]; i++) {
+    //         this.filterId(5);
+    //       }
+    //     } else {
+    //       for (let i = newsValue[1]; i < oldValue[1]; i++) {
+    //         this.filterId(6);
+    //       }
+    //     }
+    //   },
+    //   slidebar2value(newsValue, oldValue) {
+    //
+    //     if (oldValue[1] < newsValue[1]) {
+    //       for (let i = oldValue[1]; i < newsValue[1]; i++) {
+    //         this.filterId(7);
+    //       }
+    //     } else {
+    //       for (let i = newsValue[1]; i < oldValue[1]; i++) {
+    //         this.filterId(8);
+    //       }
+    //     }
+    //   },
     },
 
     methods: {
+    setOldBrightness(){
+        this.slider1OldValue = this.slidebar1value[1];
+      },
+      changeBrightness(){
+
+          if (this.slider1OldValue < this.slidebar1value[1]) {
+            //for (let i = this.slider1OldValue; i < slidebar1value; i++) {
+            this.filterId(5, this.slidebar1value[1]-this.slider1OldValue);
+            //}
+          } else if(this.slider1OldValue > this.slidebar1value[1]) {
+            //for (let i = slidebar1value; i < this.slider1OldValue; i++) {
+            this.filterId(6, this.slider1OldValue - this.slidebar1value[1]);
+            //}
+          }
+          //this.slider1OldValue = this.slidebar1value[1];
+
+      },
+      setOldContrast(){
+        this.slider2OldValue = this.slidebar2value[1]
+      },
+      changeContrast(){
+
+        if (this.slider2OldValue < this.slidebar2value[1]) {
+           //for (let i = this.slider2OldValue; i < this.slidebar2value[1]; i++) {
+           this.filterId(7, this.slidebar2value[1]-this.slider2OldValue);
+           //}
+        } else if(this.slider2OldValue > this.slidebar2value[1]) {
+           //for (let i = this.slidebar2value[1]; i < this.slider2OldValue; i++) {
+           this.filterId(8, this.slider2OldValue - this.slidebar2value[1]);
+           //}
+        }
+        //this.slider2OldValue = this.slidebar2value[1]
+      },
       cancelAutoUpdate() {
         clearInterval(this.timer)
       },
@@ -1571,13 +1631,13 @@
         }
       },
 
-      filterId(id) {
+      filterId(id, value=0) {
         if (id < 5 || id > 8) {
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
         }
         if (this.power === true) {
-          imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
+          imageFilterById(id, this.cartoonRectL, this.cartoonRectR, value);
         }
       },
 
@@ -1860,10 +1920,11 @@
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let httpOption = this.$refs.taskVuetable.httpOptions;
+        let pagination = this.$refs.taskVuetable.tablePagination;
         this.imgUrl = [];
         this.params = {
           'locale' : this.getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1893,9 +1954,10 @@
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let httpOption = this.$refs.taskVuetable.httpOptions;
+        let pagination = this.$refs.taskVuetable.tablePagination;
         let params = {
           'locale' : this.getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': this.filter,
           'idList': checkedIds.join()
@@ -1936,7 +1998,30 @@
         this.cntCartoon = 0;
         this.orderCartoon = 0;
         this.collectionLabel = [];
+        this.judgeStartTime = null;
+        this.judgeDeviceName = null;
+        this.judgeUserId = null;
+        this.judgeUserName = null;
+        this.handStartTime = null;
+        this.handDeviceName = null;
+        this.handUserName = null;
 
+        this.thumbs = [];
+        this.videos = [];
+        this.images = [];
+        this.imgRect = [];
+        this.cartoonRect = [];
+        this.rRects = [];
+        this.imagesInfo = [];
+        this.cartoonsInfo = [];
+        this.imageRectR = [];
+        this.imageRectL = [];
+        this.cartoonRectR = [];
+        this.cartoonRectL = [];
+        this.collectionLabel = [];
+        this.handGoodItems = [];
+        this.handGoodExpanded = [];
+        this.handGoodDataCodeExpanded = [];
         let url1 = '';
         let url2 = '';
         let deviceImage, submitRects, cartoonRects;
@@ -1957,45 +2042,7 @@
                 this.apiBaseURL = apiBaseUrl;
                 //if(this.showPage.workFlow.modeName
                 let modeName;
-                this.judgeStartTime = null;
-                this.judgeDeviceName = null;
-                this.judgeUserId = null;
-                this.judgeUserName = null;
-                this.handStartTime = null;
-                this.handDeviceName = null;
-                this.handUserName = null;
 
-                this.thumbs = [];
-                this.videos = [];
-                this.images = [];
-                this.imgRect = [];
-                this.cartoonRect = [];
-                this.rRects = [];
-                this.imagesInfo = [];
-                this.cartoonsInfo = [];
-                this.imageRectR = [];
-                this.imageRectL = [];
-                this.cartoonRectR = [];
-                this.cartoonRectL = [];
-                this.collectionLabel = [];
-                this.handGoodExpanded = [];
-                this.handGoodDataCodeExpanded = [];
-
-                // if(this.showPage.handAppraise === '1000001802'){
-                //   if(this.showPage.handAppraiseSecond  !== '1000001801') {
-                //     this.showPage.handAppraise = '1000001801';
-                //   }
-                //   else {
-                //     this.showPage.handAppraise= '1000001803';
-                //   }
-                // }
-                // else {
-                //   if(this.showPage.handAppraiseSecond  === '1000001801') {
-                //     this.showPage.handAppraise = '1000001802';
-                //   } else {
-                //     this.showPage.handAppraise = null;
-                //   }
-                // }
 
                 // this.conclusionType = null;
                 // if (this.showPage.serCheckResultList.length !== 0) {
@@ -2014,12 +2061,10 @@
                 }
 
                 if (this.showPage.serJudgeGraph !== undefined && this.showPage.serJudgeGraph !== null) {
-
                   if(this.showPage.serJudgeGraph.judgeCartoonRects !== undefined && this.showPage.serJudgeGraph.judgeCartoonRects !== null) {
                     cartoonRects = this.showPage.serJudgeGraph.judgeCartoonRects;
                     cartoonRects = JSON.parse(cartoonRects);
                   }
-
                   if (this.showPage.serJudgeGraph.judgeSubmitrects !== undefined &&  this.showPage.serJudgeGraph.judgeSubmitrects !== null) {
                     submitRects = this.showPage.serJudgeGraph.judgeSubmitrects;
                     submitRects = JSON.parse(submitRects);
@@ -2128,7 +2173,6 @@
                   if (this.imagesInfo[0].displayDel === '1000000601') {
                     if (this.imagesInfo[0].rectsDel != null) {
                       for (let i = 0; i < this.imagesInfo[0].rectsDel.length; i++) {
-
                         this.imageRectL.push({
                           x: this.imagesInfo[0].rateWidth * this.imagesInfo[0].rectsDel[i].x,
                           y: this.imagesInfo[0].rateHeight * this.imagesInfo[0].rectsDel[i].y,
@@ -2221,30 +2265,31 @@
                 let handGoodsStr = this.showPage.handGoods;
                 let handAttactedStr = this.showPage.handAttached;
 
-                if (handGoodsStr !== null) {
-                  handGood = handGoodsStr.split(",");
+                // if (handGoodsStr !== null) {
+                //   handGood = handGoodsStr.split(",");
+                // }
+                if (this.showPage.handGoodsList.length !== 0) {
+                  this.handGoodItems = this.showPage.handGoodsList;
                 }
 
                 if (handAttactedStr !== null) {
                   handAttached = handAttactedStr.split(",");
                 }
-
                 let k = 0;
-                if (handGood !== null) {
-                  for (let i = 0; i < handGood.length; i++) {
-                    for (let j = 0; j < 5; j++) {
-                      if (handGood[i] === this.handGoodDataCode[j]) {
-                        this.handGoodExpanded[k] = true;
-                        this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
-                        k++;
-                      }
-                    }
-                  }
-                }
-
+                // if(handGood !== null) {
+                //   for (let i = 0; i < handGood.length; i++) {
+                //     for (let j = 0; j < 5; j++) {
+                //       if (handGood[i] === this.handGoodDataCode[j]) {
+                //         this.handGoodExpanded[k] = true;
+                //         this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
+                //         k++;
+                //       }
+                //     }
+                //   }
+                // }
 
                 //getting media data from server.
-                if (handAttached !== null) {
+                if(handAttached !==null) {
                   for (let i = 0; i < handAttached.length; i++) {
                     let iHandAttached = handAttached[i].split(".");
                     if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {
@@ -2253,10 +2298,6 @@
                         src: handAttached[i]
                       });
                       this.images.push(handAttached[i]);
-                      /* this.thumbs[k].name = iHandAttached[0];
-                    this.thumbs[k].src = handAttached[i];
-                    this.images[k] = handAttached[i];*/
-
                     } else {
                       this.videos.push({
                         name: iHandAttached[0],
@@ -2266,6 +2307,27 @@
                     }
                   }
                 }
+
+                if(this.showPage.handTaskResult !== null){
+                  //if(this.showPage.handGoods !== null && this.showPage.handGoods !== ''){
+                    this.showPage.handTaskResults = this.showPage.handTaskResult;
+                  //}else{
+                    //this.showPage.handTaskResults = 'FALSE';
+                  //}
+                  //this.showPage.handTaskResults= this.showPage.handTaskResult;
+                }
+                else{
+                  if(this.showPage.judgeUserId !== this.defaultUserId) {
+                    this.showPage.handTaskResults = this.showPage.judgeResult;
+                  }else{
+                    if(this.showPage.scanAtrResult === '1000000601'){
+                      this.showPage.handTaskResults = 'TRUE';
+                    }else{
+                      this.showPage.handTaskResults = 'FALSE';
+                    }
+                  }
+                }
+                console.log(this.showPage.handTaskResults);
 
                 break;// okay
             }
@@ -2404,6 +2466,25 @@
 
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          if(temp.handTaskResult != null){
+            //if(temp.handGoods !== null && temp.handGoods !== ''){
+              temp.handTaskResults = temp.handTaskResult;
+            //}else{
+              //temp.handTaskResults = 'FALSE'
+            //}
+            //temp.handTaskResults= temp.handTaskResult;
+          }
+          else{
+            if(temp.judgeUserId !== this.defaultUserId) {
+              temp.handTaskResults = temp.judgeResult;
+            }else{
+              if(temp.scanAtrResult === '1000000601'){
+                temp.handTaskResults = 'TRUE';
+              }else{
+                temp.handTaskResults = 'FALSE';
+              }
+            }
+          }
           this.renderedCheckList.push(data.data[i].historyId);
           transformed.data.push(temp);
         }

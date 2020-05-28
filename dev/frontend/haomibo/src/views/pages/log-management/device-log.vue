@@ -1261,9 +1261,10 @@
         let checkedAll = this.$refs[vueField].checkedAllStatus;
         let checkedIds = this.$refs[vueField].selectedTo;
         let httpOption = this.$refs[vueField].httpOptions;
+        let pagination = this.$refs[vueField].tablePagination;
         this.params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': filter,
           'idList': checkedIds.join()
@@ -1279,10 +1280,11 @@
         let checkedAll = this.$refs[vueField].checkedAllStatus;
         let checkedIds = this.$refs[vueField].selectedTo;
         let httpOption = this.$refs[vueField].httpOptions;
+        let pagination = this.$refs[vueField].tablePagination;
 
         let params = {
           'locale' : getLocale(),
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length === 0 && pagination.total !== 0,
           'sort' : httpOption.params.sort,
           'filter': filter,
           'idList': checkedIds.join()
