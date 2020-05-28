@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -110,18 +111,19 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
 
         if (!StringUtils.isEmpty(taskResult)) {
-            if(SerKnowledgeCase.TaskResult.Seized.equals(taskResult)) {
-                predicate.and(builder.handGoods.isNotEmpty());
-            } else if(SerKnowledgeCase.TaskResult.NoSeized.equals(taskResult)) {
-                predicate.and(builder.handTaskResult.isNotEmpty()).and(builder.handGoods.isEmpty());
-            } else if(SerKnowledgeCase.TaskResult.Suspection.equals(taskResult)) {
-                predicate.and(builder.handTaskResult.isNull());
-                predicate.and((builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE)))
-                        .or(builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE))));
+            if(SerKnowledgeCase.TaskResult.Suspection.equals(taskResult)) {
+                BooleanExpression handTaskIsNull = builder.handTaskResult.isNull();
+                BooleanExpression handTaskSusspection = builder.handTaskResult.eq(SerHandExamination.Result.TRUE);
+                BooleanExpression defaultUserScanAtrReult = builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE));
+                BooleanExpression judgeResultSuspection = builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE));
+                predicate.and(handTaskSusspection.or(handTaskIsNull.and(defaultUserScanAtrReult.or(judgeResultSuspection))));
+
             } else {
-                predicate.and(builder.handTaskResult.isNull());
-                predicate.and((builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.ne(SerScan.ATRResult.TRUE)))
-                        .or(builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.ne(SerJudgeGraph.Result.TRUE))));
+                BooleanExpression handTaskIsNull = builder.handTaskResult.isNull();
+                BooleanExpression handTaskNoSusspection = builder.handTaskResult.eq(SerHandExamination.Result.FALSE);
+                BooleanExpression defaultUserScanAtrReult = builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.eq(SerScan.ATRResult.FALSE));
+                BooleanExpression judgeResultNoSuspection = builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.eq(SerJudgeGraph.Result.FALSE));
+                predicate.and(handTaskNoSusspection.or(handTaskIsNull.and(defaultUserScanAtrReult.or(judgeResultNoSuspection))));
             }
         }
         if (fieldId != null) {
@@ -254,18 +256,20 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
 
         if (!StringUtils.isEmpty(taskResult)) {
-            if(SerKnowledgeCase.TaskResult.Seized.equals(taskResult)) {
-                predicate.and(builder.handGoods.isNotEmpty());
-            } else if(SerKnowledgeCase.TaskResult.NoSeized.equals(taskResult)) {
-                predicate.and(builder.handTaskResult.isNotEmpty()).and(builder.handGoods.isEmpty());
-            } else if(SerKnowledgeCase.TaskResult.Suspection.equals(taskResult)) {
-                predicate.and(builder.handTaskResult.isNull());
-                predicate.and((builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE)))
-                        .or(builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE))));
+
+            if(SerKnowledgeCase.TaskResult.Suspection.equals(taskResult)) {
+                BooleanExpression handTaskIsNull = builder.handTaskResult.isNull();
+                BooleanExpression handTaskSusspection = builder.handTaskResult.eq(SerHandExamination.Result.TRUE);
+                BooleanExpression defaultUserScanAtrReult = builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE));
+                BooleanExpression judgeResultSuspection = builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE));
+                predicate.and(handTaskSusspection.or(handTaskIsNull.and(defaultUserScanAtrReult.or(judgeResultSuspection))));
+
             } else {
-                predicate.and(builder.handTaskResult.isNull());
-                predicate.and((builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.ne(SerScan.ATRResult.TRUE)))
-                        .or(builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.ne(SerJudgeGraph.Result.TRUE))));
+                BooleanExpression handTaskIsNull = builder.handTaskResult.isNull();
+                BooleanExpression handTaskNoSusspection = builder.handTaskResult.eq(SerHandExamination.Result.FALSE);
+                BooleanExpression defaultUserScanAtrReult = builder.judgeUserId.eq(Constants.DEFAULT_SYSTEM_USER).and(builder.scanAtrResult.eq(SerScan.ATRResult.FALSE));
+                BooleanExpression judgeResultNoSuspection = builder.judgeUserId.ne(Constants.DEFAULT_SYSTEM_USER).and(builder.judgeResult.eq(SerJudgeGraph.Result.FALSE));
+                predicate.and(handTaskNoSusspection.or(handTaskIsNull.and(defaultUserScanAtrReult.or(judgeResultNoSuspection))));
             }
         }
         if (fieldId != null) {

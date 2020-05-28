@@ -217,14 +217,13 @@ public class Utils {
 
     public static String getTaskResultFromKnowledge(SerKnowledgeCase task) {
         String taskResult = "";
+        boolean result = false;
         if(task.getHandTaskResult() != null) {
-            if(StringUtils.isEmpty(task.getHandGoods())) {
-                taskResult = ConstantDictionary.getDataValue(SerHandExamination.Result.FALSE);
-            } else {
-                taskResult = ConstantDictionary.getDataValue(SerHandExamination.Result.TRUE);
+            if(task.getHandTaskResult().equals(SerHandExamination.Result.TRUE)) {
+                result = true;
             }
         } else {
-            boolean result = false;
+
             if(task.getJudgeUserId().equals(Constants.DEFAULT_SYSTEM_USER)) {
                 if(SerScan.ATRResult.TRUE.equals(task.getScanAtrResult())) {
                     result = true;
@@ -234,24 +233,22 @@ public class Utils {
                     result = true;
                 }
             }
-            if(result == false) {
-                taskResult = ConstantDictionary.getDataValue("nodoubt");
-            } else {
-                taskResult = ConstantDictionary.getDataValue("doubt");
-            }
+        }
+        if(result == false) {
+            taskResult = ConstantDictionary.getDataValue("nodoubt");
+        } else {
+            taskResult = ConstantDictionary.getDataValue("doubt");
         }
         return taskResult;
     }
     public static String getTaskResult(HistorySimplifiedForHistoryTableManagement task) {
         String taskResult = "";
+        boolean result = false;
         if(task.getHandTaskResult() != null) {
-            if(StringUtils.isEmpty(task.getHandGoods())) {
-                taskResult = ConstantDictionary.getDataValue(SerHandExamination.Result.FALSE);
-            } else {
-                taskResult = ConstantDictionary.getDataValue(SerHandExamination.Result.TRUE);
+            if(task.getHandTaskResult().equals(SerHandExamination.Result.TRUE)) {
+                result = true;
             }
         } else {
-            boolean result = false;
             if(task.getJudgeUserId().equals(Constants.DEFAULT_SYSTEM_USER)) {
                 if(SerScan.ATRResult.TRUE.equals(task.getScanAtrResult())) {
                     result = true;
@@ -261,11 +258,11 @@ public class Utils {
                     result = true;
                 }
             }
-            if(result == false) {
-                taskResult = ConstantDictionary.getDataValue("nodoubt");
-            } else {
-                taskResult = ConstantDictionary.getDataValue("doubt");
-            }
+        }
+        if(result == false) {
+            taskResult = ConstantDictionary.getDataValue("nodoubt");
+        } else {
+            taskResult = ConstantDictionary.getDataValue("doubt");
         }
         return taskResult;
     }
