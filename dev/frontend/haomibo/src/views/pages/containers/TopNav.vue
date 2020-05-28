@@ -65,12 +65,13 @@
         </b-dropdown>
       </div>
       <div class="user d-inline-block">
+         <span>
+                <img :alt="currentUser.title" :src="this.portrait" @error="portraitOnError" @click="showPasswordResetView()" draggable="false"/>
+            </span>
         <b-dropdown class="dropdown-menu-right" variant="empty" toggle-class="p-0"
                     menu-class="mt-3" no-caret>
           <template slot="button-content" v-if="currentUser">
-            <span>
-                <img :alt="currentUser.title" :src="this.portrait" @error="portraitOnError" draggable="false"/>
-            </span>
+
             <span class="name ml-1 mr-2">{{currentUser.name}}</span>
           </template>
           <b-dropdown-item @click="showPasswordResetView()" :class="'dropdown-item_' + themeOptionSelect">{{this.$t('menu.account')}}</b-dropdown-item>

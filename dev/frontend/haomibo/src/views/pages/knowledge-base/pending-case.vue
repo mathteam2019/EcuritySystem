@@ -2230,6 +2230,8 @@
 
       onSearchButton() {
         this.$refs.pendingListTable.refresh();
+        // this.$refs.pendingListTable.httpOptions = [];
+        // this.idList = [];
       },
       onResetButton() {
         this.filter = {
@@ -2348,7 +2350,7 @@
           //   }
           // }
           if (temp.handTaskResult != null) {
-            if(temp.handGoods !== null && temp.handGoods !== ''){
+            if(temp.handTaskResult === 'TRUE'){
             temp.handTaskResults = '1000000601';
             }else{
             temp.handTaskResults = '1000000602'
