@@ -450,9 +450,7 @@
                   <div class="left">
                     <div>{{$t('menu.end')}}</div>
                   </div>
-
                 </div>
-
               </div>
             </div>
             <b-row>

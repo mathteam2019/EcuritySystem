@@ -952,8 +952,6 @@
               dataClass: 'text-center',
               callback: (missingReportRate) => {
                 if (missingReportRate == null) return '';
-                if(missingReportRate === 0) return 0;
-                if(Number.isInteger(missingReportRate)) return missingReportRate;
                 return missingReportRate.toFixed(2);
               }
             },
@@ -970,8 +968,6 @@
               dataClass: 'text-center',
               callback: (mistakeReportRate) => {
                 if (mistakeReportRate == null) return '';
-                if(mistakeReportRate === 0) return 0;
-                if(Number.isInteger(mistakeReportRate)) return mistakeReportRate;
                 return mistakeReportRate.toFixed(2);
               }
             },
@@ -994,8 +990,6 @@
               dataClass: 'text-center',
               callback: (artificialJudgeMissingRate) => {
                 if (artificialJudgeMissingRate == null) return '';
-                if(artificialJudgeMissingRate === 0) return 0;
-                if(Number.isInteger(artificialJudgeMissingRate)) return artificialJudgeMissingRate;
                 return artificialJudgeMissingRate.toFixed(2);
               }
             },
@@ -1012,8 +1006,6 @@
               dataClass: 'text-center',
               callback: (artificialJudgeMistakeRate) => {
                 if (artificialJudgeMistakeRate == null) return '';
-                if(artificialJudgeMistakeRate === 0) return 0;
-                if(Number.isInteger(artificialJudgeMistakeRate)) return artificialJudgeMistakeRate;
                 return artificialJudgeMistakeRate.toFixed(2);
               }
             },
@@ -1036,8 +1028,6 @@
               dataClass: 'text-center',
               callback: (intelligenceJudgeMissingRate) => {
                 if (intelligenceJudgeMissingRate == null) return '';
-                if(intelligenceJudgeMissingRate === 0) return 0;
-                if(Number.isInteger(intelligenceJudgeMissingRate)) return intelligenceJudgeMissingRate;
                 return intelligenceJudgeMissingRate.toFixed(2);
               }
             },
@@ -1054,8 +1044,6 @@
               dataClass: 'text-center',
               callback: (intelligenceJudgeMistakeRate) => {
                 if (intelligenceJudgeMistakeRate == null) return '';
-                if(intelligenceJudgeMistakeRate === 0) return 0;
-                if(Number.isInteger(intelligenceJudgeMistakeRate)) return intelligenceJudgeMistakeRate;
                 return intelligenceJudgeMistakeRate.toFixed(2);
               }
             }

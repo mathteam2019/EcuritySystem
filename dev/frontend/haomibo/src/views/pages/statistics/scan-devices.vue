@@ -795,8 +795,6 @@
               dataClass: 'text-center',
               callback: (validScanRate) => {
                 if (validScanRate == null) return '';
-                if(validScanRate === 0) return 0;
-                if(Number.isInteger(validScanRate)) return validScanRate;
                 return validScanRate.toFixed(2);
               }
             },
@@ -814,8 +812,6 @@
               dataClass: 'text-center',
               callback: (invalidScanRate) => {
                 if (invalidScanRate == null) return '';
-                if(invalidScanRate === 0) return 0;
-                if(Number.isInteger(invalidScanRate)) return invalidScanRate;
                 return invalidScanRate.toFixed(2);
               }
 
@@ -833,8 +829,6 @@
               dataClass: 'text-center',
               callback: (passedScanRate) => {
                 if (passedScanRate == null) return '';
-                if(passedScanRate === 0) return 0;
-                if(Number.isInteger(passedScanRate)) return passedScanRate;
                 return passedScanRate.toFixed(2);
               }
             },
@@ -851,8 +845,6 @@
               dataClass: 'text-center',
               callback: (alarmScanRate) => {
                 if (alarmScanRate == null) return '';
-                if(alarmScanRate === 0) return 0;
-                if(Number.isInteger(alarmScanRate)) return alarmScanRate;
                 return alarmScanRate.toFixed(2);
               }
             },

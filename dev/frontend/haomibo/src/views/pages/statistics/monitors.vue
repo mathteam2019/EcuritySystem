@@ -1066,8 +1066,6 @@
               dataClass: 'text-center',
               callback: (artificialResultRate) => {
                 if (artificialResultRate == null) return '';
-                if(artificialResultRate === 0) return 0;
-                if(Number.isInteger(artificialResultRate)) return artificialResultRate;
                 return artificialResultRate.toFixed(2);
               }
             },
@@ -1084,8 +1082,6 @@
               dataClass: 'text-center',
               callback: (assignTimeoutResultRate) => {
                 if (assignTimeoutResultRate == null) return '';
-                if(assignTimeoutResultRate === 0) return 0;
-                if(Number.isInteger(assignTimeoutResultRate)) return assignTimeoutResultRate;
                 return assignTimeoutResultRate.toFixed(2);
               }
             },
@@ -1102,8 +1098,6 @@
               dataClass: 'text-center',
               callback: (judgeTimeoutResultRate) => {
                 if (judgeTimeoutResultRate == null) return '';
-                if(judgeTimeoutResultRate === 0) return 0;
-                if(Number.isInteger(judgeTimeoutResultRate)) return judgeTimeoutResultRate;
                 return judgeTimeoutResultRate.toFixed(2);
               }
             },
@@ -1120,8 +1114,6 @@
               dataClass: 'text-center',
               callback: (scanResultRate) => {
                 if (scanResultRate == null) return '';
-                if(scanResultRate === 0) return 0;
-                if(Number.isInteger(scanResultRate)) return scanResultRate;
                 return scanResultRate.toFixed(2);
               }
             },
@@ -1138,8 +1130,6 @@
               dataClass: 'text-center',
               callback: (noSuspictionRate) => {
                 if (noSuspictionRate == null) return '';
-                if(noSuspictionRate === 0) return 0;
-                if(Number.isInteger(noSuspictionRate)) return noSuspictionRate;
                 return noSuspictionRate.toFixed(2);
               }
             },
@@ -1156,8 +1146,6 @@
               dataClass: 'text-center',
               callback: (suspictionRate) => {
                 if (suspictionRate == null) return '';
-                if(suspictionRate === 0) return 0;
-                if(Number.isInteger(suspictionRate)) return suspictionRate;
                 return suspictionRate.toFixed(2);
               }
             },
@@ -1174,8 +1162,6 @@
               dataClass: 'text-center',
               callback: (avgArtificialJudgeDuration) => {
                 if (avgArtificialJudgeDuration == null) return '';
-                if(avgArtificialJudgeDuration === 0) return 0;
-                if(Number.isInteger(avgArtificialJudgeDuration)) return avgArtificialJudgeDuration;
                 return avgArtificialJudgeDuration.toFixed(2);
               }
             },

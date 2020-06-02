@@ -795,8 +795,6 @@
               dataClass: 'text-center',
               callback: (scanStatistics) => {
                 if (scanStatistics == null) return '';
-                if(scanStatistics.validScanRate === 0) return 0;
-                if(Number.isInteger(scanStatistics.validScanRate)) return scanStatistics.validScanRate;
                 return scanStatistics.validScanRate.toFixed(2);
               }
             },
@@ -827,8 +825,6 @@
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
                 if (judgeStatistics == null) return '';
-                if(judgeStatistics.suspictionJudgeRate === 0) return 0;
-                if(Number.isInteger(judgeStatistics.suspictionJudgeRate)) return judgeStatistics.suspictionJudgeRate;
                 return judgeStatistics.suspictionJudgeRate.toFixed(2);
               }
             },
@@ -849,8 +845,6 @@
               dataClass: 'text-center',
               callback: (judgeStatistics) => {
                 if (judgeStatistics == null) return '';
-                if(judgeStatistics.noSuspictionJudgeRate === 0) return 0;
-                if(Number.isInteger(judgeStatistics.noSuspictionJudgeRate)) return judgeStatistics.noSuspictionJudgeRate;
                 return judgeStatistics.noSuspictionJudgeRate.toFixed(2);
               }
             },
@@ -881,8 +875,6 @@
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
-                if(handExaminationStatistics.seizureHandExaminationRate === 0) return 0;
-                if(Number.isInteger(handExaminationStatistics.seizureHandExaminationRate)) return handExaminationStatistics.seizureHandExaminationRate;
                 return handExaminationStatistics.seizureHandExaminationRate.toFixed(2);
               }
             },
@@ -903,8 +895,6 @@
               dataClass: 'text-center',
               callback: (handExaminationStatistics) => {
                 if (handExaminationStatistics == null) return '';
-                if(handExaminationStatistics.noSeizureHandExaminationRate === 0) return 0;
-                if(Number.isInteger(handExaminationStatistics.noSeizureHandExaminationRate)) return handExaminationStatistics.noSeizureHandExaminationRate;
                 return handExaminationStatistics.noSeizureHandExaminationRate.toFixed(2);
               }
             },

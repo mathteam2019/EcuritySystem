@@ -858,8 +858,6 @@
               dataClass: 'text-center',
               callback: (noSeizureRate) => {
                 if (noSeizureRate == null) return '';
-                if(noSeizureRate === 0) return 0;
-                if(Number.isInteger(noSeizureRate)) return noSeizureRate;
                 return noSeizureRate.toFixed(2);
               }
             },
@@ -876,8 +874,6 @@
               dataClass: 'text-center',
               callback: (seizureRate) => {
                 if (seizureRate == null) return '';
-                if(seizureRate === 0) return 0;
-                if(Number.isInteger(seizureRate)) return seizureRate;
                 return seizureRate.toFixed(2);
               }
             },
@@ -888,8 +884,6 @@
               dataClass: 'text-center',
               callback: (avgDuration) => {
                 if (avgDuration == null) return '';
-                if(avgDuration === 0) return 0;
-                if(Number.isInteger(avgDuration)) return avgDuration;
                 return avgDuration.toFixed(2);
               }
             },

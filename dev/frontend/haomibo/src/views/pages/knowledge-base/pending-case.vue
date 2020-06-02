@@ -55,7 +55,7 @@
               </b-button>
               <b-button size="sm" class="ml-2" variant="outline-info default"
                         :disabled="checkPermItem('pending_knowledge_print')" @click="onPrintButton()">
-                <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}n
+                <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
 
               </b-button>
             </div>
