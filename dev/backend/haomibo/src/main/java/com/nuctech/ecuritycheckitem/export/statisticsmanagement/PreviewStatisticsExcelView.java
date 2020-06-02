@@ -130,7 +130,7 @@ public class PreviewStatisticsExcelView extends BaseExcelView {
                 row.createCell(4).setCellValue(df.format(record.getScanStatistics().getValidScanRate()));
                 row.createCell(5).setCellValue(record.getJudgeStatistics().getTotalJudge());
                 row.createCell(6).setCellValue(record.getJudgeStatistics().getSuspictionJudge());
-                row.createCell(7).setCellValue(record.getJudgeStatistics().getSuspictionJudgeRate());
+                row.createCell(7).setCellValue(df.format(record.getJudgeStatistics().getSuspictionJudgeRate()));
                 row.createCell(8).setCellValue(record.getJudgeStatistics().getNoSuspictionJudge());
                 row.createCell(9).setCellValue(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
                 row.createCell(10).setCellValue(record.getHandExaminationStatistics().getTotalHandExamination());

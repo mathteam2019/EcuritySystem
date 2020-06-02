@@ -132,10 +132,10 @@ public class JudgeStatisticsWordView extends BaseWordView {
                 tableRow.getCell(12).setText(df.format(record.getNoSuspictionRate()));
                 tableRow.getCell(13).setText(Long.toString(record.getSuspiction()));
                 tableRow.getCell(14).setText(df.format(record.getSuspictionRate()));
-                tableRow.getCell(15).setText(Double.toString(record.getLimitedArtificialDuration()));
-                tableRow.getCell(16).setText(Double.toString(record.getAvgArtificialJudgeDuration()));
-                tableRow.getCell(17).setText(Double.toString(record.getMaxArtificialJudgeDuration()));
-                tableRow.getCell(18).setText(Double.toString(record.getMinArtificialJudgeDuration()));
+                tableRow.getCell(15).setText(Long.toString(record.getLimitedArtificialDuration()));
+                tableRow.getCell(16).setText(df.format(record.getAvgArtificialJudgeDuration()));
+                tableRow.getCell(17).setText(Long.toString(record.getMaxArtificialJudgeDuration()));
+                tableRow.getCell(18).setText(Long.toString(record.getMinArtificialJudgeDuration()));
 
             }
 

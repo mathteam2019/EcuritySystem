@@ -154,7 +154,7 @@ public class JudgeStatisticsExcelView extends BaseExcelView {
                 row.createCell(13).setCellValue(record.getSuspiction());
                 row.createCell(14).setCellValue(df.format(record.getSuspictionRate()));
                 row.createCell(15).setCellValue(record.getLimitedArtificialDuration());
-                row.createCell(16).setCellValue(record.getAvgArtificialJudgeDuration());
+                row.createCell(16).setCellValue(df.format(record.getAvgArtificialJudgeDuration()));
                 row.createCell(17).setCellValue(record.getMaxArtificialJudgeDuration());
                 row.createCell(18).setCellValue(record.getMinArtificialJudgeDuration());
 

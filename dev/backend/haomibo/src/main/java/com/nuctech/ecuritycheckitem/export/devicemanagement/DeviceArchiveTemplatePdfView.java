@@ -66,7 +66,7 @@ public class DeviceArchiveTemplatePdfView extends BasePdfView {
                 addTableCell(table, template.getTemplateName());
                 addTableCell(table, ConstantDictionary.getDataValue(template.getStatus()));
                 if(template.getDeviceCategory() != null) {
-                    addTableCell(table, template.getDeviceCategory().getCategoryName());
+                    addTableCell(table, ConstantDictionary.getDataValue(template.getCategoryId().toString(), "DeviceCategory"));
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }

@@ -68,7 +68,7 @@ public class AuditLogPdfView extends BasePdfView {
                 addTableCell(table, log.getClientIp());
                 addTableCell(table, log.getAction());
                 addTableCell(table, log.getOperateObject());
-                addTableCell(table, ConstantDictionary.getDataValue(log.getOperateResult()));
+                addTableCell(table, ConstantDictionary.getDataValue(log.getOperateResult(), "AuditLog"));
                 addTableCell(table, log.getReasonCode());
                 addTableCell(table, formatDate(log.getOperateTime()));
             }

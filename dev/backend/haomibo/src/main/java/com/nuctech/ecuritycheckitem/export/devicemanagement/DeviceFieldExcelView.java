@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.export.devicemanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 import org.apache.poi.ss.usermodel.Cell;
@@ -87,7 +88,7 @@ public class DeviceFieldExcelView extends BaseExcelView {
 
                 row.createCell(2).setCellValue(device.getDeviceName());
                 if(device.getCategory() != null) {
-                    row.createCell(3).setCellValue(device.getCategory().getCategoryName());
+                    row.createCell(3).setCellValue(ConstantDictionary.getDataValue(device.getCategoryId().toString(), "DeviceCategory"));
                 } else {
                     row.createCell(3).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

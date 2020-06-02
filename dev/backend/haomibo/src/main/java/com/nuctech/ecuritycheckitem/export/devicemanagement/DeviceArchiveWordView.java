@@ -114,7 +114,7 @@ public class DeviceArchiveWordView extends BaseWordView {
                     tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
-                    tableRow.getCell(5).setText(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
+                    tableRow.getCell(5).setText(ConstantDictionary.getDataValue(archive.getArchiveTemplate().getCategoryId().toString(), "DeviceCategory"));
                 } else {
                     tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }

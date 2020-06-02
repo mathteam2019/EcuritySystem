@@ -86,9 +86,9 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
                 addTableCell(table, df.format(record.getArtificialJudgeMistakeRate()));
 
                 addTableCell(table, Long.toString(record.getIntelligenceJudge()));
-                addTableCell(table, df.format(record.getIntelligenceJudgeMissing()));
+                addTableCell(table, Long.toString(record.getIntelligenceJudgeMissing()));
                 addTableCell(table, df.format(record.getIntelligenceJudgeMissingRate()));
-                addTableCell(table, df.format(record.getIntelligenceJudgeMistake()));
+                addTableCell(table, Long.toString(record.getIntelligenceJudgeMistake()));
                 addTableCell(table, df.format(record.getIntelligenceJudgeMistakeRate()));
 
             }

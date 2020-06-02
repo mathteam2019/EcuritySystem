@@ -359,8 +359,8 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
             record.setTotal(Utils.parseLong(item[1]));
             record.setSeizure(Utils.parseLong(item[2]));
             record.setNoSeizure(Utils.parseLong(item[3]));
-            record.setMaxDuration(Utils.parseDouble(item[4]));
-            record.setMinDuration(Utils.parseDouble(item[5]));
+            record.setMaxDuration(Utils.parseLong(item[4]));
+            record.setMinDuration(Utils.parseLong(item[5]));
             record.setAvgDuration(Utils.parseDouble(item[6]));
             record.setSeizureRate(0);
             record.setNoSeizureRate(0);

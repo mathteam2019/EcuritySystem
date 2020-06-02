@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.export.devicemanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SysDevice;
@@ -96,7 +97,7 @@ public class DeviceFieldWordView extends BaseWordView {
 
                 tableRow.getCell(2).setText(device.getDeviceName());
                 if(device.getCategory() != null) {
-                    tableRow.getCell(3).setText(device.getCategory().getCategoryName());
+                    tableRow.getCell(3).setText(ConstantDictionary.getDataValue(device.getCategoryId().toString(), "DeviceCategory"));
                 } else {
                     tableRow.getCell(3).setText(messageSource.getMessage("None", null, currentLocale));
                 }

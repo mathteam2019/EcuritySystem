@@ -106,7 +106,7 @@ public class AuditLogWordView extends BaseWordView {
                 tableRow.getCell(3).setText(log.getClientIp());
                 tableRow.getCell(4).setText(log.getAction());
                 tableRow.getCell(5).setText(log.getOperateObject());
-                tableRow.getCell(6).setText(ConstantDictionary.getDataValue(log.getOperateResult()));
+                tableRow.getCell(6).setText(ConstantDictionary.getDataValue(log.getOperateResult(), "AuditLog"));
                 tableRow.getCell(7).setText(log.getReasonCode());
                 tableRow.getCell(8).setText(formatDate(log.getOperateTime()));
 

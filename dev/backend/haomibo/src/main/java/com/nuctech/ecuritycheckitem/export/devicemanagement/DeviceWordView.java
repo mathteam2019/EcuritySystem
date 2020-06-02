@@ -112,7 +112,7 @@ public class DeviceWordView extends BaseWordView {
                     tableRow.getCell(4).setText(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getCategory() != null) {
-                    tableRow.getCell(5).setText(device.getCategory().getCategoryName());
+                    tableRow.getCell(5).setText(ConstantDictionary.getDataValue(device.getCategoryId().toString(), "DeviceCategory"));
                 } else {
                     tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }

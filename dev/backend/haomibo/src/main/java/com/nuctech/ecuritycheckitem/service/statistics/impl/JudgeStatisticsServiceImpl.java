@@ -437,11 +437,11 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             Long noSuspictionProcess = Utils.parseLong(item[6]);
             Long totalProcess = Utils.parseLong(item[7]);
             Double avgDurationProcess = Utils.parseDouble(item[8]);
-            Double maxDurationProcess = Utils.parseDouble(item[9]);
-            Double minDuratinoProcess = Utils.parseDouble(item[10]);
+            Long maxDurationProcess = Utils.parseLong(item[9]);
+            Long minDuratinoProcess = Utils.parseLong(item[10]);
             Double avgArtificialDurationProcess = Utils.parseDouble(item[11]);
-            Double maxArtificialDurationProcess = Utils.parseDouble(item[12]);
-            Double minAtificialDuratinoProcess = Utils.parseDouble(item[13]);
+            Long maxArtificialDurationProcess = Utils.parseLong(item[12]);
+            Long minAtificialDuratinoProcess = Utils.parseLong(item[13]);
             atrResultProcess = totalProcess - artififcialJudgeProcess - assignTimeoutProcess - judgeTimeoutProcess;
 
 
@@ -453,17 +453,17 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
             Long noSuspictionFinish = Utils.parseLong(item[20]);
             Long totalFinish = Utils.parseLong(item[21]);
             Double avgDurationFinish = Utils.parseDouble(item[22]);
-            Double maxDurationFinish = Utils.parseDouble(item[23]);
-            Double minDuratinoFinish = Utils.parseDouble(item[24]);
+            Long maxDurationFinish = Utils.parseLong(item[23]);
+            Long minDuratinoFinish = Utils.parseLong(item[24]);
             Double avgArtificialDurationFinish = Utils.parseDouble(item[25]);
-            Double maxArtificialDurationFinish = Utils.parseDouble(item[26]);
-            Double minAtificialDuratinoFinish = Utils.parseDouble(item[27]);
+            Long maxArtificialDurationFinish = Utils.parseLong(item[26]);
+            Long minAtificialDuratinoFinish = Utils.parseLong(item[27]);
             atrResultFinish = totalFinish - artififcialJudgeFinish - assignTimeoutFinish - judgeTimeoutFinish;
 
-            Double maxDuration = maxDurationProcess;
-            Double maxArtificialDuration = maxArtificialDurationProcess;
-            Double minDuration = minDuratinoProcess;
-            Double minArtificialDuration = minAtificialDuratinoProcess;
+            Long maxDuration = maxDurationProcess;
+            Long maxArtificialDuration = maxArtificialDurationProcess;
+            Long minDuration = minDuratinoProcess;
+            Long minArtificialDuration = minAtificialDuratinoProcess;
             if(maxDuration < maxDurationFinish) {
                 maxDuration = maxDurationFinish;
             }

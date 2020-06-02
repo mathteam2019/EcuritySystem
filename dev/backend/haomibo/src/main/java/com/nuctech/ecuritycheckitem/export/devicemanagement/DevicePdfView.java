@@ -70,7 +70,7 @@ public class DevicePdfView extends BasePdfView {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getCategory() != null) {
-                    addTableCell(table, device.getCategory().getCategoryName());
+                    addTableCell(table, ConstantDictionary.getDataValue(device.getCategoryId().toString(), "DeviceCategory"));
                 } else {
                     addTableCell(table, messageSource.getMessage("None", null, currentLocale));
                 }

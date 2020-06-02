@@ -79,9 +79,9 @@ public class HandExaminationStatisticsPdfView extends BasePdfView {
                 addTableCell(table, df.format(record.getNoSeizureRate()));
                 addTableCell(table, Long.toString(record.getSeizure()));
                 addTableCell(table, df.format(record.getSeizureRate()));
-                addTableCell(table, Double.toString(record.getAvgDuration()));
-                addTableCell(table, Double.toString(record.getMaxDuration()));
-                addTableCell(table, Double.toString(record.getMinDuration()));
+                addTableCell(table, df.format(record.getAvgDuration()));
+                addTableCell(table, Long.toString(record.getMaxDuration()));
+                addTableCell(table, Long.toString(record.getMinDuration()));
 
 
             }

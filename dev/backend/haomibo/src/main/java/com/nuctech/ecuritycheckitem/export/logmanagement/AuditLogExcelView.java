@@ -102,7 +102,7 @@ public class AuditLogExcelView extends BaseExcelView {
                 row.createCell(3).setCellValue(log.getClientIp());
                 row.createCell(4).setCellValue(log.getAction());
                 row.createCell(5).setCellValue(log.getOperateObject());
-                row.createCell(6).setCellValue(ConstantDictionary.getDataValue(log.getOperateResult()));
+                row.createCell(6).setCellValue(ConstantDictionary.getDataValue(log.getOperateResult(), "AuditLog"));
                 row.createCell(7).setCellValue(log.getReasonCode());
                 row.createCell(8).setCellValue(formatDate(log.getOperateTime()));
             }

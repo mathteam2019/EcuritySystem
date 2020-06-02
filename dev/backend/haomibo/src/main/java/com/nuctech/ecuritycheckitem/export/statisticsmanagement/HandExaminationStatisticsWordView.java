@@ -116,9 +116,9 @@ public class HandExaminationStatisticsWordView extends BaseWordView {
                 tableRow.getCell(4).setText(df.format(record.getNoSeizureRate()));
                 tableRow.getCell(5).setText(Long.toString((record.getSeizure())));
                 tableRow.getCell(6).setText(df.format(record.getSeizureRate()));
-                tableRow.getCell(7).setText(Double.toString(record.getAvgDuration()));
-                tableRow.getCell(8).setText(Double.toString(record.getMaxDuration()));
-                tableRow.getCell(9).setText(Double.toString(record.getMinDuration()));
+                tableRow.getCell(7).setText(df.format(record.getAvgDuration()));
+                tableRow.getCell(8).setText(Long.toString(record.getMaxDuration()));
+                tableRow.getCell(9).setText(Long.toString(record.getMinDuration()));
 
             }
 

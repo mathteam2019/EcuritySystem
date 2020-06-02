@@ -128,9 +128,9 @@ public class EvaluateJudgeStatisticsWordView extends BaseWordView {
                 tableRow.getCell(11).setText(df.format(record.getArtificialJudgeMistakeRate()));
 
                 tableRow.getCell(12).setText(Long.toString(record.getIntelligenceJudge()));
-                tableRow.getCell(13).setText(df.format(record.getIntelligenceJudgeMissing()));
+                tableRow.getCell(13).setText(Long.toString(record.getIntelligenceJudgeMissing()));
                 tableRow.getCell(14).setText(df.format(record.getIntelligenceJudgeMissingRate()));
-                tableRow.getCell(15).setText(df.format(record.getIntelligenceJudgeMistake()));
+                tableRow.getCell(15).setText(Long.toString(record.getIntelligenceJudgeMistake()));
                 tableRow.getCell(16).setText(df.format(record.getIntelligenceJudgeMistakeRate()));
 
             }

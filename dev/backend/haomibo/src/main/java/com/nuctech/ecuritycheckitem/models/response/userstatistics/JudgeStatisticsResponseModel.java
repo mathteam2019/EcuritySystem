@@ -31,8 +31,8 @@ public class JudgeStatisticsResponseModel {
     long suspiction; //suspiction
     long noSuspiction; //noSuspiction
     double avgDuration; //avg Duration
-    double maxDuration; //max Duration
-    double minDuration; //min Duration
+    long maxDuration; //max Duration
+    long minDuration; //min Duration
     long total; //total count
     long artificialResult; //artificial Result count
     double artificialResultRate; //artificial Result Rate
@@ -43,10 +43,10 @@ public class JudgeStatisticsResponseModel {
     double scanResultRate; //scanResult Rate
     double noSuspictionRate; //noSuspiction Rate
     double suspictionRate; //suspiction Rate
-    double limitedArtificialDuration; //limited Artificial Duration
+    long limitedArtificialDuration; //limited Artificial Duration
     double avgArtificialJudgeDuration; //avg Artificial Judge Duration
-    double maxArtificialJudgeDuration; //max Artificial Judge Duration
-    double minArtificialJudgeDuration; //min Artificial Judge Duration
+    long maxArtificialJudgeDuration; //max Artificial Judge Duration
+    long minArtificialJudgeDuration; //min Artificial Judge Duration
 
     Map<String, Integer> handGoods; //suspiction hand goods
 

@@ -395,8 +395,8 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
             record.setIntelligenceJudge(record.getTotal() - record.getArtificialJudge());
             record.setIntelligenceJudgeMissing(record.getMissingReport() - record.getArtificialJudgeMissing());
             record.setIntelligenceJudgeMistake(record.getMistakeReport() - record.getArtificialJudgeMistake());
-            record.setMaxDuration(Utils.parseDouble(item[13].toString()));
-            record.setMinDuration(Utils.parseDouble(item[14].toString()));
+            record.setMaxDuration(Utils.parseLong(item[13].toString()));
+            record.setMinDuration(Utils.parseLong(item[14].toString()));
             record.setAvgDuration(Utils.parseDouble(item[15].toString()));
             record.setMissingReportRate(0);
             record.setMistakeReportRate(0);

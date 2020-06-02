@@ -96,7 +96,7 @@ public class DeviceArchiveTemplateExcelView extends BaseExcelView {
                 row.createCell(2).setCellValue(template.getTemplateName());
                 row.createCell(3).setCellValue(ConstantDictionary.getDataValue(template.getStatus()));
                 if(template.getDeviceCategory() != null) {
-                    row.createCell(4).setCellValue(template.getDeviceCategory().getCategoryName());
+                    row.createCell(4).setCellValue(ConstantDictionary.getDataValue(template.getCategoryId().toString(), "DeviceCategory"));
                 } else {
                     row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
 

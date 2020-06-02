@@ -89,10 +89,10 @@ public class JudgeStatisticsPdfView extends BasePdfView {
                 addTableCell(table, df.format(record.getNoSuspictionRate()));
                 addTableCell(table, Long.toString(record.getSuspiction()));
                 addTableCell(table, df.format(record.getSuspictionRate()));
-                addTableCell(table, Double.toString(record.getLimitedArtificialDuration()));
-                addTableCell(table, Double.toString(record.getAvgArtificialJudgeDuration()));
-                addTableCell(table, Double.toString(record.getMaxArtificialJudgeDuration()));
-                addTableCell(table, Double.toString(record.getMinArtificialJudgeDuration()));
+                addTableCell(table, Long.toString(record.getLimitedArtificialDuration()));
+                addTableCell(table, df.format(record.getAvgArtificialJudgeDuration()));
+                addTableCell(table, Long.toString(record.getMaxArtificialJudgeDuration()));
+                addTableCell(table, Long.toString(record.getMinArtificialJudgeDuration()));
 
             }
 

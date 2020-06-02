@@ -113,7 +113,7 @@ public class HandExaminationStatisticsExcelView extends BaseExcelView {
                 row.createCell(4).setCellValue(df.format(record.getNoSeizureRate()));
                 row.createCell(5).setCellValue(record.getSeizure());
                 row.createCell(6).setCellValue(df.format(record.getSeizureRate()));
-                row.createCell(7).setCellValue(record.getAvgDuration());
+                row.createCell(7).setCellValue(df.format(record.getAvgDuration()));
                 row.createCell(8).setCellValue(record.getMaxDuration());
                 row.createCell(9).setCellValue(record.getMinDuration());
             }

@@ -111,7 +111,7 @@ public class DeviceExcelView extends BaseExcelView {
                     row.createCell(4).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
                 if(device.getCategory() != null) {
-                    row.createCell(5).setCellValue(device.getCategory().getCategoryName());
+                    row.createCell(5).setCellValue(ConstantDictionary.getDataValue(device.getCategoryId().toString(), "DeviceCategory"));
                 } else {
                     row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

@@ -131,7 +131,7 @@ public class HistoryTaskExcelView extends BaseExcelView {
                 }
 
                 if (!StringUtils.isEmpty(task.getScanPointsManName())) {
-                    row.createCell(5).setCellValue(task.getScanPointsManName());
+                    row.createCell(6).setCellValue(task.getScanPointsManName());
                 } else {
                     row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

@@ -46,8 +46,8 @@ public class HandExaminationResponseModel {
     double seizureRate; // seizure hand rate
     double noSeizureRate; //no seizure hand rate
 
-    double maxDuration; //max hand examination duration
-    double minDuration; //min hand examination duration
+    long maxDuration; //max hand examination duration
+    long minDuration; //min hand examination duration
     double avgDuration; //avg hand examination duration
 
 }
