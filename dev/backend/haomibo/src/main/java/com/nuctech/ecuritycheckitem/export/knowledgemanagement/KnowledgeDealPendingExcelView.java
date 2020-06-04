@@ -117,8 +117,8 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
                     row.createCell(5).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if(!StringUtils.isEmpty(deal.getHandDeviceName())) {
-                    row.createCell(6).setCellValue(deal.getHandDeviceName());
+                if(!StringUtils.isEmpty(deal.getJudgeDeviceName())) {
+                    row.createCell(6).setCellValue(deal.getJudgeDeviceName());
                 } else {
                     row.createCell(6).setCellValue(messageSource.getMessage("None", null, currentLocale));
                 }

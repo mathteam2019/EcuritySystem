@@ -77,7 +77,7 @@ public class JudgeStatisticsPdfView extends BasePdfView {
                 addTableCell(table, Long.toString(index ++));
                 addTableCell(table, record.getTime());
                 addTableCell(table, Long.toString(record.getTotal()));
-                addTableCell(table, Long.toString(record.getArtificialResult()));
+                addTableCell(table, Long.toString(record.getArtificialJudge()));
                 addTableCell(table, df.format(record.getArtificialResultRate()));
                 addTableCell(table, Long.toString(record.getAssignTimeout()));
                 addTableCell(table, df.format(record.getAssignTimeoutResultRate()));

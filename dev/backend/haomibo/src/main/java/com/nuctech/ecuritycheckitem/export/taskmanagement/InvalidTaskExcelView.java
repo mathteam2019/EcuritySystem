@@ -47,7 +47,7 @@ public class InvalidTaskExcelView extends BaseExcelView {
         headerCellTaskNumber.setCellValue(messageSource.getMessage("TaskNumber", null, currentLocale));
 
         Cell headerCellWorkingMode = header.createCell(2);
-        headerCellTaskNumber.setCellValue(messageSource.getMessage("WorkMode", null, currentLocale));
+        headerCellWorkingMode.setCellValue(messageSource.getMessage("WorkMode", null, currentLocale));
 
 
         Cell headerCellField = header.createCell(3);

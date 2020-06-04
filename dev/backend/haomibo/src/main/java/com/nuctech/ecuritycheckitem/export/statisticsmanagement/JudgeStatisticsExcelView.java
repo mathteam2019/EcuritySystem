@@ -141,7 +141,7 @@ public class JudgeStatisticsExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(index ++);
                 row.createCell(1).setCellValue(record.getTime());
                 row.createCell(2).setCellValue(record.getTotal());
-                row.createCell(3).setCellValue(record.getArtificialResult());
+                row.createCell(3).setCellValue(record.getArtificialJudge());
                 row.createCell(4).setCellValue(df.format(record.getArtificialResultRate()));
                 row.createCell(5).setCellValue(record.getAssignTimeout());
                 row.createCell(6).setCellValue(df.format(record.getAssignTimeoutResultRate()));

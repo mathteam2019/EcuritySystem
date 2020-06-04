@@ -131,8 +131,8 @@ public class KnowledgeDealPendingWordView extends BaseWordView {
                     tableRow.getCell(5).setText(messageSource.getMessage("None", null, currentLocale));
                 }
 
-                if(!StringUtils.isEmpty(deal.getHandDeviceName())) {
-                    tableRow.getCell(6).setText(deal.getHandDeviceName());
+                if(!StringUtils.isEmpty(deal.getJudgeDeviceName())) {
+                    tableRow.getCell(6).setText(deal.getJudgeDeviceName());
                 } else {
                     tableRow.getCell(6).setText(messageSource.getMessage("None", null, currentLocale));
                 }

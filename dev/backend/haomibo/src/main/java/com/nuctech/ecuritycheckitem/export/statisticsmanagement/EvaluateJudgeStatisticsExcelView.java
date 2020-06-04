@@ -82,7 +82,7 @@ public class EvaluateJudgeStatisticsExcelView extends BaseExcelView {
         Cell headerCellIntelligenceJudgeMissing = header.createCell(13);
         headerCellIntelligenceJudgeMissing.setCellValue(messageSource.getMessage("IntelligenceJudgeMissing", null, currentLocale));
 
-        Cell headerCellIntelligenceJudgeMissingRate = header.createCell(146);
+        Cell headerCellIntelligenceJudgeMissingRate = header.createCell(14);
         headerCellIntelligenceJudgeMissingRate.setCellValue(messageSource.getMessage("IntelligenceJudgeMissingRate", null, currentLocale));
 
         Cell headerCellIntelligenceJudgeMistake = header.createCell(15);

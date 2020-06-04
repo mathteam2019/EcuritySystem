@@ -41,6 +41,6 @@ public class SysMonitoringDeviceStatusInfoVO {
 
     private String ipAddress;
 
-    private SysUser loginUser;
+    private SysUserInfoVO loginUser;
 
 }

@@ -301,10 +301,21 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
         long difCurrent = endDate.getTime() - startDate.getTime();
         //log.error("Redis current time is " + difCurrent);
         List<SysMonitoringDeviceStatusInfoVO> monitorList = new ArrayList<>();
+
         try {
-            String dataStr = redisUtil.get(("sys.monitoring.device.status.info"));
-            JSONArray dataContent = JSONArray.parseArray(dataStr);
-            monitorList = dataContent.toJavaList(SysMonitoringDeviceStatusInfoVO.class);
+            String redisKey = "sys.monitoring.device.status.info.first";
+            Map<Object, Object> statusHash = redisUtil.getEntities(redisKey);
+            if(statusHash != null) {
+                statusHash.forEach((key, value) -> {
+                    try {
+                        SysMonitoringDeviceStatusInfoVO monitoringDeviceStatusInfoVO = objectMapper.readValue(value.toString(), SysMonitoringDeviceStatusInfoVO.class);
+                        monitorList.add(monitoringDeviceStatusInfoVO);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                });
+            }
         } catch (Exception ex) {}
         endDate = new Date();
         long difMonitoring = endDate.getTime() - startDate.getTime();

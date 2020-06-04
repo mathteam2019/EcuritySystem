@@ -120,7 +120,7 @@ public class JudgeStatisticsWordView extends BaseWordView {
                 tableRow.getCell(0).setText(Long.toString(index ++));
                 tableRow.getCell(1).setText(record.getTime());
                 tableRow.getCell(2).setText(Long.toString(record.getTotal()));
-                tableRow.getCell(3).setText(Long.toString(record.getArtificialResult()));
+                tableRow.getCell(3).setText(Long.toString(record.getArtificialJudge()));
                 tableRow.getCell(4).setText(df.format(record.getArtificialResultRate()));
                 tableRow.getCell(5).setText(Long.toString(record.getAssignTimeout()));
                 tableRow.getCell(6).setText(df.format(record.getAssignTimeoutResultRate()));
