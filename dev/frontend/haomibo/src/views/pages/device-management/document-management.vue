@@ -26,13 +26,14 @@
     div.img-wrapper {
       width: 270px;
       height: 420px;
-      padding: 30px;
+      padding: 10px;
       border: solid 1px #bdbaba;
       border-radius: 3px;
       position: relative;
 
       img {
         width: 100%;
+        max-height: 398px;
         object-fit: scale-down;
       }
     }

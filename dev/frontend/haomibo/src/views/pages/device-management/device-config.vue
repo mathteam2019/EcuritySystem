@@ -943,19 +943,20 @@
       },
 
       getHandGoodString(string) {
-
+console.log(string.length);
         if (string.length === 0) return '';
         let handGood = string;
         let k = 0, handGoodStr = '';
         // for (let j = 0; j < 5; j++) {
         //if (handGood[0] === this.handGoodDataCode[j]) {
-        handGoodStr = handGood[0].device.deviceName;
+        handGoodStr = handGood[0].device ? handGood[0].device.deviceName: '';
         //}
         //}
         for (let i = 1; i < handGood.length; i++) {
           //for (let j = 0; j < 5; j++) {
           //if (handGood[i] === this.handGoodDataCode[j]) {
-          handGoodStr += ',' + handGood[i].device.deviceName;
+          handGoodStr += ', ';
+          handGoodStr += handGood[i].device? handGood[i].device.deviceName:'';
           //}
           //}
         }

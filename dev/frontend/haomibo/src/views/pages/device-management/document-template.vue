@@ -918,7 +918,7 @@
             });
             this.basicForm.archiveIndicatorsList = archiveIndicators;
           });
-          if (isUpdated) {
+          //if (isUpdated) {
             let items = [];
 
             this.basicForm.archiveIndicatorsList.forEach((item) => {
@@ -931,7 +931,7 @@
               this.indicatorData = items;
             });
           }
-        }
+        //}
         this.submitted = false;
       },
       //save document template Item

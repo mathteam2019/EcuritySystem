@@ -136,7 +136,7 @@
                   <b-col cols="2" offset="1">
                     <b-form-group class="mb-0"
                                   :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
-                      <colorpicker :disablePicker="platFormData.displayDeleteSuspicion === '1000000602'" :color="platFormData.displayDeleteSuspicionColour" v-model="platFormData.displayDeleteSuspicionColour" @input="onInput()" :change="onChange()"/>
+                      <colorpicker :disablePicker="platFormData.displayDeleteSuspicion === '1000000602'" :color="platFormData.displayDeleteSuspicionColour" v-model="platFormData.displayDeleteSuspicionColour"/>
                     </b-form-group>
                   </b-col>
 
@@ -1098,21 +1098,20 @@
         let k = 0, handGoodStr = '';
         // for (let j = 0; j < 5; j++) {
         //if (handGood[0] === this.handGoodDataCode[j]) {
-        handGoodStr = handGood[0].device.deviceName;
+        handGoodStr = handGood[0].device?handGood[0].device.deviceName:'';
         //}
         //}
         for (let i = 1; i < handGood.length; i++) {
           //for (let j = 0; j < 5; j++) {
           //if (handGood[i] === this.handGoodDataCode[j]) {
-          handGoodStr += ',' + handGood[i].device.deviceName;
+          handGoodStr += ', ';
+          handGoodStr += handGood[i].device? handGood[i].device.deviceName:'';
           //}
           //}
         }
         return handGoodStr;
       },
-      getEvent(e){
 
-      },
       onChange() {
 
         // this.isEmptyScan = this.platFormData.scanRecogniseColour === '#';

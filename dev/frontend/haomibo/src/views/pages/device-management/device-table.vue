@@ -12,13 +12,14 @@
     div.img-wrapper {
       width: 270px;
       height: 420px;
-      padding: 30px;
+      padding: 10px;
       border: solid 1px #bdbaba;
       border-radius: 3px;
       position: relative;
 
       img {
         width: 100%;
+        max-height: 398px;
         object-fit: scale-down;
       }
     }
@@ -1658,6 +1659,12 @@
                 break;
               case responseMessages['active-device']: // okay
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.active-device`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-device']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.used-device`), {
                   duration: 3000,
                   permanent: false
                 });

@@ -385,9 +385,9 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.scan')}}</div>
                     <div>
-                      <div v-if="showPage.serScan == null"></div>
-                      <div v-else-if="showPage.serScan.scanPointsman == null"></div>
-                      <div v-else>{{showPage.serScan.scanPointsman.userName}}</div>
+                      <div v-if="showPage.history == null"></div>
+                      <div v-else-if="showPage.history.scanPointsmanName == null"></div>
+                      <div v-else>{{showPage.history.scanPointsmanName}}</div>
                     </div>
                   </div>
 
@@ -471,8 +471,8 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.field==null" class="form-input-border"/>
-                  <b-form-input disabled v-else v-model="showPage.field.fieldDesignation"
+                  <b-form-input disabled v-if="showPage.history==null" class="form-input-border"/>
+                  <b-form-input disabled v-else v-model="showPage.history.fieldDesignation"
                                 class="form-input-border"/>
                 </b-form-group>
               </b-col>
@@ -482,11 +482,11 @@
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.serScan == null"
+                  <b-form-input disabled v-if="showPage.history == null"
                                 class="form-input-border"/>
-                  <b-form-input disabled v-else-if="showPage.serScan.scanDevice == null"
+                  <b-form-input disabled v-else-if="showPage.history.scanDeviceName == null"
                                 class="form-input-border"/>
-                  <b-form-input disabled v-else v-model="showPage.serScan.scanDevice.deviceName"
+                  <b-form-input disabled v-else v-model="showPage.history.scanDeviceName"
                                 class="form-input-border"/>
                 </b-form-group>
               </b-col>

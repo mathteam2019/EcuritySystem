@@ -972,7 +972,7 @@
             //temp.maxScanCount = Math.max.apply(Math, temp.record.countList);
             temp.lineChartOptions = [];
             temp.maxScanCount = [];
-            temp.runningTimeValue = getDateTimeWithFormat(temp.deviceLoginTime, 'monitor-diff', this.$i18n.locale);
+            temp.runningTimeValue = getDateTimeWithFormat(temp.deviceLoginTime, 'monitor-diff', getLocale());
             temp.detailStatus = false;
             result.push(temp);
           }
@@ -1014,6 +1014,7 @@
         return -1;
       },
       changeDetailData(index, data) {
+        console.log(index);
         if(data.device != null) {
             this.items[index].device.currentStatus = data.device.currentStatus;
         }
@@ -1068,8 +1069,6 @@
             this.items[index].footWarningName = findDicTextData(this.footStatusDicData, data.footWarning);
             this.items[index].footWarning = data.footWarning;
         }
-
-
       },
       getDataFetchRefresh() { // customize data loading for table from server
           getApiManagerError().post(`${apiBaseUrl}/device-management/condition-monitoring/get-detail-by-id`,

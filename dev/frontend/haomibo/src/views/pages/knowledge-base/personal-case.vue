@@ -372,7 +372,7 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
-                      <div v-if="showPage.judgeUser != null">{{showPage.judgeUser.userName}}</div>
+                      <div v-if="showPage.judgeUserName != null">{{showPage.judgeUserName}}</div>
                       <div v-else>{{$t('maintenance-management.process-task.default-user')}}</div>
                     </div>
                   </div>
@@ -393,8 +393,8 @@
                   <div class="left">
                     <div>{{$t('device-config.maintenance-config.inspection')}}</div>
                     <div>
-                      <div v-if="showPage.handUser == null"></div>
-                      <div v-else>{{showPage.handUser.userName}}</div>
+                      <div v-if="showPage.handUserName == null"></div>
+                      <div v-else>{{showPage.handUserName}}</div>
                     </div>
                   </div>
 
@@ -444,11 +444,9 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.task==null"
+                  <b-form-input disabled v-if="showPage.fieldDesignation==null"
                                 class="form-input-border"/>
-                  <b-form-input disabled v-else-if="showPage.task.field==null"
-                                class="form-input-border"/>
-                  <b-form-input disabled v-else v-model="showPage.task.field.fieldDesignation"
+                  <b-form-input disabled v-else v-model="showPage.fieldDesignation"
                                 class="form-input-border"/>
                 </b-form-group>
               </b-col>
@@ -458,8 +456,8 @@
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.scanDevice == null" class="form-input-border"/>
-                  <b-form-input disabled v-else v-model="showPage.scanDevice.deviceName"
+                  <b-form-input disabled v-if="showPage.scanDeviceName == null" class="form-input-border"/>
+                  <b-form-input disabled v-else v-model="showPage.scanDeviceName"
                                 class="form-input-border"/>
                 </b-form-group>
               </b-col>
@@ -485,9 +483,9 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="showPage.handDevice == null"/>
+                                v-if="showPage.handDeviceName == null"/>
                   <b-form-input disabled class="form-input-border" v-else
-                                v-model="showPage.handDevice.deviceName"/>
+                                v-model="showPage.handDeviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -497,9 +495,9 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="showPage.judgeDevice == null"/>
+                                v-if="showPage.judgeDeviceName == null"/>
                   <b-form-input disabled class="form-input-border" v-else
-                                v-model="showPage.judgeDevice.deviceName"/>
+                                v-model="showPage.judgeDeviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>

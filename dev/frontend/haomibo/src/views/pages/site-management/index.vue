@@ -1292,6 +1292,12 @@
                   permanent: false
                 });
                 break;
+              case responseMessages["used-field"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.used-field`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {
