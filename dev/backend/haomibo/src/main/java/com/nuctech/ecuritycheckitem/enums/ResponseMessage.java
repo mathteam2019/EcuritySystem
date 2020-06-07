@@ -68,6 +68,7 @@ public enum ResponseMessage {
     USED_DEVICE_SERIAL("used_device_serial"),  //response message in case of used device serial
     USED_DEVICE("used_device"),  //response message in case of used device
     USED_DEVICE_GUID("used_device_guid"),  //response message in case of used device guid
+    USED_FIELD("used_field"),  //response message in case of used field in history
     USED_FIELD_SERIAL("used_field_serial"),  //response message in case of used field serial
     USED_FIELD_DESIGNATION("used_field_designation"),  //response message in case of used field designation
     ACTIVE_DEVICE("active_device"), //response message in case of delete device

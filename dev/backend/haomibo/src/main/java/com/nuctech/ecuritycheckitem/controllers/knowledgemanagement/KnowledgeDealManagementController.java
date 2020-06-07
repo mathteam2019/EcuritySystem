@@ -484,7 +484,7 @@ public class KnowledgeDealManagementController extends BaseController {
             fieldId = filter.getFieldId(); //get field name from input parameter
             handGoods = filter.getHandGoods(); //get handgoods from input parameter
         }
-        List<SerKnowledgeCase> exportList = knowledgeService.getDealExportList(sortBy, order, caseStatus, modeName, taskNumber, taskResult,
+        List<SerKnowledgeCase> exportList = knowledgeService.getDealExportList(sortBy, order, caseStatus, taskNumber, modeName, taskResult,
                 fieldId, handGoods, isAll, idList); //get export list from service
         return exportList;
     }

@@ -950,7 +950,7 @@ public class DeviceControlController extends BaseController {
 
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.modifyDevice(sysDevice, requestBody.getImageUrl());
-
+        asyncController.updateDevice(sysDevice.getDeviceId());
         //asyncController.updateSecurityDeviceDetail(requestBody.getGuid());
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -1021,6 +1021,9 @@ public class DeviceControlController extends BaseController {
 
         List<SysDevice> deviceList = requestBody.getDeviceList();
         deviceService.modifyDeviceField(deviceList);
+        for(int i = 0; i < deviceList.size(); i ++) {
+            asyncController.updateDevice(deviceList.get(i).getDeviceId());
+        }
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

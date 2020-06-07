@@ -25,7 +25,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@JsonFilter(ModelJsonFilters.FILTER_SYS_USER)
 @Table(name = "sys_user")
 public class SysUserInfoVO extends BaseEntity implements Serializable {
 
@@ -36,7 +35,7 @@ public class SysUserInfoVO extends BaseEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "ORG_ID")
-    private SysOrg sysOrg;
+    private SysOrgInfoVO sysOrg;
 
     @Column(name = "USER_NAME", length = 50)
     private String userName;

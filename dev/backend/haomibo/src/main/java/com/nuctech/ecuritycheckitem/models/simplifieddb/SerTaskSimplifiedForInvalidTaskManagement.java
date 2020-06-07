@@ -72,6 +72,11 @@ public class SerTaskSimplifiedForInvalidTaskManagement extends BaseEntity implem
     @NotFound(action = NotFoundAction.IGNORE)
     private SerScanSimplifiedForTaskManagement serScan;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private HistorySimplifiedForInvalidTaskManagement history;
+
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
 //    @NotFound(action = NotFoundAction.IGNORE)

@@ -372,6 +372,12 @@ public class FieldManagementController extends BaseController {
                     messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
+        if(fieldService.checkUsedHistory(requestBody.getFieldId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Field", null, currentLocale),
+                    messageSource.getMessage("UsedField", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.USED_FIELD);
+        }
         if(fieldService.removeField(requestBody.getFieldId()) == false) {
             auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
                     "", messageSource.getMessage("Field", null, currentLocale),

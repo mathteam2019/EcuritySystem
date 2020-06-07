@@ -63,6 +63,13 @@ public interface FieldService {
     boolean checkHasChild(Long fieldId);
 
     /**
+     * check if field used in history
+     * @param fieldId
+     * @return
+     */
+    boolean checkUsedHistory(Long fieldId);
+
+    /**
      * edit field
      * @param sysField
      */

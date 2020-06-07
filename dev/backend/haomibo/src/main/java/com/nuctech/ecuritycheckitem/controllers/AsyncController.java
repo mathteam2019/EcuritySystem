@@ -21,13 +21,18 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.redis.SerSecurityDeviceDetailModel;
+import com.nuctech.ecuritycheckitem.models.redis.SysDeviceRedis;
+import com.nuctech.ecuritycheckitem.models.redis.SysUserInfoVO;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
 import com.nuctech.ecuritycheckitem.models.reusables.User;
+import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceConfigService;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
+import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
 import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import com.nuctech.ecuritycheckitem.utils.RedisUtil;
@@ -60,6 +65,12 @@ public class AsyncController extends BaseController {
     DeviceConfigService deviceConfigService;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
+    SysDeviceRepository sysDeviceRepository;
+
+    @Autowired
     RedisUtil redisUtil;
 
     @Async
@@ -78,6 +89,41 @@ public class AsyncController extends BaseController {
             String dataStr = objectMapper.writeValueAsString(detailModel);
             String key = redisKey + guid;
             redisUtil.set(key, dataStr, Integer.MAX_VALUE);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Async
+    public void updateUser(Long userId) {
+        String redisKey = "sys.user.detail.info.first";
+        try {
+            SysUserInfoVO sysUserInfoVO = userService.getUserInfo(userId);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String str = objectMapper.writeValueAsString(sysUserInfoVO);
+            redisUtil.setHash(redisKey, sysUserInfoVO.getUserAccount(), str);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Async
+    public void updateDevice(Long deviceId) {
+        SysDevice sysDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice.deviceId.eq(deviceId)).orElse(null);
+        String redisKey = "sys.device.detail.info.first";
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            if(sysDevice.getDeviceType().equals(SysDevice.DeviceType.SECURITY)) {
+                updateSecurityDeviceDetail(sysDevice.getDeviceId());
+            }
+            String deviceStr = (String) redisUtil.getHash(redisKey, sysDevice.getGuid());
+            SysDeviceRedis device = objectMapper.readValue(deviceStr, SysDeviceRedis.class);
+            device.setFieldId(sysDevice.getFieldId());
+            device.setDeviceName(sysDevice.getDeviceName());
+            device.setDeviceSerial(sysDevice.getDeviceSerial());
+            String str = objectMapper.writeValueAsString(device);
+            redisUtil.setHash(redisKey, device.getGuid(), str);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

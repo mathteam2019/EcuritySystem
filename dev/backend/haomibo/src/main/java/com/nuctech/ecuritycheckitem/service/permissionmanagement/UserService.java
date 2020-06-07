@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.service.permissionmanagement;
 import com.nuctech.ecuritycheckitem.models.db.SysResource;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import com.nuctech.ecuritycheckitem.models.redis.SysUserInfoVO;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -163,6 +164,13 @@ public interface UserService {
      * @return
      */
     boolean modifyPassword(long userId, String password);
+
+    /**
+     *
+     * @param userId
+     * @return
+     */
+    SysUserInfoVO getUserInfo(Long userId);
 
     /**
      * find all user

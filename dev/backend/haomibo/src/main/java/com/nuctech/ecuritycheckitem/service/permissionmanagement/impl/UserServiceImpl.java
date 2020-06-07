@@ -19,6 +19,8 @@ import com.nuctech.ecuritycheckitem.controllers.permissionmanagement.UserManagem
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
+import com.nuctech.ecuritycheckitem.models.redis.QSysUserInfoVO;
+import com.nuctech.ecuritycheckitem.models.redis.SysUserInfoVO;
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.QSysUserSimplifiedOnlyHasName;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SysUserSimplifiedOnlyHasName;
@@ -89,6 +91,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     SysUserSimpleRepository sysUserSimpleRepository;
+
+    @Autowired
+    SysUserInfoVORepository sysUserInfoVORepository;
 
     @Autowired
     public MessageSource messageSource;
@@ -564,6 +569,12 @@ public class UserServiceImpl implements UserService {
         }
         return false;
 
+    }
+
+    @Override
+    public SysUserInfoVO getUserInfo(Long userId) {
+        SysUserInfoVO userInfoVO = sysUserInfoVORepository.findOne(QSysUserInfoVO.sysUserInfoVO.userId.eq(userId)).get();
+        return userInfoVO;
     }
 
     /**

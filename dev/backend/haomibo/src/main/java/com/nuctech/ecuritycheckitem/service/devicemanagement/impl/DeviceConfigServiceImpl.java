@@ -509,20 +509,24 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
         SysWorkMode sysWorkMode = sysWorkModeRepository.findOne(QSysWorkMode.sysWorkMode.modeId.eq(sysDeviceConfig.getModeId())).get();
 
-        SysField sysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(sysDeviceConfig.getDevice().getFieldId())).get();
+
 
         SysWorkModeSimple sysWorkModeSimple = SysWorkModeSimple.builder()
                 .modeId(sysWorkMode.getModeId())
                 .modeName(sysWorkMode.getModeName())
                 .build();
+        SysFieldSimple sysFieldSimple = null;
+        if(sysDeviceConfig.getDevice().getFieldId() != null) {
+            SysField sysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(sysDeviceConfig.getDevice().getFieldId())).get();
+            sysFieldSimple = SysFieldSimple.builder()
+                    .orgId(sysField.getOrgId())
+                    .parentFieldId(sysField.getParentFieldId())
+                    .fieldDesignation(sysField.getFieldDesignation())
+                    .fieldId(sysField.getFieldId())
+                    .fieldSerial(sysField.getFieldSerial())
+                    .build();
+        }
 
-        SysFieldSimple sysFieldSimple = SysFieldSimple.builder()
-                .orgId(sysField.getOrgId())
-                .parentFieldId(sysField.getParentFieldId())
-                .fieldDesignation(sysField.getFieldDesignation())
-                .fieldId(sysField.getFieldId())
-                .fieldSerial(sysField.getFieldSerial())
-                .build();
         SysDeviceConfigSimple deviceConfigSimple = SysDeviceConfigSimple.builder()
                 .configId(sysDeviceConfig.getConfigId())
                 .atrSwitch(sysDeviceConfig.getAtrSwitch())

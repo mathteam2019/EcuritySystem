@@ -80,9 +80,6 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
     @Column(name = "SCAN_POINTSMAN_ID", length = 20)
     private Long scanPointsmanId;
 
-    @Column(name = "SCAN_POINTSMAN_NAME", length = 50)
-    private String scanPointsmanName;
-
     @Column(name = "ASSIGN_JUDGE_ID", length = 20)
     private Long assignJudgeId;
 
@@ -211,6 +208,27 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
 
     @Column(name = "JUDGE_STATUS", length = 10)
     private String judgeStatus;
+
+    @Column(name = "SCAN_POINTSMAN_NAME", length = 50)
+    private String scanPointsmanName;
+
+    @Column(name = "JUDGE_USER_NAME", length = 50)
+    private String judgeUserName;
+
+    @Column(name = "HAND_USER_NAME", length = 50)
+    private String handUserName;
+
+    @Column(name = "FIELD_DESIGNATION", length = 50)
+    private String fieldDesignation;
+
+    @Column(name = "SCAN_DEVICE_NAME", length = 50)
+    private String scanDeviceName;
+
+    @Column(name = "JUDGE_DEVICE_NAME", length = 50)
+    private String judgeDeviceName;
+
+    @Column(name = "HAND_DEVICE_NAME", length = 50)
+    private String handDeviceName;
 
 
     @OneToOne()

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.controllers.AsyncController;
 import com.nuctech.ecuritycheckitem.enums.CustomType;
 import com.nuctech.ecuritycheckitem.enums.DefaultType;
 import com.nuctech.ecuritycheckitem.enums.GenderType;
@@ -93,10 +94,15 @@ public class DeviceServiceImpl implements DeviceService {
     HistoryRepository historyRepository;
 
     @Autowired
-    SerAssignRepository serAssignRepository;
+    SerJudgeGraphRepository serJudgeGraphRepository;
+
+    @Autowired
+    SerHandExaminationRepository serHandExaminationRepository;
 
     @Autowired
     SerDeviceStatusRepository serDeviceStatusRepository;
+
+
 
     @Autowired
     Utils utils;
@@ -280,10 +286,10 @@ public class DeviceServiceImpl implements DeviceService {
             return 1;
         }
 
-        if(serAssignRepository.exists(QSerAssign.serAssign.assignJudgeDeviceId.eq(deviceId))) {
+        if(serJudgeGraphRepository.exists(QSerJudgeGraph.serJudgeGraph.judgeDeviceId.eq(deviceId))) {
             return 1;
         }
-        if(serAssignRepository.exists(QSerAssign.serAssign.assignHandDeviceId.eq(deviceId))) {
+        if(serHandExaminationRepository.exists(QSerHandExamination.serHandExamination.handDeviceId.eq(deviceId))) {
             return 1;
         }
         if(historyRepository.exists(QHistorySimplifiedForHistoryTaskManagement.historySimplifiedForHistoryTaskManagement.handDeviceId.eq(deviceId))) {
@@ -602,7 +608,8 @@ public class DeviceServiceImpl implements DeviceService {
         // Add edited info.
         sysDevice.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
 
-        sysDeviceRepository.save(sysDevice);
+
+        sysDevice = sysDeviceRepository.save(sysDevice);
         String valueAfter = getJsonFromDevice(sysDevice);
         auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, valueBefore, valueAfter);
@@ -650,6 +657,9 @@ public class DeviceServiceImpl implements DeviceService {
                 sysDeviceConfigRepository.delete(sysDeviceConfig);
             }
 
+            fromConfigIdRepository.deleteAll(fromConfigIdRepository.findAll(
+                    QFromConfigId.fromConfigId1.deviceId.eq(sysDevice.getDeviceId())));
+
             SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
                     .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
 
@@ -660,6 +670,8 @@ public class DeviceServiceImpl implements DeviceService {
                         QSerScanParamsFrom.serScanParamsFrom.scanParamsId.eq(scanParam.getScanParamsId())));
                 serScanParamRepository.delete(scanParam);
             }
+            serScanParamsFromRepository.deleteAll(serScanParamsFromRepository.findAll(
+                    QSerScanParamsFrom.serScanParamsFrom.deviceId.eq(sysDevice.getDeviceId())));
         }
         sysDeviceRepository.delete(sysDevice);
         auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
@@ -683,7 +695,7 @@ public class DeviceServiceImpl implements DeviceService {
                 String valueBefore = getJsonFromDevice(realDevice);
                 realDevice.setFieldId(device.getFieldId());
                 realDevice.addEditedInfo((Long) authenticationFacade.getAuthentication().getPrincipal());
-                sysDeviceRepository.save(realDevice);
+                realDevice = sysDeviceRepository.save(realDevice);
                 String valueAfter = getJsonFromDevice(realDevice);
                 auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                         "", messageSource.getMessage("Device", null, currentLocale), "", realDevice.getDeviceId().toString(), null, true, valueBefore, valueAfter);

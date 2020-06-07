@@ -14,19 +14,10 @@ package com.nuctech.ecuritycheckitem.models.simplifieddb;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Getter
@@ -37,8 +28,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_HISTORY)
-@Table(name = "history_process")
-public class HistorySimplifiedForProcessTaskManagement extends BaseEntitySimple implements Serializable {
+@Table(name = "history_invalid")
+public class HistorySimplifiedForInvalidTaskManagement extends BaseEntitySimple implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

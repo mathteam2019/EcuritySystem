@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.controllers.AsyncController;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -70,6 +71,9 @@ public class UserManagementController extends BaseController {
 
     @Autowired
     PlatformOtherService platformOtherService;
+
+    @Autowired
+    AsyncController asyncController;
 
 
 
@@ -546,6 +550,7 @@ public class UserManagementController extends BaseController {
 //        }
         sysUser.setPassword(CryptUtil.encode(sysUser.getPassword()));
         userService.modifyUser(sysUser, requestBody.getPortrait());
+        asyncController.updateUser(sysUser.getUserId());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

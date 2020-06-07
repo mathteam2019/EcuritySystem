@@ -133,6 +133,24 @@ public class RedisUtil {
         return key == null ? null : redisTemplate.opsForValue().get(key);
     }
 
+    public boolean setHash(String hashKey, String identity, Object object) {
+        try {
+            redisTemplate.opsForHash().put(hashKey, identity, object);
+            return true;
+        } catch (Exception e) {
+
+            return false;
+        }
+    }
+
+    public Object getHash(String hashKey, String identity) {
+        try {
+            return redisTemplate.opsForHash().get(hashKey, identity);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public Map<Object, Object> getEntities(String hashKey) {
         try {
             return redisTemplate.opsForHash().entries(hashKey);

@@ -19,8 +19,8 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.reusables.CategoryUser;
-import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysFieldRepository;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.QSerTaskSimplifiedForProcessTaskManagement;
+import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
@@ -58,6 +58,9 @@ public class FieldServiceImpl implements FieldService {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    SerTaskRepository serTaskRepository;
 
     @Autowired
     public MessageSource messageSource;
@@ -165,6 +168,16 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public boolean checkHasChild(Long fieldId) {
         return sysFieldRepository.exists(QSysField.sysField.parentFieldId.eq(fieldId));
+    }
+
+    /**
+     * check if has children
+     * @param fieldId
+     * @return
+     */
+    @Override
+    public boolean checkUsedHistory(Long fieldId) {
+        return serTaskRepository.exists(QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement.fieldId.eq(fieldId));
     }
 
     /**
