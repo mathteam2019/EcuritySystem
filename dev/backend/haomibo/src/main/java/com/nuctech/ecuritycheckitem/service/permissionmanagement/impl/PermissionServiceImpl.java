@@ -214,7 +214,7 @@ public class PermissionServiceImpl implements PermissionService {
      * @param resourceName
      * @return
      */
-    private BooleanBuilder getRolePredicate(String roleName, String resourceName) {
+    private BooleanBuilder getRolePredicate(String roleName, String resourceName, String locale) {
         QSysRole builder = QSysRole.sysRole;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -223,7 +223,11 @@ public class PermissionServiceImpl implements PermissionService {
             predicate.and(builder.roleName.contains(roleName));
         }
         if (!StringUtils.isEmpty(resourceName)) {
-            predicate.and(builder.resources.any().resourceCaption.contains(resourceName));
+            if(Constants.ENGLISH_LOCALE.equals(locale)) {
+                predicate.and(builder.resources.any().resourceCaptionEnglish.contains(resourceName));
+            } else {
+                predicate.and(builder.resources.any().resourceCaption.contains(resourceName));
+            }
         }
         CategoryUser categoryUser = authService.getDataCategoryUserList();
         if(categoryUser.isAll() == false) {
@@ -245,8 +249,8 @@ public class PermissionServiceImpl implements PermissionService {
      * @return
      */
     @Override
-    public PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, String resourceName, int currentPage, int perPage) {
-        BooleanBuilder predicate = getRolePredicate(roleName, resourceName);
+    public PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, String resourceName, int currentPage, int perPage, String locale) {
+        BooleanBuilder predicate = getRolePredicate(roleName, resourceName, locale);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -308,8 +312,8 @@ public class PermissionServiceImpl implements PermissionService {
      * @return
      */
     @Override
-    public List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, String resourceName, boolean isAll, String idList) {
-        BooleanBuilder predicate = getRolePredicate(roleName, resourceName);
+    public List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, String resourceName, boolean isAll, String idList, String locale) {
+        BooleanBuilder predicate = getRolePredicate(roleName, resourceName, locale);
         if(isAll == false) {
             String[] splits = idList.split(",");
             List<Long> roleIdList = new ArrayList<>();

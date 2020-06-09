@@ -58,6 +58,9 @@ public class SysResource implements Serializable {
     @Column(name = "RESOURCE_CAPTION", length = 50)
     private String resourceCaption;
 
+    @Column(name = "RESOURCE_CAPTION_EN", length = 50)
+    private String resourceCaptionEnglish;
+
     @Column(name = "RESOURCE_URL", length = 200)
     private String resourceUrl;
 

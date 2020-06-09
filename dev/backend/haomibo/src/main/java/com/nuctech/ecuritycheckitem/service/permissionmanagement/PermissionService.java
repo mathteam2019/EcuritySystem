@@ -37,7 +37,7 @@ public interface PermissionService {
      * @param perPage
      * @return
      */
-    PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, String resourceName, int currentPage, int perPage);
+    PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, String resourceName, int currentPage, int perPage, String locale);
 
     /**
      * get export role list
@@ -47,7 +47,7 @@ public interface PermissionService {
      * @param idList
      * @return
      */
-    List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, String resourceName, boolean isAll, String idList);
+    List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, String resourceName, boolean isAll, String idList, String locale);
 
     /**
      * check if role exists

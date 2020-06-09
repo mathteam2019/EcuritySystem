@@ -334,11 +334,13 @@ public class PermissionControlController extends BaseController {
         String type = GetAllType.BARE;
     }
 
-    private void updateRoleList(List<SysRole> roleList) {
+    private void updateRoleList(List<SysRole> roleList, String locale) {
         for(int i = 0; i < roleList.size(); i ++) {
             SysRole role = roleList.get(i);
             role.getResources().forEach(resource -> {
-                resource.setResourceCaption(ConstantDictionary.getDataValue(resource.getResourceName(), "Resource"));
+                if(Constants.ENGLISH_LOCALE.equals(locale)) {
+                    resource.setResourceCaption(resource.getResourceCaptionEnglish());
+                }
             });
         }
     }
@@ -422,12 +424,13 @@ public class PermissionControlController extends BaseController {
             resourceName = requestBody.getFilter().getResourceName();
         }
 
-        PageResult<SysRole> result = permissionService.getRoleListByPage(sortBy, order, roleName, resourceName, currentPage, perPage);
+
+        PageResult<SysRole> result = permissionService.getRoleListByPage(sortBy, order, roleName, resourceName, currentPage, perPage, requestBody.getLocale());
 
         long total = result.getTotal();
         List<SysRole> data = result.getDataList();
         setDictionary(requestBody.getLocale()); //set dictionary data
-        updateRoleList(data);
+        updateRoleList(data, requestBody.getLocale());
         // Set filter.
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
@@ -480,7 +483,7 @@ public class PermissionControlController extends BaseController {
                 order = sortParams.get("order");
             }
         }
-        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList(), requestBody.getLocale());
 
         setDictionary(requestBody.getLocale()); //set dictionary data
         RoleExcelView.setMessageSource(messageSource);
@@ -489,7 +492,7 @@ public class PermissionControlController extends BaseController {
         } else {
             RoleExcelView.setCurrentLocale(Locale.ENGLISH);
         }
-        updateRoleList(exportList);
+        updateRoleList(exportList, requestBody.getLocale());
         InputStream inputStream = RoleExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -533,7 +536,7 @@ public class PermissionControlController extends BaseController {
             }
         }
 
-        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList(), requestBody.getLocale());
         setDictionary(requestBody.getLocale()); //set dictionary data
         RoleWordView.setMessageSource(messageSource);
         if(Constants.CHINESE_LOCALE.equals(requestBody.getLocale())) {
@@ -541,7 +544,7 @@ public class PermissionControlController extends BaseController {
         } else {
             RoleWordView.setCurrentLocale(Locale.ENGLISH);
         }
-        updateRoleList(exportList);
+        updateRoleList(exportList, requestBody.getLocale());
         InputStream inputStream = RoleWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -587,7 +590,7 @@ public class PermissionControlController extends BaseController {
             }
         }
 
-        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, resourceName, requestBody.getIsAll(), requestBody.getIdList(), requestBody.getLocale());
         RolePdfView.setResource(getFontResource()); //set font resource
         setDictionary(requestBody.getLocale());  //set dictionary data
         RolePdfView.setMessageSource(messageSource);
@@ -596,7 +599,7 @@ public class PermissionControlController extends BaseController {
         } else {
             RolePdfView.setCurrentLocale(Locale.ENGLISH);
         }
-        updateRoleList(exportList);
+        updateRoleList(exportList, requestBody.getLocale());
         InputStream inputStream = RolePdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();
