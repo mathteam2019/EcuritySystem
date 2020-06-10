@@ -52,7 +52,7 @@ public class SysUserGroupSimple extends BaseEntity implements Serializable {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "sys_user_group_role",
-            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
+            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID", insertable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
     @OrderBy("roleId ASC")

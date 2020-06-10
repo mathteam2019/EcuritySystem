@@ -336,6 +336,7 @@ public class UserServiceImpl implements UserService {
         user.setCreatedTime(oldSysUser.getCreatedTime());
         user.setStatus(oldSysUser.getStatus());
         user.setDataRangeCategory(oldSysUser.getDataRangeCategory());
+        user.setRoles(oldSysUser.getRoles());
 
         // Process user portrait file.
         String fileName = utils.saveImageFile(portraitFile);

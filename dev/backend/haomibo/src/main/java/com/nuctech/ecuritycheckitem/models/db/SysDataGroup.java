@@ -60,7 +60,7 @@ public class SysDataGroup extends BaseEntity implements Serializable {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "sys_data_group_user",
-            joinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")},
+            joinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID", insertable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
     @OrderBy("userId ASC")

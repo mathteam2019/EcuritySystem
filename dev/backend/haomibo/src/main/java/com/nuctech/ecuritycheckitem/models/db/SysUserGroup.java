@@ -78,7 +78,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
     @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "sys_user_group_user",
-            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
+            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID", insertable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
     @OrderBy("userId ASC")
@@ -87,7 +87,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "sys_user_group_role",
-            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
+            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID", insertable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
     @OrderBy("roleId ASC")
@@ -96,7 +96,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "sys_user_group_lookup",
-            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
+            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID", insertable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
     )
     @OrderBy("dataGroupId ASC")

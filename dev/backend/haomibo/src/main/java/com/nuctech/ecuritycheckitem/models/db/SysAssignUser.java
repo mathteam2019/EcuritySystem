@@ -139,7 +139,7 @@ public class SysAssignUser extends BaseEntity implements Serializable {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "sys_role_user",
-            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
     @OrderBy("roleId ASC")
@@ -148,7 +148,7 @@ public class SysAssignUser extends BaseEntity implements Serializable {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "sys_user_lookup",
-            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
     )
     @OrderBy("dataGroupId ASC")

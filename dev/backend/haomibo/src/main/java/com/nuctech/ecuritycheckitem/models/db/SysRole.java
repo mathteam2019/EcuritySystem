@@ -59,7 +59,7 @@ public class SysRole extends BaseEntity implements Serializable {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "sys_role_resource",
-            joinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")},
+            joinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID", insertable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID")}
     )
     @OrderBy("resourceId ASC")

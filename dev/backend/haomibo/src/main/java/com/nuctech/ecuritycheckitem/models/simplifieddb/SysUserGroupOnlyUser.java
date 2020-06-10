@@ -58,7 +58,7 @@ public class SysUserGroupOnlyUser extends BaseEntity implements Serializable {
     @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "sys_user_group_user",
-            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
+            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID", insertable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
     @OrderBy("userId ASC")
